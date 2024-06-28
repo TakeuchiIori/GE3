@@ -1,5 +1,5 @@
 #pragma once
-#include "Vector4.h"
+#include "math/Vector4.h"
 #include "VertexData.h"
 #include <vector>
 #include <stdint.h>

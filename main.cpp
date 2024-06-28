@@ -6,11 +6,11 @@
 #include <dxgidebug.h>
 #include <dxcapi.h>
 #include "VertexData.h"
-#include "Vector4.h"
+#include "math/Vector4.h"
 #include "CompileShader.h"
 #include "Convertstring.h"
 #include "CreateBufferResource.h"
-#include "Matrix4x4.h"
+#include "math/Matrix4x4.h"
 #include "Transform.h"
 #include "DescriptorHeap.h"
 #include "externals/imgui/imgui.h"
@@ -24,7 +24,7 @@
 #include "DescriptorHandle.h"
 #include "Material.h"
 #include "DirectionalLight.h"
-#include "MathFunc.h"
+#include "math/MathFunc.h"
 #include "TransformationMatrix.h"
 #include "LoadObjFile.h"
 #include <corecrt_math_defines.h>

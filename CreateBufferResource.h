@@ -8,7 +8,7 @@
 #include <dxgi1_6.h>
 #include <dxgidebug.h>
 #include <dxcapi.h>
-#include "Vector4.h"
+#include "math/Vector4.h"
 #include "CompileShader.h"
 #include "Convertstring.h"
 #include "wrl.h"
