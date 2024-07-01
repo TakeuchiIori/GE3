@@ -7,7 +7,7 @@
 #pragma comment(lib,"dinput8.lib")
 #pragma comment(lib,"dxguid.lib")
 
-using namespace Microsoft::WRL;
+template <class T> using ComPtr = Microsoft::WRL::ComPtr<T>;
 /// <summary>
 /// 入力
 /// </summary>
@@ -20,7 +20,7 @@ public:
 	void Update();
 
 private:
-
-	
+	ComPtr<IDirectInput8> directInput = nullptr;
+	ComPtr<IDirectInputDevice8> keyboard;
 };
 

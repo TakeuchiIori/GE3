@@ -838,6 +838,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			DispatchMessage(&msg);
 		}
 		else {
+			input_->Update();
+
 			// ここからフレームが始まる
 			ImGui_ImplDX12_NewFrame();
 			ImGui_ImplWin32_NewFrame();
