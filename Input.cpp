@@ -21,5 +21,5 @@ void Input::Initialize(HINSTANCE hinstance, HWND hwnd)
 
 void Input::Update()
 {
-	//keyboard->Acquire();
+	keyboard->Acquire();
 }
