@@ -28,9 +28,11 @@
 #include "TransformationMatrix.h"
 #include "LoadObjFile.h"
 #include <corecrt_math_defines.h>
+
 #include<wrl.h>
 #include "ResourceObject.h"
 #include "D3DResourceLeakCheacker.h"
+#include "Input.h"
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 #pragma comment(lib,"dxguid.lib")
@@ -59,6 +61,10 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT msg,
 
 //Windowsアプリのエントリーポイント(main関数)
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
+
+	
+
+
 	//　COMの初期化
 	CoInitializeEx(0, COINIT_MULTITHREADED);
 	D3DResourceLeakCheacker leakCheack;
@@ -98,6 +104,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		wc.hInstance,				  // インスタンスハンドル
 		nullptr						  // オプション
 	);
+
+	Input* input_ = nullptr;
+	input_ = new Input();
+	input_->Initialize(wc.hInstance, hwnd);
+
 	//---------- デバッグレイヤー ----------//
 #ifdef _DEBUG
 	Microsoft::WRL::ComPtr<ID3D12Debug1> debugController = nullptr;
@@ -982,7 +993,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	ImGui::DestroyContext();
 	// Release
 	CloseHandle(fenceEvent);
-
+	delete input_;
 
 
 
