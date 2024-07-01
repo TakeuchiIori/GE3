@@ -3,12 +3,12 @@
 void Input::Initialize(HINSTANCE hinstance, HWND hwnd)
 {
 	// DirectInputのインスタンス
-	
+
 	HRESULT result;
 	result = DirectInput8Create(hinstance, DIRECTINPUT_HEADER_VERSION, IID_IDirectInput8, (void**)&directInput, nullptr);
 	assert(SUCCEEDED(result));
 	// キーボードデバイス生成
-	
+
 	result = directInput->CreateDevice(GUID_SysKeyboard, &keyboard, NULL);
 	assert(SUCCEEDED(result));
 	// 入力データ形式のセット
@@ -21,9 +21,26 @@ void Input::Initialize(HINSTANCE hinstance, HWND hwnd)
 
 void Input::Update()
 {
+	HRESULT result;
+	memcpy(keyPre, key, sizeof(key));
 	// キーボード情報の取得開始
-	keyboard->Acquire();
-	// 全キーの入力情報を取得する
-	BYTE key[256] = {};
-	keyboard->GetDeviceState(sizeof(key), key);
+	result = keyboard->Acquire();
+	result = keyboard->GetDeviceState(sizeof(key), key);
+}
+
+bool Input::PushKey(BYTE keyNumber)
+{
+	// 指定したキーを押していればtrueを返す
+	if (key[keyNumber]) {
+		return true;
+	}
+	return false;
+}
+
+bool Input::TriggerKey(BYTE keyNumber)
+{
+	if (key[keyNumber] && !keyPre[keyNumber]) {
+		return true;
+	}
+	return false;
 }

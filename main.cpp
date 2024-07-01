@@ -839,7 +839,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		}
 		else {
 			input_->Update();
-
+			if (input_->TriggerKey(DIK_0)) {
+				transform.rotate.y += 0.1f;
+			}
 			// ここからフレームが始まる
 			ImGui_ImplDX12_NewFrame();
 			ImGui_ImplWin32_NewFrame();
