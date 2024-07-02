@@ -1,6 +1,7 @@
 #pragma once
 #include <Windows.h>
 #include<wrl.h>
+#include "WinApp.h"
 #define DIRECTINPUT_VERSION		0x0800
 #include "dinput.h"
 #include "assert.h"
@@ -17,12 +18,12 @@ public:
 	/// <summary>
 	/// 初期化
 	/// </summary>
-	void Initialize(HINSTANCE hinstance, HWND hwnd);
+	void Initialize(WinApp* winApp);
 
 	/// <summary>
 	/// 更新
 	/// </summary>
-	void Update();
+	void Update(WinApp* winApp);
 
 	/// <summary>
 	/// キーの押下をチェック
@@ -45,5 +46,7 @@ private:
 	BYTE key[256] = {};
 	// 前回のキーの状態
 	BYTE keyPre[256] = {};
+	// WindowsAPI
+	WinApp* winApp_ = nullptr;
 };
 

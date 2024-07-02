@@ -53,7 +53,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	
 	Input* input_ = nullptr;
 	input_ = new Input();
-	input_->Initialize(winApp_->Gethinstance(), winApp_->Gethwnd());
+	input_->Initialize(winApp_);
 
 	//---------- デバッグレイヤー ----------//
 #ifdef _DEBUG
@@ -783,7 +783,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			DispatchMessage(&msg);
 		}
 		else {
-			input_->Update();
+			input_->Update(winApp_);
 			if (input_->TriggerKey(DIK_0)) {
 				transform.rotate.y += 0.1f;
 			}

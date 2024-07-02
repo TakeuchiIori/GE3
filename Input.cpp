@@ -1,11 +1,12 @@
 #include "Input.h"
 
-void Input::Initialize(HINSTANCE hinstance, HWND hwnd)
+void Input::Initialize(WinApp* winApp)
 {
+	// 借りてきたwinAooのインスタンスを記録
+	this->winApp_ = winApp;
 	// DirectInputのインスタンス
-
 	HRESULT result;
-	result = DirectInput8Create(hinstance, DIRECTINPUT_HEADER_VERSION, IID_IDirectInput8, (void**)&directInput, nullptr);
+	result = DirectInput8Create(winApp_->Gethinstance(), DIRECTINPUT_HEADER_VERSION, IID_IDirectInput8, (void**)&directInput, nullptr);
 	assert(SUCCEEDED(result));
 	// キーボードデバイス生成
 
@@ -15,11 +16,11 @@ void Input::Initialize(HINSTANCE hinstance, HWND hwnd)
 	result = keyboard->SetDataFormat(&c_dfDIKeyboard);
 	assert(SUCCEEDED(result));
 	// 排他制御レベルのセット
-	result = keyboard->SetCooperativeLevel(hwnd, DISCL_FOREGROUND | DISCL_NONEXCLUSIVE | DISCL_NOWINKEY);
+	result = keyboard->SetCooperativeLevel(winApp_->Gethwnd(), DISCL_FOREGROUND | DISCL_NONEXCLUSIVE | DISCL_NOWINKEY);
 	assert(SUCCEEDED(result));
 }
 
-void Input::Update()
+void Input::Update(WinApp* winApp)
 {
 	HRESULT result;
 	memcpy(keyPre, key, sizeof(key));
