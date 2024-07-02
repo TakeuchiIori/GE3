@@ -776,13 +776,13 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	};
 
 	// ウィンドウのxボタンが押されるまでループ
-	while (msg.message != WM_QUIT) {
+	while (true) {
 		// windowにメッセージが来てたら最優先で処理させる
-		if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)) {
-			TranslateMessage(&msg);
-			DispatchMessage(&msg);
+		if (winApp_->ProcessMessage()) {
+			// ゲームループを抜ける
+			break;
 		}
-		else {
+		
 			input_->Update(winApp_);
 			if (input_->TriggerKey(DIK_0)) {
 				transform.rotate.y += 0.1f;
@@ -935,8 +935,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			hr = commandList->Reset(commandAllocator.Get(), nullptr);
 			assert(SUCCEEDED(hr));
 			CoUninitialize();
-		}// ゲームループの終了
-	}
+		
+	}// ゲームループの終了
 	ImGui_ImplDX12_Shutdown();
 	ImGui_ImplWin32_Shutdown();
 	ImGui::DestroyContext();

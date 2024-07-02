@@ -9,13 +9,25 @@ public: // 静的メンバ関数
 	static LRESULT CALLBACK WindowProc(HWND hwnd, UINT msg,
 		WPARAM wparam, LPARAM lparam);
 public:
-
+	/// <summary>
+	/// 初期化
+	/// </summary>
 	void Initialize();
 
+	/// <summary>
+	/// 更新
+	/// </summary>
 	void Update();
 
+	/// <summary>
+	/// 終了
+	/// </summary>
 	void Finalize();
 
+	/// <summary>
+	/// メッセージの処理
+	/// </summary>
+	bool ProcessMessage();
 
 public: // アクセッサ
 	HINSTANCE Gethinstance() { return wc.hInstance; }
