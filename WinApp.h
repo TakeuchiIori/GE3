@@ -27,7 +27,9 @@ public: // 定数
 	static const int32_t kClientHeight = 720;
 
 private: // メンバ変数
+	// ウィンドウクラスの設定
 	WNDCLASS wc{};
+	// ウィンドウハンドル
 	HWND hwnd;
 
 };

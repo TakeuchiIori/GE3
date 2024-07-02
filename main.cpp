@@ -51,8 +51,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	winApp_->Initialize();
 
 	
-
-
 	Input* input_ = nullptr;
 	input_ = new Input();
 	input_->Initialize(winApp_->Gethinstance(), winApp_->Gethwnd());
@@ -75,8 +73,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	// HRESULTはWindowa\s系のエラーコードであり、
 	// 関数が成功したかどうかをSUCCEEDEDマクロで判定できる
-	HRESULT hr = CreateDXGIFactory(IID_PPV_ARGS(&dxgiFactory))
-		;
+	HRESULT hr = CreateDXGIFactory(IID_PPV_ARGS(&dxgiFactory));
+
 	// 初期化の根本的な部分でエラーが出た場合はプログラムが間違っているか、どうに
 	// も出来ない場合が多いのでassertにしておく
 	assert(SUCCEEDED(hr));
