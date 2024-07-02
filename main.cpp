@@ -936,6 +936,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			assert(SUCCEEDED(hr));
 			CoUninitialize();
 		
+
 	}// ゲームループの終了
 	ImGui_ImplDX12_Shutdown();
 	ImGui_ImplWin32_Shutdown();
