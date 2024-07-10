@@ -193,7 +193,7 @@ private:
 	// シザー矩形
 	D3D12_RECT scissorRect{};
 	// バックバッファ
-	UINT backBufferIndex;
+	
 	// TransitionBarrierの設定
 	D3D12_RESOURCE_BARRIER barrier{};
 };
