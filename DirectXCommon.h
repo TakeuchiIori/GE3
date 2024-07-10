@@ -37,6 +37,11 @@ public: // 各種初期化
 	/// </summary>
 	void CreateDepthBuffer();
 
+	/// <summary>
+	/// 各種ディスクリプターヒープの生成
+	/// </summary>
+	void CreateDescriptorHeap();
+
 public: // メンバ関数
 	// ディスクリプターヒープ
 	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> CreateDescriptorHeap(Microsoft::WRL::ComPtr<ID3D12Device> device, D3D12_DESCRIPTOR_HEAP_TYPE heapType, UINT numDescriptors, bool shaderVisible);
@@ -65,5 +70,17 @@ private: // メンバ変数
 
 	// スワップチェーン
 	Microsoft::WRL::ComPtr<IDXGISwapChain4> swapChain;
+
+	// RTV用のヒープディスクリプタの数は2。  ShaderVisibleはfalse
+	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> rtvDescriptorHeap;
+	// SRV用のヒープディスクリプタの数は128。ShaderVisibleはtrue
+	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> srvDescriptorHeap;
+	// DSV用のヒープディスクリプタの数は1。  ShaderVisibleはfalse
+	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> dsvDescriptorHeap;
+
+private:
+	uint32_t descriptotSizeSRV;
+	uint32_t descriptotSizeRTV;
+	uint32_t descriptotSizeDSV;
 };
 
