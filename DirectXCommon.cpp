@@ -311,6 +311,16 @@ void DirectXCommon::CreateDXCompiler()
 	assert(SUCCEEDED(hr));
 }
 
+void DirectXCommon::PreDraw()
+{
+
+}
+
+void DirectXCommon::PostDraw()
+{
+
+}
+
 void DirectXCommon::InitializeViewPortRevtangle()
 {
 	// クライアント領域のサイズと一緒にして画面全体に表示

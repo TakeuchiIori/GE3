@@ -78,6 +78,12 @@ public: // 各種初期化
 	/// </summary>
 	void CreateDXCompiler();
 
+public: // 描画関連
+	// 描画前処理
+	void PreDraw();
+	// 描画後処理
+	void PostDraw();
+
 public: // メンバ関数
 	/// <summary>
 	/// ディスクリプターヒープ
