@@ -840,6 +840,13 @@ HRESULT hr;
 			ImGui::DragFloat("translateZ", &transform.translate.z, 0.01f);
 			ImGui::Checkbox("useMonsterBall", &useMonsterBall);
 			ImGui::End();
+
+
+			dxCommon->PreDraw();
+
+
+
+
 			// これから書き込むバックバッファのインデックスを取得
 			UINT backBufferIndex = dxCommon->GetswapChain()->GetCurrentBackBufferIndex();
 			// TransitionBarrierの設定
@@ -874,6 +881,11 @@ HRESULT hr;
 			dxCommon->GetcommandList()->SetDescriptorHeaps(1, descriptorHeaps);
 			dxCommon->GetcommandList()->RSSetViewports(1, &viewport);
 			dxCommon->GetcommandList()->RSSetScissorRects(1, &scissorRect);
+
+
+
+
+
 			// RootSignatureを設定。PSOに設定しているけど別途設定が必要
 			dxCommon->GetcommandList()->SetPipelineState(graphicsPipelineState.Get());    	  // PSOを設定
 			dxCommon->GetcommandList()->SetGraphicsRootSignature(rootSignature.Get());
@@ -910,6 +922,15 @@ HRESULT hr;
 			// ImGuiの描画コマンド
 			ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), dxCommon->GetcommandList().Get());
 			//------------------ 画面に描く処理は全て終わり、画面に映すので状態を遷移 ------------------//
+			
+
+			dxCommon->PostDraw();
+
+
+
+
+
+
 			// 今回はRendeerTargetからPresentにする
 			barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;
 			barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PRESENT;
@@ -946,12 +967,18 @@ HRESULT hr;
 			CoUninitialize();
 		
 
+
+
+
+
+
+
 	}// ゲームループの終了
-	//ImGui_ImplDX12_Shutdown();
-	//ImGui_ImplWin32_Shutdown();
-	//ImGui::DestroyContext();
-	//// Release
-	//CloseHandle(dxCommon->GetfenceEvent());
+	ImGui_ImplDX12_Shutdown();
+	ImGui_ImplWin32_Shutdown();
+	ImGui::DestroyContext();
+	// Release
+	CloseHandle(dxCommon->GetfenceEvent());
 	delete input_;
 
 
