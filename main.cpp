@@ -35,11 +35,12 @@
 #include "D3DResourceLeakCheacker.h"
 #include "WinApp.h"
 #include "Input.h"
+#include "DirectXCommon.h"
 #include "externals/imgui/imgui_impl_win32.h"
 
 
 #pragma comment(lib,"dxguid.lib")
-#pragma comment(lib,"dxgi.lib")
+
 #pragma comment(lib,"dxcompiler.lib")
 
 //Windowsアプリのエントリーポイント(main関数)
@@ -55,6 +56,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	input_ = new Input();
 	input_->Initialize(winApp_);
 
+	DirectXCommon* dxCommon = nullptr;
+	// DirectXの初期化
+	dxCommon = new DirectXCommon();
+	dxCommon->Initialize();
+
 	//---------- デバッグレイヤー ----------//
 #ifdef _DEBUG
 	Microsoft::WRL::ComPtr<ID3D12Debug1> debugController = nullptr;
@@ -65,8 +71,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		debugController->SetEnableGPUBasedValidation(true);
 	}
 #endif
-	
-
 	MSG msg{};
 	//--------------- DXGIファクトリーの生成 ---------------//
 	Microsoft::WRL::ComPtr<IDXGIFactory7> dxgiFactory = nullptr;
@@ -152,7 +156,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	}
 #endif
-	
+
 
 	//------------------------------ コマンドキューの作成 -------------------------//
 	Microsoft::WRL::ComPtr<ID3D12CommandQueue> commandQueue = nullptr;
@@ -379,6 +383,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	hr = device->CreateGraphicsPipelineState(&graphicsPipelineStateDesc,
 		IID_PPV_ARGS(&graphicsPipelineState));
 	assert(SUCCEEDED(hr));
+
+	
 
 	//------------------ Material用のリソース ------------------//
 	Microsoft::WRL::ComPtr<ID3D12Resource> materialResource = CreateBufferResource(device.Get(), sizeof(Material));
@@ -949,6 +955,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	winApp_->Finalize();
 	delete winApp_;
 	winApp_ = nullptr;
+
+	delete dxCommon;
 
 	
 	return 0;// main関数のリターン
