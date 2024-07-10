@@ -108,6 +108,34 @@ public: // メンバ関数
 	/// SRVの指定番号のGPUディスクリプタハンドルを取得
 	/// </summary>
 	D3D12_GPU_DESCRIPTOR_HANDLE GetSRVGPUDescriptorHandle(uint32_t index);
+
+public: // アクセッサ
+	
+	Microsoft::WRL::ComPtr<ID3D12Device> Getdevice() { return device; }
+	Microsoft::WRL::ComPtr<IDxcUtils> GetdxcUtils() { return dxcUtils; }
+	Microsoft::WRL::ComPtr<IDxcCompiler3> GetdxcCompiler() { return dxcCompiler; }
+	Microsoft::WRL::ComPtr<IDxcIncludeHandler> GetincludeHandler() { return includeHandler; }
+	Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> GetcommandList() { return commandList; }
+	Microsoft::WRL::ComPtr<ID3D12CommandQueue> GetcommandQueue() { return commandQueue; }
+	Microsoft::WRL::ComPtr<ID3D12CommandAllocator> GetcommandAllocator() { return commandAllocator; }
+
+	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> GetrtvDescriptorHeap() { return rtvDescriptorHeap; }
+	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> GetsrvDescriptorHeap() { return srvDescriptorHeap; }
+	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> GetdsvDescriptorHeap() { return dsvDescriptorHeap; }
+
+	uint32_t GetdescriptotSizeSRV() { return descriptotSizeSRV;}
+	uint32_t GetdescriptotSizeRTV() { return descriptotSizeRTV; }
+	uint32_t GetdescriptotSizeDSV() { return descriptotSizeDSV; }
+
+	Microsoft::WRL::ComPtr<IDXGISwapChain4> GetswapChain() { return swapChain; }
+	std::array<Microsoft::WRL::ComPtr<ID3D12Resource>, 2> GetswapChainResources() { return swapChainResources; }
+	D3D12_CPU_DESCRIPTOR_HANDLE* GetrtvHandles() { return rtvHandles; }
+
+	Microsoft::WRL::ComPtr<ID3D12Fence> Getfence() { return fence; }
+	HANDLE GetfenceEvent() { return fenceEvent; }
+	uint64_t GetfenceValue() { return fenceValue; }
+	uint64_t SetfenceValue(uint64_t val) {  return fenceValue = val; }
+
 private: // メンバ変数
 
 	// WindowsAPI
@@ -134,21 +162,26 @@ private: // メンバ変数
 	Microsoft::WRL::ComPtr<IDXGISwapChain4> swapChain;
 	std::array<Microsoft::WRL::ComPtr<ID3D12Resource>,2> swapChainResources;
 
-	// RTV用のヒープディスクリプタの数は2。  ShaderVisibleはfalse
 	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> rtvDescriptorHeap;
-	// SRV用のヒープディスクリプタの数は128。ShaderVisibleはtrue
 	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> srvDescriptorHeap;
-	// DSV用のヒープディスクリプタの数は1。  ShaderVisibleはfalse
 	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> dsvDescriptorHeap;
+
+	// 現時点ではincludeはしないが、includeに対応するための設定を行っておく
+	Microsoft::WRL::ComPtr<IDxcIncludeHandler> includeHandler ;
 
 private:
 	uint32_t descriptotSizeSRV;
 	uint32_t descriptotSizeRTV;
 	uint32_t descriptotSizeDSV;
+	// RTVを2つ作るのでディスクリプタを2つ用意
+	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandles[2];
 	// RTV
 	D3D12_RENDER_TARGET_VIEW_DESC rtvDesc{};
 	// スワップチェーン
 	DXGI_SWAP_CHAIN_DESC1 swapChainDesc{};
+
+	uint64_t fenceValue = 0;
+	HANDLE fenceEvent;
 	// ビューポート
 	D3D12_VIEWPORT viewport{};
 	// シザー矩形

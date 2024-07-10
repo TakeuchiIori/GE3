@@ -187,15 +187,16 @@ void DirectXCommon::InitializeRenderTarget()
 	rtvDesc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2D;
 	// ディスクリプタの先頭を取得する
 	D3D12_CPU_DESCRIPTOR_HANDLE rtvStartHandle = GetCPUDescriptorHandle(rtvDescriptorHeap, descriptotSizeRTV, 0);
-	// RTVを2つ作るのでディスクリプタを2つ用意
-	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandles[2];
+
 	/*=============================================//
 						 裏表2つ分
 	//=============================================*/
 	for (uint32_t i = 0; i < 2; ++i) {
 		rtvHandles[i] = rtvStartHandle;
-		device->CreateRenderTargetView(swapChainResources[i].GetAddressOf()[i], &rtvDesc, rtvHandles[i]);
+		rtvStartHandle.ptr += device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
+		device->CreateRenderTargetView(swapChainResources[i].GetAddressOf()[0], &rtvDesc, rtvHandles[i]);
 	}
+
 	//// まず1つ目をを作る。1つ目は最初のところに作る。作る場所をこちらで指定してあげる必要がある
 	//
 	//// 2つ目のディスクリプタハンドルを得る(自力で)
@@ -228,11 +229,11 @@ void DirectXCommon::InitializeFence()
 				FenceとEventを生成する
 	//=============================================*/
 	HRESULT hr;
-	uint64_t fenceValue = 0;
+	
 	hr = device->CreateFence(fenceValue, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&fence));
 	assert(SUCCEEDED(hr));
 	// FenceのSignalを持つためのイベントを生成する
-	HANDLE fenceEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
+	fenceEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
 	assert(fenceEvent, != nullptr);
 }
 
@@ -305,8 +306,7 @@ void DirectXCommon::CreateDXCompiler()
 	assert(SUCCEEDED(hr));
 	hr = DxcCreateInstance(CLSID_DxcCompiler, IID_PPV_ARGS(&dxcCompiler));
 	assert(SUCCEEDED(hr));
-	// 現時点ではincludeはしないが、includeに対応するための設定を行っておく
-	Microsoft::WRL::ComPtr<IDxcIncludeHandler> includeHandler = nullptr;
+	
 	hr = dxcUtils->CreateDefaultIncludeHandler(&includeHandler);
 	assert(SUCCEEDED(hr));
 }
