@@ -47,15 +47,35 @@ public: // 各種初期化
 	void CreateDescriptorHeap();
 
 public: // メンバ関数
-	// ディスクリプターヒープ
+	/// <summary>
+	/// ディスクリプターヒープ
+	/// </summary>
 	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> CreateDescriptorHeap(Microsoft::WRL::ComPtr<ID3D12Device> device, D3D12_DESCRIPTOR_HEAP_TYPE heapType, UINT numDescriptors, bool shaderVisible);
-	// 深度バッファのリソース
+	
+	/// <summary>
+	/// 深度バッファのリソース
+	/// </summary>
 	Microsoft::WRL::ComPtr<ID3D12Resource> CreateDepthStencilTextureResource(Microsoft::WRL::ComPtr<ID3D12Device> device, int32_t width, int32_t height);
-	// CPUの取得
-	D3D12_CPU_DESCRIPTOR_HANDLE GetCPUDescriptorHandle(ID3D12DescriptorHeap* descriptorHeap, uint32_t descriptorSize, uint32_t index);
-	// GPUの取得
-	D3D12_GPU_DESCRIPTOR_HANDLE GetGPUDescriptorHandle(ID3D12DescriptorHeap* descriptorHeap, uint32_t descriptorSize, uint32_t index);
-
+	
+	/// <summary>
+	/// 指定番号のCPUの取得
+	/// </summary>
+	static D3D12_CPU_DESCRIPTOR_HANDLE GetCPUDescriptorHandle(Microsoft::WRL::ComPtr<ID3D12DescriptorHeap>& descriptorHeap, uint32_t descriptorSize, uint32_t index);
+	
+	/// <summary>
+	/// 指定番号のGPUの取得
+	/// </summary>
+	static D3D12_GPU_DESCRIPTOR_HANDLE GetGPUDescriptorHandle(Microsoft::WRL::ComPtr<ID3D12DescriptorHeap>& descriptorHeap, uint32_t descriptorSize, uint32_t index);
+	
+	/// <summary>
+	/// SRVの指定番号のCPUディスクリプタハンドルを取得
+	/// </summary>
+	D3D12_CPU_DESCRIPTOR_HANDLE GetSRVCPUDescriptorHandle(uint32_t index);
+	
+	/// <summary>
+	/// SRVの指定番号のGPUディスクリプタハンドルを取得
+	/// </summary>
+	D3D12_GPU_DESCRIPTOR_HANDLE GetSRVGPUDescriptorHandle(uint32_t index);
 private: // メンバ変数
 
 	// WindowsAPI
