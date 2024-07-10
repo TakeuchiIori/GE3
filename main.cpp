@@ -56,10 +56,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	input_ = new Input();
 	input_->Initialize(winApp_);
 
-	DirectXCommon* dxCommon = nullptr;
-	// DirectXの初期化
-	dxCommon = new DirectXCommon();
-	dxCommon->Initialize();
+	//DirectXCommon* dxCommon = nullptr;
+	//// DirectXの初期化
+	//dxCommon = new DirectXCommon();
+	//dxCommon->Initialize(winApp_);
 
 	//---------- デバッグレイヤー ----------//
 #ifdef _DEBUG
@@ -956,7 +956,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	delete winApp_;
 	winApp_ = nullptr;
 
-	delete dxCommon;
+	//delete dxCommon;
 
 	
 	return 0;// main関数のリターン

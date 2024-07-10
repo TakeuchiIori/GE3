@@ -3,7 +3,7 @@
 #include <dxgi1_6.h>
 #include <wrl.h>
 #include <array>
-
+#include <dxcapi.h>
 #include "WinApp.h"
 
 /// <summary>
@@ -21,7 +21,7 @@ public: // 各種初期化
 	/// <summary>
 	/// DXGIデバイス初期化
 	/// </summary>
-	void InitializeDXGIDevice(bool enableDebugLayer = true);
+	void InitializeDXGIDevice();//bool enableDebugLayer = true
 	
 	/// <summary>
 	/// コマンド関連の初期化
@@ -39,6 +39,31 @@ public: // 各種初期化
 	void InitializeRenderTarget();
 
 	/// <summary>
+	/// 深度ステンシルビューの初期化
+	/// </summary>
+	void InitializeDepthStencilView();
+
+	/// <summary>
+	/// フェンスの初期化
+	/// </summary>
+	void InitializeFence();
+
+	/// <summary>
+	/// ビューポート矩形の初期化
+	/// </summary>
+	void InitializeViewPortRevtangle();
+	
+	/// <summary>
+	/// シザリング矩形の初期化
+	/// </summary>
+	void InitializeScissorRevtangle();
+
+	/// <summary>
+	/// ImGuiの初期化
+	/// </summary>
+	void InitializeImGui();
+
+	/// <summary>
 	/// 深度バッファ生成
 	/// </summary>
 	void CreateDepthBuffer();
@@ -47,6 +72,11 @@ public: // 各種初期化
 	/// 各種ディスクリプターヒープの生成
 	/// </summary>
 	void CreateDescriptorHeap();
+
+	/// <summary>
+	/// DXCコンパイラの生成
+	/// </summary>
+	void CreateDXCompiler();
 
 public: // メンバ関数
 	/// <summary>
@@ -86,6 +116,9 @@ private: // メンバ変数
 	Microsoft::WRL::ComPtr<ID3D12Device> device;
 	// DXGIファクトリ
 	Microsoft::WRL::ComPtr<IDXGIFactory7> dxgiFactory;
+	// DXCコンパイラ関連
+	Microsoft::WRL::ComPtr<IDxcUtils> dxcUtils;
+	Microsoft::WRL::ComPtr<IDxcCompiler3> dxcCompiler;
 
 	// コマンドキュー
 	Microsoft::WRL::ComPtr<ID3D12CommandQueue> commandQueue;
@@ -93,6 +126,9 @@ private: // メンバ変数
 	Microsoft::WRL::ComPtr<ID3D12CommandAllocator> commandAllocator;
 	// コマンドリスト
 	Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> commandList;
+
+	// フェンス
+	Microsoft::WRL::ComPtr<ID3D12Fence> fence;
 
 	// スワップチェーン
 	Microsoft::WRL::ComPtr<IDXGISwapChain4> swapChain;
@@ -109,5 +145,13 @@ private:
 	uint32_t descriptotSizeSRV;
 	uint32_t descriptotSizeRTV;
 	uint32_t descriptotSizeDSV;
+	// RTV
+	D3D12_RENDER_TARGET_VIEW_DESC rtvDesc{};
+	// スワップチェーン
+	DXGI_SWAP_CHAIN_DESC1 swapChainDesc{};
+	// ビューポート
+	D3D12_VIEWPORT viewport{};
+	// シザー矩形
+	D3D12_RECT scissorRect{};
 };
 
