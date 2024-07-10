@@ -31,6 +31,10 @@ public: // 各種初期化
 	/// </summary>
 	void CreateSwapChain();
 
+	/// <summary>
+	/// レンダーターゲットの初期化
+	/// </summary>
+	void InitializeRenderTarget();
 
 	/// <summary>
 	/// 深度バッファ生成
@@ -70,6 +74,7 @@ private: // メンバ変数
 
 	// スワップチェーン
 	Microsoft::WRL::ComPtr<IDXGISwapChain4> swapChain;
+	Microsoft::WRL::ComPtr<ID3D12Resource> swapChainResources[2] = { nullptr };
 
 	// RTV用のヒープディスクリプタの数は2。  ShaderVisibleはfalse
 	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> rtvDescriptorHeap;

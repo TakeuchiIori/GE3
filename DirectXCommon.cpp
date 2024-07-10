@@ -20,30 +20,10 @@ void DirectXCommon::Initialize(WinApp* winApp)
 	hr = dxgiFactory->CreateSwapChainForHwnd(commandQueue.Get(), winApp_->Gethwnd(), &swapChainDesc, nullptr, nullptr, reinterpret_cast<IDXGISwapChain1**>(swapChain.GetAddressOf()));
 	assert(SUCCEEDED(hr));
 
-	// SwapChainからResourceを引っ張ってくる
-	Microsoft::WRL::ComPtr<ID3D12Resource> swapChainResources[2] = { nullptr };
-	hr = swapChain->GetBuffer(0, IID_PPV_ARGS(&swapChainResources[0]));
-	// うまく取得できなければ起動できない
-	assert(SUCCEEDED(hr));
-	hr = swapChain->GetBuffer(1, IID_PPV_ARGS(&swapChainResources[1]));
-	assert(SUCCEEDED(hr));
+	
 
 
-	//--------------- RTVの設定 ---------------//
-	D3D12_RENDER_TARGET_VIEW_DESC rtvDesc{};
-	rtvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
-	rtvDesc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2D;
-	// ディスクリプタの先頭を取得する
-	D3D12_CPU_DESCRIPTOR_HANDLE rtvStartHandle = GetCPUDescriptorHandle(rtvDescriptorHeap.Get(), descriptotSizeRTV, 0);
-	// RTVを2つ作るのでディスクリプタを2つ用意
-	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandles[2];
-	// まず1つ目をを作る。1つ目は最初のところに作る。作る場所をこちらで指定してあげる必要がある
-	rtvHandles[0] = rtvStartHandle;
-	device->CreateRenderTargetView(swapChainResources->GetAddressOf()[0], &rtvDesc, rtvHandles[0]);
-	// 2つ目のディスクリプタハンドルを得る(自力で)
-	rtvHandles[1].ptr = rtvHandles[0].ptr + device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
-	// 2つ目を作る
-	device->CreateRenderTargetView(swapChainResources->GetAddressOf()[1], &rtvDesc, rtvHandles[1]);
+
 	
 	//--------------- DSVの設定 ---------------//
 	D3D12_DEPTH_STENCIL_VIEW_DESC dsvDesc{};
@@ -326,12 +306,56 @@ void DirectXCommon::CreateSwapChain()
 	swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;		//モニタに映したら、中身を破棄
 }
 
+void DirectXCommon::InitializeRenderTarget()
+{
+	/*=============================================//
+			SwapChainからResourceを引っ張ってくる
+	//=============================================*/
+
+	HRESULT hr;
+	hr = swapChain->GetBuffer(0, IID_PPV_ARGS(&swapChainResources[0]));
+	// うまく取得できなければ起動できない
+	assert(SUCCEEDED(hr));
+	hr = swapChain->GetBuffer(1, IID_PPV_ARGS(&swapChainResources[1]));
+	assert(SUCCEEDED(hr));
+
+	/*=============================================//
+						RTVの設定
+	//=============================================*/
+
+	D3D12_RENDER_TARGET_VIEW_DESC rtvDesc{};
+	rtvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
+	rtvDesc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2D;
+	// ディスクリプタの先頭を取得する
+	D3D12_CPU_DESCRIPTOR_HANDLE rtvStartHandle = GetCPUDescriptorHandle(rtvDescriptorHeap.Get(), descriptotSizeRTV, 0);
+	// RTVを2つ作るのでディスクリプタを2つ用意
+	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandles[2];
+	/*=============================================//
+						 裏表2つ分
+	//=============================================*/
+	for (uint32_t i = 0; i < 2; ++i) {
+		rtvHandles[i] = rtvStartHandle;
+		device->CreateRenderTargetView(swapChainResources->GetAddressOf()[i], &rtvDesc, rtvHandles[i]);
+	}
+	//// まず1つ目をを作る。1つ目は最初のところに作る。作る場所をこちらで指定してあげる必要がある
+	//
+	//// 2つ目のディスクリプタハンドルを得る(自力で)
+	//rtvHandles[1].ptr = rtvHandles[0].ptr + device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
+	//// 2つ目を作る
+	//device->CreateRenderTargetView(swapChainResources->GetAddressOf()[1], &rtvDesc, rtvHandles[1]);
+
+	
+}
+
 void DirectXCommon::CreateDepthBuffer()
 {
-	// 生成するResourceの設定
+	
+	/*=============================================//
+				  生成するResourceの設定
+	//=============================================*/
 	D3D12_RESOURCE_DESC resourceDesc{};
-	resourceDesc.Width = WinApp::kClientWidth;										// Textureのは幅
-	resourceDesc.Height = WinApp::kClientHeight;									// Textureの高さ
+	resourceDesc.Width = WinApp::kClientWidth;						// Textureのは幅
+	resourceDesc.Height = WinApp::kClientHeight;					// Textureの高さ
 	resourceDesc.MipLevels = 1;										// mipmapの数
 	resourceDesc.DepthOrArraySize = 1;								//奥行き or 配列Textureの配列数
 	resourceDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;			// Depthstencilとして利用可能なフォーマット
@@ -339,16 +363,26 @@ void DirectXCommon::CreateDepthBuffer()
 	resourceDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
 	//2次元
 	resourceDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL;	// DepthStencilとして使う通知
-	//.利用するHeapの設定
+	
+	/*=============================================//
+				  利用するHeapの設定
+	//=============================================*/
+
 	D3D12_HEAP_PROPERTIES heapProperties{};
 	heapProperties.Type = D3D12_HEAP_TYPE_DEFAULT;					// VRAM上に作る
+	/*=============================================//
+				  深度値のクリア設定
+	//=============================================*/
 
-	// 深度値のクリア設定
 	D3D12_CLEAR_VALUE depthClearValue{};
 	depthClearValue.DepthStencil.Depth = 1.0f;						// 1.0f (最大値)　でクリア
 	depthClearValue.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;			// フォーマット。Resourceと合わせる
 
-	// Resourceの生成
+	
+	/*=============================================//
+				 Resourceの生成
+	//=============================================*/
+
 	Microsoft::WRL::ComPtr<ID3D12Resource> resource = nullptr;
 	HRESULT hr = device->CreateCommittedResource(
 		&heapProperties, // Heapの設定
