@@ -2,12 +2,14 @@
 #include <d3d12.h>
 #include <dxgi1_6.h>
 #include <wrl.h>
+#include <array>
+
 #include "WinApp.h"
 
 /// <summary>
 /// DirectX基盤
 /// </summary>
-
+using namespace std;
 class DirectXCommon
 {
 public: // 各種初期化
@@ -94,7 +96,7 @@ private: // メンバ変数
 
 	// スワップチェーン
 	Microsoft::WRL::ComPtr<IDXGISwapChain4> swapChain;
-	Microsoft::WRL::ComPtr<ID3D12Resource> swapChainResources[2] = { nullptr };
+	std::array<Microsoft::WRL::ComPtr<ID3D12Resource>,2> swapChainResources;
 
 	// RTV用のヒープディスクリプタの数は2。  ShaderVisibleはfalse
 	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> rtvDescriptorHeap;

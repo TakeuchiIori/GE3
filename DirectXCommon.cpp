@@ -327,7 +327,7 @@ void DirectXCommon::InitializeRenderTarget()
 	rtvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
 	rtvDesc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2D;
 	// ディスクリプタの先頭を取得する
-	D3D12_CPU_DESCRIPTOR_HANDLE rtvStartHandle = GetCPUDescriptorHandle(rtvDescriptorHeap.Get(), descriptotSizeRTV, 0);
+	D3D12_CPU_DESCRIPTOR_HANDLE rtvStartHandle = GetCPUDescriptorHandle(rtvDescriptorHeap, descriptotSizeRTV, 0);
 	// RTVを2つ作るのでディスクリプタを2つ用意
 	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandles[2];
 	/*=============================================//
@@ -335,7 +335,7 @@ void DirectXCommon::InitializeRenderTarget()
 	//=============================================*/
 	for (uint32_t i = 0; i < 2; ++i) {
 		rtvHandles[i] = rtvStartHandle;
-		device->CreateRenderTargetView(swapChainResources->GetAddressOf()[i], &rtvDesc, rtvHandles[i]);
+		device->CreateRenderTargetView(swapChainResources[i].GetAddressOf()[i], &rtvDesc, rtvHandles[i]);
 	}
 	//// まず1つ目をを作る。1つ目は最初のところに作る。作る場所をこちらで指定してあげる必要がある
 	//
