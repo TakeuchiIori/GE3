@@ -115,6 +115,18 @@ public: // メンバ関数
 	/// </summary>
 	D3D12_GPU_DESCRIPTOR_HANDLE GetSRVGPUDescriptorHandle(uint32_t index);
 
+	/// <summary>
+	/// DSVの指定番号のCPUディスクリプタハンドルを取得
+	/// </summary>
+	D3D12_CPU_DESCRIPTOR_HANDLE GetDSVCPUDescriptorHandle(uint32_t index);
+
+	/// <summary>
+	/// DSVの指定番号のGPUディスクリプタハンドルを取得
+	/// </summary>
+	D3D12_GPU_DESCRIPTOR_HANDLE GetDSVGPUDescriptorHandle(uint32_t index);
+
+
+
 public: // アクセッサ
 	
 	Microsoft::WRL::ComPtr<ID3D12Device> Getdevice() { return device; }
@@ -192,8 +204,8 @@ private:
 	D3D12_VIEWPORT viewport{};
 	// シザー矩形
 	D3D12_RECT scissorRect{};
-	// バックバッファ
 	
+
 	// TransitionBarrierの設定
 	D3D12_RESOURCE_BARRIER barrier{};
 };
