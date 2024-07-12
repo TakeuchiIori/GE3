@@ -133,6 +133,7 @@ public: // アクセッサ
 	Microsoft::WRL::ComPtr<IDxcUtils> GetdxcUtils() { return dxcUtils; }
 	Microsoft::WRL::ComPtr<IDxcCompiler3> GetdxcCompiler() { return dxcCompiler; }
 	Microsoft::WRL::ComPtr<IDxcIncludeHandler> GetincludeHandler() { return includeHandler; }
+
 	Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> GetcommandList() { return commandList; }
 	Microsoft::WRL::ComPtr<ID3D12CommandQueue> GetcommandQueue() { return commandQueue; }
 	Microsoft::WRL::ComPtr<ID3D12CommandAllocator> GetcommandAllocator() { return commandAllocator; }
@@ -147,6 +148,8 @@ public: // アクセッサ
 
 	Microsoft::WRL::ComPtr<IDXGISwapChain4> GetswapChain() { return swapChain; }
 	std::array<Microsoft::WRL::ComPtr<ID3D12Resource>, 2> GetswapChainResources() { return swapChainResources; }
+
+
 	D3D12_CPU_DESCRIPTOR_HANDLE* GetrtvHandles() { return rtvHandles; }
 
 	Microsoft::WRL::ComPtr<ID3D12Fence> Getfence() { return fence; }
