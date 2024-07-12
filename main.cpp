@@ -64,7 +64,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	SpriteCommon* spriteCommon = nullptr;
 	// スプライト共通部の初期化
 	spriteCommon = new SpriteCommon();
-	spriteCommon->Initialize();
+	spriteCommon->Initialize(dxCommon);
 
 #pragma endregion 基礎システムの初期化
 
@@ -666,10 +666,11 @@ HRESULT hr;
 			ImGui::Checkbox("useMonsterBall", &useMonsterBall);
 			ImGui::End();
 
-
+			// DirectXの描画準備。全ての描画にグラフィックスコマンドを積む
 			dxCommon->PreDraw();
 
-
+			// Spriteの描画準備。Spriteの描画に共通のグラフィックスコマンドを積む
+			spriteCommon->DrawPreference();
 
 
 			
