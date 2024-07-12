@@ -1,5 +1,5 @@
 #include "WinApp.h"
-#pragma comment(lib,"winmm.lib");
+#pragma comment(lib,"winmm.lib")
 
 LRESULT CALLBACK WinApp::WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 {

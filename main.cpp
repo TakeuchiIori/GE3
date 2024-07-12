@@ -32,6 +32,8 @@
 #include "WinApp.h"
 #include "Input.h"
 #include "DirectXCommon.h"
+#include "SpriteCommon.h"
+#include "Sprite.h"
 #include "externals/imgui/imgui_impl_win32.h"
 
 
@@ -57,6 +59,23 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	dxCommon = new DirectXCommon();
 	dxCommon->Initialize(winApp_);
 
+#pragma region 基礎システムの初期化
+
+	SpriteCommon* spriteCommon = nullptr;
+	// スプライト共通部の初期化
+	spriteCommon = new SpriteCommon();
+	spriteCommon->Initialize();
+
+#pragma endregion 基礎システムの初期化
+
+#pragma region 最初のシーンの初期化
+
+	Sprite* sprite = nullptr;
+	// スプライト共通部の初期化
+	sprite = new Sprite();
+	sprite->Initialize();
+
+#pragma endregion 最初のシーンの終了
 
 HRESULT hr;
 	//------------------ Pipeline State Object ------------------//
@@ -703,52 +722,6 @@ HRESULT hr;
 			dxCommon->PostDraw();
 
 
-
-
-
-
-			//// 今回はRendeerTargetからPresentにする
-			//barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;
-			//barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PRESENT;
-			//// TransitionBarrierを張る
-			//dxCommon->GetcommandList()->ResourceBarrier(1, &barrier);
-			//// コマンドリストの内容を確定させる。全てのコマンドを積んでからCloseすること
-			//hr = dxCommon->GetcommandList()->Close();
-			//assert(SUCCEEDED(hr));
-			//// コマンドリストの実行を行わせる
-			//ID3D12CommandList* commandLists[] = { dxCommon->GetcommandList().Get()};
-			//dxCommon->GetcommandQueue()->ExecuteCommandLists(1, commandLists);
-
-			//// GPUと05に画面の交換を行うよう通知する
-			//dxCommon->GetswapChain()->Present(1, 0);
-			////------------------ GPUにSigalを送る ------------------//
-			//// Fenceの値を更新
-			//dxCommon->SetfenceValue(dxCommon->GetfenceValue() + 1);
-			//// GPUがここまでたどり着いたときに、Fenceの値を指定した値に代入するようにSignalを送る
-			//dxCommon->GetcommandQueue()->Signal(dxCommon->Getfence().Get(), dxCommon->GetfenceValue());
-			//// Fenceの値が指定したSignal値にたどり着いているか確認する
-			//// GetCompletedValueの初期値はFence作成時に渡した初期値
-			//if (dxCommon->Getfence()->GetCompletedValue() < dxCommon->GetfenceValue())
-			//{
-			//	// 指定したSignalにたどり着いていないので、たどり着くまで待つようにイベントを設定する
-			//	dxCommon->Getfence()->SetEventOnCompletion(dxCommon->GetfenceValue(), dxCommon->GetfenceEvent());
-			//	// イベントを待つ
-			//	WaitForSingleObject(dxCommon->GetfenceEvent(), INFINITE);
-			//}
-			//// 次のフレーム用のコマンドリストを準備
-			//hr = dxCommon->GetcommandAllocator()->Reset();
-			//assert(SUCCEEDED(hr));
-			//hr = dxCommon->GetcommandList()->Reset(dxCommon->GetcommandAllocator().Get(), nullptr);
-			//assert(SUCCEEDED(hr));
-			//CoUninitialize();
-		
-
-
-
-
-
-
-
 	}// ゲームループの終了
 	ImGui_ImplDX12_Shutdown();
 	ImGui_ImplWin32_Shutdown();
@@ -756,13 +729,12 @@ HRESULT hr;
 	// Release
 	CloseHandle(dxCommon->GetfenceEvent());
 	delete input_;
-
-
 	winApp_->Finalize();
 	delete winApp_;
 	winApp_ = nullptr;
-
 	delete dxCommon;
+	delete spriteCommon;
+	delete sprite;
 
 	
 	return 0;// main関数のリターン
