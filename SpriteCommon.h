@@ -37,7 +37,7 @@ public: // メンバ関数
 	/// <summary>
 	/// プリミティブトポロジーをセット
 	/// </summary>
-	void PrimitiveTopology();
+	void SetPrimitiveTopology();
 
 public: // アクセッサ
 

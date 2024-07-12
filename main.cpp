@@ -666,11 +666,7 @@ HRESULT hr;
 			ImGui::Checkbox("useMonsterBall", &useMonsterBall);
 			ImGui::End();
 
-			// DirectXの描画準備。全ての描画にグラフィックスコマンドを積む
-			dxCommon->PreDraw();
-
-			// Spriteの描画準備。Spriteの描画に共通のグラフィックスコマンドを積む
-			spriteCommon->DrawPreference();
+		
 
 
 			
@@ -678,7 +674,11 @@ HRESULT hr;
 			ImGui::Render();
 			
 
+			// DirectXの描画準備。全ての描画にグラフィックスコマンドを積む
+			dxCommon->PreDraw();
 
+			// Spriteの描画準備。Spriteの描画に共通のグラフィックスコマンドを積む
+			spriteCommon->DrawPreference();
 
 
 

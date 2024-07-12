@@ -118,7 +118,7 @@ void SpriteCommon::CreateGraphicsPipeline()
 
 	HRESULT hr;
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC graphicsPipelineStateDesc{};
-	graphicsPipelineStateDesc.pRootSignature = rootSignature.Get();					 // Rootsignature
+	graphicsPipelineStateDesc.pRootSignature = rootSignature.Get();				 // Rootsignature
 	graphicsPipelineStateDesc.InputLayout = inputLayoutDesc;					 // InputLayout
 	graphicsPipelineStateDesc.VS = { vertexShaderBlob->GetBufferPointer(),
 	vertexShaderBlob->GetBufferSize() };										 // VertexShader
@@ -151,9 +151,9 @@ void SpriteCommon::DrawPreference()
 {
 	SetRootSignature();
 
-	CreateRootSignature();
+	SetRootSignature();
 
-	PrimitiveTopology();
+	SetPrimitiveTopology();
 
 }
 
@@ -169,7 +169,7 @@ void SpriteCommon::SetGraphicsCommand()
 	dxCommon_->GetcommandList()->SetPipelineState(graphicsPipelineState.Get());    	 
 }
 
-void SpriteCommon::PrimitiveTopology()
+void SpriteCommon::SetPrimitiveTopology()
 {
 	dxCommon_->GetcommandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 }
