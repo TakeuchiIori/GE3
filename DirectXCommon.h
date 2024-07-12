@@ -6,6 +6,8 @@
 #include <dxcapi.h>
 #include <string>
 #include "WinApp.h"
+#include "externals/DirectXTex/DirectXTex.h"
+
 
 /// <summary>
 /// DirectX基盤
@@ -85,7 +87,7 @@ public: // 描画関連
 	// 描画後処理
 	void PostDraw();
 
-public: // メンバ関数
+private: // メンバ関数
 	/// <summary>
 	/// ディスクリプターヒープ
 	/// </summary>
@@ -126,15 +128,33 @@ public: // メンバ関数
 	/// </summary>
 	D3D12_GPU_DESCRIPTOR_HANDLE GetDSVGPUDescriptorHandle(uint32_t index);
 
+public:
 	/// <summary>
 	/// シェーダーのコンパイル
 	/// </summary>
 	Microsoft::WRL::ComPtr<IDxcBlob> CompileShader(const wstring& filePath, const wchar_t* profile);
 
 	/// <summary>
-	///バッファリソースの生成
+	/// バッファリソースの生成
 	/// </summary>
 	Microsoft::WRL::ComPtr<ID3D12Resource> CreateBufferResource(size_t  sizeInBytes);
+
+	/// <summary>
+	/// テクスチャリソースの生成
+	/// </summary>
+	Microsoft::WRL::ComPtr<ID3D12Resource> CreateTextureResource(const DirectX::TexMetadata& metadata);
+	
+	/// <summary>
+	/// テクスチャデータの転送
+	/// </summary>
+	Microsoft::WRL::ComPtr<ID3D12Resource> UploadTextureData(Microsoft::WRL::ComPtr<ID3D12Resource> texture, const DirectX::ScratchImage& mipImages);
+	
+	/// <summary>
+	/// テクスチャファイルの読み込み
+	/// </summary>
+	/// <param name ="failePath">テクスチャファイルのパス</param>
+	/// <reeturns>画像イメージデータ</returns>
+	static DirectX::ScratchImage LoadTexture(const std::string& filePath);
 
 public: // アクセッサ
 	

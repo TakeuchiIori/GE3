@@ -150,11 +150,11 @@ HRESULT hr;
 	rasterrizerDesc.FillMode = D3D12_FILL_MODE_SOLID;
 
 	// 4. Shaderをコンパイルする
-	Microsoft::WRL::ComPtr<IDxcBlob> vertexShaderBlob = CompilerShader(L"Resources/shaders/Object3d.VS.hlsl",
-		L"vs_6_0", dxCommon->GetdxcUtils().Get(), dxCommon->GetdxcCompiler().Get(), dxCommon->GetincludeHandler().Get());
+	Microsoft::WRL::ComPtr<IDxcBlob> vertexShaderBlob = dxCommon->CompileShader(L"Resources/shaders/Object3d.VS.hlsl",
+		L"vs_6_0");
 	assert(vertexShaderBlob != nullptr);
-	Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob = CompilerShader(L"Resources/shaders/Object3d.PS.hlsl",
-		L"ps_6_0", dxCommon->GetdxcUtils().Get(), dxCommon->GetdxcCompiler().Get(), dxCommon->GetincludeHandler().Get());
+	Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob = dxCommon->CompileShader(L"Resources/shaders/Object3d.PS.hlsl",
+		L"ps_6_0");
 	assert(pixelShaderBlob != nullptr);
 
 	// DepthStencilStateの設定
@@ -198,7 +198,7 @@ HRESULT hr;
 	
 
 	//------------------ Material用のリソース ------------------//
-	Microsoft::WRL::ComPtr<ID3D12Resource> materialResource = CreateBufferResource(dxCommon->Getdevice().Get(), sizeof(Material));
+	Microsoft::WRL::ComPtr<ID3D12Resource> materialResource = dxCommon->CreateBufferResource(sizeof(Material));
 	// マテリアルのデータを書き込む
 	Material* materialData = nullptr;
 	// 書き込むためのアドレスを取得
@@ -206,7 +206,7 @@ HRESULT hr;
 	// 今回は赤を書き込んでみる	// 03_00で白に変更
 	materialData->color = { 1.0f, 1.0f, 1.0f, 1.0f };
 	// WVP用のリソースを作る。　1つ分のサイズを用意する
-	Microsoft::WRL::ComPtr<ID3D12Resource> wvpResource = CreateBufferResource(dxCommon->Getdevice().Get(), sizeof(TransformationMatrix));
+	Microsoft::WRL::ComPtr<ID3D12Resource> wvpResource = dxCommon->CreateBufferResource(sizeof(TransformationMatrix));
 	// データを書き込む
 	TransformationMatrix* wvpData = nullptr;
 	// 書き込むためのアドレスを取得
@@ -218,7 +218,7 @@ HRESULT hr;
 	//materialData->enableLighting = true;
 
 	//------------------ Sprite用のリソース ------------------//
-	Microsoft::WRL::ComPtr<ID3D12Resource> materialResourceSprite = CreateBufferResource(dxCommon->Getdevice().Get(), sizeof(Material));
+	Microsoft::WRL::ComPtr<ID3D12Resource> materialResourceSprite = dxCommon->CreateBufferResource(sizeof(Material));
 	// マテリアルのデータを書き込む
 	Material* materialDataSprite = nullptr;
 	// 書き込むためのアドレスを取得
@@ -226,7 +226,7 @@ HRESULT hr;
 	// 今回は赤を書き込んでみる	// 03_00で白に変更
 	materialDataSprite->color = { 0.0f,0.0f, 0.0f, 0.0f };
 	// WVP用のリソースを作る。TransformationMatrix　1つ分のサイズを用意する
-	Microsoft::WRL::ComPtr<ID3D12Resource> wvpResourceSprite = CreateBufferResource(dxCommon->Getdevice().Get(), sizeof(TransformationMatrix));
+	Microsoft::WRL::ComPtr<ID3D12Resource> wvpResourceSprite = dxCommon->CreateBufferResource(sizeof(TransformationMatrix));
 	// データを書き込む
 	TransformationMatrix* wvpDataSprite = nullptr;
 	// 書き込むかめのアドレスを取得
@@ -238,7 +238,7 @@ HRESULT hr;
 	materialDataSprite->enableLighting = false;
 
 	//------------------ 平行光源用のリソース ------------------//
-	Microsoft::WRL::ComPtr<ID3D12Resource> directionalLightResource = CreateBufferResource(dxCommon->Getdevice().Get(), sizeof(DirectionalLight));
+	Microsoft::WRL::ComPtr<ID3D12Resource> directionalLightResource = dxCommon->CreateBufferResource(sizeof(DirectionalLight));
 	// データを書き込む
 	DirectionalLight* directionalLight = nullptr;
 	// 書き込むためのアドレスを取得
@@ -248,7 +248,7 @@ HRESULT hr;
 	directionalLight->direction = { 0.0f,-1.0f,0.0f };
 	directionalLight->intensity = 1.0f;
 	//// WVP用のリソースを作る。Matrix4x4　1つ分のサイズを用意する
-	//ID3D12Resource* wvpResourceDirectional = CreateBufferResource(device, sizeof(TransformationMatrix));
+	//ID3D12Resource* wvpResourceDirectional = dxCommon->CreateBufferResource(sizeof(TransformationMatrix));
 	//// データを書き込む
 	//TransformationMatrix* wvpDataDirectional = nullptr;
 	//// 書き込むためのアドレスを取得
@@ -261,16 +261,16 @@ HRESULT hr;
 	const uint32_t kSubdivision = 512;
 	float vertexSphere = kSubdivision * kSubdivision * 6;
 	// 詳しいことは関数を参照
-	//ID3D12Resource* vertexResource = CreateBufferResource(device, sizeof(VertexData) * vertexSphere);
+	//ID3D12Resource* vertexResource =dxCommon-> CreateBufferResource(sizeof(VertexData) * vertexSphere);
 	// SphereのIndex用のリソース
-	//ID3D12Resource* indexResourceSphere = CreateBufferResource(device, sizeof(uint32_t) * vertexSphere);
+	//ID3D12Resource* indexResourceSphere = dxCommon->CreateBufferResource(sizeof(uint32_t) * vertexSphere);
 
 
 	// Sprite用の頂点リソース
-	Microsoft::WRL::ComPtr<ID3D12Resource> vertexResourceSprite = CreateBufferResource(dxCommon->Getdevice().Get(), sizeof(VertexData) * 6);
+	Microsoft::WRL::ComPtr<ID3D12Resource> vertexResourceSprite = dxCommon->CreateBufferResource(sizeof(VertexData) * 6);
 	
 	// SpriteのIndex用のリソース
-	Microsoft::WRL::ComPtr<ID3D12Resource> indexResourceSprite = CreateBufferResource(dxCommon->Getdevice().Get(), sizeof(uint32_t) * 6);
+	Microsoft::WRL::ComPtr<ID3D12Resource> indexResourceSprite = dxCommon->CreateBufferResource(sizeof(uint32_t) * 6);
 
 	//------------------ VertexBufferViewを設定する ------------------//
 	//// 頂点バッファビューを作成する
@@ -310,7 +310,7 @@ HRESULT hr;
 
 	ModelData modelData = LoadObjFile("Resources", "axis.obj");
 	//頂点リソース
-	Microsoft::WRL::ComPtr<ID3D12Resource> vertexResource = CreateBufferResource(dxCommon->Getdevice().Get(), sizeof(VertexData) * modelData.verteces.size());
+	Microsoft::WRL::ComPtr<ID3D12Resource> vertexResource = dxCommon->CreateBufferResource(sizeof(VertexData) * modelData.verteces.size());
 	// 頂点バッファービュー
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferView{};
 	vertexBufferView.BufferLocation = vertexResource->GetGPUVirtualAddress();// リソースデータの先頭アドレスから使う
@@ -543,16 +543,16 @@ HRESULT hr;
 	//	GetGPUDescriptorHandle(srvDescriptorHeap.Get(), descriptotSizeSRV, 0));
 
 	//　Textureを読んで転送する
-	DirectX::ScratchImage mipImages = LoadTexture("Resources/uvChecker.png");
+	DirectX::ScratchImage mipImages = dxCommon->LoadTexture("Resources/uvChecker.png");
 	const DirectX::TexMetadata& metadata = mipImages.GetMetadata();
-	Microsoft::WRL::ComPtr<ID3D12Resource> textureResource = CreateTextureResource(dxCommon->Getdevice().Get(), metadata);
-	Microsoft::WRL::ComPtr<ID3D12Resource> intermediateResource = UploadTextureData(textureResource.Get(), mipImages, dxCommon->Getdevice().Get(), dxCommon->GetcommandList().Get());
+	Microsoft::WRL::ComPtr<ID3D12Resource> textureResource = dxCommon->CreateTextureResource(metadata);
+	Microsoft::WRL::ComPtr<ID3D12Resource> intermediateResource = dxCommon->UploadTextureData(textureResource.Get(), mipImages);
 
 	// 2枚目のTexture
-	DirectX::ScratchImage mipImages2 = LoadTexture(modelData.material.textureFilePath);
+	DirectX::ScratchImage mipImages2 = dxCommon->LoadTexture(modelData.material.textureFilePath);
 	const DirectX::TexMetadata& metadata2 = mipImages2.GetMetadata();
-	Microsoft::WRL::ComPtr<ID3D12Resource> textureResource2 = CreateTextureResource(dxCommon->Getdevice().Get(), metadata2);
-	Microsoft::WRL::ComPtr<ID3D12Resource> intermediateResource2 = UploadTextureData(textureResource2.Get(), mipImages2, dxCommon->Getdevice().Get(), dxCommon->GetcommandList().Get());
+	Microsoft::WRL::ComPtr<ID3D12Resource> textureResource2 = dxCommon->CreateTextureResource(metadata2);
+	Microsoft::WRL::ComPtr<ID3D12Resource> intermediateResource2 = dxCommon->UploadTextureData(textureResource2.Get(), mipImages2);
 
 	//---------------- metaDataを基にSRVの設定 ----------------//
 	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc{};
