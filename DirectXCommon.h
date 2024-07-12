@@ -173,33 +173,33 @@ public:
 
 public: // アクセッサ
 	
-	Microsoft::WRL::ComPtr<ID3D12Device> Getdevice() { return device; }
-	Microsoft::WRL::ComPtr<IDxcUtils> GetdxcUtils() { return dxcUtils; }
-	Microsoft::WRL::ComPtr<IDxcCompiler3> GetdxcCompiler() { return dxcCompiler; }
-	Microsoft::WRL::ComPtr<IDxcIncludeHandler> GetincludeHandler() { return includeHandler; }
+	Microsoft::WRL::ComPtr<ID3D12Device> Getdevice() { return device_; }
+	Microsoft::WRL::ComPtr<IDxcUtils> GetdxcUtils() { return dxcUtils_; }
+	Microsoft::WRL::ComPtr<IDxcCompiler3> GetdxcCompiler() { return dxcCompiler_; }
+	Microsoft::WRL::ComPtr<IDxcIncludeHandler> GetincludeHandler() { return includeHandler_; }
 
-	Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> GetcommandList() { return commandList; }
-	Microsoft::WRL::ComPtr<ID3D12CommandQueue> GetcommandQueue() { return commandQueue; }
-	Microsoft::WRL::ComPtr<ID3D12CommandAllocator> GetcommandAllocator() { return commandAllocator; }
+	Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> GetcommandList() { return commandList_; }
+	Microsoft::WRL::ComPtr<ID3D12CommandQueue> GetcommandQueue() { return commandQueue_; }
+	Microsoft::WRL::ComPtr<ID3D12CommandAllocator> GetcommandAllocator() { return commandAllocator_; }
 
-	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> GetrtvDescriptorHeap() { return rtvDescriptorHeap; }
-	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> GetsrvDescriptorHeap() { return srvDescriptorHeap; }
-	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> GetdsvDescriptorHeap() { return dsvDescriptorHeap; }
+	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> GetrtvDescriptorHeap() { return rtvDescriptorHeap_; }
+	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> GetsrvDescriptorHeap() { return srvDescriptorHeap_; }
+	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> GetdsvDescriptorHeap() { return dsvDescriptorHeap_; }
 
-	uint32_t GetdescriptotSizeSRV() { return descriptotSizeSRV;}
-	uint32_t GetdescriptotSizeRTV() { return descriptotSizeRTV; }
-	uint32_t GetdescriptotSizeDSV() { return descriptotSizeDSV; }
+	uint32_t GetdescriptotSizeSRV() { return descriptotSizeSRV_;}
+	uint32_t GetdescriptotSizeRTV() { return descriptotSizeRTV_; }
+	uint32_t GetdescriptotSizeDSV() { return descriptotSizeDSV_; }
 
-	Microsoft::WRL::ComPtr<IDXGISwapChain4> GetswapChain() { return swapChain; }
-	std::array<Microsoft::WRL::ComPtr<ID3D12Resource>, 2> GetswapChainResources() { return swapChainResources; }
+	Microsoft::WRL::ComPtr<IDXGISwapChain4> GetswapChain() { return swapChain_; }
+	std::array<Microsoft::WRL::ComPtr<ID3D12Resource>, 2> GetswapChainResources() { return swapChainResources_; }
 
 
-	D3D12_CPU_DESCRIPTOR_HANDLE* GetrtvHandles() { return rtvHandles; }
+	D3D12_CPU_DESCRIPTOR_HANDLE* GetrtvHandles() { return rtvHandles_; }
 
-	Microsoft::WRL::ComPtr<ID3D12Fence> Getfence() { return fence; }
-	HANDLE GetfenceEvent() { return fenceEvent; }
-	uint64_t GetfenceValue() { return fenceValue; }
-	uint64_t SetfenceValue(uint64_t val) {  return fenceValue = val; }
+	Microsoft::WRL::ComPtr<ID3D12Fence> Getfence() { return fence_; }
+	HANDLE GetfenceEvent() { return fenceEvent_; }
+	uint64_t GetfenceValue() { return fenceValue_; }
+	uint64_t SetfenceValue(uint64_t val) {  return fenceValue_ = val; }
 
 	
 
@@ -209,56 +209,56 @@ private: // メンバ変数
 	// WindowsAPI
 	WinApp* winApp_ = nullptr;
 	// DirectX12デバイス
-	Microsoft::WRL::ComPtr<ID3D12Device> device;
+	Microsoft::WRL::ComPtr<ID3D12Device> device_;
 	// DXGIファクトリ
-	Microsoft::WRL::ComPtr<IDXGIFactory7> dxgiFactory;
+	Microsoft::WRL::ComPtr<IDXGIFactory7> dxgiFactory_;
 	// DXCコンパイラ関連
-	Microsoft::WRL::ComPtr<IDxcUtils> dxcUtils;
-	Microsoft::WRL::ComPtr<IDxcCompiler3> dxcCompiler;
+	Microsoft::WRL::ComPtr<IDxcUtils> dxcUtils_;
+	Microsoft::WRL::ComPtr<IDxcCompiler3> dxcCompiler_;
 
 	// コマンドキュー
-	Microsoft::WRL::ComPtr<ID3D12CommandQueue> commandQueue;
+	Microsoft::WRL::ComPtr<ID3D12CommandQueue> commandQueue_;
 	// コマンドアロケータ
-	Microsoft::WRL::ComPtr<ID3D12CommandAllocator> commandAllocator;
+	Microsoft::WRL::ComPtr<ID3D12CommandAllocator> commandAllocator_;
 	// コマンドリスト
-	Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> commandList;
+	Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> commandList_;
 
 	// フェンス
-	Microsoft::WRL::ComPtr<ID3D12Fence> fence;
+	Microsoft::WRL::ComPtr<ID3D12Fence> fence_;
 
 	// スワップチェーン
-	Microsoft::WRL::ComPtr<IDXGISwapChain4> swapChain;
-	std::array<Microsoft::WRL::ComPtr<ID3D12Resource>,2> swapChainResources;
+	Microsoft::WRL::ComPtr<IDXGISwapChain4> swapChain_;
+	std::array<Microsoft::WRL::ComPtr<ID3D12Resource>,2> swapChainResources_;
 	// スワップチェーン
 	DXGI_SWAP_CHAIN_DESC1 swapChainDesc{};
 
-	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> rtvDescriptorHeap;
-	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> srvDescriptorHeap;
-	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> dsvDescriptorHeap;
-
+	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> rtvDescriptorHeap_;
+	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> srvDescriptorHeap_;
+	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> dsvDescriptorHeap_;
+																  
 	// 現時点ではincludeはしないが、includeに対応するための設定を行っておく
-	IDxcIncludeHandler* includeHandler = nullptr;
+	IDxcIncludeHandler* includeHandler_ = nullptr;
 
-	Microsoft::WRL::ComPtr<ID3D12Resource> depthStencilResource;
+	Microsoft::WRL::ComPtr<ID3D12Resource> depthStencilResource_;
 
-	uint32_t descriptotSizeSRV;
-	uint32_t descriptotSizeRTV;
-	uint32_t descriptotSizeDSV;
+	uint32_t descriptotSizeSRV_;
+	uint32_t descriptotSizeRTV_;
+	uint32_t descriptotSizeDSV_;
 	// RTVを2つ作るのでディスクリプタを2つ用意
-	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandles[2];
+	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandles_[2];
 	// RTV
-	D3D12_RENDER_TARGET_VIEW_DESC rtvDesc{};
+	D3D12_RENDER_TARGET_VIEW_DESC rtvDesc_{};
 	
 
-	uint64_t fenceValue = 0;
-	HANDLE fenceEvent;
+	uint64_t fenceValue_ = 0;
+	HANDLE fenceEvent_;
 	// ビューポート
-	D3D12_VIEWPORT viewport{};
+	D3D12_VIEWPORT viewport_{};
 	// シザー矩形
-	D3D12_RECT scissorRect{};
+	D3D12_RECT scissorRect_{};
 	
 
 	// TransitionBarrierの設定
-	D3D12_RESOURCE_BARRIER barrier{};
+	D3D12_RESOURCE_BARRIER barrier_{};
 };
 
