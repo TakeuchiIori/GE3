@@ -5,6 +5,7 @@
 #include <array>
 #include <dxcapi.h>
 #include <string>
+#include <chrono>
 #include "WinApp.h"
 #include "externals/DirectXTex/DirectXTex.h"
 
@@ -127,6 +128,20 @@ private: // メンバ関数
 	/// DSVの指定番号のGPUディスクリプタハンドルを取得
 	/// </summary>
 	D3D12_GPU_DESCRIPTOR_HANDLE GetDSVGPUDescriptorHandle(uint32_t index);
+
+private:
+	/// <summary>
+	/// FPS固定初期化
+	/// </summary>
+	void InitializeFixFPS();
+
+	/// <summary>
+	/// FPS固定更新
+	/// </summary>
+	void UpdateFixFPS();
+
+	// 記録時間（FPS固定用）
+	std::chrono::steady_clock::time_point reference_;
 
 public:
 	/// <summary>

@@ -1,5 +1,5 @@
 #include "WinApp.h"
-
+#pragma comment(lib,"winmm.lib");
 
 LRESULT CALLBACK WinApp::WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 {
@@ -59,6 +59,8 @@ void WinApp::Initialize()
 
 	// ウィンドウを表示する
 	ShowWindow(hwnd, SW_SHOW);
+	// システムタイマーの分解能を上げる
+	timeBeginPeriod(1);
 }
 
 void WinApp::Update()
