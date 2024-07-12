@@ -7,21 +7,16 @@
 #include <dxcapi.h>
 #include "VertexData.h"
 #include "math/Vector4.h"
-#include "CompileShader.h"
-#include "Convertstring.h"
-#include "CreateBufferResource.h"
 #include "math/Matrix4x4.h"
 #include "Transform.h"
-#include "DescriptorHeap.h"
-
 
 #include "externals/imgui/imgui_impl_dx12.h"
 
 #include "externals/DirectXTex/DirectXTex.h"
 #include "LoadTexture.h"
 #include "CreateTextureResource.h"
-#include "UploadTextureData.h"
-#include "CreateDepthStencilTextureResource.h"
+
+
 #include "DescriptorHandle.h"
 #include "Material.h"
 #include "DirectionalLight.h"
@@ -32,7 +27,8 @@
 
 #include<wrl.h>
 #include "ResourceObject.h"
-#include "D3DResourceLeakCheacker.h"
+
+#include "D3DResorceLeakChecker.h"
 #include "WinApp.h"
 #include "Input.h"
 #include "DirectXCommon.h"
@@ -46,7 +42,7 @@
 //Windowsアプリのエントリーポイント(main関数)
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
-	D3DResourceLeakCheacker leakCheack;
+	D3DResorceLeakChecker* leakCheack;
 	WinApp* winApp_ = nullptr;
 	winApp_ = new WinApp();
 	winApp_->Initialize();

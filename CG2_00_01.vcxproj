@@ -90,11 +90,11 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="CompileShader.cpp" />
     <ClCompile Include="Convertstring.cpp" />
     <ClCompile Include="CreateBufferResource.cpp" />
     <ClCompile Include="CreateDepthStencilTextureResource.cpp" />
     <ClCompile Include="CreateTextureResource.cpp" />
+    <ClCompile Include="D3DResorceLeakChecker.cpp" />
     <ClCompile Include="DescriptorHeap.cpp" />
     <ClCompile Include="DirectXCommon.cpp" />
     <ClCompile Include="externals\imgui\imgui.cpp" />
@@ -128,12 +128,12 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="CompileShader.h" />
     <ClInclude Include="Convertstring.h" />
     <ClInclude Include="CreateBufferResource.h" />
     <ClInclude Include="CreateDepthStencilTextureResource.h" />
     <ClInclude Include="CreateTextureResource.h" />
-    <ClInclude Include="D3DResourceLeakCheacker.h" />
+    <ClInclude Include="LeakCheacker.h" />
+    <ClInclude Include="D3DResorceLeakChecker.h" />
     <ClInclude Include="DescriptorHandle.h" />
     <ClInclude Include="DescriptorHeap.h" />
     <ClInclude Include="DirectionalLight.h" />
