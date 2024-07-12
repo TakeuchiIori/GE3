@@ -28,6 +28,7 @@ void DirectXCommon::Initialize(WinApp* winApp)
 	CreateDescriptorHeap();
 	// レンダーターゲットビューの初期化
 	InitializeRenderTarget();
+	CreateDepthBuffer();
 	// 深度ステンシルビューの初期化
 	InitializeDepthStencilView();
 	// フェンスの初期化
@@ -197,36 +198,35 @@ void DirectXCommon::InitializeRenderTarget()
 	/*=============================================//
 						 裏表2つ分
 	//=============================================*/
-	//for (uint32_t i = 0; i < 2; ++i) {
-	//	rtvHandles[i] = rtvStartHandle;
-	//	//rtvStartHandle.ptr += device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
-	//	device->CreateRenderTargetView(swapChainResources[i].Get(), &rtvDesc, rtvHandles[i]);
-	//}
+	for (uint32_t i = 0; i < 2; ++i) {
+		rtvHandles[i] = rtvStartHandle;
+		
+		device->CreateRenderTargetView(swapChainResources[i].Get(), &rtvDesc, rtvHandles[i]);
+		rtvStartHandle.ptr += device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
+	}
 
-	 //まず1つ目をを作る。1つ目は最初のところに作る。作る場所をこちらで指定してあげる必要がある
-	rtvHandles[0] = rtvStartHandle;
-	device->CreateRenderTargetView(swapChainResources[0].Get(), &rtvDesc, rtvHandles[0]);
-	// 2つ目のディスクリプタハンドルを得る(自力で)
-	rtvHandles[1].ptr = rtvHandles[0].ptr + device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
-	// 2つ目を作る
-	device->CreateRenderTargetView(swapChainResources[1].Get(), &rtvDesc, rtvHandles[1]);
+	// //まず1つ目をを作る。1つ目は最初のところに作る。作る場所をこちらで指定してあげる必要がある
+	//rtvHandles[0] = rtvStartHandle;
+	//device->CreateRenderTargetView(swapChainResources[0].Get(), &rtvDesc, rtvHandles[0]);
+	//// 2つ目のディスクリプタハンドルを得る(自力で)
+	//rtvHandles[1].ptr = rtvHandles[0].ptr + device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
+	//// 2つ目を作る
+	//device->CreateRenderTargetView(swapChainResources[1].Get(), &rtvDesc, rtvHandles[1]);
 	
 }
 
-void DirectXCommon::InitializeDepthStencilView()
-{
+void DirectXCommon::InitializeDepthStencilView(){  
 	/*=============================================//
 				  DSVの設定
 	//=============================================*/
 	D3D12_DEPTH_STENCIL_VIEW_DESC dsvDesc{};
 	dsvDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT; // Format. BAHaResourceleDt3
 	dsvDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D; // 2dTexture
-	// DepthStencilTextureをウィンドウサイズで作成
-	Microsoft::WRL::ComPtr<ID3D12Resource> depthStencilResource = CreateDepthStencilTextureResource(device.Get(), WinApp::kClientWidth, WinApp::kClientHeight);
+	
 	/*=============================================//
 				  DSVheapの先頭にDSVをつくる
 	//=============================================*/
-	device->CreateDepthStencilView(depthStencilResource.Get(), &dsvDesc, GetCPUDescriptorHandle(dsvDescriptorHeap, descriptotSizeDSV, 0));
+	device->CreateDepthStencilView(depthStencilResource.Get(), &dsvDesc, dsvDescriptorHeap->GetCPUDescriptorHandleForHeapStart());
 }
 
 void DirectXCommon::InitializeFence()
@@ -244,50 +244,8 @@ void DirectXCommon::InitializeFence()
 }
 
 void DirectXCommon::CreateDepthBuffer()
-{
-	
-	/*=============================================//
-				  生成するResourceの設定
-	//=============================================*/
-	D3D12_RESOURCE_DESC resourceDesc{};
-	resourceDesc.Width = WinApp::kClientWidth;						// Textureのは幅
-	resourceDesc.Height = WinApp::kClientHeight;					// Textureの高さ
-	resourceDesc.MipLevels = 1;										// mipmapの数
-	resourceDesc.DepthOrArraySize = 1;								//奥行き or 配列Textureの配列数
-	resourceDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;			// Depthstencilとして利用可能なフォーマット
-	resourceDesc.SampleDesc.Count = 1;								//サンプリングカウント。1固定。
-	resourceDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
-	//2次元
-	resourceDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL;	// DepthStencilとして使う通知
-	
-	/*=============================================//
-				  利用するHeapの設定
-	//=============================================*/
-
-	D3D12_HEAP_PROPERTIES heapProperties{};
-	heapProperties.Type = D3D12_HEAP_TYPE_DEFAULT;					// VRAM上に作る
-	/*=============================================//
-				  深度値のクリア設定
-	//=============================================*/
-
-	D3D12_CLEAR_VALUE depthClearValue{};
-	depthClearValue.DepthStencil.Depth = 1.0f;						// 1.0f (最大値)　でクリア
-	depthClearValue.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;			// フォーマット。Resourceと合わせる
-
-	
-	/*=============================================//
-				 Resourceの生成
-	//=============================================*/
-
-	Microsoft::WRL::ComPtr<ID3D12Resource> resource = nullptr;
-	HRESULT hr = device->CreateCommittedResource(
-		&heapProperties, // Heapの設定
-		D3D12_HEAP_FLAG_NONE,//Heapの特殊な設定。特になし。
-		&resourceDesc,// Resourceの設定
-		D3D12_RESOURCE_STATE_DEPTH_WRITE,//深度値を書き込む状態にしておく
-		&depthClearValue,// clear最適値
-		IID_PPV_ARGS(&resource));//作成するResourceポインタへのポインタ
-	assert(SUCCEEDED(hr));
+{ //DepthStencilTextureをウィンドウサイズで作成
+	depthStencilResource = CreateDepthStencilTextureResource(device.Get(), WinApp::kClientWidth, WinApp::kClientHeight);
 
 }
 
@@ -338,10 +296,10 @@ void DirectXCommon::PreDraw()
 
 	// 描画先のRTVとDSVを設定する
 	D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle = GetDSVCPUDescriptorHandle(0); // 適切か確認要
-	commandList->OMSetRenderTargets(1, &rtvHandles[backBufferIndex], FALSE, nullptr);
+	commandList->OMSetRenderTargets(1, &rtvHandles[backBufferIndex], FALSE, &dsvHandle);
 
 	// 指定した深度で画面全体をクリアにする
-	//commandList->ClearDepthStencilView(dsvHandle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
+	commandList->ClearDepthStencilView(dsvHandle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
 
 	// 指定した色で画面全体をクリアする
 	float clearColor[] = { 0.1f, 0.25f, 0.5f, 1.0f };
@@ -515,5 +473,88 @@ D3D12_GPU_DESCRIPTOR_HANDLE DirectXCommon::GetDSVGPUDescriptorHandle(uint32_t in
 	return  GetGPUDescriptorHandle(dsvDescriptorHeap, descriptotSizeDSV, index);
 }
 
+Microsoft::WRL::ComPtr<IDxcBlob> DirectXCommon::CompileShader(const wstring& filePath, const wchar_t* profile)
+{
+	// 1.hlslファイルを読み込む
+	// これからシェーダーをコンパイルする旨をログに出す
+	Log(ConvertString(std::format(L"Begin CompileShader,path:{},profile:{}\n", filePath, profile)));
+	// hlslファイルを読み込む
+	IDxcBlobEncoding* shaderSource = nullptr;
+	HRESULT hr = dxcUtils->LoadFile(filePath.c_str(), nullptr, &shaderSource);
+	// 読めなかったら止める
+	assert(SUCCEEDED(hr));
+	// 読み込んだファイルの内容を設定する
+	DxcBuffer shaderSourceBuffer;
+	shaderSourceBuffer.Ptr = shaderSource->GetBufferPointer();
+	shaderSourceBuffer.Size = shaderSource->GetBufferSize();
+	shaderSourceBuffer.Encoding = DXC_CP_UTF8; // UTF8の文字コードであることを通知
+	// 2. Compileする
+	LPCWSTR arguments[] = {
+		filePath.c_str(),		   // コンパイル対象のhlslファイル名
+		L"-E",L"main",			   // エントリーポイントの指定。基本的にmain以外にはしない
+		L"-T",profile,			   // ShaderProfileの設定
+		L"-Zi",L"-Qembed_debug",   // デバッグ用の情報を埋め込む
+		L"-Od",					   // 最適化しておく
+		L"-Zpr",				   // メモリレイアウトは行優先
+	};
+	// 実際にShaderをコンパイルする
+	IDxcResult* shaderResult = nullptr;
+	hr = dxcCompiler->Compile(
+		&shaderSourceBuffer,		  // 読み込んだファイル
+		arguments,					  // コンパイルオプション
+		_countof(arguments),		  // コンパイルオプションの数
+		includeHandler,				  // includeが含まれた諸々
+		IID_PPV_ARGS(&shaderResult)	  // コンパイル結果
+	);
+	// コンパイルエラーではなくdxcが起動できないなど致命的な状況
+	assert(SUCCEEDED(hr));
+	// 3. 警告・エラーが出てたらログに出して止める
+	IDxcBlobUtf8* shaderError = nullptr;
+	shaderResult->GetOutput(DXC_OUT_ERRORS, IID_PPV_ARGS(&shaderError), nullptr);
+	if (shaderError != nullptr && shaderError->GetStringLength() != 0) {
+		Log(shaderError->GetStringPointer());
+		// 警告・エラー放置ダメゼッタイ！！！！
+		assert(false);
+	}
+	// 4. コンパイル結果から実行用のバイナリ部分を取得
+	IDxcBlob* shaderBlob = nullptr;
+	hr = shaderResult->GetOutput(DXC_OUT_OBJECT, IID_PPV_ARGS(&shaderBlob), nullptr);
+	assert(SUCCEEDED(hr));
+	// 成功したログを出す
+	Log(ConvertString(std::format(L"Compile Succeeded,path:{},profile:{}\n", filePath, profile)));
+	// もう使わないリソースを解放
+	shaderSource->Release();
+	shaderResult->Release();
+	// 実行用のバイナリを返却
+	return shaderBlob;
 
+}
+
+Microsoft::WRL::ComPtr<ID3D12Resource> DirectXCommon::CreateBufferResource(size_t sizeInBytes)
+{
+	HRESULT hr;
+	//　頂点リソース用のヒープの設定
+	D3D12_HEAP_PROPERTIES uploadHeapProperties{};
+	uploadHeapProperties.Type = D3D12_HEAP_TYPE_UPLOAD;// Uploadheapを使う
+	// 頂点リソースの設定
+	D3D12_RESOURCE_DESC vertexResourceDesc{};
+	// バッファーリソース。テクスチャの場合はまた別の設定をする
+	vertexResourceDesc.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
+	vertexResourceDesc.Width = sizeInBytes;// リソースのサイズ。今回はVector4を3頂点分
+	// バッファの場合はこれらは1にする決まり
+	vertexResourceDesc.Height = 1;
+	vertexResourceDesc.DepthOrArraySize = 1;
+	vertexResourceDesc.MipLevels = 1;
+	vertexResourceDesc.SampleDesc.Count = 1;
+	// バッファの場合これにする決まり
+	vertexResourceDesc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
+	// 実際に頂点リソースを作る
+	Microsoft::WRL::ComPtr<ID3D12Resource> vertexResource = nullptr;
+	hr = device->CreateCommittedResource(&uploadHeapProperties, D3D12_HEAP_FLAG_NONE,
+		&vertexResourceDesc, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr,
+		IID_PPV_ARGS(&vertexResource));
+	assert(SUCCEEDED(hr));
+
+	return vertexResource;
+}
 

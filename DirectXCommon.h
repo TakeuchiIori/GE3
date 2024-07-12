@@ -4,6 +4,7 @@
 #include <wrl.h>
 #include <array>
 #include <dxcapi.h>
+#include <string>
 #include "WinApp.h"
 
 /// <summary>
@@ -125,7 +126,15 @@ public: // メンバ関数
 	/// </summary>
 	D3D12_GPU_DESCRIPTOR_HANDLE GetDSVGPUDescriptorHandle(uint32_t index);
 
+	/// <summary>
+	/// シェーダーのコンパイル
+	/// </summary>
+	Microsoft::WRL::ComPtr<IDxcBlob> CompileShader(const wstring& filePath, const wchar_t* profile);
 
+	/// <summary>
+	///バッファリソースの生成
+	/// </summary>
+	Microsoft::WRL::ComPtr<ID3D12Resource> CreateBufferResource(size_t  sizeInBytes);
 
 public: // アクセッサ
 	
@@ -157,6 +166,9 @@ public: // アクセッサ
 	uint64_t GetfenceValue() { return fenceValue; }
 	uint64_t SetfenceValue(uint64_t val) {  return fenceValue = val; }
 
+	
+
+
 private: // メンバ変数
 
 	// WindowsAPI
@@ -182,15 +194,18 @@ private: // メンバ変数
 	// スワップチェーン
 	Microsoft::WRL::ComPtr<IDXGISwapChain4> swapChain;
 	std::array<Microsoft::WRL::ComPtr<ID3D12Resource>,2> swapChainResources;
+	// スワップチェーン
+	DXGI_SWAP_CHAIN_DESC1 swapChainDesc{};
 
 	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> rtvDescriptorHeap;
 	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> srvDescriptorHeap;
 	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> dsvDescriptorHeap;
 
 	// 現時点ではincludeはしないが、includeに対応するための設定を行っておく
-	Microsoft::WRL::ComPtr<IDxcIncludeHandler> includeHandler ;
+	IDxcIncludeHandler* includeHandler = nullptr;
 
-private:
+	Microsoft::WRL::ComPtr<ID3D12Resource> depthStencilResource;
+
 	uint32_t descriptotSizeSRV;
 	uint32_t descriptotSizeRTV;
 	uint32_t descriptotSizeDSV;
@@ -198,8 +213,7 @@ private:
 	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandles[2];
 	// RTV
 	D3D12_RENDER_TARGET_VIEW_DESC rtvDesc{};
-	// スワップチェーン
-	DXGI_SWAP_CHAIN_DESC1 swapChainDesc{};
+	
 
 	uint64_t fenceValue = 0;
 	HANDLE fenceEvent;
