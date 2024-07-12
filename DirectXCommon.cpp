@@ -44,7 +44,16 @@ void DirectXCommon::Initialize(WinApp* winApp)
 
 void DirectXCommon::InitializeDXGIDevice()
 {
-	MSG msg{};
+	//---------- デバッグレイヤー ----------//
+#ifdef _DEBUG
+	Microsoft::WRL::ComPtr<ID3D12Debug1> debugController = nullptr;
+	if (SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(&debugController)))) {
+		// デバッグレイヤーを有効化する
+		debugController->EnableDebugLayer();
+		// さらにGPU側でもチェックを行うようにする
+		debugController->SetEnableGPUBasedValidation(true);
+	}
+#endif
 	//--------------- DXGIファクトリーの生成 ---------------//
 	
 	// HRESULTはWindowa\s系のエラーコードであり、
