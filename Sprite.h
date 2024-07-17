@@ -49,18 +49,32 @@ public:
 	/// </summary>
 	void CreateIndex();
 
+	/// <summary>
+	/// マテリアルリソース
+	/// </summary>
+	void MaterialResource();
+
+	
+
 private: // メンバ関数
 
 	SpriteCommon* spriteCommon_ = nullptr;
 	DirectXCommon* dxCommon_ = nullptr;
 
 	// 頂点リソース
-	Microsoft::WRL::ComPtr<ID3D12Resource> vertexResource;
+	Microsoft::WRL::ComPtr<ID3D12Resource> vertexResource_;
 	// バッファービュー
-	D3D12_VERTEX_BUFFER_VIEW vertexBufferView{};
+	D3D12_VERTEX_BUFFER_VIEW vertexBufferView_{};
+
 	// インデックス用のリソース
-	Microsoft::WRL::ComPtr<ID3D12Resource> indexResource;
+	Microsoft::WRL::ComPtr<ID3D12Resource> indexResource_;
 	// バッファービュー
-	D3D12_INDEX_BUFFER_VIEW indexBufferView{};
+	D3D12_INDEX_BUFFER_VIEW indexBufferView_{};
+
+	// マテリアル
+	Microsoft::WRL::ComPtr<ID3D12Resource> materialResource_;
+	// データを指すポインタ
+	Material* materialData_ = nullptr;
+
 };
 

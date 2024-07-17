@@ -13,13 +13,13 @@ void Sprite::Initialize(SpriteCommon* spriteCommon)
 void Sprite::VertexResource()
 {
 	// リソース
-	vertexResource = dxCommon_->CreateBufferResource(sizeof(VertexData) * 6);
+	vertexResource_ = dxCommon_->CreateBufferResource(sizeof(VertexData) * 6);
 	// リソースの先頭アドレスから使う
-	vertexBufferView.BufferLocation = vertexResource->GetGPUVirtualAddress();
+	vertexBufferView_.BufferLocation = vertexResource_->GetGPUVirtualAddress();
 	// 使用するリソースサイズは頂点3つ分のサイズ
-	vertexBufferView.SizeInBytes = sizeof(VertexData) * 6;
+	vertexBufferView_.SizeInBytes = sizeof(VertexData) * 6;
 	// 1頂点あたりのサイズ
-	vertexBufferView.StrideInBytes = sizeof(VertexData);
+	vertexBufferView_.StrideInBytes = sizeof(VertexData);
 
 	CreateVertex();
 }
@@ -27,7 +27,7 @@ void Sprite::VertexResource()
 void Sprite::CreateVertex()
 {
 	VertexData* vertexData = nullptr;
-	vertexResource->Map(0, nullptr, reinterpret_cast<void**>(&vertexData));
+	vertexResource_->Map(0, nullptr, reinterpret_cast<void**>(&vertexData));
 	// 1枚目の三角形
 	vertexData[0].position = { 0.0f,360.0f,0.0f,1.0f };//左下
 	vertexData[0].texcoord = { 0.0f,1.0f };
@@ -49,13 +49,13 @@ void Sprite::CreateVertex()
 void Sprite::IndexResource()
 {
 	// リソース
-	indexResource = dxCommon_->CreateBufferResource(sizeof(uint32_t) * 6);
+	indexResource_ = dxCommon_->CreateBufferResource(sizeof(uint32_t) * 6);
 	// リソースの先頭アドレスから使う
-	indexBufferView.BufferLocation = indexResource->GetGPUVirtualAddress();
+	indexBufferView_.BufferLocation = indexResource_->GetGPUVirtualAddress();
 	// 使用するリソースサイズはもとの頂点のサイズ
-	indexBufferView.SizeInBytes = sizeof(uint32_t) * 6;
+	indexBufferView_.SizeInBytes = sizeof(uint32_t) * 6;
 	// インデックスはuint32_tとする
-	indexBufferView.Format = DXGI_FORMAT_R32_UINT;
+	indexBufferView_.Format = DXGI_FORMAT_R32_UINT;
 
 	CreateIndex();
 }
@@ -63,11 +63,22 @@ void Sprite::IndexResource()
 void Sprite::CreateIndex()
 {
 	uint32_t* indexData = nullptr;
-	indexResource->Map(0, nullptr, reinterpret_cast<void**>(&indexData));
+	indexResource_->Map(0, nullptr, reinterpret_cast<void**>(&indexData));
 	indexData[0] = 0;  // 最初の三角形
 	indexData[1] = 1;
 	indexData[2] = 2;
 	indexData[3] = 1;  // 2つ目の三角形
 	indexData[4] = 3;
 	indexData[5] = 2;
+}
+
+void Sprite::MaterialResource()
+{
+	materialResource_ = dxCommon_->CreateBufferResource(sizeof(Material));
+	// 書き込むためのアドレスを取得
+	materialResource_->Map(0, nullptr, reinterpret_cast<void**>(&materialData_));
+	// マテリアルデータの初期化
+	materialData_->color = { 0.0f,0.0f, 0.0f, 0.0f };
+	materialData_->enableLighting = false;
+	materialData_->uvTransform = MakeIdentity4x4();
 }
