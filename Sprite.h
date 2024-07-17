@@ -22,12 +22,22 @@ public: // 構造体
 		Matrix4x4 uvTransform;
 	};
 
+	// 座標変換データ
+	struct TransformationMatrix {
+		Matrix4x4 WVP;
+		Matrix4x4 World;
+	};
 
 public:
 	/// <summary>
 	/// 初期化
 	/// </summary>
 	void Initialize(SpriteCommon* spriteCommon);
+
+	/// <summary>
+	/// 更新
+	/// </summary>
+	void Update();
 
 	/// <summary>
 	/// 頂点リソース
@@ -54,7 +64,10 @@ public:
 	/// </summary>
 	void MaterialResource();
 
-	
+	/// <summary>
+	/// 座標変換リソース
+	/// </summary>
+	void TransformResource();
 
 private: // メンバ関数
 
@@ -75,6 +88,11 @@ private: // メンバ関数
 	Microsoft::WRL::ComPtr<ID3D12Resource> materialResource_;
 	// データを指すポインタ
 	Material* materialData_ = nullptr;
+
+	// バッファリソース
+	Microsoft::WRL::ComPtr<ID3D12Resource> transformationMatrixResource_;
+	// データを書き込む
+	TransformationMatrix* transformationMatrixData_ = nullptr;
 
 };
 

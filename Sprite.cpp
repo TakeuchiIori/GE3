@@ -8,6 +8,14 @@ void Sprite::Initialize(SpriteCommon* spriteCommon)
 	VertexResource();
 
 	IndexResource();
+
+	MaterialResource();
+}
+
+void Sprite::Update()
+{
+
+
 }
 
 void Sprite::VertexResource()
@@ -74,11 +82,26 @@ void Sprite::CreateIndex()
 
 void Sprite::MaterialResource()
 {
+	// リソース作成
 	materialResource_ = dxCommon_->CreateBufferResource(sizeof(Material));
-	// 書き込むためのアドレスを取得
+	// データを書き込むためのアドレスを取得して割り当て
 	materialResource_->Map(0, nullptr, reinterpret_cast<void**>(&materialData_));
 	// マテリアルデータの初期化
 	materialData_->color = { 0.0f,0.0f, 0.0f, 0.0f };
 	materialData_->enableLighting = false;
 	materialData_->uvTransform = MakeIdentity4x4();
+
+	TransformResource();
+}
+
+void Sprite::TransformResource()
+{
+	// リソース作成
+	transformationMatrixResource_ = dxCommon_->CreateBufferResource(sizeof(TransformationMatrix));
+	// データを書き込むためのアドレスを取得して割り当て
+	transformationMatrixResource_->Map(0, nullptr, reinterpret_cast<void**>(&transformationMatrixData_));
+
+	// 単位行列を書き込む
+	transformationMatrixData_->WVP = MakeIdentity4x4();
+	transformationMatrixData_->World = MakeIdentity4x4();
 }
