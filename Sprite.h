@@ -89,6 +89,33 @@ private: // メンバ関数
 	/// </summary>
 	void SetSRV();
 
+public: // アクセッサ
+
+	/*===============================================//
+						  座標
+	//===============================================*/
+	const Vector2& Getposition()const { return position_; }
+	void SetPosition(const Vector2& position) { position_ = position; }
+
+	/*===============================================//
+						  回転
+	//===============================================*/
+	float GetRotation()const { return rotation_; }
+	void SetRotation(float rotation) { rotation_ = rotation; }
+
+	/*===============================================//
+						  拡縮
+	//===============================================*/
+	const Vector2& GetSize() { return size_; }
+	void SetSize(const Vector2& size) { size_ = size; }
+
+	/*===============================================//
+					　	 色を変更
+	//===============================================*/
+	const Vector4& Getcolor()const { return materialData_->color; }
+	void SetColor(const Vector4& color) { materialData_->color = color; }
+
+
 private: // メンバ関数
 
 	SpriteCommon* spriteCommon_ = nullptr;
@@ -128,6 +155,14 @@ private: // メンバ関数
 
 	D3D12_CPU_DESCRIPTOR_HANDLE textureSrvHandleCPU;
 	D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHandleGPU;
+
+	/*===============================================//
+						  SRV
+	//===============================================*/
+
+	Vector2 position_ = { 0.0f,0.0f };
+	float rotation_ = 0.0f;
+	Vector2 size_ = { 640.0f,360.0f };
 
 
 

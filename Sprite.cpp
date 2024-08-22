@@ -24,6 +24,10 @@ void Sprite::Initialize(SpriteCommon* spriteCommon)
 void Sprite::Update()
 {
 	Transform_h transform{ {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
+
+	transform.translate = { position_.x,position_.y,0.0f };
+	transform.rotate = { 0.0f,0.0f,rotation_ };
+	transform.scale = { size_.x,size_.y,1.0f };
 	Matrix4x4 worldMatrix = MakeAffineMatrix(transform.scale, transform.rotate, transform.translate);
 
 	Matrix4x4 viewMatrix = MakeIdentity4x4();
@@ -71,22 +75,51 @@ void Sprite::CreateVertex()
 {
 	VertexData* vertexData = nullptr;
 	vertexResource_->Map(0, nullptr, reinterpret_cast<void**>(&vertexData));
-	// 1枚目の三角形
-	vertexData[0].position = { 0.0f,360.0f,0.0f,1.0f };   //左下
-	vertexData[0].texcoord = { 0.0f,1.0f };
-	vertexData[1].position = { 0.0f,0.0f,0.0f,1.0f };     //左上
-	vertexData[1].texcoord = { 0.0f,0.0f };
-	vertexData[2].position = { 640.0f,360.0f,0.0f,1.0f }; //右下
-	vertexData[2].texcoord = { 1.0f,1.0f };
-	//2枚目の三角形
-	vertexData[3].position = { 640.0f,0.0f,0.0f,1.0f };   //右上
-	vertexData[3].texcoord = { 1.0f,0.0f };
-	vertexData[4].position = { 0.0f, 0.0f, 0.0f, 1.0f };  //左上
+	/*=====================================================//
+							 indexなし
+	=======================================================*/
+
+	// 左下
+	vertexData[0].position = { 0.0f, 1.0f, 0.0f, 1.0f };
+	vertexData[0].texcoord = { 0.0f, 1.0f };
+
+	// 左上
+	vertexData[1].position = { 0.0f, 0.0f, 0.0f, 1.0f };
+	vertexData[1].texcoord = { 0.0f, 0.0f };
+
+	// 右下
+	vertexData[2].position = { 1.0f, 1.0f, 0.0f, 1.0f };
+	vertexData[2].texcoord = { 1.0f, 1.0f };
+
+	// 右上
+	vertexData[3].position = { 1.0f, 0.0f, 0.0f, 1.0f };
+	vertexData[3].texcoord = { 1.0f, 0.0f };
+
+	// 2枚目の三角形用
+	vertexData[4].position = { 0.0f, 0.0f, 0.0f, 1.0f }; // 左上
 	vertexData[4].texcoord = { 0.0f, 0.0f };
-	vertexData[5].position = { 640.0f,360.0f,0.0f,1.0f }; //右下
-	vertexData[5].texcoord = { 1.0f,1.0f };
-	// 書き込むためのアドレスを取得
-	vertexData[0].normal = { 0.0f,0.0f,-1.0f };
+
+	vertexData[5].position = { 1.0f, 1.0f, 0.0f, 1.0f }; // 右下
+	vertexData[5].texcoord = { 1.0f, 1.0f };
+
+
+	//// 1枚目の三角形
+	//vertexData[0].position = { 0.0f,360.0f,0.0f,1.0f };   //左下
+	//vertexData[0].texcoord = { 0.0f,1.0f };
+	//vertexData[1].position = { 0.0f,0.0f,0.0f,1.0f };     //左上
+	//vertexData[1].texcoord = { 0.0f,0.0f };
+	//vertexData[2].position = { 640.0f,360.0f,0.0f,1.0f }; //右下
+	//vertexData[2].texcoord = { 1.0f,1.0f };
+	////2枚目の三角形
+	//vertexData[3].position = { 640.0f,0.0f,0.0f,1.0f };   //右上
+	//vertexData[3].texcoord = { 1.0f,0.0f };
+	//vertexData[4].position = { 0.0f, 0.0f, 0.0f, 1.0f };  //左上
+	//vertexData[4].texcoord = { 0.0f, 0.0f };
+	//vertexData[5].position = { 640.0f,360.0f,0.0f,1.0f }; //右下
+	//vertexData[5].texcoord = { 1.0f,1.0f };
+	//// 書き込むためのアドレスを取得
+	//vertexData[0].normal = { 0.0f,0.0f,-1.0f };
+
 }
 
 void Sprite::IndexResource()

@@ -623,63 +623,31 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			input_->Update(winApp_);
 
 			sprite->Update();
-		/*	if (input_->TriggerKey(DIK_0)) {
-				transform.rotate.y += 0.1f;
-			}*/
-		//	// ここからフレームが始まる
-		//	ImGui_ImplDX12_NewFrame();
-		//	ImGui_ImplWin32_NewFrame();
-		//	ImGui::NewFrame();
-		//	//================================ ゲームの処理 ================================//
-		////	transform.rotate.y += 0.01f;
-		//	Matrix4x4 worldMatrix = MakeAffineMatrix(transform.scale, transform.rotate, transform.translate);
-		//	Matrix4x4 cameraMatrix = MakeAffineMatrix(cameraTransform.scale, cameraTransform.rotate, cameraTransform.translate);
-		//	Matrix4x4 viewMatrix = Inverse(cameraMatrix);
-		//	Matrix4x4 projectionMatrix = MakePerspectiveFovMatrix(0.45f, float(winApp_->kClientWidth) / float(winApp_->kClientHeight), 0.1f, 100.0f);
-		//	Matrix4x4 worldViewProjectionMatrix = Multiply(worldMatrix, Multiply(viewMatrix, projectionMatrix));
-		//	wvpData->WVP = worldViewProjectionMatrix;
-		//	wvpData->World = worldViewProjectionMatrix;
-		//	//------------------ Sprite用のWorldViewProjectionMatrixを作る ------------------//
-		//	Matrix4x4 worldMatrixSprite = MakeAffineMatrix(transformSprite.scale, transformSprite.rotate, transformSprite.translate);
-		//	Matrix4x4 viewMatrixSprite = MakeIdentity4x4();
-		//	Matrix4x4 projectionMatrixSprite = MakeOrthographicMatrix(0.0f, 0.0f, float(winApp_->kClientWidth), float(winApp_->kClientHeight), 0.0f, 100.0f);
-		//	Matrix4x4 worldProjectionMatrixSprite = Multiply(worldMatrixSprite, Multiply(viewMatrixSprite, projectionMatrixSprite));
-		//	wvpDataSprite->WVP = worldProjectionMatrixSprite;
-		//	wvpDataSprite->World = worldProjectionMatrixSprite;
-		//	//------------------ UVTransform用の行列 ------------------//
-		//	Matrix4x4 uvTransformMatrix = MakeScaleMatrix(uvTransformSprite.scale);
-		//	uvTransformMatrix = Multiply(uvTransformMatrix, MakeRotateMatrixZ(uvTransformSprite.rotate.z));
-		//	uvTransformMatrix = Multiply(uvTransformMatrix, MakeTranslateMatrix(uvTransformSprite.translate));
-		//	materialDataSprite->uvTransform = uvTransformMatrix;
+			// 移動テスト
+			Vector2 position = sprite->Getposition();
+			position.x += 0.1f;
+			position.y += 0.1f;
+			//sprite->SetPosition(position);
+			
+			// 回転テスト
+			float rotation = sprite->GetRotation();
+			rotation += 0.01f;
+			//sprite->SetRotation(rotation);
 
-		//	// 開発用UIの処理。実際に開発用のUIを出す場合はここをゲーム固有の処理に置き換える
-		//	ImGui::Begin("Setting");
-		//	ImGui::ColorEdit4("material : Color", &materialData->color.x);
-		//	ImGui::DragFloat3("translateSprite", &transformSprite.translate.x, 1.0f);
-		//	ImGui::DragFloat3("cameraTranslate", &cameraTransform.translate.x, 0.01f);
-		//	ImGui::ColorEdit4("directonalLight : Color", &directionalLight->color.x);
-		//	//ImGui::ColorEdit4("material : Color", &vertexData->position.x, 0.01f);
-		//	ImGui::DragFloat3("directonalLight : direction", &directionalLight->direction.x, 0.01f);
-		//	directionalLight->direction = Normalize(directionalLight->direction);
-		//	ImGui::DragFloat("directonalLight : intensity", &directionalLight->intensity, 0.01f);
-		//	ImGui::DragFloat2("UVScale", &uvTransformSprite.scale.x, 0.01f, -10.0f, 10.0f);
-		//	ImGui::DragFloat2("UVTranslate", &uvTransformSprite.translate.x, 0.01f, -10.0f, 10.0f);
-		//	ImGui::SliderAngle("Model RotateX", &transform.rotate.x);
-		//	ImGui::SliderAngle("Model RotateY", &transform.rotate.y);
-		//	ImGui::SliderAngle("Model RotateZ", &transform.rotate.z);
-		//	ImGui::DragFloat("translateX", &transform.translate.x, 0.01f);
-		//	ImGui::DragFloat("translateY", &transform.translate.y, 0.01f);
-		//	ImGui::DragFloat("translateZ", &transform.translate.z, 0.01f);
-		//	ImGui::Checkbox("useMonsterBall", &useMonsterBall);
-		//	ImGui::End();
+			// サイズ変化
+			Vector2 size = sprite->GetSize();
+			size.x += 0.1f;
+			size.y += 0.1f;
+			sprite->SetSize(size);
 
-		//
-
-
-		//	
-		//	// 描画処理の前・ImGuiの内部コマンドを生成する
-		//	ImGui::Render();
-		//	
+			// 色テスト
+			Vector4 color = sprite->Getcolor();
+			color.x += 0.01f;
+			if (color.x > 1.0f) {
+				color.x -= 1.0f;
+			}
+			sprite->SetColor(color);
+	
 
 			// DirectXの描画準備。全ての描画にグラフィックスコマンドを積む
 			dxCommon->PreDraw();
