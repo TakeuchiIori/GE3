@@ -88,7 +88,7 @@ public: // 描画関連
 	// 描画後処理
 	void PostDraw();
 
-private: // メンバ関数
+public: // メンバ関数
 	/// <summary>
 	/// ディスクリプターヒープ
 	/// </summary>
@@ -102,12 +102,12 @@ private: // メンバ関数
 	/// <summary>
 	/// 指定番号のCPUの取得
 	/// </summary>
-	static D3D12_CPU_DESCRIPTOR_HANDLE GetCPUDescriptorHandle(Microsoft::WRL::ComPtr<ID3D12DescriptorHeap>& descriptorHeap, uint32_t descriptorSize, uint32_t index);
+	static D3D12_CPU_DESCRIPTOR_HANDLE GetCPUDescriptorHandle(Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> descriptorHeap, uint32_t descriptorSize, uint32_t index);
 	
 	/// <summary>
 	/// 指定番号のGPUの取得
 	/// </summary>
-	static D3D12_GPU_DESCRIPTOR_HANDLE GetGPUDescriptorHandle(Microsoft::WRL::ComPtr<ID3D12DescriptorHeap>& descriptorHeap, uint32_t descriptorSize, uint32_t index);
+	static D3D12_GPU_DESCRIPTOR_HANDLE GetGPUDescriptorHandle(Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> descriptorHeap, uint32_t descriptorSize, uint32_t index);
 	
 	/// <summary>
 	/// SRVの指定番号のCPUディスクリプタハンドルを取得
@@ -182,13 +182,13 @@ public: // アクセッサ
 	Microsoft::WRL::ComPtr<ID3D12CommandQueue> GetcommandQueue() { return commandQueue_; }
 	Microsoft::WRL::ComPtr<ID3D12CommandAllocator> GetcommandAllocator() { return commandAllocator_; }
 
-	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> GetrtvDescriptorHeap() { return rtvDescriptorHeap_; }
-	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> GetsrvDescriptorHeap() { return srvDescriptorHeap_; }
-	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> GetdsvDescriptorHeap() { return dsvDescriptorHeap_; }
+	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> GetrtvDescriptorHeap() const { return rtvDescriptorHeap_; }
+	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> GetsrvDescriptorHeap() const { return srvDescriptorHeap_; }
+	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> GetdsvDescriptorHeap() const { return dsvDescriptorHeap_; }
 
-	uint32_t GetdescriptotSizeSRV() { return descriptotSizeSRV_;}
-	uint32_t GetdescriptotSizeRTV() { return descriptotSizeRTV_; }
-	uint32_t GetdescriptotSizeDSV() { return descriptotSizeDSV_; }
+	uint32_t GetdescriptotSizeSRV() const { return descriptotSizeSRV_;}
+	uint32_t GetdescriptotSizeRTV() const { return descriptotSizeRTV_; }
+	uint32_t GetdescriptotSizeDSV() const { return descriptotSizeDSV_; }
 
 	Microsoft::WRL::ComPtr<IDXGISwapChain4> GetswapChain() { return swapChain_; }
 	std::array<Microsoft::WRL::ComPtr<ID3D12Resource>, 2> GetswapChainResources() { return swapChainResources_; }
@@ -201,7 +201,9 @@ public: // アクセッサ
 	uint64_t GetfenceValue() { return fenceValue_; }
 	uint64_t SetfenceValue(uint64_t val) {  return fenceValue_ = val; }
 
-	
+
+
+
 
 
 private: // メンバ変数

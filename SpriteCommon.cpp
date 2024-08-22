@@ -149,7 +149,7 @@ void SpriteCommon::CreateGraphicsPipeline()
 
 void SpriteCommon::DrawPreference()
 {
-	SetRootSignature();
+	SetGraphicsCommand();
 
 	SetRootSignature();
 

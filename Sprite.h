@@ -1,8 +1,10 @@
 #pragma once
-#include "DirectXCommon.h"
+#include <wrl.h>
+#include <d3d12.h>
 #include "math/Vector4.h"
 #include "math/Matrix4x4.h"
 #include "math/Vector2.h"
+#include "externals/DirectXTex/DirectXTex.h"
 class SpriteCommon;
 class Sprite
 {
@@ -28,7 +30,8 @@ public: // 構造体
 		Matrix4x4 World;
 	};
 
-public:
+public: // 基本的関数
+	Sprite();
 	/// <summary>
 	/// 初期化
 	/// </summary>
@@ -38,6 +41,13 @@ public:
 	/// 更新
 	/// </summary>
 	void Update();
+
+	/// <summary>
+	/// 描画
+	/// </summary>
+	void Draw();
+
+private: // メンバ関数
 
 	/// <summary>
 	/// 頂点リソース
@@ -69,30 +79,58 @@ public:
 	/// </summary>
 	void TransformResource();
 
+	/// <summary>
+	/// Textureを読んで転送
+	/// </summary>
+	void TransferTexture();
+
+	/// <summary>
+	/// SRVの設定
+	/// </summary>
+	void SetSRV();
+
 private: // メンバ関数
 
 	SpriteCommon* spriteCommon_ = nullptr;
-	DirectXCommon* dxCommon_ = nullptr;
+	/*===============================================//
+						Resouurces
+	//===============================================*/
 
-	// 頂点リソース
+	// 頂点
 	Microsoft::WRL::ComPtr<ID3D12Resource> vertexResource_;
-	// バッファービュー
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferView_{};
 
-	// インデックス用のリソース
+	// インデックス
 	Microsoft::WRL::ComPtr<ID3D12Resource> indexResource_;
-	// バッファービュー
 	D3D12_INDEX_BUFFER_VIEW indexBufferView_{};
 
 	// マテリアル
 	Microsoft::WRL::ComPtr<ID3D12Resource> materialResource_;
-	// データを指すポインタ
 	Material* materialData_ = nullptr;
 
-	// バッファリソース
+	// 座標変換
 	Microsoft::WRL::ComPtr<ID3D12Resource> transformationMatrixResource_;
-	// データを書き込む
 	TransformationMatrix* transformationMatrixData_ = nullptr;
+
+	/*===============================================//
+						Texture
+	//===============================================*/
+
+	DirectX::ScratchImage mipImages[2] = {};
+	const DirectX::TexMetadata& metadata = mipImages[0].GetMetadata();
+	const DirectX::TexMetadata& metadata2 = mipImages[1].GetMetadata();
+
+	Microsoft::WRL::ComPtr<ID3D12Resource> textureResource[2];
+	Microsoft::WRL::ComPtr<ID3D12Resource> intermediateResource[2];
+
+	//Microsoft::WRL::ComPtr<ID3D12Resource> textureResource2;
+	//Microsoft::WRL::ComPtr<ID3D12Resource> intermediateResource2;
+
+	D3D12_CPU_DESCRIPTOR_HANDLE textureSrvHandleCPU;
+	D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHandleGPU;
+
+
+
 
 };
 
