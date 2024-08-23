@@ -70,10 +70,23 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 #pragma region 最初のシーンの初期化
 
-	Sprite* sprite = nullptr;
-	// スプライト共通部の初期化
-	sprite = new Sprite();
-	sprite->Initialize(spriteCommon);
+	std::vector<Sprite*> sprites;
+	for (uint32_t i = 0; i < 5; ++i) {
+		Sprite* sprite = new Sprite();
+		sprite->Initialize(spriteCommon);
+		// 移動テスト: インデックスに応じてX、Y座標をずらして配置
+		Vector2 position;
+		position.x = i * 200;
+		position.y = 0.0f;
+		sprite->SetPosition(position);
+
+		// 初期色の設定（任意で設定）
+		Vector4 color = { 1.0f, 1.0f, 1.0f, 1.0f }; // 白色
+		sprite->SetColor(color);
+
+
+		sprites.push_back(sprite);
+	}
 
 #pragma endregion 最初のシーンの終了
 
@@ -89,32 +102,30 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		
 			input_->Update(winApp_);
 
-			sprite->Update();
-			// 移動テスト
-			Vector2 position = sprite->Getposition();
-			position.x += 0.1f;
-			position.y += 0.1f;
-			//sprite->SetPosition(position);
-			
-			// 回転テスト
-			float rotation = sprite->GetRotation();
-			rotation += 0.01f;
-			//sprite->SetRotation(rotation);
+			// 更新
+			for (size_t i = 0; i < sprites.size(); ++i) {
+				Sprite* sprite = sprites[i];
+				sprite->Update();
 
-			// サイズ変化
-			Vector2 size = sprite->GetSize();
-			size.x += 0.1f;
-			size.y += 0.1f;
-			sprite->SetSize(size);
+				// 回転テスト
+				float rotation = sprite->GetRotation();
+				rotation += 0.01f;
+				// sprite->SetRotation(rotation);
 
-			// 色テスト
-			Vector4 color = sprite->Getcolor();
-			color.x += 0.01f;
-			if (color.x > 1.0f) {
-				color.x -= 1.0f;
+				// サイズ変化
+				Vector2 size = sprite->GetSize();
+				size.x += 0.01f;  // サイズ変化を少し小さくする
+				size.y += 0.01f;  // サイズ変化を少し小さくする
+				//sprite->SetSize(size);
+
+				// 色テスト
+				Vector4 color = sprite->GetColor();
+				color.x += 0.01f;
+				if (color.x > 1.0f) {
+					color.x -= 1.0f;
+				}
+				sprite->SetColor(color);
 			}
-			sprite->SetColor(color);
-	
 
 			// DirectXの描画準備。全ての描画にグラフィックスコマンドを積む
 			dxCommon->PreDraw();
@@ -123,7 +134,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			spriteCommon->DrawPreference();
 
 	
-			sprite->Draw();
+			// 描画
+			for (Sprite* sprite : sprites) {
+				sprite->Draw();
+			}
 		
 			dxCommon->PostDraw();
 
@@ -142,7 +156,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	winApp_ = nullptr;
 	delete dxCommon;
 	delete spriteCommon;
-	delete sprite;
+	// 描画
+	for (Sprite* sprite : sprites) {
+		delete sprite;
+	}
 
 	
 	return 0;// main関数のリターン

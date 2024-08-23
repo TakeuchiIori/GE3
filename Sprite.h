@@ -94,7 +94,7 @@ public: // アクセッサ
 	/*===============================================//
 						  座標
 	//===============================================*/
-	const Vector2& Getposition()const { return position_; }
+	const Vector2& GetPosition()const { return position_; }
 	void SetPosition(const Vector2& position) { position_ = position; }
 
 	/*===============================================//
@@ -112,7 +112,7 @@ public: // アクセッサ
 	/*===============================================//
 					　	 色を変更
 	//===============================================*/
-	const Vector4& Getcolor()const { return materialData_->color; }
+	const Vector4& GetColor()const { return materialData_->color; }
 	void SetColor(const Vector4& color) { materialData_->color = color; }
 
 
