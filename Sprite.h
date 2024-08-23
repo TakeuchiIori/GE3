@@ -162,7 +162,7 @@ private: // メンバ関数
 
 	Vector2 position_ = { 0.0f,0.0f };
 	float rotation_ = 0.0f;
-	Vector2 size_ = { 640.0f,360.0f };
+	Vector2 size_ = { 100.0f,100.0f };
 
 
 
