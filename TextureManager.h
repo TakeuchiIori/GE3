@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
-#include<wrl.h>
+#include <wrl.h>
+#include <vector>
 #include "d3d12.h"
 #include "externals/DirectXTex/DirectXTex.h"
 
@@ -34,6 +35,8 @@ private:
 	TextureManager(TextureManager&) = delete;
 	TextureManager& operator = (TextureManager&) = delete;
 
+	// テクスチャデータ
+	std::vector<TextureData> textureDatas;
 
 
 };
