@@ -46,6 +46,14 @@ void TextureManager::LoadTexture(const std::string& filePath)
 	textureData.metadata = image.GetMetadata();
 	textureData.resource = dxCommon_->CreateTextureResource(textureData.metadata);
 
+	// テクスチャデータの要素番号をSRVのインデックスとする
+	uint32_t srvIndex = static_cast<uint32_t>(textureDatas.size());
+
+	textureData.srvHandleCPU = dxCommon_->GetSRVCPUDescriptorHandle(srvIndex);
+	textureData.srvHandleGPU = dxCommon_->GetSRVGPUDescriptorHandle(srvIndex);
+
+	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc{};
+
 
 
 
