@@ -18,17 +18,31 @@ private:
 		D3D12_GPU_DESCRIPTOR_HANDLE srvHandleGPU;
 	};
 
-public:
+public: // メンバ関数
+
 	// シングルトンインスタンスの取得
 	static TextureManager* GetInstance();
 	// 終了
 	void Finalize();
 
+	/// <summary>
+	/// 初期化
+	/// </summary>
+	void Initialize();
+
+
+	/// <summary>
+	/// テクスチャファイルの読み込み
+	/// </summary>
+	void LoadTexture(const std::string& filePath);
 
 
 
+	std::wstring ConvertString(const std::string& str);
+	std::string ConvertString(const std::wstring& str);
+	void Log(const std::string& message);
+private: // メンバ変数
 
-private:
 	static TextureManager* instance;
 	TextureManager() = default;
 	~TextureManager() = default;

@@ -34,6 +34,7 @@
 #include "DirectXCommon.h"
 #include "SpriteCommon.h"
 #include "Sprite.h"
+#include "TextureManager.h"
 #include "externals/imgui/imgui_impl_win32.h"
 
 
@@ -66,7 +67,12 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	spriteCommon = new SpriteCommon();
 	spriteCommon->Initialize(dxCommon);
 
+	// テクスチャマネージャの初期化
+	TextureManager::GetInstance()->Initialize();
+
 #pragma endregion 基礎システムの初期化
+
+
 
 #pragma region 最初のシーンの初期化
 
@@ -139,7 +145,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 				sprite->Draw();
 			}
 		
+			// テクスチャマネージャの終了
+			TextureManager::GetInstance()->Finalize();
+
 			dxCommon->PostDraw();
+			
 
 
 	}// ゲームループの終了

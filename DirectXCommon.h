@@ -205,7 +205,8 @@ public: // アクセッサ
 
 
 
-
+	// 最大SRV数（最大テクスチャ枚数）
+	static const uint32_t kMaxSRVCount;
 private: // メンバ変数
 
 	// WindowsAPI
@@ -263,7 +264,6 @@ private: // メンバ変数
 	// TransitionBarrierの設定
 	D3D12_RESOURCE_BARRIER barrier_{};
 
-	// 最大SRV数（最大テクスチャ枚数）
-	static const uint32_t kMaxSRVCount;
+
 };
 
