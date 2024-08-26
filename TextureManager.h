@@ -7,6 +7,8 @@
 
 
 class DirectXCommon;
+class Sprite;
+class SpriteCommon;
 // テクスチャマネージャー
 class TextureManager
 {
@@ -40,6 +42,7 @@ public: // メンバ関数
 
 
 
+
 	std::wstring ConvertString(const std::string& str);
 	std::string ConvertString(const std::wstring& str);
 	void Log(const std::string& message);
@@ -55,6 +58,14 @@ private: // メンバ変数
 	std::vector<TextureData> textureDatas;
 	// DirectXCommon
 	DirectXCommon* dxCommon_ = nullptr;
+
+	SpriteCommon* spriteCommon_ = nullptr;
+	// テクスチャハンドル
+	D3D12_CPU_DESCRIPTOR_HANDLE textureSrvHandleCPU;
+	D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHandleGPU;
+
+	// SRVインデックスの開始番号
+	static uint32_t kSRVIndexTop;
 
 };
 
