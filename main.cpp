@@ -72,14 +72,15 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 #pragma endregion 基礎システムの初期化
 
-
+	
 
 #pragma region 最初のシーンの初期化
 
 	std::vector<Sprite*> sprites;
+	std::string textureFilePath = "Resources./monsterBall.png";
 	for (uint32_t i = 0; i < 5; ++i) {
 		Sprite* sprite = new Sprite();
-		sprite->Initialize(spriteCommon);
+		sprite->Initialize(spriteCommon, textureFilePath);
 		// 移動テスト: インデックスに応じてX、Y座標をずらして配置
 		Vector2 position;
 		position.x = i * 200;

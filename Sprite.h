@@ -1,6 +1,7 @@
 #pragma once
 #include <wrl.h>
 #include <d3d12.h>
+#include <string>
 #include "math/Vector4.h"
 #include "math/Matrix4x4.h"
 #include "math/Vector2.h"
@@ -35,7 +36,7 @@ public: // 基本的関数
 	/// <summary>
 	/// 初期化
 	/// </summary>
-	void Initialize(SpriteCommon* spriteCommon);
+	void Initialize(SpriteCommon* spriteCommon,std::string& textureFilePath);
 
 	/// <summary>
 	/// 更新
@@ -163,6 +164,9 @@ private: // メンバ関数
 	Vector2 position_ = { 0.0f,0.0f };
 	float rotation_ = 0.0f;
 	Vector2 size_ = { 100.0f,100.0f };
+
+	// テクスチャ番号
+	uint32_t textureIndex = 0;
 
 
 

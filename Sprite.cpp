@@ -1,12 +1,13 @@
 #include "Sprite.h"
 #include "SpriteCommon.h"
 #include "Transform.h"
+#include "TextureManager.h"
 
 Sprite::Sprite()
 {
 }
 
-void Sprite::Initialize(SpriteCommon* spriteCommon)
+void Sprite::Initialize(SpriteCommon* spriteCommon, std::string& textureFilePath)
 {
 	this->spriteCommon_ = spriteCommon;
 
@@ -16,9 +17,10 @@ void Sprite::Initialize(SpriteCommon* spriteCommon)
 
 	MaterialResource();
 
-	TransferTexture();
-
-	SetSRV();
+	TextureManager::GetInstance()->LoadTexture(textureFilePath);
+	
+	// 単位行列を書き込んでおく
+	textureIndex = TextureManager::GetInstance()->GetTextureIndexByFilePath(textureFilePath);
 }
 
 void Sprite::Update()
@@ -50,7 +52,7 @@ void Sprite::Draw()
 	spriteCommon_->GetDxCommon()->GetcommandList()->SetGraphicsRootConstantBufferView(1, transformationMatrixResource_->GetGPUVirtualAddress());
 
 	// SRVの設定
-	spriteCommon_->GetDxCommon()->GetcommandList()->SetGraphicsRootDescriptorTable(2, textureSrvHandleGPU); // SRVのパラメータインデックスを変更
+	spriteCommon_->GetDxCommon()->GetcommandList()->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetsrvHandleGPU(textureIndex)); // SRVのパラメータインデックスを変更
 
 	// 描画！！！DrawCall/ドローコール）
 	spriteCommon_->GetDxCommon()->GetcommandList()->DrawIndexedInstanced(6, 1, 0, 0, 0);
