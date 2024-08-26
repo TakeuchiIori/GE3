@@ -70,10 +70,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 #pragma region 最初のシーンの初期化
 
-	Sprite* sprite = nullptr;
-	// スプライト共通部の初期化
-	sprite = new Sprite();
-	sprite->Initialize();
+	//Sprite* sprite = nullptr;
+	//// スプライト共通部の初期化
+	//sprite = new Sprite();
+	//sprite->Initialize(spriteCommon);
 
 #pragma endregion 最初のシーンの終了
 
@@ -239,7 +239,7 @@ HRESULT hr;
 	// 書き込むためのアドレスを取得
 	materialResourceSprite->Map(0, nullptr, reinterpret_cast<void**>(&materialDataSprite));
 	// 今回は赤を書き込んでみる	// 03_00で白に変更
-	materialDataSprite->color = { 0.0f,0.0f, 0.0f, 0.0f };
+	materialDataSprite->color = { 1.0f,1.0f, 1.0f, 1.0f };
 	// WVP用のリソースを作る。TransformationMatrix　1つ分のサイズを用意する
 	Microsoft::WRL::ComPtr<ID3D12Resource> wvpResourceSprite = dxCommon->CreateBufferResource(sizeof(TransformationMatrix));
 	// データを書き込む
@@ -700,7 +700,7 @@ HRESULT hr;
 			dxCommon->GetcommandList()->SetGraphicsRootConstantBufferView(3, directionalLightResource->GetGPUVirtualAddress());
 			
 			// Triangleの描画！DrawCall/ドローコール）。3頂点1つのインスタンス。
-			dxCommon->GetcommandList()->DrawInstanced(UINT(modelData.verteces.size()), 1, 0, 0);
+			//dxCommon->GetcommandList()->DrawInstanced(UINT(modelData.verteces.size()), 1, 0, 0);
 			dxCommon->GetcommandList()->SetGraphicsRootDescriptorTable(2, textureSrvHandleGPU);
 
 
@@ -713,7 +713,7 @@ HRESULT hr;
 			// IndexBufferView
 			dxCommon->GetcommandList()->IASetIndexBuffer(&indexBufferViewSprite);//IBV
 			// 描画！！！DrawCall/ドローコール）
-			//commandList->DrawIndexedInstanced(6, 1, 0, 0, 0 );
+			dxCommon->GetcommandList()->DrawIndexedInstanced(6, 1, 0, 0, 0 );
 
 			// ImGuiの描画コマンド
 			ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), dxCommon->GetcommandList().Get());
@@ -735,7 +735,7 @@ HRESULT hr;
 	winApp_ = nullptr;
 	delete dxCommon;
 	delete spriteCommon;
-	delete sprite;
+	//delete sprite;
 
 	
 	return 0;// main関数のリターン
