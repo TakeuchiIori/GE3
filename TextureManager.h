@@ -40,8 +40,16 @@ public: // メンバ関数
 	/// </summary>
 	void LoadTexture(const std::string& filePath);
 
+	/// <summary>
+	/// SRVインデックスの開始番号
+	/// </summary>
+	uint32_t GetTextureIndexByFilePath(const std::string& filePath);
 
-
+	
+	/// <summary>
+	/// テクスチャ番号からGPUハンドルを取得
+	/// </summary>
+	D3D12_GPU_DESCRIPTOR_HANDLE GetsrvHandleGPU(uint32_t textureIndex);
 
 	std::wstring ConvertString(const std::string& str);
 	std::string ConvertString(const std::wstring& str);

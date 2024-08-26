@@ -1,6 +1,7 @@
 #include "TextureManager.h"
 #include "DirectXCommon.h"
 #include "SpriteCommon.h"
+#include "assert.h"
 
 TextureManager* TextureManager::instance = nullptr;
 // ImGUiで0番を使用するため、1番から使用
@@ -38,7 +39,7 @@ void TextureManager::LoadTexture(const std::string& filePath)
 		// 読み込み済みなら早期return
 		return;
 	}
-
+	assert(textureDatas.size() + kSRVIndexTop < DirectXCommon::kMaxSRVCount);
 
 
 	// テクスチャファイルを読んでプログラムで扱えるようにする
@@ -86,6 +87,31 @@ void TextureManager::LoadTexture(const std::string& filePath)
 
 
 
+}
+
+uint32_t TextureManager::GetTextureIndexByFilePath(const std::string& filePath)
+{
+	// 読み込み済みテクスチャを検索
+	auto it = std::find_if(
+		textureDatas.begin(),
+		textureDatas.end(),
+		[&](TextureData& textureData) {return textureData.filePath == filePath; }
+	);
+	if (it != textureDatas.end()) {
+		// 読み込み済みなら要素番号を返す
+		uint32_t textureIndex = static_cast<uint32_t>(std::distance(textureDatas.begin(), it));
+		return textureIndex;
+	}
+	assert(0);
+	return 0;
+}
+
+D3D12_GPU_DESCRIPTOR_HANDLE TextureManager::GetsrvHandleGPU(uint32_t textureIndex)
+{
+	assert(textureIndex < textureDatas.size());
+
+	TextureData& textureData = textureDatas[textureIndex];
+	return textureData.srvHandleGPU;
 }
 
 std::wstring TextureManager::ConvertString(const std::string& str) {
