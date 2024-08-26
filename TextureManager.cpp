@@ -26,17 +26,6 @@ void TextureManager::Initialize()
 
 void TextureManager::LoadTexture(const std::string& filePath)
 {
-	// テクスチャデータを追加
-	textureDatas.resize(textureDatas.size() + 1);
-	// 追加したテクスチャデータの参照を取得する
-	TextureData& textureData = textureDatas.back();
-
-	textureData.filePath = filePath;
-	textureData.metadata;
-	textureData.resource = cea
-
-
-
 	// テクスチャファイルを読んでプログラムで扱えるようにする
 	DirectX::ScratchImage image{};
 	std::wstring filepathW = ConvertString(filePath);
@@ -47,6 +36,19 @@ void TextureManager::LoadTexture(const std::string& filePath)
 	DirectX::ScratchImage mipImages{};
 	hr = DirectX::GenerateMipMaps(image.GetImages(), image.GetImageCount(), image.GetMetadata(), DirectX::TEX_FILTER_SRGB, 0, mipImages);
 	assert(SUCCEEDED(hr));
+
+	// テクスチャデータを追加
+	textureDatas.resize(textureDatas.size() + 1);
+	// 追加したテクスチャデータの参照を取得する
+	TextureData& textureData = textureDatas.back();
+
+	textureData.filePath = filePath;
+	textureData.metadata = image.GetMetadata();
+	textureData.resource = dxCommon_->CreateTextureResource(textureData.metadata);
+
+
+
+
 }
 
 std::wstring TextureManager::ConvertString(const std::string& str) {

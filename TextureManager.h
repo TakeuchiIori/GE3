@@ -5,6 +5,8 @@
 #include "d3d12.h"
 #include "externals/DirectXTex/DirectXTex.h"
 
+
+class DirectXCommon;
 // テクスチャマネージャー
 class TextureManager
 {
@@ -51,7 +53,8 @@ private: // メンバ変数
 
 	// テクスチャデータ
 	std::vector<TextureData> textureDatas;
-
+	// DirectXCommon
+	DirectXCommon* dxCommon_ = nullptr;
 
 };
 
