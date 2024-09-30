@@ -112,6 +112,14 @@ public: // アクセッサ
 	const Vector4& GetColor()const { return materialData_->color; }
 	void SetColor(const Vector4& color) { materialData_->color = color; }
 
+	/*===============================================//
+					　アンカーポイント
+	//===============================================*/
+	// getter
+	const Vector2& GetAnchorPoint()const { return anchorPoint_; }
+	// setter
+	void SetAnchorPoint(const Vector2& anchorPoint) { this->anchorPoint_ = anchorPoint; }
+
 
 private: // メンバ関数
 
@@ -147,22 +155,18 @@ private: // メンバ関数
 	Microsoft::WRL::ComPtr<ID3D12Resource> textureResource[2];
 	Microsoft::WRL::ComPtr<ID3D12Resource> intermediateResource[2];
 
-	//Microsoft::WRL::ComPtr<ID3D12Resource> textureResource2;
-	//Microsoft::WRL::ComPtr<ID3D12Resource> intermediateResource2;
-
 	D3D12_CPU_DESCRIPTOR_HANDLE textureSrvHandleCPU;
 	D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHandleGPU;
+	// テクスチャ番号
+	uint32_t textureIndex = 0;
 
-	/*===============================================//
-						  SRV
-	//===============================================*/
-
+	// スプライトのSRT
 	Vector2 position_ = { 0.0f,0.0f };
 	float rotation_ = 0.0f;
 	Vector2 size_ = { 100.0f,100.0f };
-
-	// テクスチャ番号
-	uint32_t textureIndex = 0;
+	
+	// アンカーポイント
+	Vector2 anchorPoint_ = { 0.0f,0.0f };
 
 
 
