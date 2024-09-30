@@ -1,6 +1,6 @@
 #include "Sprite.h"
 #include "SpriteCommon.h"
-#include "Transform.h"
+#include "VectorSRT.h"
 #include "TextureManager.h"
 
 Sprite::Sprite()
@@ -26,16 +26,17 @@ void Sprite::Initialize(SpriteCommon* spriteCommon, std::string& textureFilePath
 
 void Sprite::Update()
 {
-	Transform_h transform{ {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
-
+	// スプライトのSRT
+	VectorSRT transform{ {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
 	transform.translate = { position_.x,position_.y,0.0f };
 	transform.rotate = { 0.0f,0.0f,rotation_ };
-	transform.scale = { size_.x,size_.y,1.0f };
-	Matrix4x4 worldMatrix = MakeAffineMatrix(transform.scale, transform.rotate, transform.translate);
+	transform.scale = { size_.x,size_.y,1.0f };	
 
+	Matrix4x4 worldMatrix = MakeAffineMatrix(transform.scale, transform.rotate, transform.translate);
 	Matrix4x4 viewMatrix = MakeIdentity4x4();
 	Matrix4x4 projectionMatrix = MakeOrthographicMatrix(0.0f, 0.0f, float(WinApp::kClientWidth), float(WinApp::kClientHeight), 0.0f, 100.0f);
 	Matrix4x4 worldProjectionMatrix = Multiply(worldMatrix, Multiply(viewMatrix, projectionMatrix));
+
 	transformationMatrixData_->WVP = worldProjectionMatrix;
 	transformationMatrixData_->World =worldMatrix;
 }
@@ -79,32 +80,38 @@ void Sprite::CreateVertex()
 	VertexData* vertexData = nullptr;
 	vertexResource_->Map(0, nullptr, reinterpret_cast<void**>(&vertexData));
 	/*=====================================================//
-							 indexなし
+							 index有
 	=======================================================*/
 
+	// アンカーポイント
+	float left = 0.0f - anchorPoint_.x;
+	float right = 1.0f - anchorPoint_.x;
+	float top = 0.0f - anchorPoint_.y;
+	float bottom = 1.0f - anchorPoint_.y;
+
 	// 左下
-	vertexData[0].position = { 0.0f, 1.0f, 0.0f, 1.0f };
+	vertexData[0].position = { left, bottom, 0.0f, 1.0f };
 	vertexData[0].texcoord = { 0.0f, 1.0f };
 
 	// 左上
-	vertexData[1].position = { 0.0f, 0.0f, 0.0f, 1.0f };
+	vertexData[1].position = { left, top, 0.0f, 1.0f };
 	vertexData[1].texcoord = { 0.0f, 0.0f };
 
 	// 右下
-	vertexData[2].position = { 1.0f, 1.0f, 0.0f, 1.0f };
+	vertexData[2].position = { right, bottom, 0.0f, 1.0f };
 	vertexData[2].texcoord = { 1.0f, 1.0f };
 
 	// 右上
-	vertexData[3].position = { 1.0f, 0.0f, 0.0f, 1.0f };
+	vertexData[3].position = { right, top, 0.0f, 1.0f };
 	vertexData[3].texcoord = { 1.0f, 0.0f };
 
 	// 2枚目の三角形用
-	vertexData[4].position = { 0.0f, 0.0f, 0.0f, 1.0f }; // 左上
+	vertexData[4].position = { left, top, 0.0f, 1.0f };  // 左上
 	vertexData[4].texcoord = { 0.0f, 0.0f };
 
-	vertexData[5].position = { 1.0f, 1.0f, 0.0f, 1.0f }; // 右下
+	vertexData[5].position = { right, bottom, 0.0f, 1.0f };  // 右下
 	vertexData[5].texcoord = { 1.0f, 1.0f };
-
+	
 
 	//// 1枚目の三角形
 	//vertexData[0].position = { 0.0f,360.0f,0.0f,1.0f };   //左下

@@ -168,7 +168,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="SpriteCommon.h" />
     <ClInclude Include="StringUtility.h" />
     <ClInclude Include="TextureManager.h" />
-    <ClInclude Include="Transform.h" />
+    <ClInclude Include="VectorSRT.h" />
     <ClInclude Include="TransformationMatrix.h" />
     <ClInclude Include="UploadTextureData.h" />
     <ClInclude Include="VertexData.h" />

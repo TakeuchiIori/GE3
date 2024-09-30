@@ -8,7 +8,7 @@
 #include "VertexData.h"
 #include "math/Vector4.h"
 #include "math/Matrix4x4.h"
-#include "Transform.h"
+
 
 #include "externals/imgui/imgui_impl_dx12.h"
 
@@ -122,7 +122,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 				// 回転テスト
 				float rotation = sprite->GetRotation();
 				rotation += 0.01f;
-				// sprite->SetRotation(rotation);
+				sprite->SetRotation(rotation);
 
 				// サイズ変化
 				Vector2 size = sprite->GetSize();

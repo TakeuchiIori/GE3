@@ -160,7 +160,8 @@ private: // メンバ関数
 	// テクスチャ番号
 	uint32_t textureIndex = 0;
 
-	// スプライトのSRT
+	// スプライト
+	VertexData* vertexData = nullptr;
 	Vector2 position_ = { 0.0f,0.0f };
 	float rotation_ = 0.0f;
 	Vector2 size_ = { 100.0f,100.0f };
