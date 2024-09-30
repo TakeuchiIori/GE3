@@ -130,6 +130,17 @@ public: // アクセッサ
 	void SetIsFlipX(const bool& isFlipX) { this->isFlipX_ = isFlipX; }
 	void SetIsFlipY(const bool& isFlipY) { this->isFlipY_ = isFlipY; }
 
+	/*===============================================//
+					　テクスチャ範囲指定
+	//===============================================*/
+	// getter
+	const Vector2& GetTextureLeftTop() const {return textureLeftTop_;}
+	const Vector2& GetTextureSize() const {return textureSize_;}
+	// setter
+	void SetTextureLeftTop(const Vector2& textureLeftTop) {this->textureLeftTop_ = textureLeftTop;}
+	void SetTextureSize(const Vector2& textureSize) {this->textureSize_ = textureSize;}
+
+
 private: // メンバ関数
 
 	SpriteCommon* spriteCommon_ = nullptr;
@@ -168,6 +179,11 @@ private: // メンバ関数
 	D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHandleGPU;
 	// テクスチャ番号
 	uint32_t textureIndex = 0;
+
+	// テクスチャ左上座標
+	Vector2 textureLeftTop_ = { 0.0f,0.0f };
+	// テクスチャ切り出しサイズ
+	Vector2 textureSize_ = { 100.0f,100.0f };
 
 	// スプライト
 	VertexData* vertexData = nullptr;
