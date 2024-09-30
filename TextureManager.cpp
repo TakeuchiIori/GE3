@@ -64,12 +64,11 @@ void TextureManager::LoadTexture(const std::string& filePath)
 	textureData.metadata = image.GetMetadata();
 	textureData.resource = dxCommon_->CreateTextureResource(textureData.metadata);
 	// テクスチャデータをGPUにアップロード
-	auto intermediateResource = dxCommon_->UploadTextureData(textureData.resource.Get(), mipImages);
+	textureData.intermediateResource = dxCommon_->UploadTextureData(textureData.resource.Get(), image);
 
 
 	// テクスチャデータの要素番号をSRVのインデックスとする
 	uint32_t srvIndex = static_cast<uint32_t>(textureDatas.size() - 1) + kSRVIndexTop;
-
 	textureData.srvHandleCPU = dxCommon_->GetSRVCPUDescriptorHandle(srvIndex);
 	textureData.srvHandleGPU = dxCommon_->GetSRVGPUDescriptorHandle(srvIndex);
 
@@ -81,17 +80,9 @@ void TextureManager::LoadTexture(const std::string& filePath)
 	srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
 	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;//2Dtexture
 	srvDesc.Texture2D.MipLevels = UINT(textureData.metadata.mipLevels);
-	
-	// SRVを作成DescriptorHeapの場所を決める
-	textureSrvHandleCPU = dxCommon_->GetCPUDescriptorHandle(dxCommon_->GetsrvDescriptorHeap().Get(), dxCommon_->GetdescriptotSizeSRV(), 1);
-	textureSrvHandleGPU = dxCommon_->GetGPUDescriptorHandle(dxCommon_->GetsrvDescriptorHeap().Get(), dxCommon_->GetdescriptotSizeSRV(), 1);
-
 
 	// SRVの生成
-	dxCommon_->Getdevice()->CreateShaderResourceView(textureData.resource.Get(), &srvDesc, textureSrvHandleCPU);
-	// 2枚目のSRVの生成
-
-
+	dxCommon_->Getdevice()->CreateShaderResourceView(textureData.resource.Get(), &srvDesc, textureData.srvHandleCPU);
 
 }
 

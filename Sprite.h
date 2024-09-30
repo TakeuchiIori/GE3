@@ -48,6 +48,11 @@ public: // 基本的関数
 	/// </summary>
 	void Draw();
 
+	/// <summary>
+	/// テクスチャ変更
+	/// </summary>
+	void ChangeTexture(std::string textureFilePath);
+
 private: // メンバ関数
 
 	/// <summary>
@@ -80,15 +85,6 @@ private: // メンバ関数
 	/// </summary>
 	void TransformResource();
 
-	/// <summary>
-	/// Textureを読んで転送
-	/// </summary>
-	//void TransferTexture();
-
-	/// <summary>
-	/// SRVの設定
-	/// </summary>
-	//void SetSRV();
 
 public: // アクセッサ
 

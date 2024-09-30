@@ -77,10 +77,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 #pragma region 最初のシーンの初期化
 
 	std::vector<Sprite*> sprites;
-	std::string textureFilePath = "Resources./monsterBall.png";
+	std::string textureFilePath[2] = { "Resources./monsterBall.png" ,"Resources./uvChecker.png" };
 	for (uint32_t i = 0; i < 5; ++i) {
 		Sprite* sprite = new Sprite();
-		sprite->Initialize(spriteCommon, textureFilePath);
+		sprite->Initialize(spriteCommon, textureFilePath[0]);
 		// 移動テスト: インデックスに応じてX、Y座標をずらして配置
 		Vector2 position;
 		position.x = i * 200;
@@ -90,7 +90,12 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		// 初期色の設定（任意で設定）
 		Vector4 color = { 1.0f, 1.0f, 1.0f, 1.0f }; // 白色
 		sprite->SetColor(color);
-
+		if (i % 2 == 0 ) {
+			sprite->ChangeTexture(textureFilePath[0]);
+		}
+		else {
+			sprite->ChangeTexture(textureFilePath[1]);
+		}
 
 		sprites.push_back(sprite);
 	}
@@ -147,8 +152,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			}
 		
 			
-			// テクスチャマネージャの終了
-			TextureManager::GetInstance()->Finalize();
+			
 			dxCommon->PostDraw();
 			
 
@@ -171,7 +175,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	for (Sprite* sprite : sprites) {
 		delete sprite;
 	}
-
+	// テクスチャマネージャの終了
+	TextureManager::GetInstance()->Finalize();
 	
 	
 	return 0;// main関数のリターン
