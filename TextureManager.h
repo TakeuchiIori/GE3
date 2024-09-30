@@ -53,6 +53,10 @@ public: // メンバ関数
 	std::wstring ConvertString(const std::string& str);
 	std::string ConvertString(const std::wstring& str);
 	void Log(const std::string& message);
+
+	// メタデータを取得
+	const DirectX::TexMetadata& GetMetaData(uint32_t textureIndex);
+
 private: // メンバ変数
 
 	static TextureManager* instance;

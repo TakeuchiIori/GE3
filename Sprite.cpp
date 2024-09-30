@@ -26,6 +26,7 @@ void Sprite::Initialize(SpriteCommon* spriteCommon, std::string& textureFilePath
 
 void Sprite::Update()
 {
+	CreateVertex();
 	// スプライトのSRT
 	VectorSRT transform{ {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
 	transform.translate = { position_.x,position_.y,0.0f };
@@ -72,7 +73,7 @@ void Sprite::VertexResource()
 	// 1頂点あたりのサイズ
 	vertexBufferView_.StrideInBytes = sizeof(VertexData);
 
-	CreateVertex();
+	
 }
 
 void Sprite::CreateVertex()
@@ -100,29 +101,40 @@ void Sprite::CreateVertex()
 		bottom = -bottom;
 	}
 
+	const DirectX::TexMetadata& metadata = TextureManager::GetInstance()->GetMetaData(textureIndex);
+	float tex_left = textureLeftTop_.x / metadata.width;
+	float tex_right = (textureLeftTop_.x + textureSize_.x) / metadata.width;
+	float tex_top = textureLeftTop_.y / metadata.height;
+	float tex_bottom = (textureLeftTop_.y + textureSize_.y) / metadata.height;
 	// 左下
 	vertexData[0].position = { left, bottom, 0.0f, 1.0f };
-	vertexData[0].texcoord = { 0.0f, 1.0f };
+	vertexData[0].texcoord = { tex_left, tex_bottom };
 
 	// 左上
 	vertexData[1].position = { left, top, 0.0f, 1.0f };
-	vertexData[1].texcoord = { 0.0f, 0.0f };
+	vertexData[1].texcoord = { tex_left, tex_top };
 
 	// 右下
 	vertexData[2].position = { right, bottom, 0.0f, 1.0f };
-	vertexData[2].texcoord = { 1.0f, 1.0f };
+	vertexData[2].texcoord = { tex_right, tex_bottom };
 
 	// 右上
 	vertexData[3].position = { right, top, 0.0f, 1.0f };
-	vertexData[3].texcoord = { 1.0f, 0.0f };
+	vertexData[3].texcoord = { tex_right, tex_top };
 
 	// 2枚目の三角形用
 	vertexData[4].position = { left, top, 0.0f, 1.0f };  // 左上
-	vertexData[4].texcoord = { 0.0f, 0.0f };
+	vertexData[4].texcoord = { tex_left, tex_top };
 
 	vertexData[5].position = { right, bottom, 0.0f, 1.0f };  // 右下
-	vertexData[5].texcoord = { 1.0f, 1.0f };
-	
+	vertexData[5].texcoord = { tex_right, tex_bottom };
+
+	vertexData[0].normal = { 0.0f,0.0f,-1.0f };
+	vertexData[1].normal = { 0.0f,0.0f,-1.0f };
+	vertexData[2].normal = { 0.0f,0.0f,-1.0f };
+	vertexData[3].normal = { 0.0f,0.0f,-1.0f };
+	vertexData[4].normal = { 0.0f,0.0f,-1.0f };
+	vertexData[5].normal = { 0.0f,0.0f,-1.0f };
 
 	//// 1枚目の三角形
 	//vertexData[0].position = { 0.0f,360.0f,0.0f,1.0f };   //左下

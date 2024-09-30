@@ -141,3 +141,15 @@ std::string TextureManager::ConvertString(const std::wstring& str) {
 void TextureManager::Log(const std::string& message) {
 	OutputDebugStringA(message.c_str());
 }
+
+const DirectX::TexMetadata& TextureManager::GetMetaData(uint32_t textureIndex)
+{
+	// テクスチャ番号が範囲内であることを確認
+	assert(textureIndex < textureDatas.size());
+
+	// テクスチャデータの参照を取得
+	TextureData& textureData = textureDatas[textureIndex];
+
+	// メタデータを返却
+	return textureData.metadata;
+}
