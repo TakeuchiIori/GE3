@@ -120,6 +120,15 @@ public: // アクセッサ
 	// setter
 	void SetAnchorPoint(const Vector2& anchorPoint) { this->anchorPoint_ = anchorPoint; }
 
+	/*===============================================//
+					　    フリップ
+	//===============================================*/
+	// getter
+	const bool& GetIsFlipX()const { return isFlipX_; }
+	const bool& GetIsFlipY()const { return isFlipY_; }
+	// setter
+	void SetIsFlipX(const bool& isFlipX) { this->isFlipX_ = isFlipX; }
+	void SetIsFlipY(const bool& isFlipY) { this->isFlipY_ = isFlipY; }
 
 private: // メンバ関数
 
@@ -168,8 +177,11 @@ private: // メンバ関数
 	
 	// アンカーポイント
 	Vector2 anchorPoint_ = { 0.0f,0.0f };
-
-
+	
+	// 左右フリップ
+	bool isFlipX_ = false;
+	// 上下フリップ
+	bool isFlipY_ = false;
 
 
 };
