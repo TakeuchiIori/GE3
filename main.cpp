@@ -78,7 +78,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	std::vector<Sprite*> sprites;
 	std::string textureFilePath[2] = { "Resources./monsterBall.png" ,"Resources./uvChecker.png" };
-	for (uint32_t i = 0; i < 5; ++i) {
+	for (uint32_t i = 0; i < 1; ++i) {
 		Sprite* sprite = new Sprite();
 		sprite->Initialize(spriteCommon, textureFilePath[0]);
 		// 移動テスト: インデックスに応じてX、Y座標をずらして配置

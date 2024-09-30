@@ -21,6 +21,7 @@ void Sprite::Initialize(SpriteCommon* spriteCommon, std::string& textureFilePath
 	
 	textureIndex = TextureManager::GetInstance()->GetTextureIndexByFilePath(textureFilePath);
 
+	AdjustTaxtureSize();
 	
 }
 
@@ -206,6 +207,17 @@ void Sprite::TransformResource()
 	// 単位行列を書き込む
 	transformationMatrixData_->WVP = MakeIdentity4x4();
 	transformationMatrixData_->World = MakeIdentity4x4();
+}
+
+void Sprite::AdjustTaxtureSize()
+{
+	// テクスチャメタデータを取得
+	const DirectX::TexMetadata& metadata = TextureManager::GetInstance()->GetMetaData(textureIndex);
+
+	textureSize_.x = static_cast<float>(metadata.width);
+	textureSize_.y = static_cast<float>(metadata.height);
+	// 画像サイズをテクスチャサイズに合わせる
+	size_ = textureSize_;
 }
 
 void Sprite::ChangeTexture(std::string textureFilePath)

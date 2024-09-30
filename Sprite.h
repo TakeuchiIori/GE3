@@ -85,6 +85,11 @@ private: // メンバ関数
 	/// </summary>
 	void TransformResource();
 
+	/// <summary>
+	/// テクスチャサイズをイメージに合わせる
+	/// </summary>
+	void AdjustTaxtureSize();
+
 
 public: // アクセッサ
 
@@ -141,7 +146,7 @@ public: // アクセッサ
 	void SetTextureSize(const Vector2& textureSize) {this->textureSize_ = textureSize;}
 
 
-private: // メンバ関数
+private: // メンバ変数
 
 	SpriteCommon* spriteCommon_ = nullptr;
 	/*===============================================//
