@@ -19,8 +19,9 @@ void Sprite::Initialize(SpriteCommon* spriteCommon, std::string& textureFilePath
 
 	TextureManager::GetInstance()->LoadTexture(textureFilePath);
 	
-	// 単位行列を書き込んでおく
 	textureIndex = TextureManager::GetInstance()->GetTextureIndexByFilePath(textureFilePath);
+
+	
 }
 
 void Sprite::Update()
@@ -177,45 +178,45 @@ void Sprite::TransformResource()
 	transformationMatrixData_->World = MakeIdentity4x4();
 }
 
-void Sprite::TransferTexture()
-{
-	mipImages[0] = spriteCommon_->GetDxCommon()->LoadTexture("Resources/uvChecker.png");
-	textureResource[0] = spriteCommon_->GetDxCommon()->CreateTextureResource(metadata);
-	intermediateResource[0] = spriteCommon_->GetDxCommon()->UploadTextureData(textureResource[0].Get(), mipImages[0]);
-
-	// 2枚目のTexture
-	mipImages[1] = spriteCommon_->GetDxCommon()->LoadTexture("Resources/monsterball.png");
-	textureResource[1] = spriteCommon_->GetDxCommon()->CreateTextureResource(metadata2);
-	intermediateResource[1] = spriteCommon_->GetDxCommon()->UploadTextureData(textureResource[1].Get(), mipImages[1]);
-}
-
-void Sprite::SetSRV()
-{
-	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc{};
-	srvDesc.Format = metadata.format;
-	srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;//2Dtexture
-	srvDesc.Texture2D.MipLevels = UINT(metadata.mipLevels);
-	// 2枚目のmetaDataを基にSRVの設定
-	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc2{};
-	srvDesc2.Format = metadata2.format;
-	srvDesc2.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-	srvDesc2.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;//2Dtexture
-	srvDesc2.Texture2D.MipLevels = UINT(metadata2.mipLevels);
-
-	// SRVを作成DescriptorHeapの場所を決める
-	textureSrvHandleCPU = spriteCommon_->GetDxCommon()->GetCPUDescriptorHandle(spriteCommon_->GetDxCommon()->GetsrvDescriptorHeap().Get(), spriteCommon_->GetDxCommon()->GetdescriptotSizeSRV(), 1);
-	textureSrvHandleGPU = spriteCommon_->GetDxCommon()->GetGPUDescriptorHandle(spriteCommon_->GetDxCommon()->GetsrvDescriptorHeap().Get(), spriteCommon_->GetDxCommon()->GetdescriptotSizeSRV(), 1);
-
-	// 先頭はImGuiが使っているのでその次を使う
-	//textureSrvHandleCPU.ptr += device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-	//textureSrvHandleGPU.ptr += device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-	// SRVの生成
-	spriteCommon_->GetDxCommon()->Getdevice()->CreateShaderResourceView(textureResource[0].Get(), &srvDesc, textureSrvHandleCPU);
-	// 2枚目のSRVの生成
-
-	// SRV切り替え　　使っていないためコメントアウト
-	
-	//bool useMonsterBall = true;
-
-}
+//void Sprite::TransferTexture()
+//{
+//	mipImages[0] = spriteCommon_->GetDxCommon()->LoadTexture("Resources/uvChecker.png");
+//	textureResource[0] = spriteCommon_->GetDxCommon()->CreateTextureResource(metadata);
+//	intermediateResource[0] = spriteCommon_->GetDxCommon()->UploadTextureData(textureResource[0].Get(), mipImages[0]);
+//
+//	// 2枚目のTexture
+//	mipImages[1] = spriteCommon_->GetDxCommon()->LoadTexture("Resources/monsterball.png");
+//	textureResource[1] = spriteCommon_->GetDxCommon()->CreateTextureResource(metadata2);
+//	intermediateResource[1] = spriteCommon_->GetDxCommon()->UploadTextureData(textureResource[1].Get(), mipImages[1]);
+//}
+//
+//void Sprite::SetSRV()
+//{
+//	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc{};
+//	srvDesc.Format = metadata.format;
+//	srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+//	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;//2Dtexture
+//	srvDesc.Texture2D.MipLevels = UINT(metadata.mipLevels);
+//	// 2枚目のmetaDataを基にSRVの設定
+//	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc2{};
+//	srvDesc2.Format = metadata2.format;
+//	srvDesc2.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+//	srvDesc2.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;//2Dtexture
+//	srvDesc2.Texture2D.MipLevels = UINT(metadata2.mipLevels);
+//
+//	// SRVを作成DescriptorHeapの場所を決める
+//	textureSrvHandleCPU = spriteCommon_->GetDxCommon()->GetCPUDescriptorHandle(spriteCommon_->GetDxCommon()->GetsrvDescriptorHeap().Get(), spriteCommon_->GetDxCommon()->GetdescriptotSizeSRV(), 1);
+//	textureSrvHandleGPU = spriteCommon_->GetDxCommon()->GetGPUDescriptorHandle(spriteCommon_->GetDxCommon()->GetsrvDescriptorHeap().Get(), spriteCommon_->GetDxCommon()->GetdescriptotSizeSRV(), 1);
+//
+//	// 先頭はImGuiが使っているのでその次を使う
+//	//textureSrvHandleCPU.ptr += device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+//	//textureSrvHandleGPU.ptr += device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+//	// SRVの生成
+//	spriteCommon_->GetDxCommon()->Getdevice()->CreateShaderResourceView(textureResource[0].Get(), &srvDesc, textureSrvHandleCPU);
+//	// 2枚目のSRVの生成
+//
+//	// SRV切り替え　　使っていないためコメントアウト
+//	
+//	//bool useMonsterBall = true;
+//
+//}

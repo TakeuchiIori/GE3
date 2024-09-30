@@ -1,6 +1,4 @@
 #include "TextureManager.h"
-#include "DirectXCommon.h"
-#include "SpriteCommon.h"
 #include "assert.h"
 
 TextureManager* TextureManager::instance = nullptr;
@@ -21,8 +19,11 @@ void TextureManager::Finalize()
 	instance = nullptr;
 }
 
-void TextureManager::Initialize()
+void TextureManager::Initialize(DirectXCommon* dxCommon)
 {
+	 // dxCommon_ を設定
+    this->dxCommon_ = dxCommon;
+
 	// SRVの数と同数
 	textureDatas.reserve(DirectXCommon::kMaxSRVCount);
 }
@@ -39,6 +40,7 @@ void TextureManager::LoadTexture(const std::string& filePath)
 		// 読み込み済みなら早期return
 		return;
 	}
+	// テクスチャ上限枚数チェック
 	assert(textureDatas.size() + kSRVIndexTop < DirectXCommon::kMaxSRVCount);
 
 
@@ -57,10 +59,13 @@ void TextureManager::LoadTexture(const std::string& filePath)
 	textureDatas.resize(textureDatas.size() + 1);
 	// 追加したテクスチャデータの参照を取得する
 	TextureData& textureData = textureDatas.back();
-
+	
 	textureData.filePath = filePath;
 	textureData.metadata = image.GetMetadata();
 	textureData.resource = dxCommon_->CreateTextureResource(textureData.metadata);
+	// テクスチャデータをGPUにアップロード
+	auto intermediateResource = dxCommon_->UploadTextureData(textureData.resource.Get(), mipImages);
+
 
 	// テクスチャデータの要素番号をSRVのインデックスとする
 	uint32_t srvIndex = static_cast<uint32_t>(textureDatas.size() - 1) + kSRVIndexTop;
@@ -78,11 +83,12 @@ void TextureManager::LoadTexture(const std::string& filePath)
 	srvDesc.Texture2D.MipLevels = UINT(textureData.metadata.mipLevels);
 	
 	// SRVを作成DescriptorHeapの場所を決める
-	textureSrvHandleCPU = spriteCommon_->GetDxCommon()->GetCPUDescriptorHandle(spriteCommon_->GetDxCommon()->GetsrvDescriptorHeap().Get(), spriteCommon_->GetDxCommon()->GetdescriptotSizeSRV(), 1);
-	textureSrvHandleGPU = spriteCommon_->GetDxCommon()->GetGPUDescriptorHandle(spriteCommon_->GetDxCommon()->GetsrvDescriptorHeap().Get(), spriteCommon_->GetDxCommon()->GetdescriptotSizeSRV(), 1);
+	textureSrvHandleCPU = dxCommon_->GetCPUDescriptorHandle(dxCommon_->GetsrvDescriptorHeap().Get(), dxCommon_->GetdescriptotSizeSRV(), 1);
+	textureSrvHandleGPU = dxCommon_->GetGPUDescriptorHandle(dxCommon_->GetsrvDescriptorHeap().Get(), dxCommon_->GetdescriptotSizeSRV(), 1);
+
 
 	// SRVの生成
-	spriteCommon_->GetDxCommon()->Getdevice()->CreateShaderResourceView(textureData.resource.Get(), &srvDesc, textureSrvHandleCPU);
+	dxCommon_->Getdevice()->CreateShaderResourceView(textureData.resource.Get(), &srvDesc, textureSrvHandleCPU);
 	// 2枚目のSRVの生成
 
 

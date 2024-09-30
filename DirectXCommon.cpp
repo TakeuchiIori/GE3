@@ -615,7 +615,7 @@ Microsoft::WRL::ComPtr<ID3D12Resource> DirectXCommon::CreateTextureResource(cons
 	heapProperties.MemoryPoolPreference = D3D12_MEMORY_POOL_UNKNOWN;					 // プロセッサの近くに配置
 	// Resourceの生成　( VRAM )
 	Microsoft::WRL::ComPtr<ID3D12Resource> resource = nullptr;
-	HRESULT hr = device_->CreateCommittedResource(
+	HRESULT hr = this->device_->CreateCommittedResource(
 		&heapProperties,						// heapの設定
 		D3D12_HEAP_FLAG_NONE,					// heaoの特殊な設定。特になし。
 		&resourceDesc,							// Resourceの設定

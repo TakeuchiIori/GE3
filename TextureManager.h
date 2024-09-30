@@ -2,13 +2,11 @@
 #include <string>
 #include <wrl.h>
 #include <vector>
+#include "DirectXCommon.h"
 #include "d3d12.h"
 #include "externals/DirectXTex/DirectXTex.h"
 
 
-class DirectXCommon;
-class Sprite;
-class SpriteCommon;
 // テクスチャマネージャー
 class TextureManager
 {
@@ -32,7 +30,7 @@ public: // メンバ関数
 	/// <summary>
 	/// 初期化
 	/// </summary>
-	void Initialize();
+	void Initialize(DirectXCommon* dxCommon);
 
 
 	/// <summary>
@@ -67,7 +65,7 @@ private: // メンバ変数
 	// DirectXCommon
 	DirectXCommon* dxCommon_ = nullptr;
 
-	SpriteCommon* spriteCommon_ = nullptr;
+
 	// テクスチャハンドル
 	D3D12_CPU_DESCRIPTOR_HANDLE textureSrvHandleCPU;
 	D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHandleGPU;

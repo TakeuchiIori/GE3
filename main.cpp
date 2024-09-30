@@ -68,7 +68,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	spriteCommon->Initialize(dxCommon);
 
 	// テクスチャマネージャの初期化
-	TextureManager::GetInstance()->Initialize();
+	TextureManager::GetInstance()->Initialize(dxCommon);
 
 #pragma endregion 基礎システムの初期化
 
@@ -146,9 +146,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 				sprite->Draw();
 			}
 		
+			
 			// テクスチャマネージャの終了
 			TextureManager::GetInstance()->Finalize();
-
 			dxCommon->PostDraw();
 			
 
@@ -172,6 +172,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		delete sprite;
 	}
 
+	
 	
 	return 0;// main関数のリターン
 }

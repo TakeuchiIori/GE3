@@ -83,12 +83,12 @@ private: // メンバ関数
 	/// <summary>
 	/// Textureを読んで転送
 	/// </summary>
-	void TransferTexture();
+	//void TransferTexture();
 
 	/// <summary>
 	/// SRVの設定
 	/// </summary>
-	void SetSRV();
+	//void SetSRV();
 
 public: // アクセッサ
 
