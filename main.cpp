@@ -77,7 +77,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	// 3Dオブジェクト共通部の初期化
 	Object3dCommon* object3dCommon_ = nullptr;
 	object3dCommon_ = new Object3dCommon();
-	object3dCommon_->Initialize();
+	object3dCommon_->Initialize(dxCommon_);
 
 #pragma endregion 基礎システムの初期化
 
@@ -155,7 +155,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			// DirectXの描画準備。全ての描画にグラフィックスコマンドを積む
 			dxCommon_->PreDraw();
 
-			// Spriteの描画準備。Spriteの描画に共通のグラフィックスコマンドを積む
+			// 3Dオブジェクトの描画準備。3Dオブジェクトの描画に共通のグラフィックスコマンドを積む
+			object3dCommon_->DrawPreference();
+
+			// 2DSpriteの描画準備。Spriteの描画に共通のグラフィックスコマンドを積む
 			spriteCommon_->DrawPreference();
 
 	
