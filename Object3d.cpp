@@ -8,7 +8,8 @@ void Object3d::Initialize(Object3dCommon* object3dCommon)
 {
 	// 引数で受け取ってメンバ変数に記録する
 	this->object3dCommon_ = object3dCommon;
-
+	// モデル読み込み
+	modelData_ = LoadObjFile("Resources","plane.obj");
 }
 
 MaterialData Object3d::LoadMaterialTemplateFile(const std::string& directoryPath, const std::string& filename)
