@@ -22,7 +22,7 @@
 #include "DirectionalLight.h"
 #include "math/MathFunc.h"
 #include "TransformationMatrix.h"
-#include "LoadObjFile.h"
+
 #include <corecrt_math_defines.h>
 
 #include<wrl.h>
