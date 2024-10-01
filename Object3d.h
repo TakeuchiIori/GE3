@@ -6,7 +6,6 @@
 #include "math/Vector4.h"
 #include "math/Matrix4x4.h"
 #include "math/Vector2.h"
-#include "TransformationMatrix.h"
 
 //　構造体
 
@@ -16,27 +15,36 @@ class Object3dCommon;
 class Object3d
 {
 public: // 構造体
+	// 頂点データ
 	struct VertexData {
 		Vector4 position;
 		Vector2 texcoord;
 		Vector3 normal;
 	};
-
-
 	struct MaterialData {
 		std::string textureFilePath;
 	};
-
 	struct ModelData {
 		std::vector<VertexData> vertices;
 		MaterialData material;
 	};
-
+	// マテリアルデータ
 	struct Material {
 		Vector4 color;
 		int32_t enableLighting;
 		float padding[3];
 		Matrix4x4 uvTransform;
+	};
+	// 平行光源
+	struct DirectionalLight {
+		Vector4 color;		// ライトの色
+		Vector3 direction;	// ライトの向き
+		float intensity;	// 輝度
+	};
+	// 座標変換データ
+	struct TransformationMatrix {
+		Matrix4x4 WVP;
+		Matrix4x4 World;
 	};
 
 public: // メンバ関数
