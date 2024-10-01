@@ -29,13 +29,17 @@
 #include "ResourceObject.h"
 
 #include "D3DResorceLeakChecker.h"
+
 #include "WinApp.h"
 #include "Input.h"
 #include "DirectXCommon.h"
 #include "SpriteCommon.h"
 #include "Sprite.h"
 #include "TextureManager.h"
+#include "Object3dCommon.h"
+#include "Object3d.h"
 #include "externals/imgui/imgui_impl_win32.h"
+
 
 
 #pragma comment(lib,"dxguid.lib")
@@ -55,20 +59,25 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	input_ = new Input();
 	input_->Initialize(winApp_);
 
-	DirectXCommon* dxCommon = nullptr;
+	DirectXCommon* dxCommon_ = nullptr;
 	// DirectXの初期化
-	dxCommon = new DirectXCommon();
-	dxCommon->Initialize(winApp_);
+	dxCommon_ = new DirectXCommon();
+	dxCommon_->Initialize(winApp_);
 
 #pragma region 基礎システムの初期化
 
-	SpriteCommon* spriteCommon = nullptr;
+	SpriteCommon* spriteCommon_ = nullptr;
 	// スプライト共通部の初期化
-	spriteCommon = new SpriteCommon();
-	spriteCommon->Initialize(dxCommon);
+	spriteCommon_ = new SpriteCommon();
+	spriteCommon_->Initialize(dxCommon_);
 
 	// テクスチャマネージャの初期化
-	TextureManager::GetInstance()->Initialize(dxCommon);
+	TextureManager::GetInstance()->Initialize(dxCommon_);
+
+	// 3Dオブジェクト共通部の初期化
+	Object3dCommon* object3dCommon_ = nullptr;
+	object3dCommon_ = new Object3dCommon();
+	object3dCommon_->Initialize();
 
 #pragma endregion 基礎システムの初期化
 
@@ -76,11 +85,12 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 #pragma region 最初のシーンの初期化
 
+	// スプライトの初期化
 	std::vector<Sprite*> sprites;
 	std::string textureFilePath[2] = { "Resources./monsterBall.png" ,"Resources./uvChecker.png" };
 	for (uint32_t i = 0; i < 1; ++i) {
 		Sprite* sprite = new Sprite();
-		sprite->Initialize(spriteCommon, textureFilePath[0]);
+		sprite->Initialize(spriteCommon_, textureFilePath[0]);
 		// 移動テスト: インデックスに応じてX、Y座標をずらして配置
 		Vector2 position;
 		position.x = i * 200;
@@ -96,9 +106,12 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		else {
 			sprite->ChangeTexture(textureFilePath[1]);
 		}
-
 		sprites.push_back(sprite);
 	}
+
+	// 3Dオブジェクトの初期化
+	Object3d* object3d = new Object3d();
+	object3d->Initialize();
 
 #pragma endregion 最初のシーンの終了
 
@@ -140,10 +153,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			}
 
 			// DirectXの描画準備。全ての描画にグラフィックスコマンドを積む
-			dxCommon->PreDraw();
+			dxCommon_->PreDraw();
 
 			// Spriteの描画準備。Spriteの描画に共通のグラフィックスコマンドを積む
-			spriteCommon->DrawPreference();
+			spriteCommon_->DrawPreference();
 
 	
 			// 描画
@@ -153,7 +166,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		
 			
 			
-			dxCommon->PostDraw();
+			dxCommon_->PostDraw();
 			
 
 
@@ -164,20 +177,21 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	ImGui::DestroyContext();
 
 	// 各解放の処理
-	CloseHandle(dxCommon->GetfenceEvent());
+	CloseHandle(dxCommon_->GetfenceEvent());
 	delete input_;
 	winApp_->Finalize();
 	delete winApp_;
 	winApp_ = nullptr;
-	delete dxCommon;
-	delete spriteCommon;
+	delete dxCommon_;
+	delete spriteCommon_;
 	// 描画
 	for (Sprite* sprite : sprites) {
 		delete sprite;
 	}
 	// テクスチャマネージャの終了
 	TextureManager::GetInstance()->Finalize();
-	
+	delete object3d;
+	delete object3dCommon_;
 	
 	return 0;// main関数のリターン
 }
