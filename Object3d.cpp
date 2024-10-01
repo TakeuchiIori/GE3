@@ -53,8 +53,6 @@ void Object3d::Draw()
 {
 	// VertexBufferView
 	object3dCommon_->GetDxCommon()->GetcommandList()->IASetVertexBuffers(0, 1, &vertexBufferView_); // VBVを設定
-	// IndexBufferView
-	//object3dCommon_->GetDxCommon()->GetcommandList()->IASetIndexBuffer(&indexBufferView_);//IBV
 
 	// マテリアルCBufferの場所を指定
 	object3dCommon_->GetDxCommon()->GetcommandList()->SetGraphicsRootConstantBufferView(0, materialResource_->GetGPUVirtualAddress());
