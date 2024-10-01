@@ -103,7 +103,7 @@ public: // アクセッサ
 						  拡縮
 	//===============================================*/
 	const Vector3& GetScale() { return scale_; }
-	void Setscale(const Vector3& scale) { scale_ = scale; }
+	void SetScale(const Vector3& scale) { scale_ = scale; }
 
 	/*===============================================//
 					　アンカーポイント

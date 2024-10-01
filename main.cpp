@@ -121,10 +121,27 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	Model* model_ = new Model();
 	model_->Initialize(modelCommon_);
 
-	// 3Dオブジェクトの初期化
-	Object3d* object3d = new Object3d();
-	object3d->Initialize(object3dCommon_);
-	object3d->SetModel(model_);
+	std::vector<Object3d*> object3ds;
+
+	// 複数のオブジェクトを初期化
+	uint32_t numObjects = 2;
+	for (int i = 0; i < numObjects; ++i) {
+		Object3d* object = new Object3d();
+		object->Initialize(object3dCommon_);
+		Vector3 position;
+		if (i == 0) {
+			position.x = -2;
+		}
+		else if (i == 1) {
+			position.x = 3;
+		}
+		position.y = 3;
+		position.z = 0.0f;
+		object->SetPosition(position);
+		object->SetModel(model_);
+
+		object3ds.push_back(object);
+	}
 
 
 #pragma endregion 最初のシーンの終了
@@ -171,12 +188,22 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			}
 
 			// 3Dオブジェクトの更新
-			object3d->Update();
-
-			// 
-			Vector3 rotate = object3d->GetRotation();
-			rotate.y += 0.01f;
-			object3d->SetRotation(rotate);
+			for (int i = 0; i < object3ds.size(); ++i) {
+				Object3d* obj = object3ds[i];
+				obj->Update();
+				Vector3 rotate = obj->GetRotation();
+				if (i == 0) {
+					// 1つ目のオブジェクト: Y軸で回転
+					rotate.y += 0.01f;
+				}
+				else if (i == 1) {
+					// 2つ目のオブジェクト: Z軸で回転
+					rotate.z += 0.01f;
+				}
+				// 更新した回転、スケール、位置を適用
+				obj->SetRotation(rotate);
+			}
+			
 
 
 			/*================================================================//
@@ -199,7 +226,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 				//sprite->Draw();
 			}
 			// 3Dオブジェクト
-			object3d->Draw();
+			for (auto& obj : object3ds) {
+				obj->Draw();
+			}
 		
 			
 			// DirectXの描画終了
@@ -221,8 +250,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	winApp_ = nullptr;
 	delete dxCommon_;
 	delete spriteCommon_;
-	delete object3d;
-	delete object3dCommon_;
+
+	// 描画処理
+	for (auto& obj : object3ds) {
+		delete obj;
+	}
 	delete model_;
 	delete modelCommon_;
 	// 描画

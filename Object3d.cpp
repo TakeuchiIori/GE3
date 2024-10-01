@@ -18,7 +18,7 @@ void Object3d::Initialize(Object3dCommon* object3dCommon)
 	TransformationInitialize();
 	
 	// Transform変数を作る
-	transform_ = { {1.0f,1.0f,1.0f,},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
+	transform_ = { scale_ ,rotation_,position_ };
 	cameraTransform_ = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,4.0f,-10.0f} };
 
 }
@@ -26,6 +26,7 @@ void Object3d::Initialize(Object3dCommon* object3dCommon)
 void Object3d::Update()
 {
 	transform_ = { scale_ ,rotation_,position_};
+	transform_.translate = position_;
 
 	Matrix4x4 worldMatrix = MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.translate);
 	Matrix4x4 cameraMatrix = MakeAffineMatrix(cameraTransform_.scale, cameraTransform_.rotate, cameraTransform_.translate);
