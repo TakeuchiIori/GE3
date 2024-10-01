@@ -22,7 +22,7 @@
 #include<wrl.h>
 #include "ResourceObject.h"
 
-#include "D3DResorceLeakChecker.h"
+
 
 #include "WinApp.h"
 #include "Input.h"
