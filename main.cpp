@@ -250,7 +250,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	winApp_ = nullptr;
 	delete dxCommon_;
 	delete spriteCommon_;
-
+	delete object3dCommon_;
 	// 描画処理
 	for (auto& obj : object3ds) {
 		delete obj;
