@@ -6,6 +6,7 @@
 #include "math/Vector4.h"
 #include "math/Matrix4x4.h"
 #include "math/Vector2.h"
+#include "VectorSRT.h"
 
 //　構造体
 
@@ -142,6 +143,9 @@ private: // メンバ変数
 	bool isFlipX_ = false;
 	// 上下フリップ
 	bool isFlipY_ = false;
+
+	VectorSRT transform_;
+	VectorSRT cameraTransform_;
 
 };
 

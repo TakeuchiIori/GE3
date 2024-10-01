@@ -26,6 +26,9 @@ void Object3d::Initialize(Object3dCommon* object3dCommon)
 	modelData_.material.textureIndex =
 		TextureManager::GetInstance()->GetTextureIndexByFilePath(modelData_.material.textureFilePath);
 
+	// Transform変数を作る
+	transform_ = { {1.0f,1.0f,1.0f,},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
+	cameraTransform_ = { {1.0f,1.0f,1.0f},{0.3f,0.0f,0.0f},{0.0f,4.0f,-10.0f} };
 	//AdjustTaxtureSize();
 }
 
