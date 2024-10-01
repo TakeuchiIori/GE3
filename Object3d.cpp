@@ -174,6 +174,7 @@ void Object3d::CreateIndex()
 
 void Object3d::MaterialResource()
 {
+
 	// リソース作成
 	materialResource_ = object3dCommon_->GetDxCommon()->CreateBufferResource(sizeof(Material));
 	// データを書き込むためのアドレスを取得して割り当て
