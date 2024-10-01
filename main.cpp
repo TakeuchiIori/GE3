@@ -187,14 +187,15 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	winApp_ = nullptr;
 	delete dxCommon_;
 	delete spriteCommon_;
+	delete object3d;
+	delete object3dCommon_;
 	// 描画
 	for (Sprite* sprite : sprites) {
 		delete sprite;
 	}
 	// テクスチャマネージャの終了
 	TextureManager::GetInstance()->Finalize();
-	delete object3d;
-	delete object3dCommon_;
+	
 	
 	return 0;// main関数のリターン
 }
