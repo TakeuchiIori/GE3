@@ -104,6 +104,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="externals\imgui\imgui_impl_win32.cpp" />
     <ClCompile Include="externals\imgui\imgui_tables.cpp" />
     <ClCompile Include="externals\imgui\imgui_widgets.cpp" />
+    <ClCompile Include="GraphicsPipelineManager.cpp" />
     <ClCompile Include="Input.cpp" />
     <ClCompile Include="LoadTexture.cpp" />
     <ClCompile Include="Logger.cpp" />
@@ -137,6 +138,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="CreateBufferResource.h" />
     <ClInclude Include="CreateDepthStencilTextureResource.h" />
     <ClInclude Include="CreateTextureResource.h" />
+    <ClInclude Include="GraphicsPipelineManager.h" />
     <ClInclude Include="LeakCheacker.h" />
     <ClInclude Include="D3DResorceLeakChecker.h" />
     <ClInclude Include="DescriptorHandle.h" />

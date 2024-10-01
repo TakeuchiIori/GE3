@@ -1,9 +1,6 @@
 #pragma once
 #include "DirectXCommon.h"
-
-// 3Dオブジェクト共通部
-class DirectXCommon;
-class Object3dCommon
+class GraphicsPipelineManager
 {
 public: // メンバ関数
 	/// <summary>
@@ -12,25 +9,19 @@ public: // メンバ関数
 	void Initialize(DirectXCommon* dxCommon);
 
 	/// <summary>
-	/// 共通部描画設定
-	/// </summary>
-	void DrawPreference();
-
-public: // アクセッサ
-	DirectXCommon* GetDxCommon() const { return dxCommon_; }
-
-
-
-private:
-	/// <summary>
-	/// ルートシグネチャの作成
+	/// 初期化
 	/// </summary>
 	void CreateRootSignature();
 
 	/// <summary>
-	/// グラフィックスパイプラインの生成
+	/// 初期化
 	/// </summary>
 	void CreateGraphicsPipeline();
+
+	/// <summary>
+	/// 共通描画設定
+	/// </summary>
+	void DrawPreference();
 
 	/// <summary>
 	/// ルートシグネチャをセット
@@ -47,7 +38,11 @@ private:
 	/// </summary>
 	void SetPrimitiveTopology();
 
-private:
+public: // アクセッサ
+
+	DirectXCommon* GetDxCommon() const { return dxCommon_; }
+
+private: // メンバ変数
 	DirectXCommon* dxCommon_;
 	// ディスクリプターレンジ
 	D3D12_DESCRIPTOR_RANGE descriptorRange[1] = {};
@@ -68,7 +63,6 @@ private:
 	Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob;
 
 	D3D12_INPUT_LAYOUT_DESC inputLayoutDesc{};
-
 	Microsoft::WRL::ComPtr<ID3D12RootSignature> rootSignature = nullptr;
 	Microsoft::WRL::ComPtr<ID3D12PipelineState> graphicsPipelineState = nullptr;
 };
