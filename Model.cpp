@@ -27,12 +27,6 @@ void Model::Initialize(ModelCommon* modelCommon)
 	
 }
 
-void Model::Update()
-{
-
-
-}
-
 void Model::Draw()
 {
 	// VertexBufferView
@@ -56,11 +50,14 @@ void Model::VertexResource()
 	vertexBufferView_.SizeInBytes = UINT(sizeof(VertexData) * modelData_.vertices.size());
 	// 1頂点あたりのサイズ
 	vertexBufferView_.StrideInBytes = sizeof(VertexData);
+
+	CreateVertex();
 }
 
 void Model::CreateVertex()
 {
 	vertexResource_->Map(0, nullptr, reinterpret_cast<void**>(&vertexData_));
+	// 頂点を作成
 	memcpy(vertexData_, modelData_.vertices.data(), sizeof(VertexData) * modelData_.vertices.size());
 }
 
@@ -74,15 +71,6 @@ void Model::MaterialResource()
 	materialData_->color = { 1.0f,1.0f, 1.0f, 1.0f };
 	materialData_->enableLighting = true;
 	materialData_->uvTransform = MakeIdentity4x4();
-
-	// リソース作成
-	//transformationMatrixResource_ = modelCommon_->GetDxCommon()->CreateBufferResource(sizeof(TransformationMatrix));
-	// データを書き込むためのアドレスを取得して割り当て
-	//transformationMatrixResource_->Map(0, nullptr, reinterpret_cast<void**>(&transformationMatrixData_));
-
-	// 単位行列を書き込む
-	//transformationMatrixData_->WVP = MakeIdentity4x4();
-	//transformationMatrixData_->World = MakeIdentity4x4();
 }
 
 Model::MaterialData Model::LoadMaterialTemplateFile(const std::string& directoryPath, const std::string& filename)

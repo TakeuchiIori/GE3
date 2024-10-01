@@ -12,6 +12,7 @@
 
 //前方宣言
 class Object3dCommon;
+class Model;
 // 3Dオブジェクト
 class Object3d
 {
@@ -73,45 +74,16 @@ public: // メンバ関数
 	
 private:
 	/// <summary>
-	/// 頂点リソース
+	/// 座標変換行列の初期化
 	/// </summary>
-	void VertexResource();
+	void TransformationInitialize();
 
 	/// <summary>
-	/// 頂点
-	/// </summary>
-	void CreateVertex();
-
-	/// <summary>
-	/// インデックスリソース
-	/// </summary>
-	void IndexResource();
-
-	/// <summary>
-	/// 頂点インデックス
-	/// </summary>
-	void CreateIndex();
-
-	/// <summary>
-	/// マテリアルリソース
-	/// </summary>
-	void MaterialResource();
-
-
-	/// <summary>
-	/// 座標変換リソース
+	/// 平行光源リソース
 	/// </summary>
 	void DirectionalLightResource();
 
-	/// <summary>
-	/// テクスチャサイズをイメージに合わせる
-	/// </summary>
-	void AdjustTaxtureSize();
 
-	// .mtlファイルの読み取り
-	static MaterialData LoadMaterialTemplateFile(const std::string& directoryPath, const std::string& filename);
-	//.objファイルの読み取り
-	static ModelData LoadObjFile(const std::string& directoryPath, const std::string& filename);
 
 public: // アクセッサ
 
@@ -134,12 +106,6 @@ public: // アクセッサ
 	void SetSize(const Vector2& size) { size_ = size; }
 
 	/*===============================================//
-					　	 色を変更
-	//===============================================*/
-	const Vector4& GetColor()const { return materialData_->color; }
-	void SetColor(const Vector4& color) { materialData_->color = color; }
-
-	/*===============================================//
 					　アンカーポイント
 	//===============================================*/
 	// getter
@@ -157,20 +123,12 @@ public: // アクセッサ
 	void SetIsFlipX(const bool& isFlipX) { this->isFlipX_ = isFlipX; }
 	void SetIsFlipY(const bool& isFlipY) { this->isFlipY_ = isFlipY; }
 
+	void SetModel(Model* model) { this->model_ = model; }
 
 private: // メンバ変数
 	Object3dCommon* object3dCommon_ = nullptr;
-	// objファイルのデータ
-	ModelData modelData_;
+	Model* model_ = nullptr;
 
-	// バッファリソース
-	Microsoft::WRL::ComPtr<ID3D12Resource> vertexResource_;
-	// インデックス
-	Microsoft::WRL::ComPtr<ID3D12Resource> indexResource_;
-	D3D12_INDEX_BUFFER_VIEW indexBufferView_{};
-	// マテリアル
-	Microsoft::WRL::ComPtr<ID3D12Resource> materialResource_;
-	Material* materialData_ = nullptr;
 	// 平行光源
 	Microsoft::WRL::ComPtr<ID3D12Resource> directionalLightResource_;
 	DirectionalLight* directionalLight_ = nullptr;
@@ -178,11 +136,6 @@ private: // メンバ変数
 	Microsoft::WRL::ComPtr<ID3D12Resource> transformationMatrixResource_;
 	TransformationMatrix* transformationMatrixData_ = nullptr;
 
-
-	// バッファリソース内のデータを指すポインタ
-	VertexData* vertexData_ = nullptr;
-	// バッファリソースの使い道を補足するバッファービュー
-	D3D12_VERTEX_BUFFER_VIEW vertexBufferView_{};
 
 	// テクスチャ左上座標
 	Vector2 textureLeftTop_ = { 0.0f,0.0f };

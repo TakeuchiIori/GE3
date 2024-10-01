@@ -38,6 +38,8 @@
 #include "TextureManager.h"
 #include "Object3dCommon.h"
 #include "Object3d.h"
+#include "Model.h"
+#include "ModelCommon.h"
 #include "externals/imgui/imgui_impl_win32.h"
 
 
@@ -79,6 +81,12 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	object3dCommon_ = new Object3dCommon();
 	object3dCommon_->Initialize(dxCommon_);
 
+	// 3Dモデル共通部の初期化
+	ModelCommon* modelCommon_ = nullptr;
+	modelCommon_ = new ModelCommon();
+	modelCommon_->Initialize(dxCommon_);
+
+
 #pragma endregion 基礎システムの初期化
 
 	
@@ -109,9 +117,15 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		sprites.push_back(sprite);
 	}
 
+	// 3Dモデルの初期化
+	Model* model_ = new Model();
+	model_->Initialize(modelCommon_);
+
 	// 3Dオブジェクトの初期化
 	Object3d* object3d = new Object3d();
 	object3d->Initialize(object3dCommon_);
+	object3d->SetModel(model_);
+
 
 #pragma endregion 最初のシーンの終了
 
@@ -198,6 +212,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	delete spriteCommon_;
 	delete object3d;
 	delete object3dCommon_;
+	delete model_;
+	delete modelCommon_;
 	// 描画
 	for (Sprite* sprite : sprites) {
 		delete sprite;

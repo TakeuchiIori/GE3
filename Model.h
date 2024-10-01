@@ -40,21 +40,11 @@ public: // 構造体
 		Vector3 direction;	// ライトの向き
 		float intensity;	// 輝度
 	};
-	// 座標変換データ
-	struct TransformationMatrix {
-		Matrix4x4 WVP;
-		Matrix4x4 World;
-	};
 public: // メンバ関数
 	/// <summary>
 	/// 初期化
 	/// </summary>
 	void Initialize(ModelCommon* modelCommon);
-
-	/// <summary>
-	/// 更新
-	/// </summary>
-	void Update();
 
 	/// <summary>
 	/// 描画
@@ -100,6 +90,7 @@ private: // メンバ変数
 	Microsoft::WRL::ComPtr<ID3D12Resource> materialResource_;
 	Material* materialData_ = nullptr;
 
+	
 	
 	
 };
