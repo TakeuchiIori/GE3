@@ -90,7 +90,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	std::string textureFilePath[2] = { "Resources./monsterBall.png" ,"Resources./uvChecker.png" };
 	for (uint32_t i = 0; i < 1; ++i) {
 		Sprite* sprite = new Sprite();
-		sprite->Initialize(spriteCommon_, textureFilePath[0]);
+		sprite->Initialize(spriteCommon_, textureFilePath[1]);
 		// 移動テスト: インデックスに応じてX、Y座標をずらして配置
 		Vector2 position;
 		position.x = i * 200;
@@ -100,7 +100,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		// 初期色の設定（任意で設定）
 		Vector4 color = { 1.0f, 1.0f, 1.0f, 1.0f }; // 白色
 		sprite->SetColor(color);
-		if (i % 2 == 0 ) {
+		if (i % 2 != 0 ) {
 			sprite->ChangeTexture(textureFilePath[0]);
 		}
 		else {
@@ -127,7 +127,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		
 			input_->Update(winApp_);
 
-			// 更新
+			// 2Dスプライトの更新
 			for (size_t i = 0; i < sprites.size(); ++i) {
 				Sprite* sprite = sprites[i];
 				sprite->Update();
@@ -135,7 +135,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 				// 回転テスト
 				float rotation = sprite->GetRotation();
 				rotation += 0.01f;
-				sprite->SetRotation(rotation);
+				//sprite->SetRotation(rotation);
 
 				// サイズ変化
 				Vector2 size = sprite->GetSize();
@@ -149,8 +149,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 				if (color.x > 1.0f) {
 					color.x -= 1.0f;
 				}
-				sprite->SetColor(color);
+				//sprite->SetColor(color);
 			}
+
+			// 3Dオブジェクトの更新
+			object3d->Update();
 
 			// DirectXの描画準備。全ての描画にグラフィックスコマンドを積む
 			dxCommon_->PreDraw();
@@ -163,9 +166,12 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	
 			// 描画
+			// 2Dスプライト
 			for (Sprite* sprite : sprites) {
 				sprite->Draw();
 			}
+			// 3Dオブジェクト
+			object3d->Draw();
 		
 			
 			// DirectXの描画終了

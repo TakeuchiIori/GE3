@@ -188,7 +188,7 @@ private: // メンバ変数
 	// テクスチャ左上座標
 	Vector2 textureLeftTop_ = { 0.0f,0.0f };
 	// テクスチャ切り出しサイズ
-	Vector2 textureSize_ = { 64.0f,64.0f };
+	Vector2 textureSize_ = { 100.0f,100.0f };
 
 	// スプライト
 	VertexData* vertexData = nullptr;

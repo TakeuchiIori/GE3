@@ -55,6 +55,21 @@ public: // メンバ関数
 	/// </summary>
 	void Initialize(Object3dCommon* object3dCommon);
 
+	/// <summary>
+	/// 更新
+	/// </summary>
+	void Update();
+
+	/// <summary>
+	/// 描画
+	/// </summary>
+	void Draw();
+
+	/// <summary>
+	/// テクスチャ変更
+	/// </summary>
+	void ChangeTexture(std::string textureFilePath);
+
 	
 private:
 	/// <summary>

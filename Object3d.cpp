@@ -28,9 +28,43 @@ void Object3d::Initialize(Object3dCommon* object3dCommon)
 
 	// Transform変数を作る
 	transform_ = { {1.0f,1.0f,1.0f,},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
-	cameraTransform_ = { {1.0f,1.0f,1.0f},{0.3f,0.0f,0.0f},{0.0f,4.0f,-10.0f} };
+	cameraTransform_ = { {1.0f,1.0f,1.0f},{0.3f,0.0f,0.0f},{0.0f,4.0f,-50.0f} };
 	//AdjustTaxtureSize();
 }
+
+void Object3d::Update()
+{
+	CreateVertex();
+
+	Matrix4x4 worldMatrix = MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.translate);
+	Matrix4x4 cameraMatrix = MakeAffineMatrix(cameraTransform_.scale, cameraTransform_.rotate, cameraTransform_.translate);
+	Matrix4x4 viewMatrix = Inverse(cameraMatrix);
+	Matrix4x4 projectionMatrix = MakeOrthographicMatrix(0.0f, 0.0f, float(WinApp::kClientWidth), float(WinApp::kClientHeight), 0.0f, 100.0f);
+	Matrix4x4 worldProjectionMatrix = Multiply(worldMatrix, Multiply(viewMatrix, projectionMatrix));
+
+	transformationMatrixData_->WVP = worldProjectionMatrix;
+	transformationMatrixData_->World = worldMatrix;
+}
+
+void Object3d::Draw()
+{
+	// VertexBufferView
+	object3dCommon_->GetDxCommon()->GetcommandList()->IASetVertexBuffers(0, 1, &vertexBufferView_); // VBVを設定
+	// IndexBufferView
+	object3dCommon_->GetDxCommon()->GetcommandList()->IASetIndexBuffer(&indexBufferView_);//IBV
+
+	// マテリアルCBufferの場所を指定
+	object3dCommon_->GetDxCommon()->GetcommandList()->SetGraphicsRootConstantBufferView(0, materialResource_->GetGPUVirtualAddress());
+	// TransformatonMatrixCBuffferの場所を設定
+	object3dCommon_->GetDxCommon()->GetcommandList()->SetGraphicsRootConstantBufferView(1, transformationMatrixResource_->GetGPUVirtualAddress());
+
+	// SRVの設定
+	object3dCommon_->GetDxCommon()->GetcommandList()->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetsrvHandleGPU(modelData_.material.textureIndex)); // SRVのパラメータインデックスを変更
+
+	// 描画！！！DrawCall/ドローコール）
+	object3dCommon_->GetDxCommon()->GetcommandList()->DrawIndexedInstanced(6, 1, 0, 0, 0);
+}
+
 
 void Object3d::VertexResource()
 {
