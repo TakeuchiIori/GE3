@@ -17,7 +17,7 @@
 #include "CreateTextureResource.h"
 
 
-#include "DescriptorHandle.h"
+
 #include "Material.h"
 #include "DirectionalLight.h"
 #include "math/MathFunc.h"

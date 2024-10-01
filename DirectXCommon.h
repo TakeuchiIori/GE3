@@ -82,6 +82,14 @@ public: // 各種初期化
 	/// </summary>
 	void CreateDXCompiler();
 
+	/// <summary>
+	/// ログ
+	/// </summary>
+	/// <param name="message"></param>
+	void Log(const std::string& message);
+	static std::wstring ConvertString(const std::string& str);
+	static std::string ConvertString(const std::wstring& str);
+
 public: // 描画関連
 	// 描画前処理
 	void PreDraw();

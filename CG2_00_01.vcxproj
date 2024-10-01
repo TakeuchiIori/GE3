@@ -90,12 +90,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Convertstring.cpp" />
-    <ClCompile Include="CreateBufferResource.cpp" />
-    <ClCompile Include="CreateDepthStencilTextureResource.cpp" />
-    <ClCompile Include="CreateTextureResource.cpp" />
     <ClCompile Include="D3DResorceLeakChecker.cpp" />
-    <ClCompile Include="DescriptorHeap.cpp" />
     <ClCompile Include="DirectXCommon.cpp" />
     <ClCompile Include="externals\imgui\imgui.cpp" />
     <ClCompile Include="externals\imgui\imgui_demo.cpp" />
@@ -117,7 +112,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="ResourceObject.cpp" />
     <ClCompile Include="Sprite.cpp" />
     <ClCompile Include="SpriteCommon.cpp" />
-    <ClCompile Include="StringUtility.cpp" />
     <ClCompile Include="TextureManager.cpp" />
     <ClCompile Include="WinApp.cpp" />
   </ItemGroup>
@@ -136,15 +130,10 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Convertstring.h" />
-    <ClInclude Include="CreateBufferResource.h" />
-    <ClInclude Include="CreateDepthStencilTextureResource.h" />
     <ClInclude Include="CreateTextureResource.h" />
     <ClInclude Include="GraphicsPipelineManager.h" />
     <ClInclude Include="LeakCheacker.h" />
     <ClInclude Include="D3DResorceLeakChecker.h" />
-    <ClInclude Include="DescriptorHandle.h" />
-    <ClInclude Include="DescriptorHeap.h" />
     <ClInclude Include="DirectionalLight.h" />
     <ClInclude Include="DirectXCommon.h" />
     <ClInclude Include="externals\imgui\imconfig.h" />
@@ -172,7 +161,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="ResourceObject.h" />
     <ClInclude Include="Sprite.h" />
     <ClInclude Include="SpriteCommon.h" />
-    <ClInclude Include="StringUtility.h" />
     <ClInclude Include="TextureManager.h" />
     <ClInclude Include="VectorSRT.h" />
     <ClInclude Include="TransformationMatrix.h" />

@@ -2,7 +2,6 @@
 #include <cassert>
 #include <thread>
 #include "Logger.h"
-#include "StringUtility.h"
 #include <format>
 #include "externals/imgui/imgui_impl_win32.h"
 #include "externals/imgui/imgui_impl_dx12.h"
@@ -271,6 +270,7 @@ void DirectXCommon::CreateDXCompiler()
 	hr = dxcUtils_->CreateDefaultIncludeHandler(&includeHandler_);
 	assert(SUCCEEDED(hr));
 }
+
 
 void DirectXCommon::PreDraw()
 {
@@ -644,6 +644,36 @@ Microsoft::WRL::ComPtr<ID3D12Resource> DirectXCommon::UploadTextureData(Microsof
 	return intermediateResource;
 }
 
+std::wstring DirectXCommon::ConvertString(const std::string& str)
+{
+	if (str.empty()) {
+		return std::wstring();
+	}
+
+	auto sizeNeeded = MultiByteToWideChar(CP_UTF8, 0, reinterpret_cast<const char*>(&str[0]), static_cast<int>(str.size()), NULL, 0);
+	if (sizeNeeded == 0) {
+		return std::wstring();
+	}
+	std::wstring result(sizeNeeded, 0);
+	MultiByteToWideChar(CP_UTF8, 0, reinterpret_cast<const char*>(&str[0]), static_cast<int>(str.size()), &result[0], sizeNeeded);
+	return result;
+}
+
+std::string DirectXCommon::ConvertString(const std::wstring& str)
+{
+	if (str.empty()) {
+		return std::string();
+	}
+
+	auto sizeNeeded = WideCharToMultiByte(CP_UTF8, 0, str.data(), static_cast<int>(str.size()), NULL, 0, NULL, NULL);
+	if (sizeNeeded == 0) {
+		return std::string();
+	}
+	std::string result(sizeNeeded, 0);
+	WideCharToMultiByte(CP_UTF8, 0, str.data(), static_cast<int>(str.size()), result.data(), sizeNeeded, NULL, NULL);
+	return result;
+}
+
 DirectX::ScratchImage DirectXCommon::LoadTexture(const std::string& filePath)
 {
 	// テクスチャファイルを読んでプログラムで扱えるようにする
@@ -661,3 +691,7 @@ DirectX::ScratchImage DirectXCommon::LoadTexture(const std::string& filePath)
 	return mipImages;
 }
 
+void DirectXCommon::Log(const std::string& message)
+{
+	OutputDebugStringA(message.c_str());
+}
