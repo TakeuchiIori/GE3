@@ -4,13 +4,13 @@
 #include <fstream>
 #include <sstream>
 #include "TextureManager.h"
-void Model::Initialize(ModelCommon* modelCommon)
+void Model::Initialize(ModelCommon* modelCommon, const std::string& directorypath, const std::string& filename)
 {
 	// 引数から受け取ってメンバ変数に記録する
 	modelCommon_ = modelCommon;
 
 	// モデル読み込み
-	modelData_ = LoadObjFile("Resources", "plane.obj");
+	modelData_ = LoadObjFile(directorypath, filename);
 
 	// 頂点データの初期化
 	VertexResource();

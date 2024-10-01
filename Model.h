@@ -44,7 +44,7 @@ public: // メンバ関数
 	/// <summary>
 	/// 初期化
 	/// </summary>
-	void Initialize(ModelCommon* modelCommon);
+	void Initialize(ModelCommon* modelCommon, const std::string& directorypath,const std::string& filename);
 
 	/// <summary>
 	/// 描画
