@@ -15,12 +15,10 @@
 #include "externals/DirectXTex/DirectXTex.h"
 
 #include "math/MathFunc.h"
-#include "TransformationMatrix.h"
 
 #include <corecrt_math_defines.h>
 
 #include<wrl.h>
-#include "ResourceObject.h"
 
 
 
