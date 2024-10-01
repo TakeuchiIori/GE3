@@ -1,6 +1,12 @@
 #pragma once
 class ModelManager
 {
+public:
+	// シングルトンインスタンスの取得
+	static ModelManager* GetInstance();
+	// 終了
+	void Finalize();
+
 
 
 
