@@ -80,10 +80,11 @@ private:
 	/// </summary>
 	void MaterialResource();
 
+
 	/// <summary>
 	/// 座標変換リソース
 	/// </summary>
-	void TransformResource();
+	void DirectionalLightResource();
 
 	/// <summary>
 	/// テクスチャサイズをイメージに合わせる
@@ -109,9 +110,13 @@ private: // メンバ変数
 	// マテリアル
 	Microsoft::WRL::ComPtr<ID3D12Resource> materialResource_;
 	Material* materialData_ = nullptr;
+	// 平行光源
+	Microsoft::WRL::ComPtr<ID3D12Resource> directionalLightResource_;
+	DirectionalLight* directionalLight = nullptr;
 	// 座標変換
 	Microsoft::WRL::ComPtr<ID3D12Resource> transformationMatrixResource_;
 	TransformationMatrix* transformationMatrixData_ = nullptr;
+
 
 	// バッファリソース内のデータを指すポインタ
 	VertexData* vertexData_ = nullptr;

@@ -12,11 +12,14 @@ void Object3d::Initialize(Object3dCommon* object3dCommon)
 	// モデル読み込み
 	modelData_ = LoadObjFile("Resources","plane.obj");
 
-	//VertexResource();
+	VertexResource();
 
-	//IndexResource();
+	IndexResource();
 
-	//MaterialResource();
+	MaterialResource();
+
+	DirectionalLightResource();
+
 
 	//TextureManager::GetInstance()->LoadTexture(textureFilePath);
 
@@ -136,12 +139,6 @@ void Object3d::MaterialResource()
 	materialData_->enableLighting = false;
 	materialData_->uvTransform = MakeIdentity4x4();
 
-
-	TransformResource();
-}
-
-void Object3d::TransformResource()
-{
 	// リソース作成
 	transformationMatrixResource_ = object3dCommon_->GetDxCommon()->CreateBufferResource(sizeof(TransformationMatrix));
 	// データを書き込むためのアドレスを取得して割り当て
@@ -150,7 +147,22 @@ void Object3d::TransformResource()
 	// 単位行列を書き込む
 	transformationMatrixData_->WVP = MakeIdentity4x4();
 	transformationMatrixData_->World = MakeIdentity4x4();
+}
 
+void Object3d::DirectionalLightResource()
+{
+	directionalLightResource_ = object3dCommon_->GetDxCommon()->CreateBufferResource(sizeof(DirectionalLight));
+	// WVP用のリソースを作る。Matrix4x4　1つ分のサイズを用意する
+	Microsoft::WRL::ComPtr<ID3D12Resource> wvpResourceDirectionalComPtr = object3dCommon_->GetDxCommon()->CreateBufferResource(sizeof(TransformationMatrix));
+	ID3D12Resource* wvpResourceDirectional = wvpResourceDirectionalComPtr.Get();
+
+	// データを書き込む
+	TransformationMatrix* wvpDataDirectional = nullptr;
+	// 書き込むためのアドレスを取得
+	wvpResourceDirectional->Map(0, nullptr, reinterpret_cast<void**>(&wvpDataDirectional));
+	// 単位行列を書き込んでおく
+	wvpDataDirectional->WVP = MakeIdentity4x4();
+	wvpDataDirectional->World = MakeIdentity4x4();
 }
 
 void Object3d::AdjustTaxtureSize()
