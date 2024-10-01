@@ -27,8 +27,8 @@ void Object3d::Initialize(Object3dCommon* object3dCommon)
 		TextureManager::GetInstance()->GetTextureIndexByFilePath(modelData_.material.textureFilePath);
 
 	// Transform変数を作る
-	transform_ = { {1.0f,1.0f,1.0f,},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
-	cameraTransform_ = { {1.0f,1.0f,1.0f},{0.3f,0.0f,0.0f},{0.0f,4.0f,-50.0f} };
+	transform_ = { {10.0f,0.0f,1.0f,},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
+	cameraTransform_ = { {1.0f,1.0f,1.0f},{0.3f,0.0f,0.0f},{0.0f,4.0f,-20.0f} };
 	//AdjustTaxtureSize();
 }
 
@@ -39,11 +39,12 @@ void Object3d::Update()
 	Matrix4x4 worldMatrix = MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.translate);
 	Matrix4x4 cameraMatrix = MakeAffineMatrix(cameraTransform_.scale, cameraTransform_.rotate, cameraTransform_.translate);
 	Matrix4x4 viewMatrix = Inverse(cameraMatrix);
-	Matrix4x4 projectionMatrix = MakeOrthographicMatrix(0.0f, 0.0f, float(WinApp::kClientWidth), float(WinApp::kClientHeight), 0.0f, 100.0f);
-	Matrix4x4 worldProjectionMatrix = Multiply(worldMatrix, Multiply(viewMatrix, projectionMatrix));
+	Matrix4x4 projectionMatrix = MakePerspectiveFovMatrix(0.45f, float(WinApp::kClientWidth) / float(WinApp::kClientHeight), 0.1f, 100.0f);
 
-	transformationMatrixData_->WVP = worldProjectionMatrix;
+	Matrix4x4 worldViewProjectionMatrix = Multiply(worldMatrix, Multiply(viewMatrix, projectionMatrix));
+	transformationMatrixData_->WVP = worldViewProjectionMatrix;
 	transformationMatrixData_->World = worldMatrix;
+	
 }
 
 void Object3d::Draw()
@@ -60,14 +61,16 @@ void Object3d::Draw()
 
 	// SRVの設定
 	object3dCommon_->GetDxCommon()->GetcommandList()->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetsrvHandleGPU(modelData_.material.textureIndex)); // SRVのパラメータインデックスを変更
-
+	// 平行光源のCBufferの場所を設定
+	object3dCommon_->GetDxCommon()->GetcommandList()->SetGraphicsRootConstantBufferView(3, directionalLightResource_->GetGPUVirtualAddress());
 	// 描画！！！DrawCall/ドローコール）
-	object3dCommon_->GetDxCommon()->GetcommandList()->DrawIndexedInstanced(6, 1, 0, 0, 0);
+	object3dCommon_->GetDxCommon()->GetcommandList()->DrawInstanced(UINT(modelData_.vertices.size()), 1, 0, 0);
 }
 
 
 void Object3d::VertexResource()
 {
+	
 	// リソース
 	vertexResource_ = object3dCommon_->GetDxCommon()->CreateBufferResource(sizeof(VertexData) * 6);
 	// リソースの先頭アドレスから使う
@@ -193,14 +196,15 @@ void Object3d::DirectionalLightResource()
 	// WVP用のリソースを作る。Matrix4x4　1つ分のサイズを用意する
 	Microsoft::WRL::ComPtr<ID3D12Resource> wvpResourceDirectionalComPtr = object3dCommon_->GetDxCommon()->CreateBufferResource(sizeof(TransformationMatrix));
 	ID3D12Resource* wvpResourceDirectional = wvpResourceDirectionalComPtr.Get();
-
-	// データを書き込む
-	TransformationMatrix* wvpDataDirectional = nullptr;
+	
 	// 書き込むためのアドレスを取得
-	wvpResourceDirectional->Map(0, nullptr, reinterpret_cast<void**>(&wvpDataDirectional));
-	// 単位行列を書き込んでおく
-	wvpDataDirectional->WVP = MakeIdentity4x4();
-	wvpDataDirectional->World = MakeIdentity4x4();
+	wvpResourceDirectional->Map(0, nullptr, reinterpret_cast<void**>(&directionalLight_));
+
+	// デフォルト値を設定
+	directionalLight_->color = { 1.0f,1.0f,1.0f,1.0f };
+	directionalLight_->direction = { 0.0f,-1.0f,0.0f };
+	directionalLight_->intensity = 1.0f;
+
 }
 
 void Object3d::AdjustTaxtureSize()

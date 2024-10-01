@@ -135,7 +135,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 				// 回転テスト
 				float rotation = sprite->GetRotation();
 				rotation += 0.01f;
-				//sprite->SetRotation(rotation);
+				sprite->SetRotation(rotation);
 
 				// サイズ変化
 				Vector2 size = sprite->GetSize();
@@ -168,7 +168,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			// 描画
 			// 2Dスプライト
 			for (Sprite* sprite : sprites) {
-				sprite->Draw();
+				//sprite->Draw();
 			}
 			// 3Dオブジェクト
 			object3d->Draw();

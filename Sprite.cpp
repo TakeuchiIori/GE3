@@ -1,6 +1,5 @@
 #include "Sprite.h"
 #include "SpriteCommon.h"
-#include "VectorSRT.h"
 #include "TextureManager.h"
 
 Sprite::Sprite()
@@ -22,6 +21,8 @@ void Sprite::Initialize(SpriteCommon* spriteCommon, std::string& textureFilePath
 	textureIndex = TextureManager::GetInstance()->GetTextureIndexByFilePath(textureFilePath);
 
 	AdjustTaxtureSize();
+
+	transform_ = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
 	
 }
 
@@ -29,12 +30,11 @@ void Sprite::Update()
 {
 	CreateVertex();
 	// スプライトのSRT
-	VectorSRT transform{ {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
-	transform.translate = { position_.x,position_.y,0.0f };
-	transform.rotate = { 0.0f,0.0f,rotation_ };
-	transform.scale = { size_.x,size_.y,1.0f };	
-
-	Matrix4x4 worldMatrix = MakeAffineMatrix(transform.scale, transform.rotate, transform.translate);
+	
+	transform_.translate = { position_.x,position_.y,0.0f };
+	transform_.rotate = { 0.0f,0.0f,rotation_ };
+	transform_.scale = { size_.x,size_.y,1.0f };
+	Matrix4x4 worldMatrix = MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.translate);
 	Matrix4x4 viewMatrix = MakeIdentity4x4();
 	Matrix4x4 projectionMatrix = MakeOrthographicMatrix(0.0f, 0.0f, float(WinApp::kClientWidth), float(WinApp::kClientHeight), 0.0f, 100.0f);
 	Matrix4x4 worldProjectionMatrix = Multiply(worldMatrix, Multiply(viewMatrix, projectionMatrix));

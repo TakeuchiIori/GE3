@@ -129,7 +129,7 @@ private: // メンバ変数
 	Material* materialData_ = nullptr;
 	// 平行光源
 	Microsoft::WRL::ComPtr<ID3D12Resource> directionalLightResource_;
-	DirectionalLight* directionalLight = nullptr;
+	DirectionalLight* directionalLight_ = nullptr;
 	// 座標変換
 	Microsoft::WRL::ComPtr<ID3D12Resource> transformationMatrixResource_;
 	TransformationMatrix* transformationMatrixData_ = nullptr;
