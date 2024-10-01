@@ -25,6 +25,7 @@ public: //　構造体
 		MaterialData material;
 	};
 
+
 public: // メンバ関数
 	/// <summary>
 	/// 初期化
