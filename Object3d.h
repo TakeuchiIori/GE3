@@ -113,6 +113,50 @@ private:
 	//.objファイルの読み取り
 	static ModelData LoadObjFile(const std::string& directoryPath, const std::string& filename);
 
+public: // アクセッサ
+
+	/*===============================================//
+						  座標
+	//===============================================*/
+	const Vector3& GetPosition()const { return position_; }
+	void SetPosition(const Vector3& position) { position_ = position; }
+
+	/*===============================================//
+						  回転
+	//===============================================*/
+	float GetRotation()const { return rotation_; }
+	void SetRotation(float rotation) { rotation_ = rotation; }
+
+	/*===============================================//
+						  拡縮
+	//===============================================*/
+	const Vector2& GetSize() { return size_; }
+	void SetSize(const Vector2& size) { size_ = size; }
+
+	/*===============================================//
+					　	 色を変更
+	//===============================================*/
+	const Vector4& GetColor()const { return materialData_->color; }
+	void SetColor(const Vector4& color) { materialData_->color = color; }
+
+	/*===============================================//
+					　アンカーポイント
+	//===============================================*/
+	// getter
+	const Vector3& GetAnchorPoint()const { return anchorPoint_; }
+	// setter
+	void SetAnchorPoint(const Vector3& anchorPoint) { this->anchorPoint_ = anchorPoint; }
+
+	/*===============================================//
+					　    フリップ
+	//===============================================*/
+	// getter
+	const bool& GetIsFlipX()const { return isFlipX_; }
+	const bool& GetIsFlipY()const { return isFlipY_; }
+	// setter
+	void SetIsFlipX(const bool& isFlipX) { this->isFlipX_ = isFlipX; }
+	void SetIsFlipY(const bool& isFlipY) { this->isFlipY_ = isFlipY; }
+
 
 private: // メンバ変数
 	Object3dCommon* object3dCommon_ = nullptr;
@@ -145,15 +189,13 @@ private: // メンバ変数
 	// テクスチャ切り出しサイズ
 	Vector2 textureSize_ = { 64.0f,64.0f };
 
-	// スプライト
-	VertexData* vertexData = nullptr;
-	Vector2 position_ = { 0.0f,0.0f };
+	// 3DオブジェクトのSRT
+	Vector3 position_ = { 0.0f,0.0f,0.0f};
 	float rotation_ = 0.0f;
-	Vector2 size_ = { 100.0f,100.0f };
+	Vector2 size_ = { 100.0f,100.0f};
 
 	// アンカーポイント
-	Vector2 anchorPoint_ = { 0.0f,0.0f };
-
+	Vector3 anchorPoint_ = { 0.5f,0.5f,0.5f };
 	// 左右フリップ
 	bool isFlipX_ = false;
 	// 上下フリップ

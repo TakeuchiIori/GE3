@@ -154,6 +154,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 			// 3Dオブジェクトの更新
 			object3d->Update();
+			float rotate = object3d->GetRotation();
+			rotate += 0.01f;
+			object3d->SetRotation(rotate);
 
 			// DirectXの描画準備。全ての描画にグラフィックスコマンドを積む
 			dxCommon_->PreDraw();

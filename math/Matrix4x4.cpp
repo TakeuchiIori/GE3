@@ -73,6 +73,7 @@ Matrix4x4 Multiply(Matrix4x4 matrix1, Matrix4x4 matrix2) {
 
 	return result;
 }
+
 //===================================== 4. 逆行列 ===============================================//
 Matrix4x4 Inverse(Matrix4x4 matrix) {
 	Matrix4x4 result;
@@ -403,6 +404,38 @@ Matrix4x4 MakePerspectiveFovMatrix(float FovY, float aspectRatio, float nearClip
 
 	return result;
 };
+
+//Matrix4x4 MakePerspectiveFovMatrix(float FovY, float aspectRatio, float nearClip, float farClip) {
+//	Matrix4x4 result;
+//
+//	// 縦方向の視野角に基づいてスケールを設定
+//	float yScale = 1 / std::tanf(FovY / 2);
+//	float xScale = yScale / aspectRatio;
+//
+//	// 行列の各要素を設定
+//	result.m[0][0] = xScale;
+//	result.m[0][1] = 0;
+//	result.m[0][2] = 0;
+//	result.m[0][3] = 0;
+//
+//	result.m[1][0] = 0;
+//	result.m[1][1] = yScale;
+//	result.m[1][2] = 0;
+//	result.m[1][3] = 0;
+//
+//	result.m[2][0] = 0;
+//	result.m[2][1] = 0;
+//	result.m[2][2] = farClip / (farClip - nearClip);
+//	result.m[2][3] = 1;
+//
+//	result.m[3][0] = 0;
+//	result.m[3][1] = 0;
+//	result.m[3][2] = -nearClip * farClip / (farClip - nearClip);
+//	result.m[3][3] = 0;
+//
+//	return result;
+//}
+
 // 2. 正射影行列
 Matrix4x4 MakeOrthographicMatrix(float left, float top, float right, float bottom, float nearClip, float farClip) {
 	Matrix4x4 result;

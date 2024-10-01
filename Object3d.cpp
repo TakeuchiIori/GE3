@@ -10,7 +10,7 @@ void Object3d::Initialize(Object3dCommon* object3dCommon)
 	// 引数で受け取ってメンバ変数に記録する
 	this->object3dCommon_ = object3dCommon;
 	// モデル読み込み
-	modelData_ = LoadObjFile("Resources","plane.obj");
+	modelData_ = LoadObjFile("Resources","axis.obj");
 
 	VertexResource();
 
@@ -27,14 +27,16 @@ void Object3d::Initialize(Object3dCommon* object3dCommon)
 		TextureManager::GetInstance()->GetTextureIndexByFilePath(modelData_.material.textureFilePath);
 
 	// Transform変数を作る
-	transform_ = { {10.0f,0.0f,1.0f,},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
-	cameraTransform_ = { {1.0f,1.0f,1.0f},{0.3f,0.0f,0.0f},{0.0f,4.0f,-20.0f} };
+	transform_ = { {1.0f,1.0f,1.0f,},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
+	cameraTransform_ = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,4.0f,-10.0f} };
 	//AdjustTaxtureSize();
 }
 
 void Object3d::Update()
 {
 	CreateVertex();
+
+	transform_ = { {1.0f,1.0f,1.0f,},{0.0f,rotation_,0.0f},{0.0f,3.0f,0.0f} };
 
 	Matrix4x4 worldMatrix = MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.translate);
 	Matrix4x4 cameraMatrix = MakeAffineMatrix(cameraTransform_.scale, cameraTransform_.rotate, cameraTransform_.translate);
@@ -52,7 +54,7 @@ void Object3d::Draw()
 	// VertexBufferView
 	object3dCommon_->GetDxCommon()->GetcommandList()->IASetVertexBuffers(0, 1, &vertexBufferView_); // VBVを設定
 	// IndexBufferView
-	object3dCommon_->GetDxCommon()->GetcommandList()->IASetIndexBuffer(&indexBufferView_);//IBV
+	//object3dCommon_->GetDxCommon()->GetcommandList()->IASetIndexBuffer(&indexBufferView_);//IBV
 
 	// マテリアルCBufferの場所を指定
 	object3dCommon_->GetDxCommon()->GetcommandList()->SetGraphicsRootConstantBufferView(0, materialResource_->GetGPUVirtualAddress());
@@ -65,6 +67,7 @@ void Object3d::Draw()
 	object3dCommon_->GetDxCommon()->GetcommandList()->SetGraphicsRootConstantBufferView(3, directionalLightResource_->GetGPUVirtualAddress());
 	// 描画！！！DrawCall/ドローコール）
 	object3dCommon_->GetDxCommon()->GetcommandList()->DrawInstanced(UINT(modelData_.vertices.size()), 1, 0, 0);
+	
 }
 
 
@@ -72,11 +75,11 @@ void Object3d::VertexResource()
 {
 	
 	// リソース
-	vertexResource_ = object3dCommon_->GetDxCommon()->CreateBufferResource(sizeof(VertexData) * 6);
+	vertexResource_ = object3dCommon_->GetDxCommon()->CreateBufferResource(sizeof(VertexData) * modelData_.vertices.size());
 	// リソースの先頭アドレスから使う
 	vertexBufferView_.BufferLocation = vertexResource_->GetGPUVirtualAddress();
 	// 使用するリソースサイズは頂点3つ分のサイズ
-	vertexBufferView_.SizeInBytes = sizeof(VertexData) * 6;
+	vertexBufferView_.SizeInBytes = UINT(sizeof(VertexData) * modelData_.vertices.size());
 	// 1頂点あたりのサイズ
 	vertexBufferView_.StrideInBytes = sizeof(VertexData);
 
@@ -84,63 +87,63 @@ void Object3d::VertexResource()
 
 void Object3d::CreateVertex()
 {
-	VertexData* vertexData = nullptr;
-	vertexResource_->Map(0, nullptr, reinterpret_cast<void**>(&vertexData));
+	vertexResource_->Map(0, nullptr, reinterpret_cast<void**>(&vertexData_));
 	/*=====================================================//
 							 index有
 	=======================================================*/
+	memcpy(vertexData_, modelData_.vertices.data(), sizeof(VertexData) * modelData_.vertices.size());
 
-	// アンカーポイント
-	float left = 0.0f - anchorPoint_.x;
-	float right = 1.0f - anchorPoint_.x;
-	float top = 0.0f - anchorPoint_.y;
-	float bottom = 1.0f - anchorPoint_.y;
+	//// アンカーポイント
+	//float left = 0.0f - anchorPoint_.x;
+	//float right = 1.0f - anchorPoint_.x;
+	//float top = 0.0f - anchorPoint_.y;
+	//float bottom = 1.0f - anchorPoint_.y;
 
-	// 左右反転
-	if (isFlipX_) {
-		left = -left;
-		right = -right;
-	}
-	//上下反転
-	if (isFlipY_) {
-		top = -top;
-		bottom = -bottom;
-	}
+	//// 左右反転
+	//if (isFlipX_) {
+	//	left = -left;
+	//	right = -right;
+	//}
+	////上下反転
+	//if (isFlipY_) {
+	//	top = -top;
+	//	bottom = -bottom;
+	//}
 
-	const DirectX::TexMetadata& metadata = TextureManager::GetInstance()->GetMetaData(modelData_.material.textureIndex);
-	float tex_left = textureLeftTop_.x / metadata.width;
-	float tex_right = (textureLeftTop_.x + textureSize_.x) / metadata.width;
-	float tex_top = textureLeftTop_.y / metadata.height;
-	float tex_bottom = (textureLeftTop_.y + textureSize_.y) / metadata.height;
-	// 左下
-	vertexData[0].position = { left, bottom, 0.0f, 1.0f };
-	vertexData[0].texcoord = { tex_left, tex_bottom };
+	//const DirectX::TexMetadata& metadata = TextureManager::GetInstance()->GetMetaData(modelData_.material.textureIndex);
+	//float tex_left = textureLeftTop_.x / metadata.width;
+	//float tex_right = (textureLeftTop_.x + textureSize_.x) / metadata.width;
+	//float tex_top = textureLeftTop_.y / metadata.height;
+	//float tex_bottom = (textureLeftTop_.y + textureSize_.y) / metadata.height;
+	//// 左下
+	//vertexData[0].position = { left, bottom, 0.0f, 1.0f };
+	//vertexData[0].texcoord = { tex_left, tex_bottom };
 
-	// 左上
-	vertexData[1].position = { left, top, 0.0f, 1.0f };
-	vertexData[1].texcoord = { tex_left, tex_top };
+	//// 左上
+	//vertexData[1].position = { left, top, 0.0f, 1.0f };
+	//vertexData[1].texcoord = { tex_left, tex_top };
 
-	// 右下
-	vertexData[2].position = { right, bottom, 0.0f, 1.0f };
-	vertexData[2].texcoord = { tex_right, tex_bottom };
+	//// 右下
+	//vertexData[2].position = { right, bottom, 0.0f, 1.0f };
+	//vertexData[2].texcoord = { tex_right, tex_bottom };
 
-	// 右上
-	vertexData[3].position = { right, top, 0.0f, 1.0f };
-	vertexData[3].texcoord = { tex_right, tex_top };
+	//// 右上
+	//vertexData[3].position = { right, top, 0.0f, 1.0f };
+	//vertexData[3].texcoord = { tex_right, tex_top };
 
-	// 2枚目の三角形用
-	vertexData[4].position = { left, top, 0.0f, 1.0f };  // 左上
-	vertexData[4].texcoord = { tex_left, tex_top };
+	//// 2枚目の三角形用
+	//vertexData[4].position = { left, top, 0.0f, 1.0f };  // 左上
+	//vertexData[4].texcoord = { tex_left, tex_top };
 
-	vertexData[5].position = { right, bottom, 0.0f, 1.0f };  // 右下
-	vertexData[5].texcoord = { tex_right, tex_bottom };
+	//vertexData[5].position = { right, bottom, 0.0f, 1.0f };  // 右下
+	//vertexData[5].texcoord = { tex_right, tex_bottom };
 
-	vertexData[0].normal = { 0.0f,0.0f,-1.0f };
-	vertexData[1].normal = { 0.0f,0.0f,-1.0f };
-	vertexData[2].normal = { 0.0f,0.0f,-1.0f };
-	vertexData[3].normal = { 0.0f,0.0f,-1.0f };
-	vertexData[4].normal = { 0.0f,0.0f,-1.0f };
-	vertexData[5].normal = { 0.0f,0.0f,-1.0f };
+	//vertexData[0].normal = { 0.0f,0.0f,-1.0f };
+	//vertexData[1].normal = { 0.0f,0.0f,-1.0f };
+	//vertexData[2].normal = { 0.0f,0.0f,-1.0f };
+	//vertexData[3].normal = { 0.0f,0.0f,-1.0f };
+	//vertexData[4].normal = { 0.0f,0.0f,-1.0f };
+	//vertexData[5].normal = { 0.0f,0.0f,-1.0f };
 }
 
 void Object3d::IndexResource()
@@ -177,7 +180,7 @@ void Object3d::MaterialResource()
 	materialResource_->Map(0, nullptr, reinterpret_cast<void**>(&materialData_));
 	// マテリアルデータの初期化
 	materialData_->color = { 1.0f,1.0f, 1.0f, 1.0f };
-	materialData_->enableLighting = false;
+	materialData_->enableLighting = true;
 	materialData_->uvTransform = MakeIdentity4x4();
 
 	// リソース作成
@@ -193,12 +196,9 @@ void Object3d::MaterialResource()
 void Object3d::DirectionalLightResource()
 {
 	directionalLightResource_ = object3dCommon_->GetDxCommon()->CreateBufferResource(sizeof(DirectionalLight));
-	// WVP用のリソースを作る。Matrix4x4　1つ分のサイズを用意する
-	Microsoft::WRL::ComPtr<ID3D12Resource> wvpResourceDirectionalComPtr = object3dCommon_->GetDxCommon()->CreateBufferResource(sizeof(TransformationMatrix));
-	ID3D12Resource* wvpResourceDirectional = wvpResourceDirectionalComPtr.Get();
 	
 	// 書き込むためのアドレスを取得
-	wvpResourceDirectional->Map(0, nullptr, reinterpret_cast<void**>(&directionalLight_));
+	directionalLightResource_->Map(0, nullptr, reinterpret_cast<void**>(&directionalLight_));
 
 	// デフォルト値を設定
 	directionalLight_->color = { 1.0f,1.0f,1.0f,1.0f };
@@ -251,7 +251,7 @@ Object3d::ModelData Object3d::LoadObjFile(const std::string& directoryPath, cons
 	string line;				   // ファイルから読んだ1行を格納
 
 	// 2. ファイルを開く
-	std::ifstream file(directoryPath + "/" + filename);
+	ifstream file(directoryPath + "/" + filename);
 	assert(file.is_open());						   // 開けなかったら止める
 
 	while (getline(file, line)) {
@@ -297,8 +297,6 @@ Object3d::ModelData Object3d::LoadObjFile(const std::string& directoryPath, cons
 				Vector4 position = positions[elementIndices[0] - 1];
 				Vector2 texcoord = texcoords[elementIndices[1] - 1];
 				Vector3 normal = normals[elementIndices[2] - 1];
-				//VertexData vertex = { position , texcoord, normal };
-				//modelData.verteces.push_back(vertex);
 				triangle[faceVertex] = { position,texcoord,normal };
 			}
 			// 頂点を逆順すろことで、回り順を逆にする
