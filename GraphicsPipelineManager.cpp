@@ -1,5 +1,5 @@
 #include "GraphicsPipelineManager.h"
-#include "Logger.h"
+
 
 void GraphicsPipelineManager::Initialize()
 {

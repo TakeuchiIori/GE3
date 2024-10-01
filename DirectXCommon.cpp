@@ -1,7 +1,6 @@
 #include "DirectXCommon.h"
 #include <cassert>
 #include <thread>
-#include "Logger.h"
 #include <format>
 #include "externals/imgui/imgui_impl_win32.h"
 #include "externals/imgui/imgui_impl_dx12.h"

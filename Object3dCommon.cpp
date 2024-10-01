@@ -1,5 +1,4 @@
 #include "Object3dCommon.h"
-#include "Logger.h"
 
 void Object3dCommon::Initialize(DirectXCommon* dxCommon)
 {
@@ -56,7 +55,7 @@ void Object3dCommon::CreateRootSignature()
 	hr = D3D12SerializeRootSignature(&descriptionRootSignature,
 		D3D_ROOT_SIGNATURE_VERSION_1, &signatureBlob, &errorBlob);
 	if (FAILED(hr)) {
-		Logger::Log(reinterpret_cast<char*>(errorBlob->GetBufferPointer()));
+		DirectXCommon::Log(reinterpret_cast<char*>(errorBlob->GetBufferPointer()));
 		assert(false);
 	}
 	// バイナリを元に生成

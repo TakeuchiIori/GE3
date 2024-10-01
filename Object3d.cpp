@@ -52,6 +52,11 @@ void Object3d::Draw()
 	}
 }
 
+void Object3d::ChangeTexture(std::string textureFilePath)
+{
+
+}
+
 
 void Object3d::TransformationInitialize()
 {
