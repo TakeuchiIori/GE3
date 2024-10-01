@@ -3,4 +3,5 @@
 void Object3d::Initialize()
 {
 
+
 }
