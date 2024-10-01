@@ -106,7 +106,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="externals\imgui\imgui_widgets.cpp" />
     <ClCompile Include="GraphicsPipelineManager.cpp" />
     <ClCompile Include="Input.cpp" />
-    <ClCompile Include="LoadTexture.cpp" />
     <ClCompile Include="Logger.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="math\Matrix4x4.cpp" />
@@ -154,10 +153,8 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="externals\imgui\imstb_textedit.h" />
     <ClInclude Include="externals\imgui\imstb_truetype.h" />
     <ClInclude Include="Input.h" />
-    <ClInclude Include="LoadTexture.h" />
     <ClInclude Include="Logger.h" />
     <ClInclude Include="Material.h" />
-    <ClInclude Include="MaterialData.h" />
     <ClInclude Include="math\MathFunc.h" />
     <ClInclude Include="math\Matrix3x3.h" />
     <ClInclude Include="math\Matrix4x4.h" />
@@ -173,7 +170,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="TextureManager.h" />
     <ClInclude Include="VectorSRT.h" />
     <ClInclude Include="TransformationMatrix.h" />
-    <ClInclude Include="UploadTextureData.h" />
     <ClInclude Include="WinApp.h" />
   </ItemGroup>
   <ItemGroup>

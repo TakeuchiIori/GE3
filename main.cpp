@@ -13,7 +13,7 @@
 #include "externals/imgui/imgui_impl_dx12.h"
 
 #include "externals/DirectXTex/DirectXTex.h"
-#include "LoadTexture.h"
+
 #include "CreateTextureResource.h"
 
 
