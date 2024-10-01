@@ -39,7 +39,7 @@
 #include "Object3dCommon.h"
 #include "Object3d.h"
 #include "Model.h"
-#include "ModelCommon.h"
+#include "ModelManager.h"
 #include "externals/imgui/imgui_impl_win32.h"
 
 
@@ -81,12 +81,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	object3dCommon_ = new Object3dCommon();
 	object3dCommon_->Initialize(dxCommon_);
 
-	// 3Dモデル共通部の初期化
-	ModelCommon* modelCommon_ = nullptr;
-	modelCommon_ = new ModelCommon();
-	modelCommon_->Initialize(dxCommon_);
-
-
+	// 3Dモデルマネージャの初期化
+	ModelManager::GetInstance()->Initialze(dxCommon_);
+	// .objファイルからモデルを読み込む
+	ModelManager::GetInstance()->LoadModel("plane.obj");
+	ModelManager::GetInstance()->LoadModel("axis.obj");
 #pragma endregion 基礎システムの初期化
 
 	
@@ -117,10 +116,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		sprites.push_back(sprite);
 	}
 
-	// 3Dモデルの初期化
-	Model* model_ = new Model();
-	model_->Initialize(modelCommon_);
-
 	std::vector<Object3d*> object3ds;
 
 	// 複数のオブジェクトを初期化
@@ -131,15 +126,15 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		Vector3 position;
 		if (i == 0) {
 			position.x = -2;
+			object->SetModel("plane.obj");
 		}
 		else if (i == 1) {
 			position.x = 3;
+			object->SetModel("axis.obj");
 		}
 		position.y = 3;
 		position.z = 0.0f;
 		object->SetPosition(position);
-		object->SetModel(model_);
-
 		object3ds.push_back(object);
 	}
 
@@ -170,7 +165,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 				// 回転テスト
 				float rotation = sprite->GetRotation();
 				rotation += 0.01f;
-				sprite->SetRotation(rotation);
+				//sprite->SetRotation(rotation);
 
 				// サイズ変化
 				Vector2 size = sprite->GetSize();
@@ -223,7 +218,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			// 描画
 			// 2Dスプライト
 			for (Sprite* sprite : sprites) {
-				//sprite->Draw();
+				sprite->Draw();
 			}
 			// 3Dオブジェクト
 			for (auto& obj : object3ds) {
@@ -255,15 +250,16 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	for (auto& obj : object3ds) {
 		delete obj;
 	}
-	delete model_;
-	delete modelCommon_;
+	/*delete model_;
+	delete modelCommon_;*/
 	// 描画
 	for (Sprite* sprite : sprites) {
 		delete sprite;
 	}
 	// テクスチャマネージャの終了
 	TextureManager::GetInstance()->Finalize();
-	
+	// 3Dモデルマネージャの終了
+	ModelManager::GetInstance()->Finalize();
 	
 	return 0;// main関数のリターン
 }

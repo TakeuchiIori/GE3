@@ -4,6 +4,7 @@
 #include <fstream>
 #include <sstream>
 #include "TextureManager.h"
+#include "ModelManager.h"
 #include "Model.h"
 
 void Object3d::Initialize(Object3dCommon* object3dCommon)
@@ -75,5 +76,11 @@ void Object3d::DirectionalLightResource()
 	directionalLight_->direction = { 0.0f,-1.0f,0.0f };
 	directionalLight_->intensity = 1.0f;
 
+}
+
+void Object3d::SetModel(const std::string& filePath)
+{
+	// モデルを検索してセットする
+	model_ = ModelManager::GetInstance()->FindModel(filePath);
 }
 

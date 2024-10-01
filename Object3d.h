@@ -123,8 +123,7 @@ public: // アクセッサ
 	void SetIsFlipX(const bool& isFlipX) { this->isFlipX_ = isFlipX; }
 	void SetIsFlipY(const bool& isFlipY) { this->isFlipY_ = isFlipY; }
 
-	void SetModel(Model* model) { this->model_ = model; }
-
+	void SetModel(const std::string& filePath);
 private: // メンバ変数
 	Object3dCommon* object3dCommon_ = nullptr;
 	Model* model_ = nullptr;
