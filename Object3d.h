@@ -96,14 +96,14 @@ public: // アクセッサ
 	/*===============================================//
 						  回転
 	//===============================================*/
-	float GetRotation()const { return rotation_; }
-	void SetRotation(float rotation) { rotation_ = rotation; }
+	const Vector3& GetRotation()const { return rotation_; }
+	void SetRotation(const Vector3& rotation) { rotation_ = rotation; }
 
 	/*===============================================//
 						  拡縮
 	//===============================================*/
-	const Vector2& GetSize() { return size_; }
-	void SetSize(const Vector2& size) { size_ = size; }
+	const Vector3& GetScale() { return scale_; }
+	void Setscale(const Vector3& scale) { scale_ = scale; }
 
 	/*===============================================//
 					　アンカーポイント
@@ -143,9 +143,10 @@ private: // メンバ変数
 	Vector2 textureSize_ = { 64.0f,64.0f };
 
 	// 3DオブジェクトのSRT
-	Vector3 position_ = { 0.0f,0.0f,0.0f};
-	float rotation_ = 0.0f;
-	Vector2 size_ = { 100.0f,100.0f};
+	Vector3 scale_ = { 1.0f,1.0f,1.0f };
+	Vector3 position_ = { 0.0f,3.0f,0.0f};
+	Vector3 rotation_ = { 0.0f,0.0f,0.0f };
+	
 
 	// アンカーポイント
 	Vector3 anchorPoint_ = { 0.5f,0.5f,0.5f };

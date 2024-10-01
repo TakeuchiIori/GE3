@@ -73,6 +73,11 @@ private:
 	static MaterialData LoadMaterialTemplateFile(const std::string& directoryPath, const std::string& filename);
 	//.objファイルの読み取り
 	static ModelData LoadObjFile(const std::string& directoryPath, const std::string& filename);
+
+public: // アクセッサ
+
+
+
 private: // メンバ変数
 	// ModelCommonのポインタ
 	ModelCommon* modelCommon_;
@@ -89,8 +94,6 @@ private: // メンバ変数
 	// マテリアル
 	Microsoft::WRL::ComPtr<ID3D12Resource> materialResource_;
 	Material* materialData_ = nullptr;
-
-	
 	
 	
 };

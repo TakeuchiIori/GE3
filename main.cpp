@@ -141,6 +141,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		
 			input_->Update(winApp_);
 
+			/*================================================================//
+									   ゲームの処理開始
+			//================================================================*/
+
 			// 2Dスプライトの更新
 			for (size_t i = 0; i < sprites.size(); ++i) {
 				Sprite* sprite = sprites[i];
@@ -168,9 +172,16 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 			// 3Dオブジェクトの更新
 			object3d->Update();
-			float rotate = object3d->GetRotation();
-			rotate += 0.01f;
+
+			// 
+			Vector3 rotate = object3d->GetRotation();
+			rotate.y += 0.01f;
 			object3d->SetRotation(rotate);
+
+
+			/*================================================================//
+									    ゲームの処理終了
+			//================================================================*/
 
 			// DirectXの描画準備。全ての描画にグラフィックスコマンドを積む
 			dxCommon_->PreDraw();
