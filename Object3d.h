@@ -23,6 +23,7 @@ public: // 構造体
 	};
 	struct MaterialData {
 		std::string textureFilePath;
+		uint32_t textureIndex = 0;
 	};
 	struct ModelData {
 		std::vector<VertexData> vertices;
@@ -122,10 +123,6 @@ private: // メンバ変数
 	VertexData* vertexData_ = nullptr;
 	// バッファリソースの使い道を補足するバッファービュー
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferView_{};
-
-
-	// テクスチャ番号
-	uint32_t textureIndex = 0;
 
 	// テクスチャ左上座標
 	Vector2 textureLeftTop_ = { 0.0f,0.0f };

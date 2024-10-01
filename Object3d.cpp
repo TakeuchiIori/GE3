@@ -20,10 +20,11 @@ void Object3d::Initialize(Object3dCommon* object3dCommon)
 
 	DirectionalLightResource();
 
-
-	//TextureManager::GetInstance()->LoadTexture(textureFilePath);
-
-	//textureIndex = TextureManager::GetInstance()->GetTextureIndexByFilePath(textureFilePath);
+	// .objの参照しているテクスチャファイル読み込み
+	TextureManager::GetInstance()->LoadTexture(modelData_.material.textureFilePath);
+	// 読み込んだテクスチャ番号の取得
+	modelData_.material.textureIndex =
+		TextureManager::GetInstance()->GetTextureIndexByFilePath(modelData_.material.textureFilePath);
 
 	//AdjustTaxtureSize();
 }
@@ -66,7 +67,7 @@ void Object3d::CreateVertex()
 		bottom = -bottom;
 	}
 
-	const DirectX::TexMetadata& metadata = TextureManager::GetInstance()->GetMetaData(textureIndex);
+	const DirectX::TexMetadata& metadata = TextureManager::GetInstance()->GetMetaData(modelData_.material.textureIndex);
 	float tex_left = textureLeftTop_.x / metadata.width;
 	float tex_right = (textureLeftTop_.x + textureSize_.x) / metadata.width;
 	float tex_top = textureLeftTop_.y / metadata.height;
@@ -168,7 +169,7 @@ void Object3d::DirectionalLightResource()
 void Object3d::AdjustTaxtureSize()
 {
 	// テクスチャメタデータを取得
-	const DirectX::TexMetadata& metadata = TextureManager::GetInstance()->GetMetaData(textureIndex);
+	const DirectX::TexMetadata& metadata = TextureManager::GetInstance()->GetMetaData(modelData_.material.textureIndex);
 
 	textureSize_.x = static_cast<float>(metadata.width);
 	textureSize_.y = static_cast<float>(metadata.height);
