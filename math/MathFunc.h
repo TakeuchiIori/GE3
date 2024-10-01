@@ -23,7 +23,7 @@ float Magnitude(const Vector3& v) { return std::sqrt(MagnitudeSquared(v)); }
 
 // ベクトルの正規化を行う関数
  float Normalize(const float& v) {
-	 float mag = Magnitude(v);
+	 //float mag = Magnitude(v);
 	 return { v / v };
  }
 Vector3 Normalize(const Vector3& v) {

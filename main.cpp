@@ -14,12 +14,6 @@
 
 #include "externals/DirectXTex/DirectXTex.h"
 
-#include "CreateTextureResource.h"
-
-
-
-#include "Material.h"
-#include "DirectionalLight.h"
 #include "math/MathFunc.h"
 #include "TransformationMatrix.h"
 
@@ -51,7 +45,6 @@
 //Windowsアプリのエントリーポイント(main関数)
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
-	D3DResorceLeakChecker* leakCheack;
 	WinApp* winApp_ = nullptr;
 	winApp_ = new WinApp();
 	winApp_->Initialize();
@@ -100,7 +93,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		sprite->Initialize(spriteCommon_, textureFilePath[1]);
 		// 移動テスト: インデックスに応じてX、Y座標をずらして配置
 		Vector2 position;
-		position.x = i * 200;
+		position.x = i * 200.0f;
 		position.y = 0.0f;
 		sprite->SetPosition(position);
 
@@ -120,7 +113,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	// 複数のオブジェクトを初期化
 	uint32_t numObjects = 2;
-	for (int i = 0; i < numObjects; ++i) {
+	for (uint32_t i = 0; i < numObjects; ++i) {
 		Object3d* object = new Object3d();
 		object->Initialize(object3dCommon_);
 		Vector3 position;
