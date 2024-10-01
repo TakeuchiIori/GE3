@@ -164,7 +164,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="math\Vector2.h" />
     <ClInclude Include="math\Vector3.h" />
     <ClInclude Include="math\Vector4.h" />
-    <ClInclude Include="ModelData.h" />
     <ClInclude Include="Object3d.h" />
     <ClInclude Include="Object3dCommon.h" />
     <ClInclude Include="ResourceObject.h" />
@@ -175,7 +174,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="VectorSRT.h" />
     <ClInclude Include="TransformationMatrix.h" />
     <ClInclude Include="UploadTextureData.h" />
-    <ClInclude Include="VertexData.h" />
     <ClInclude Include="WinApp.h" />
   </ItemGroup>
   <ItemGroup>

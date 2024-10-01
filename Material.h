@@ -1,6 +1,6 @@
 #pragma once
 #include "math/Vector4.h"
-#include "VertexData.h"
+
 #include <vector>
 #include <stdint.h>
 struct Material {

@@ -5,7 +5,7 @@
 #include <dxgi1_6.h>
 #include <dxgidebug.h>
 #include <dxcapi.h>
-#include "VertexData.h"
+
 #include "math/Vector4.h"
 #include "math/Matrix4x4.h"
 
