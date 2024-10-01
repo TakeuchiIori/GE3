@@ -165,7 +165,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			}
 		
 			
-			
+			// DirectXの描画終了
 			dxCommon_->PostDraw();
 			
 
