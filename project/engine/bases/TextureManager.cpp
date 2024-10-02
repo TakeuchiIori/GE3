@@ -54,9 +54,6 @@ void TextureManager::LoadTexture(const std::string& filePath)
 
 	// テクスチャデータを追加
 	TextureData& textureData = textureDatas[filePath];
-
-	// 追加したテクスチャデータの参照を取得する
-	//TextureData& textureData = textureDatas.back();
 	
 	textureData.metadata = image.GetMetadata();
 	textureData.resource = dxCommon_->CreateTextureResource(textureData.metadata);
@@ -90,7 +87,7 @@ uint32_t TextureManager::GetTextureIndexByFilePath(const std::string& filePath)
 	if (it != textureDatas.end()) {
 		return it->second.srvIndex;
 	}
-
+	Log("Error: Texture not found for filePath: " + filePath); // ログを追加
 	// 見つからない場合はassertでエラーにする
 	assert(0);
 	return 0;
@@ -98,14 +95,19 @@ uint32_t TextureManager::GetTextureIndexByFilePath(const std::string& filePath)
 
 D3D12_GPU_DESCRIPTOR_HANDLE TextureManager::GetsrvHandleGPU(const std::string& filePath)
 { 
-    // テクスチャ番号が範囲内であることを確認
-  //  assert(filePath < textureDatas.size());
+	// テクスチャが存在するか確認
+	auto it = textureDatas.find(filePath);
+	if (it == textureDatas.end()) {
+		// テクスチャが存在しない場合はエラーハンドリング
+		Log("Error: Texture not found for filePath: " + filePath);
+		throw std::runtime_error("Texture not found for filePath: " + filePath);
+	}
 
-    // テクスチャデータの参照を取得
-    TextureData& textureData = textureDatas[filePath];
+	// テクスチャデータの参照を取得
+	TextureData& textureData = it->second;
 
-    // GPUハンドルを返却
-    return textureData.srvHandleGPU;
+	// GPUハンドルを返却
+	return textureData.srvHandleGPU;
 }
 
 std::wstring TextureManager::ConvertString(const std::string& str) {
@@ -142,11 +144,16 @@ void TextureManager::Log(const std::string& message) {
 const DirectX::TexMetadata& TextureManager::GetMetaData(const std::string& filePath)
 {
 
-	// テクスチャ番号が範囲内であることを確認
-	//assert(textureIndex < textureDatas.size());
+	// テクスチャが存在するか確認
+	auto it = textureDatas.find(filePath);
+	if (it == textureDatas.end()) {
+		// テクスチャが存在しない場合はエラーハンドリング
+		Log("Error: Texture not found for filePath: " + filePath);
+		throw std::runtime_error("Texture not found for filePath: " + filePath);
+	}
 
 	// テクスチャデータの参照を取得
-	TextureData& textureData = textureDatas[filePath];
+	TextureData& textureData = it->second;
 
 	// メタデータを返却
 	return textureData.metadata;

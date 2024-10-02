@@ -303,8 +303,7 @@ void DirectXCommon::PreDraw()
 	commandList_->ClearRenderTargetView(rtvHandles_[backBufferIndex], clearColor, 0, nullptr);
 
 	// ディスクリプタヒープの設定
-	//ID3D12DescriptorHeap* descriptorHeaps[] = { srvDescriptorHeap_.Get() };
-	//commandList_->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
+
 	commandList_->RSSetViewports(1, &viewport_);
 	commandList_->RSSetScissorRects(1, &scissorRect_);
 }
