@@ -7,6 +7,7 @@ class DirectXCommon;
 // SRV管理
 class SrvManager
 {
+	
 
 public: // メンバ関数
 
@@ -16,6 +17,15 @@ public: // メンバ関数
 	/// <param name="dxCommon"></param>
 	void Initialize(DirectXCommon* dxCommon);
 
+	/// <summary>
+	/// 描画の前準備
+	/// </summary>
+	void PreDraw();
+
+	/// <summary>
+	/// SRVセットコマンド
+	/// </summary>
+	void SetGraphicsRootDescriptorTable(UINT RootParameterIndex, uint32_t srvIndex);
 
 
 private:
@@ -45,12 +55,15 @@ private:
 
 
 
+public:
+	// 最大SRV数（最大テクスチャ枚数）
+	static const uint32_t kMaxSRVcount_;
+
 private: // メンバ変数
 	// ポインタ
 	DirectXCommon* dxCommon_ = nullptr;
 
-	// 最大SRV数（最大テクスチャ枚数）
-	static const uint32_t kMaxSRVcount_;
+	
 	// 次に使用するSRVインデックス
 	uint32_t useIndex_ = 0;
 	// SRV用のデスクリプタサイズ

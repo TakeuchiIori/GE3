@@ -5,7 +5,8 @@
 #include "DirectXCommon.h"
 #include "d3d12.h"
 #include "DirectXTex.h"
-
+#include "SrvManager.h"
+#include <unordered_map>
 
 // テクスチャマネージャー
 class TextureManager
@@ -31,7 +32,7 @@ public: // メンバ関数
 	/// <summary>
 	/// 初期化
 	/// </summary>
-	void Initialize(DirectXCommon* dxCommon);
+	void Initialize(DirectXCommon* dxCommon,SrvManager* srvManager);
 
 
 	/// <summary>
@@ -60,13 +61,14 @@ public: // メンバ関数
 private: // メンバ変数
 
 	static TextureManager* instance;
+	SrvManager* srvManager_;
 	TextureManager() = default;
 	~TextureManager() = default;
 	TextureManager(TextureManager&) = delete;
 	TextureManager& operator = (TextureManager&) = delete;
 
 	// テクスチャデータ
-	std::vector<TextureData> textureDatas;
+	std::unordered_map<std::string,TextureData> textureDatas;
 	// DirectXCommon
 	DirectXCommon* dxCommon_ = nullptr;
 

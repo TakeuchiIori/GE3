@@ -19,13 +19,15 @@ void TextureManager::Finalize()
 	instance = nullptr;
 }
 
-void TextureManager::Initialize(DirectXCommon* dxCommon)
+void TextureManager::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager)
 {
 	 // dxCommon_ を設定
     this->dxCommon_ = dxCommon;
+	// SrvManagerを設定
+	this->srvManager_ = srvManager;
 
 	// SRVの数と同数
-	textureDatas.reserve(DirectXCommon::kMaxSRVCount);
+	textureDatas.reserve(SrvManager::kMaxSRVcount_);
 }
 
 void TextureManager::LoadTexture(const std::string& filePath)
@@ -41,7 +43,7 @@ void TextureManager::LoadTexture(const std::string& filePath)
 		return;
 	}
 	// テクスチャ上限枚数チェック
-	assert(textureDatas.size() + kSRVIndexTop < DirectXCommon::kMaxSRVCount);
+	assert(textureDatas.size() + kSRVIndexTop < SrvManager::kMaxSRVcount_);
 
 
 	// テクスチャファイルを読んでプログラムで扱えるようにする

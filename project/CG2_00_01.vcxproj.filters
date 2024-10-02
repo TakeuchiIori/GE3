@@ -120,8 +120,8 @@
     <ClCompile Include="engine\3d\Camera.cpp">
       <Filter>ソース ファイル\engine\3d</Filter>
     </ClCompile>
-    <ClCompile Include="SrvManager.cpp">
-      <Filter>ソース ファイル</Filter>
+    <ClCompile Include="engine\bases\SrvManager.cpp">
+      <Filter>ソース ファイル\engine\base</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -203,8 +203,8 @@
     <ClInclude Include="engine\3d\Camera.h">
       <Filter>ヘッダー ファイル\engine\3d</Filter>
     </ClInclude>
-    <ClInclude Include="SrvManager.h">
-      <Filter>ヘッダー ファイル</Filter>
+    <ClInclude Include="engine\bases\SrvManager.h">
+      <Filter>ヘッダー ファイル\engine\base</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

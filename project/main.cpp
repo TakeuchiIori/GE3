@@ -11,6 +11,7 @@
 #include "ModelManager.h"
 #include "imgui_impl_win32.h"
 #include "Camera.h"
+#include "SrvManager.h"
 
 
 
@@ -37,13 +38,18 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 #pragma region 基礎システムの初期化
 
+	// SRVマネージャの初期化
+	SrvManager* srvManager_ = nullptr;
+	srvManager_ = new SrvManager();
+	srvManager_->Initialize(dxCommon_);
+
 	SpriteCommon* spriteCommon_ = nullptr;
 	// スプライト共通部の初期化
 	spriteCommon_ = new SpriteCommon();
 	spriteCommon_->Initialize(dxCommon_);
 
 	// テクスチャマネージャの初期化
-	TextureManager::GetInstance()->Initialize(dxCommon_);
+	TextureManager::GetInstance()->Initialize(dxCommon_,srvManager_);
 
 	// 3Dオブジェクト共通部の初期化
 	Object3dCommon* object3dCommon_ = nullptr;
@@ -61,6 +67,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	camera_->SetRotate({ 0.0f,0.0f,0.0f });
 	camera_->SetTranslate({ 0.0f,4.0f,-10.0f });
 	object3dCommon_->SetDefaultCamera(camera_);
+
+
+
 
 #pragma endregion 基礎システムの初期化
 
@@ -225,6 +234,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	delete spriteCommon_;
 	delete object3dCommon_;
 	delete camera_;
+	delete srvManager_;
 	// 描画処理
 	for (auto& obj : object3ds) {
 		delete obj;
