@@ -1,27 +1,4 @@
-#include <Windows.h>
-#include <string>
-#include <format>
-#include <cstdint>
-#include <dxgi1_6.h>
-#include <dxgidebug.h>
-#include <dxcapi.h>
-
-#include "Vector4.h"
-#include "Matrix4x4.h"
-
-
-#include "externals/imgui/imgui_impl_dx12.h"
-
-#include "externals/DirectXTex/DirectXTex.h"
-
-#include "MathFunc.h"
-
-#include <corecrt_math_defines.h>
-
-#include<wrl.h>
-
-
-
+#include "imgui_impl_dx12.h"
 #include "WinApp.h"
 #include "Input.h"
 #include "DirectXCommon.h"
@@ -32,7 +9,7 @@
 #include "Object3d.h"
 #include "Model.h"
 #include "ModelManager.h"
-#include "externals/imgui/imgui_impl_win32.h"
+#include "imgui_impl_win32.h"
 
 
 
