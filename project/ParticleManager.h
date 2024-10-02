@@ -3,6 +3,25 @@
 class DirectXCommon;
 class SrvManager;
 class ParticleManager {
+
+public:
+	enum BlendMode {
+		// ブレンド無し
+		kBlendModeNone,
+		// 通常のブレンド
+		kBlendModeNormal,
+		// 加算
+		kBlendModeAdd,
+		// 減算
+		kBlendModeSubtract,
+		// 乗算
+		kBlendModeMultiply,
+		// スクリーン
+		kBlendModeScreen,
+
+		// 利用してはいけない
+		kCount0fBlendMode,
+	};
 public:
     // シングルトンインスタンスの取得
     static ParticleManager* GetInstance();
@@ -25,9 +44,51 @@ public: // メンバ関数
 	/// </summary>
 	void Update();
 
+	void SetBlendMode(D3D12_BLEND_DESC& blendDesc, BlendMode blendMode);
+
+	void ShowBlendModeDropdown(BlendMode& currentBlendMode);
+
+	void Render(D3D12_BLEND_DESC& blendDesc, BlendMode& currentBlendMode);
+
+private:
+
+	/// <summary>
+	///  ルートシグネチャ生成
+	/// </summary>
+	void CreateRootSignature();
+
+	/// <summary>
+	/// パイプライン生成
+	/// </summary>
+	void CreateGraphicsPipeline();
+
+	/// <summary>
+	/// 頂点リソース
+	/// </summary>
+	void CreateVertexResource();
+
+	/// <summary>
+	/// 頂点
+	/// </summary>
+	void CreateVertexVBV();
+
+
+
 
 private: // メンバ変数
 	DirectXCommon* dxCommon_;
 	SrvManager* srvManager_;
+
+	// ルートシグネチャ
+	D3D12_ROOT_SIGNATURE_DESC descriptionRootSignature{};
+	D3D12_DESCRIPTOR_RANGE descriptorRangeForInstancing[1] = {};
+	// ルートパラメーター
+	D3D12_ROOT_PARAMETER rootParameters[4] = {};
+	// サンプラー
+	D3D12_STATIC_SAMPLER_DESC staticSamplers[1] = {};
+	// インプットレイアウト
+	D3D12_INPUT_ELEMENT_DESC inputElementDescs[3] = {};
+	// ブレンド
+	D3D12_BLEND_DESC blendDesc{};
 
 };
