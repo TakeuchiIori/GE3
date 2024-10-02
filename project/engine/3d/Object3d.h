@@ -7,7 +7,7 @@
 #include "Matrix4x4.h"
 #include "Vector2.h"
 #include "Vector3.h"
-
+#include "Camera.h"
 //　構造体
 
 
@@ -124,10 +124,15 @@ public: // アクセッサ
 	void SetIsFlipX(const bool& isFlipX) { this->isFlipX_ = isFlipX; }
 	void SetIsFlipY(const bool& isFlipY) { this->isFlipY_ = isFlipY; }
 
+	
 	void SetModel(const std::string& filePath);
+	void SetCamera(Camera* camera) { this->camera_ = camera; }
+
 private: // メンバ変数
+	// ポインタ
 	Object3dCommon* object3dCommon_ = nullptr;
 	Model* model_ = nullptr;
+	Camera* camera_ = nullptr;
 
 	// 平行光源
 	Microsoft::WRL::ComPtr<ID3D12Resource> directionalLightResource_;
@@ -156,7 +161,7 @@ private: // メンバ変数
 	bool isFlipY_ = false;
 
 	Transform transform_;
-	Transform cameraTransform_;
+	
 
 };
 

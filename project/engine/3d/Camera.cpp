@@ -17,12 +17,15 @@ void Camera::Update()
 {
 	// transformからアフィン変換行列を計算
 	worldMatrix_ = MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.translate);
-	// worldMatrixの逆行列
-	viewMatrix_ = Inverse(worldMatrix_);
-	// プロジェクション行列の更新
-	projectionMatrix_ = MakePerspectiveFovMatrix(fovY_, aspectRatio_, nearClip_,farClip_);
-	// 合成行列
-	viewProjectionMatrix_ = Multiply(viewMatrix_, projectionMatrix_);
+    // worldMatrixの逆行列
+    viewMatrix_ = Inverse(worldMatrix_);
+    // プロジェクション行列の更新
+    projectionMatrix_ = MakePerspectiveFovMatrix(fovY_, aspectRatio_, nearClip_, farClip_);
+    // 合成行列
+    viewProjectionMatrix_ = Multiply(viewMatrix_, projectionMatrix_);
+	
+	
+	
 
 
 }

@@ -1,5 +1,6 @@
 #pragma once
 #include "DirectXCommon.h"
+#include "Camera.h"
 
 // 3Dオブジェクト共通部
 class DirectXCommon;
@@ -17,8 +18,12 @@ public: // メンバ関数
 	void DrawPreference();
 
 public: // アクセッサ
+	// getter
+	Camera* GetDefaultCamera() const { return defaultCamera_; }
+	
+	// setter
 	DirectXCommon* GetDxCommon() const { return dxCommon_; }
-
+	void SetDefaultCamera(Camera* camera){ this->defaultCamera_ = camera; }
 
 
 private:
@@ -48,7 +53,9 @@ private:
 	void SetPrimitiveTopology();
 
 private:
+	// ポインタ
 	DirectXCommon* dxCommon_;
+	Camera* defaultCamera_ = nullptr;
 	// ディスクリプターレンジ
 	D3D12_DESCRIPTOR_RANGE descriptorRange[1] = {};
 	// ルートシグネチャ

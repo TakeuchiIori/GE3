@@ -10,6 +10,7 @@
 #include "Model.h"
 #include "ModelManager.h"
 #include "imgui_impl_win32.h"
+#include "Camera.h"
 
 
 
@@ -24,7 +25,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	winApp_ = new WinApp();
 	winApp_->Initialize();
 
-	
+
 	Input* input_ = nullptr;
 	input_ = new Input();
 	input_->Initialize(winApp_);
@@ -54,9 +55,16 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	// .objファイルからモデルを読み込む
 	ModelManager::GetInstance()->LoadModel("plane.obj");
 	ModelManager::GetInstance()->LoadModel("axis.obj");
+
+	// デフォルトカメラ
+	Camera* camera_ = new Camera();
+	camera_->SetRotate({ 0.0f,0.0f,0.0f });
+	camera_->SetTranslate({ 0.0f,4.0f,-10.0f });
+	object3dCommon_->SetDefaultCamera(camera_);
+
 #pragma endregion 基礎システムの初期化
 
-	
+
 
 #pragma region 最初のシーンの初期化
 
@@ -75,7 +83,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		// 初期色の設定（任意で設定）
 		Vector4 color = { 1.0f, 1.0f, 1.0f, 1.0f }; // 白色
 		sprite->SetColor(color);
-		if (i % 2 != 0 ) {
+		if (i % 2 != 0) {
 			sprite->ChangeTexture(textureFilePath[0]);
 		}
 		else {
@@ -110,7 +118,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 #pragma endregion 最初のシーンの終了
 
 
-	
+
 	// ウィンドウのxボタンが押されるまでループ
 	while (true) {
 		// windowにメッセージが来てたら最優先で処理させる
@@ -118,85 +126,87 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			// ゲームループを抜ける
 			break;
 		}
-		
-			input_->Update(winApp_);
 
-			/*================================================================//
-									   ゲームの処理開始
-			//================================================================*/
+		// キーボード入力
+		input_->Update(winApp_);
 
-			// 2Dスプライトの更新
-			for (size_t i = 0; i < sprites.size(); ++i) {
-				Sprite* sprite = sprites[i];
-				sprite->Update();
+		/*================================================================//
+								   ゲームの処理開始
+		//================================================================*/
 
-				// 回転テスト
-				float rotation = sprite->GetRotation();
-				rotation += 0.01f;
-				//sprite->SetRotation(rotation);
+		// 2Dスプライトの更新
+		for (size_t i = 0; i < sprites.size(); ++i) {
+			Sprite* sprite = sprites[i];
+			sprite->Update();
 
-				// サイズ変化
-				Vector2 size = sprite->GetSize();
-				size.x += 0.01f;  // サイズ変化を少し小さくする
-				size.y += 0.01f;  // サイズ変化を少し小さくする
-				//sprite->SetSize(size);
+			// 回転テスト
+			float rotation = sprite->GetRotation();
+			rotation += 0.01f;
+			//sprite->SetRotation(rotation);
 
-				// 色テスト
-				Vector4 color = sprite->GetColor();
-				color.x += 0.01f;
-				if (color.x > 1.0f) {
-					color.x -= 1.0f;
-				}
-				//sprite->SetColor(color);
+			// サイズ変化
+			Vector2 size = sprite->GetSize();
+			size.x += 0.01f;  // サイズ変化を少し小さくする
+			size.y += 0.01f;  // サイズ変化を少し小さくする
+			//sprite->SetSize(size);
+
+			// 色テスト
+			Vector4 color = sprite->GetColor();
+			color.x += 0.01f;
+			if (color.x > 1.0f) {
+				color.x -= 1.0f;
 			}
+			//sprite->SetColor(color);
+		}
 
-			// 3Dオブジェクトの更新
-			for (int i = 0; i < object3ds.size(); ++i) {
-				Object3d* obj = object3ds[i];
-				obj->Update();
-				Vector3 rotate = obj->GetRotation();
-				if (i == 0) {
-					// 1つ目のオブジェクト: Y軸で回転
-					rotate.y += 0.01f;
-				}
-				else if (i == 1) {
-					// 2つ目のオブジェクト: Z軸で回転
-					rotate.z += 0.01f;
-				}
-				// 更新した回転、スケール、位置を適用
-				obj->SetRotation(rotate);
+		// 3Dオブジェクトの更新
+		for (int i = 0; i < object3ds.size(); ++i) {
+			Object3d* obj = object3ds[i];
+			obj->Update();
+			Vector3 rotate = obj->GetRotation();
+			if (i == 0) {
+				// 1つ目のオブジェクト: Y軸で回転
+				rotate.y += 0.01f;
 			}
-			
-
-
-			/*================================================================//
-									    ゲームの処理終了
-			//================================================================*/
-
-			// DirectXの描画準備。全ての描画にグラフィックスコマンドを積む
-			dxCommon_->PreDraw();
-
-			// 3Dオブジェクトの描画準備。3Dオブジェクトの描画に共通のグラフィックスコマンドを積む
-			object3dCommon_->DrawPreference();
-
-			// 2DSpriteの描画準備。Spriteの描画に共通のグラフィックスコマンドを積む
-			spriteCommon_->DrawPreference();
-
-	
-			// 描画
-			// 2Dスプライト
-			for (Sprite* sprite : sprites) {
-				sprite->Draw();
+			else if (i == 1) {
+				// 2つ目のオブジェクト: Z軸で回転
+				rotate.z += 0.01f;
 			}
-			// 3Dオブジェクト
-			for (auto& obj : object3ds) {
-				obj->Draw();
-			}
-		
-			
-			// DirectXの描画終了
-			dxCommon_->PostDraw();
-			
+			// 更新した回転、スケール、位置を適用
+			obj->SetRotation(rotate);
+		}
+
+		// デフォルトカメラの更新
+		camera_->Update();
+
+		/*================================================================//
+									ゲームの処理終了
+		//================================================================*/
+
+		// DirectXの描画準備。全ての描画にグラフィックスコマンドを積む
+		dxCommon_->PreDraw();
+
+		// 3Dオブジェクトの描画準備。3Dオブジェクトの描画に共通のグラフィックスコマンドを積む
+		object3dCommon_->DrawPreference();
+
+		// 2DSpriteの描画準備。Spriteの描画に共通のグラフィックスコマンドを積む
+		spriteCommon_->DrawPreference();
+
+
+		// 描画
+		// 2Dスプライト
+		for (Sprite* sprite : sprites) {
+			sprite->Draw();
+		}
+		// 3Dオブジェクト
+		for (auto& obj : object3ds) {
+			obj->Draw();
+		}
+
+
+		// DirectXの描画終了
+		dxCommon_->PostDraw();
+
 
 
 	}// ゲームループの終了
@@ -214,12 +224,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	delete dxCommon_;
 	delete spriteCommon_;
 	delete object3dCommon_;
+	delete camera_;
 	// 描画処理
 	for (auto& obj : object3ds) {
 		delete obj;
 	}
-	/*delete model_;
-	delete modelCommon_;*/
 	// 描画
 	for (Sprite* sprite : sprites) {
 		delete sprite;
@@ -228,7 +237,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	TextureManager::GetInstance()->Finalize();
 	// 3Dモデルマネージャの終了
 	ModelManager::GetInstance()->Finalize();
-	
+
 	return 0;// main関数のリターン
 }
 

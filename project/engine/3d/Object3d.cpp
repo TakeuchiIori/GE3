@@ -12,6 +12,9 @@ void Object3d::Initialize(Object3dCommon* object3dCommon)
 	// 引数で受け取ってメンバ変数に記録する
 	this->object3dCommon_ = object3dCommon;
 
+	// デフォルトカメラのセット
+	this->camera_ = object3dCommon_->GetDefaultCamera();
+
 	// 平行光源の初期化
 	DirectionalLightResource();
 
@@ -20,7 +23,7 @@ void Object3d::Initialize(Object3dCommon* object3dCommon)
 	
 	// Transform変数を作る
 	transform_ = { scale_ ,rotation_,position_ };
-	cameraTransform_ = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,4.0f,-10.0f} };
+	
 
 }
 
@@ -30,11 +33,16 @@ void Object3d::Update()
 	transform_.translate = position_;
 
 	Matrix4x4 worldMatrix = MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.translate);
-	Matrix4x4 cameraMatrix = MakeAffineMatrix(cameraTransform_.scale, cameraTransform_.rotate, cameraTransform_.translate);
-	Matrix4x4 viewMatrix = Inverse(cameraMatrix);
-	Matrix4x4 projectionMatrix = MakePerspectiveFovMatrix(0.45f, float(WinApp::kClientWidth) / float(WinApp::kClientHeight), 0.1f, 100.0f);
+	Matrix4x4 worldViewProjectionMatrix;
+	if (camera_) {
+		const Matrix4x4& viewProjectionMatrix = camera_->GetViewProjectionMatrix();
+		worldViewProjectionMatrix = Multiply(worldMatrix, viewProjectionMatrix);
+	}
+	else {
+		worldViewProjectionMatrix = worldMatrix;
+	}
 
-	Matrix4x4 worldViewProjectionMatrix = Multiply(worldMatrix, Multiply(viewMatrix, projectionMatrix));
+
 	transformationMatrixData_->WVP = worldViewProjectionMatrix;
 	transformationMatrixData_->World = worldMatrix;
 	

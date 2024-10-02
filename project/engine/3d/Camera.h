@@ -25,13 +25,13 @@ public: // アクセッサ
     void SetFarClip(float farClip) {farClip_ = farClip;     }
 
 	// getter
-	const Matrix4x4& GetWorldMatrix() const { worldMatrix_; }
-	const Matrix4x4& GetViewMatrix() const { viewMatrix_; }
-	const Matrix4x4& GetProjectionMatrix() const { projectionMatrix_; }
-	const Matrix4x4& GetViewProjectionMatrix() const { viewProjectionMatrix_; }
-	Vector3 GetRotate() const { transform_.rotate; }
-	Vector3 GetTranslate() const { transform_.translate; }
-	Vector3 GetScale() const { transform_.scale; }
+	const Matrix4x4& GetWorldMatrix() const { return worldMatrix_; }
+	const Matrix4x4& GetViewMatrix() const { return viewMatrix_; }
+	const Matrix4x4& GetProjectionMatrix() const { return projectionMatrix_; }
+	const Matrix4x4& GetViewProjectionMatrix() const { return viewProjectionMatrix_; }
+	Vector3 GetRotate() const { return transform_.rotate; }
+	Vector3 GetTranslate() const { return transform_.translate; }
+	Vector3 GetScale() const { return transform_.scale; }
 
 private: // メンバ変数
 	Transform transform_;	   
