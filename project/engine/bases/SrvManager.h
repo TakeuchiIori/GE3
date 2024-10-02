@@ -18,6 +18,12 @@ public: // メンバ関数
 	void Initialize(DirectXCommon* dxCommon);
 
 	/// <summary>
+	/// アロケータ
+	/// </summary>
+	/// <returns></returns>
+	uint32_t Allocate();
+
+	/// <summary>
 	/// 描画の前準備
 	/// </summary>
 	void PreDraw();
@@ -26,14 +32,6 @@ public: // メンバ関数
 	/// SRVセットコマンド
 	/// </summary>
 	void SetGraphicsRootDescriptorTable(UINT RootParameterIndex, uint32_t srvIndex);
-
-
-private:
-	/// <summary>
-	/// アロケータ
-	/// </summary>
-	/// <returns></returns>
-	uint32_t Allocate();
 
 	/// <summary>
 	/// SRVの指定番号のCPUディスクリプタハンドルを取得
@@ -45,6 +43,12 @@ private:
 	/// </summary>
 	D3D12_GPU_DESCRIPTOR_HANDLE GetGPUSRVDescriptorHandle(uint32_t index);
 
+	/// <summary>
+	/// 確保可能チェック
+	/// </summary>
+	bool IsAllocation();
+
+private:
 	/// <summary>
 	/// SRV生成（テクスチャ用）
 	/// SRV生成（Structured Buffer用）

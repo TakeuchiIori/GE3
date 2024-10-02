@@ -14,10 +14,10 @@ class TextureManager
 private:
 	// テクスチャ1枚分のデータ
 	struct TextureData {
-		std::string filePath;
 		DirectX::TexMetadata metadata;
 		Microsoft::WRL::ComPtr<ID3D12Resource> resource;
 		Microsoft::WRL::ComPtr<ID3D12Resource> intermediateResource;
+		uint32_t srvIndex;
 		D3D12_CPU_DESCRIPTOR_HANDLE srvHandleCPU;
 		D3D12_GPU_DESCRIPTOR_HANDLE srvHandleGPU;
 	};
@@ -49,14 +49,14 @@ public: // メンバ関数
 	/// <summary>
 	/// テクスチャ番号からGPUハンドルを取得
 	/// </summary>
-	D3D12_GPU_DESCRIPTOR_HANDLE GetsrvHandleGPU(uint32_t textureIndex);
+	D3D12_GPU_DESCRIPTOR_HANDLE GetsrvHandleGPU(const std::string& filePath);
 
 	std::wstring ConvertString(const std::string& str);
 	std::string ConvertString(const std::wstring& str);
 	void Log(const std::string& message);
 
 	// メタデータを取得
-	const DirectX::TexMetadata& GetMetaData(uint32_t textureIndex);
+	const DirectX::TexMetadata& GetMetaData(const std::string& filePath);
 
 private: // メンバ変数
 

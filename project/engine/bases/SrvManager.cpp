@@ -1,5 +1,7 @@
 #include "SrvManager.h"
 #include "DirectXCommon.h"
+
+const uint32_t SrvManager::kMaxSRVcount_ = 512;
 void SrvManager::Initialize(DirectXCommon* dxCommon)
 {
 	// 引数で受け取ってメンバ変数に記録する
@@ -52,6 +54,17 @@ D3D12_GPU_DESCRIPTOR_HANDLE SrvManager::GetGPUSRVDescriptorHandle(uint32_t index
 	D3D12_GPU_DESCRIPTOR_HANDLE  handleGPU = descriptorHeap_->GetGPUDescriptorHandleForHeapStart();
 	handleGPU.ptr += (descriptorSize_ * index);
 	return handleGPU;
+}
+
+bool SrvManager::IsAllocation()
+{
+	if (kMaxSRVcount_ > useIndex_) {
+		return true;
+	}
+	else {
+		return false;
+	}
+	
 }
 
 void SrvManager::CreateSRVforTexture2D(uint32_t srvIndex, ID3D12Resource* pResource, DXGI_FORMAT Format, UINT MipLevels)

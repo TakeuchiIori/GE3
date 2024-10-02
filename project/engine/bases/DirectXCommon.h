@@ -191,10 +191,10 @@ public: // アクセッサ
 	Microsoft::WRL::ComPtr<ID3D12CommandAllocator> GetcommandAllocator() { return commandAllocator_; }
 
 	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> GetrtvDescriptorHeap() const { return rtvDescriptorHeap_; }
-	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> GetsrvDescriptorHeap() const { return srvDescriptorHeap_; }
+	//Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> GetsrvDescriptorHeap() const { return srvDescriptorHeap_; }
 	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> GetdsvDescriptorHeap() const { return dsvDescriptorHeap_; }
 
-	uint32_t GetdescriptotSizeSRV() const { return descriptotSizeSRV_;}
+	//uint32_t GetdescriptotSizeSRV() const { return descriptotSizeSRV_;}
 	uint32_t GetdescriptotSizeRTV() const { return descriptotSizeRTV_; }
 	uint32_t GetdescriptotSizeDSV() const { return descriptotSizeDSV_; }
 

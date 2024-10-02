@@ -6,6 +6,7 @@
 #include "Matrix4x4.h"
 #include "Vector2.h"
 #include "DirectXTex.h"
+#include "SrvManager.h"
 class SpriteCommon;
 class Sprite
 {
@@ -149,6 +150,7 @@ public: // アクセッサ
 private: // メンバ変数
 
 	SpriteCommon* spriteCommon_ = nullptr;
+	SrvManager* srvManagaer_;
 	/*===============================================//
 						Resouurces
 	//===============================================*/
@@ -183,7 +185,8 @@ private: // メンバ変数
 	D3D12_CPU_DESCRIPTOR_HANDLE textureSrvHandleCPU;
 	D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHandleGPU;
 	// テクスチャ番号
-	uint32_t textureIndex = 0;
+	uint32_t textureIndex_;
+	std::string filePath_;
 
 	// テクスチャ左上座標
 	Vector2 textureLeftTop_ = { 0.0f,0.0f };

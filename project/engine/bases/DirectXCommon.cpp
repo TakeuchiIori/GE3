@@ -10,7 +10,7 @@
 #pragma comment(lib,"dxgi.lib")
 
 using namespace Microsoft::WRL;
-const uint32_t DirectXCommon::kMaxSRVCount = 512;
+//const uint32_t DirectXCommon::kMaxSRVCount = 512;
 
 void DirectXCommon::Initialize(WinApp* winApp)
 {
@@ -248,13 +248,13 @@ void DirectXCommon::CreateDepthBuffer()
 void DirectXCommon::CreateDescriptorHeap()
 {
 	//　Descriptorのサイズ設定
-	descriptotSizeSRV_ = device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	//descriptotSizeSRV_ = device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 	descriptotSizeRTV_ = device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
 	descriptotSizeDSV_ = device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
 					 
 	// ディスクリプタヒープの生成 
 	rtvDescriptorHeap_ = CreateDescriptorHeap(device_.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_RTV, 2, false);
-	srvDescriptorHeap_ = CreateDescriptorHeap(device_.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, kMaxSRVCount, true);
+	//srvDescriptorHeap_ = CreateDescriptorHeap(device_.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, kMaxSRVCount, true);
 	dsvDescriptorHeap_ = CreateDescriptorHeap(device_.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_DSV, 1, false);
 
 }
@@ -303,8 +303,8 @@ void DirectXCommon::PreDraw()
 	commandList_->ClearRenderTargetView(rtvHandles_[backBufferIndex], clearColor, 0, nullptr);
 
 	// ディスクリプタヒープの設定
-	ID3D12DescriptorHeap* descriptorHeaps[] = { srvDescriptorHeap_.Get() };
-	commandList_->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
+	//ID3D12DescriptorHeap* descriptorHeaps[] = { srvDescriptorHeap_.Get() };
+	//commandList_->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
 	commandList_->RSSetViewports(1, &viewport_);
 	commandList_->RSSetScissorRects(1, &scissorRect_);
 }
@@ -372,7 +372,7 @@ void DirectXCommon::InitializeScissorRevtangle()
 
 void DirectXCommon::InitializeImGui()
 {
-	IMGUI_CHECKVERSION();
+	/*IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
 	ImGui::StyleColorsDark();
 	ImGui_ImplWin32_Init(winApp_->Gethwnd());
@@ -381,7 +381,7 @@ void DirectXCommon::InitializeImGui()
 		rtvDesc_.Format,
 		srvDescriptorHeap_.Get(),
 		GetCPUDescriptorHandle(srvDescriptorHeap_, descriptotSizeSRV_, 0),
-		GetGPUDescriptorHandle(srvDescriptorHeap_, descriptotSizeSRV_, 0));
+		GetGPUDescriptorHandle(srvDescriptorHeap_, descriptotSizeSRV_, 0));*/
 
 }
 
@@ -451,15 +451,15 @@ D3D12_GPU_DESCRIPTOR_HANDLE DirectXCommon::GetGPUDescriptorHandle(Microsoft::WRL
 }
 
 
-D3D12_CPU_DESCRIPTOR_HANDLE DirectXCommon::GetSRVCPUDescriptorHandle(uint32_t index)
-{
-	return GetCPUDescriptorHandle(srvDescriptorHeap_, descriptotSizeSRV_, index);
-}
-
-D3D12_GPU_DESCRIPTOR_HANDLE DirectXCommon::GetSRVGPUDescriptorHandle(uint32_t index)
-{
-	return GetGPUDescriptorHandle(srvDescriptorHeap_, descriptotSizeSRV_, index);
-}
+//D3D12_CPU_DESCRIPTOR_HANDLE DirectXCommon::GetSRVCPUDescriptorHandle(uint32_t index)
+//{
+//	//return GetCPUDescriptorHandle(srvDescriptorHeap_, descriptotSizeSRV_, index);
+//}
+//
+//D3D12_GPU_DESCRIPTOR_HANDLE DirectXCommon::GetSRVGPUDescriptorHandle(uint32_t index)
+//{
+//	//return GetGPUDescriptorHandle(srvDescriptorHeap_, descriptotSizeSRV_, index);
+//}
 
 D3D12_CPU_DESCRIPTOR_HANDLE DirectXCommon::GetDSVCPUDescriptorHandle(uint32_t index)
 {
