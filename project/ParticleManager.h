@@ -91,4 +91,19 @@ private: // メンバ変数
 	// ブレンド
 	D3D12_BLEND_DESC blendDesc{};
 
+	D3D12_RASTERIZER_DESC rasterrizerDesc{};
+	D3D12_DEPTH_STENCIL_DESC depthStencilDesc{};
+
+	Microsoft::WRL::ComPtr<IDxcBlob> vertexShaderBlob;
+	Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob;
+
+
+	D3D12_INPUT_LAYOUT_DESC inputLayoutDesc{};
+
+	Microsoft::WRL::ComPtr<ID3D12RootSignature> rootSignature = nullptr;
+
+
+
+	Microsoft::WRL::ComPtr<ID3D12PipelineState> graphicsPipelineState = nullptr;
+
 };
