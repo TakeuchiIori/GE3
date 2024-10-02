@@ -82,12 +82,13 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	std::string textureFilePath[2] = { "Resources./monsterBall.png" ,"Resources./uvChecker.png" };
 	for (uint32_t i = 0; i < 1; ++i) {
 		Sprite* sprite = new Sprite();
-		sprite->Initialize(spriteCommon_, textureFilePath[0]);
+		sprite->Initialize(spriteCommon_, textureFilePath[1]);
 		// 移動テスト: インデックスに応じてX、Y座標をずらして配置
 		Vector2 position;
 		position.x = i * 200.0f;
 		position.y = 0.0f;
 		sprite->SetPosition(position);
+		sprite->SetSrvManager(srvManager_);
 
 		// 初期色の設定（任意で設定）
 		Vector4 color = { 1.0f, 1.0f, 1.0f, 1.0f }; // 白色
@@ -223,9 +224,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	}// ゲームループの終了
 
-	ImGui_ImplDX12_Shutdown();
-	ImGui_ImplWin32_Shutdown();
-	ImGui::DestroyContext();
+
 
 	// 各解放の処理
 	CloseHandle(dxCommon_->GetfenceEvent());
@@ -250,6 +249,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	TextureManager::GetInstance()->Finalize();
 	// 3Dモデルマネージャの終了
 	ModelManager::GetInstance()->Finalize();
+
+	//ImGui_ImplDX12_Shutdown();
+	//ImGui_ImplWin32_Shutdown();
+	//ImGui::DestroyContext();
 
 	return 0;// main関数のリターン
 }

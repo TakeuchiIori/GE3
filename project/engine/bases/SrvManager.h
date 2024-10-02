@@ -59,7 +59,17 @@ public: // メンバ関数
 
 public:
 	// 最大SRV数（最大テクスチャ枚数）
-	static const uint32_t kMaxSRVcount_;
+	static const uint32_t kMaxSRVCount_;
+
+	// descriptorSize_ の Getter
+	uint32_t GetDescriptorSize() const {
+		return descriptorSize_;
+	}
+
+	// descriptorHeap_ の Getter
+	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> GetDescriptorHeap() const {
+		return descriptorHeap_;
+	}
 
 private: // メンバ変数
 	// ポインタ

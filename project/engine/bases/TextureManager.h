@@ -61,7 +61,7 @@ public: // メンバ関数
 private: // メンバ変数
 
 	static TextureManager* instance;
-	SrvManager* srvManager_;
+	SrvManager* srvManager_ = nullptr;
 	TextureManager() = default;
 	~TextureManager() = default;
 	TextureManager(TextureManager&) = delete;

@@ -145,7 +145,8 @@ public: // アクセッサ
 	// setter
 	void SetTextureLeftTop(const Vector2& textureLeftTop) {this->textureLeftTop_ = textureLeftTop;}
 	void SetTextureSize(const Vector2& textureSize) {this->textureSize_ = textureSize;}
-
+	// SrvManagerのセッター
+	void SetSrvManager(SrvManager* srvManager) {this->srvManagaer_ = srvManager;}
 
 private: // メンバ変数
 

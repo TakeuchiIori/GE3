@@ -1,14 +1,14 @@
 #include "SrvManager.h"
 
 
-const uint32_t SrvManager::kMaxSRVcount_ = 512;
+const uint32_t SrvManager::kMaxSRVCount_ = 512;
 void SrvManager::Initialize(DirectXCommon* dxCommon)
 {
 	// 引数で受け取ってメンバ変数に記録する
 	this->dxCommon_ = dxCommon;
 
 	// デスクリプタヒープの生成
-	descriptorHeap_ = dxCommon_->CreateDescriptorHeap(dxCommon_->Getdevice(),D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, kMaxSRVcount_,true);
+	descriptorHeap_ = dxCommon_->CreateDescriptorHeap(dxCommon_->Getdevice(),D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, kMaxSRVCount_,true);
 	// デスクリプタ1個分のサイズを取得して記録
 	descriptorSize_ = dxCommon_->Getdevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 
@@ -30,7 +30,7 @@ void SrvManager::SetGraphicsRootDescriptorTable(UINT RootParameterIndex, uint32_
 uint32_t SrvManager::Allocate()
 {
 	// 上限に達していないかチェックしてassert
-	assert(kMaxSRVcount_ > useIndex_);
+	assert(kMaxSRVCount_ > useIndex_);
 
 	// return する番号を一旦記録しておく
 	int index = useIndex_;
@@ -56,7 +56,7 @@ D3D12_GPU_DESCRIPTOR_HANDLE SrvManager::GetGPUSRVDescriptorHandle(uint32_t index
 
 bool SrvManager::IsAllocation()
 {
-	if (kMaxSRVcount_ > useIndex_) {
+	if (kMaxSRVCount_ > useIndex_) {
 		return true;
 	}
 	else {

@@ -44,7 +44,7 @@ void DirectXCommon::Initialize(WinApp* winApp)
 	// DXCコンパイラの生成
 	CreateDXCompiler();
 	// ImGuiの初期化
-	InitializeImGui();
+	//InitializeImGui();
 }	 
 
 void DirectXCommon::InitializeDXGIDevice()
@@ -372,16 +372,16 @@ void DirectXCommon::InitializeScissorRevtangle()
 
 void DirectXCommon::InitializeImGui()
 {
-	/*IMGUI_CHECKVERSION();
-	ImGui::CreateContext();
-	ImGui::StyleColorsDark();
-	ImGui_ImplWin32_Init(winApp_->Gethwnd());
-	ImGui_ImplDX12_Init(device_.Get(),
-		swapChainDesc.BufferCount,
-		rtvDesc_.Format,
-		srvDescriptorHeap_.Get(),
-		GetCPUDescriptorHandle(srvDescriptorHeap_, descriptotSizeSRV_, 0),
-		GetGPUDescriptorHandle(srvDescriptorHeap_, descriptotSizeSRV_, 0));*/
+	//IMGUI_CHECKVERSION();
+	//ImGui::CreateContext();
+	//ImGui::StyleColorsDark();
+	//ImGui_ImplWin32_Init(winApp_->Gethwnd());
+	//ImGui_ImplDX12_Init(device_.Get(),
+	//	swapChainDesc.BufferCount,
+	//	rtvDesc_.Format,
+	//	srvDescriptorHeap_.Get(),
+	//	GetCPUDescriptorHandle(srvDescriptorHeap_, descriptotSizeSRV_, 0),
+	//	GetGPUDescriptorHandle(srvDescriptorHeap_, descriptotSizeSRV_, 0));
 
 }
 

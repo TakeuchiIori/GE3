@@ -24,10 +24,10 @@ void TextureManager::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager)
 	 // dxCommon_ を設定
     this->dxCommon_ = dxCommon;
 	// SrvManagerを設定
-	srvManager_ = srvManager;
+	this->srvManager_ = srvManager;
 
 	// SRVの数と同数のバケット数を確保
-	textureDatas.rehash(kSRVIndexTop < SrvManager::kMaxSRVcount_);
+	textureDatas.rehash(kSRVIndexTop < SrvManager::kMaxSRVCount_);
 }
 
 void TextureManager::LoadTexture(const std::string& filePath)
