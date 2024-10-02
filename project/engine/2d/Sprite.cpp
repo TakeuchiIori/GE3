@@ -20,7 +20,7 @@ void Sprite::Initialize(SpriteCommon* spriteCommon, std::string& textureFilePath
 
 	TextureManager::GetInstance()->LoadTexture(textureFilePath);
 	
-	textureIndex_ = TextureManager::GetInstance()->GetTextureIndexByFilePath(filePath_);
+	textureIndex_ = TextureManager::GetInstance()->GetTextureIndexByFilePath(textureFilePath);
 
 	AdjustTaxtureSize();
 

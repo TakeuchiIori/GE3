@@ -306,6 +306,7 @@ void DirectXCommon::PreDraw()
 
 	commandList_->RSSetViewports(1, &viewport_);
 	commandList_->RSSetScissorRects(1, &scissorRect_);
+	
 }
 
 void DirectXCommon::PostDraw()

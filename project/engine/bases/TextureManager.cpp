@@ -24,10 +24,10 @@ void TextureManager::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager)
 	 // dxCommon_ を設定
     this->dxCommon_ = dxCommon;
 	// SrvManagerを設定
-	this->srvManager_ = srvManager;
+	srvManager_ = srvManager;
 
-	// SRVの数と同数
-	textureDatas.reserve(SrvManager::kMaxSRVcount_);
+	// SRVの数と同数のバケット数を確保
+	textureDatas.rehash(SrvManager::kMaxSRVcount_);
 }
 
 void TextureManager::LoadTexture(const std::string& filePath)
@@ -69,14 +69,14 @@ void TextureManager::LoadTexture(const std::string& filePath)
 	/*===============================================//
 						SRVの生成
 	//===============================================*/
-	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc{};
-	srvDesc.Format = textureData.metadata.format;
-	srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;//2Dtexture
-	srvDesc.Texture2D.MipLevels = UINT(textureData.metadata.mipLevels);
 
-	// SRVの生成
-	dxCommon_->Getdevice()->CreateShaderResourceView(textureData.resource.Get(), &srvDesc, textureData.srvHandleCPU);
+	// srvManagerを使用してSRVを生成
+	srvManager_->CreateSRVforTexture2D(
+    textureData.srvIndex,                       // SRVのインデックス
+    textureData.resource.Get(),                 // リソース
+    textureData.metadata.format,                // フォーマット
+    UINT(textureData.metadata.mipLevels)        // ミップレベル
+);
 
 }
 

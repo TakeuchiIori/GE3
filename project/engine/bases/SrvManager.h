@@ -3,7 +3,8 @@
 #include "wrl.h"
 #include <d3d12.h>
 #include <dxgi1_6.h>
-class DirectXCommon;
+#include "DirectXCommon.h"
+
 // SRV管理
 class SrvManager
 {
@@ -48,16 +49,13 @@ public: // メンバ関数
 	/// </summary>
 	bool IsAllocation();
 
-private:
 	/// <summary>
 	/// SRV生成（テクスチャ用）
 	/// SRV生成（Structured Buffer用）
 	/// </summary>
 	void CreateSRVforTexture2D(uint32_t srvIndex, ID3D12Resource* pResource, DXGI_FORMAT Format, UINT MipLevels);
 	void CreateSRVforStructuredBuffer(uint32_t srvIndex, ID3D12Resource* pResource, UINT numElements, UINT
-	structureByteStride);
-
-
+		structureByteStride);
 
 public:
 	// 最大SRV数（最大テクスチャ枚数）
