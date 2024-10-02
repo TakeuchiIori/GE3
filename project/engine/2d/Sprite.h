@@ -6,7 +6,6 @@
 #include "Matrix4x4.h"
 #include "Vector2.h"
 #include "DirectXTex.h"
-#include "VectorSRT.h"
 class SpriteCommon;
 class Sprite
 {
@@ -205,6 +204,6 @@ private: // メンバ変数
 	// 上下フリップ
 	bool isFlipY_ = false;
 
-	VectorSRT transform_;
+	Transform transform_;
 };
 

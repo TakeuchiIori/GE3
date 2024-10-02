@@ -29,7 +29,7 @@ Matrix4x4 MakeScaleMatrix(const Vector3& scale);
 Matrix4x4 MakeTranslateMatrix(const Vector3& translate);
 
 // 9. 座標変換
-Vector3 Transform(const Vector3& vector, const Matrix4x4& matrix);
+Vector3 TransformCoordinates(const Vector3& vector, const Matrix4x4& matrix);
 
 // 10.回転行列
 //    X軸回転行列
