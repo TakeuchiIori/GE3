@@ -40,3 +40,26 @@ D3D12_GPU_DESCRIPTOR_HANDLE SrvManager::GetGPUSRVDescriptorHandle(uint32_t index
 	handleGPU.ptr += (descriptorSize_ * index);
 	return handleGPU;
 }
+
+void SrvManager::CreateSRVforTexture2D(uint32_t srvIndex, ID3D12Resource* pResource, DXGI_FORMAT Format, UINT MipLevels)
+{
+	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc{};
+	srvDesc.Format = Format;
+	srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;//2Dtexture
+	srvDesc.Texture2D.MipLevels = MipLevels;
+
+	dxCommon_->Getdevice()->CreateShaderResourceView(pResource, &srvDesc, GetCPUSRVDescriptorHandle(srvIndex));
+
+}
+
+void SrvManager::CreateSRVforStructuredBuffer(uint32_t srvIndex, ID3D12Resource* pResource, UINT numElements, UINT structureByteStride)
+{
+	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc{};
+	srvDesc.Buffer.NumElements = numElements; // 要素数
+	srvDesc.Buffer.StructureByteStride = structureByteStride; // 各構造体のサイズ
+
+	// SRV を作成
+	dxCommon_->Getdevice()->CreateShaderResourceView(pResource, &srvDesc, GetCPUSRVDescriptorHandle(srvIndex));
+}
+

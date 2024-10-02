@@ -18,7 +18,7 @@ public: // メンバ関数
 
 
 
-public:
+private:
 	/// <summary>
 	/// アロケータ
 	/// </summary>
@@ -34,6 +34,17 @@ public:
 	/// SRVの指定番号のGPUディスクリプタハンドルを取得
 	/// </summary>
 	D3D12_GPU_DESCRIPTOR_HANDLE GetGPUSRVDescriptorHandle(uint32_t index);
+
+	/// <summary>
+	/// SRV生成（テクスチャ用）
+	/// SRV生成（Structured Buffer用）
+	/// </summary>
+	void CreateSRVforTexture2D(uint32_t srvIndex, ID3D12Resource* pResource, DXGI_FORMAT Format, UINT MipLevels);
+	void CreateSRVforStructuredBuffer(uint32_t srvIndex, ID3D12Resource* pResource, UINT numElements, UINT
+	structureByteStride);
+
+
+
 private: // メンバ変数
 	// ポインタ
 	DirectXCommon* dxCommon_ = nullptr;
