@@ -3,9 +3,9 @@
 #include <d3d12.h>
 #include <string>
 #include <vector>
-#include "math/Vector4.h"
-#include "math/Matrix4x4.h"
-#include "math/Vector2.h"
+#include "Vector4.h"
+#include "Matrix4x4.h"
+#include "Vector2.h"
 #include "VectorSRT.h"
 
 //　構造体

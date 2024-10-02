@@ -7,7 +7,7 @@
 #include <string>
 #include <chrono>
 #include "WinApp.h"
-#include "externals/DirectXTex/DirectXTex.h"
+#include "DirectXTex.h"
 
 
 /// <summary>

@@ -2,10 +2,10 @@
 #include <wrl.h>
 #include <d3d12.h>
 #include <string>
-#include "math/Vector4.h"
-#include "math/Matrix4x4.h"
-#include "math/Vector2.h"
-#include "externals/DirectXTex/DirectXTex.h"
+#include "Vector4.h"
+#include "Matrix4x4.h"
+#include "Vector2.h"
+#include "DirectXTex.h"
 #include "VectorSRT.h"
 class SpriteCommon;
 class Sprite

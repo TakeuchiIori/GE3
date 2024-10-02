@@ -6,15 +6,15 @@
 #include <dxgidebug.h>
 #include <dxcapi.h>
 
-#include "math/Vector4.h"
-#include "math/Matrix4x4.h"
+#include "Vector4.h"
+#include "Matrix4x4.h"
 
 
 #include "externals/imgui/imgui_impl_dx12.h"
 
 #include "externals/DirectXTex/DirectXTex.h"
 
-#include "math/MathFunc.h"
+#include "MathFunc.h"
 
 #include <corecrt_math_defines.h>
 

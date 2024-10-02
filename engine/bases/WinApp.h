@@ -1,7 +1,7 @@
 #pragma once
 #include "Windows.h"
 #include <cstdint>
-#include "externals/imgui/imgui.h"
+#include "imgui.h"
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 class WinApp
 {
