@@ -114,9 +114,6 @@
     <ClCompile Include="Object3dCommon.cpp">
       <Filter>ソース ファイル\engine\3d</Filter>
     </ClCompile>
-    <ClCompile Include="GraphicsPipelineManager.cpp">
-      <Filter>ソース ファイル\engine\3d</Filter>
-    </ClCompile>
     <ClCompile Include="TextureManager.cpp">
       <Filter>ソース ファイル\engine\base</Filter>
     </ClCompile>
@@ -178,9 +175,6 @@
       <Filter>ヘッダー ファイル\engine\3d</Filter>
     </ClInclude>
     <ClInclude Include="Object3d.h">
-      <Filter>ヘッダー ファイル\engine\3d</Filter>
-    </ClInclude>
-    <ClInclude Include="GraphicsPipelineManager.h">
       <Filter>ヘッダー ファイル\engine\3d</Filter>
     </ClInclude>
     <ClInclude Include="DirectXCommon.h">
