@@ -192,11 +192,12 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 									ゲームの処理終了
 		//================================================================*/
 
-		// DirectXの描画準備。全ての描画にグラフィックスコマンドを積む
-		dxCommon_->PreDraw();
 
 		// Srvの描画準備
 		srvManager_->PreDraw();
+		// DirectXの描画準備。全ての描画にグラフィックスコマンドを積む
+		dxCommon_->PreDraw();
+
 
 		// 3Dオブジェクトの描画準備。3Dオブジェクトの描画に共通のグラフィックスコマンドを積む
 		object3dCommon_->DrawPreference();
