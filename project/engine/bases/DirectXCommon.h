@@ -214,7 +214,7 @@ public: // アクセッサ
 
 
 	// 最大SRV数（最大テクスチャ枚数）
-	static const uint32_t kMaxSRVCount;
+	//static const uint32_t kMaxSRVCount;
 private: // メンバ変数
 
 	// WindowsAPI
@@ -244,7 +244,7 @@ private: // メンバ変数
 	DXGI_SWAP_CHAIN_DESC1 swapChainDesc{};
 
 	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> rtvDescriptorHeap_;
-	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> srvDescriptorHeap_;
+	//Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> srvDescriptorHeap_;
 	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> dsvDescriptorHeap_;
 																  
 	// 現時点ではincludeはしないが、includeに対応するための設定を行っておく
@@ -252,7 +252,7 @@ private: // メンバ変数
 
 	Microsoft::WRL::ComPtr<ID3D12Resource> depthStencilResource_;
 
-	uint32_t descriptotSizeSRV_;
+	//uint32_t descriptotSizeSRV_;
 	uint32_t descriptotSizeRTV_;
 	uint32_t descriptotSizeDSV_;
 	// RTVを2つ作るのでディスクリプタを2つ用意

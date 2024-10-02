@@ -1,0 +1,50 @@
+#pragma once
+#include "cstdint"
+#include "wrl.h"
+#include <d3d12.h>
+#include <dxgi1_6.h>
+class DirectXCommon;
+// SRV管理
+class SrvManager
+{
+
+public: // メンバ関数
+
+	/// <summary>
+	/// 初期化
+	/// </summary>
+	/// <param name="dxCommon"></param>
+	void Initialize(DirectXCommon* dxCommon);
+
+
+
+public:
+	/// <summary>
+	/// アロケータ
+	/// </summary>
+	/// <returns></returns>
+	uint32_t Allocate();
+
+	/// <summary>
+	/// SRVの指定番号のCPUディスクリプタハンドルを取得
+	/// </summary>
+	D3D12_CPU_DESCRIPTOR_HANDLE GetCPUSRVDescriptorHandle(uint32_t index);
+
+	/// <summary>
+	/// SRVの指定番号のGPUディスクリプタハンドルを取得
+	/// </summary>
+	D3D12_GPU_DESCRIPTOR_HANDLE GetGPUSRVDescriptorHandle(uint32_t index);
+private: // メンバ変数
+	// ポインタ
+	DirectXCommon* dxCommon_ = nullptr;
+
+	// 最大SRV数（最大テクスチャ枚数）
+	static const uint32_t kMaxSRVcount_;
+	// 次に使用するSRVインデックス
+	uint32_t useIndex_ = 0;
+	// SRV用のデスクリプタサイズ
+	uint32_t descriptorSize_;
+	// SRV用デスクリプタヒープ
+	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> descriptorHeap_;
+};
+
