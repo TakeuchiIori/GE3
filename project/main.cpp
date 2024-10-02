@@ -82,7 +82,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	std::string textureFilePath[2] = { "Resources./monsterBall.png" ,"Resources./uvChecker.png" };
 	for (uint32_t i = 0; i < 1; ++i) {
 		Sprite* sprite = new Sprite();
-		sprite->Initialize(spriteCommon_, textureFilePath[1]);
+		sprite->Initialize(spriteCommon_, textureFilePath[0]);
 		// 移動テスト: インデックスに応じてX、Y座標をずらして配置
 		Vector2 position;
 		position.x = i * 200.0f;
@@ -209,8 +209,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		// 描画
 		// 2Dスプライト
 		for (Sprite* sprite : sprites) {
-			sprite->Draw();
-		}
+			sprite->Draw();		}
 		// 3Dオブジェクト
 		for (auto& obj : object3ds) {
 			obj->Draw();

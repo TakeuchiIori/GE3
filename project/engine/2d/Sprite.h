@@ -185,7 +185,7 @@ private: // メンバ変数
 	D3D12_CPU_DESCRIPTOR_HANDLE textureSrvHandleCPU;
 	D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHandleGPU;
 	// テクスチャ番号
-	uint32_t textureIndex_;
+	uint32_t textureIndex_ = 0;
 	std::string filePath_;
 
 	// テクスチャ左上座標

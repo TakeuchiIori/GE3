@@ -57,9 +57,6 @@ public: // メンバ関数
 
 	// メタデータを取得
 	const DirectX::TexMetadata& GetMetaData(const std::string& filePath);
-	const std::unordered_map<std::string, TextureData>& GetTextureDatas() const {
-		return textureDatas;
-	}
 
 private: // メンバ変数
 
