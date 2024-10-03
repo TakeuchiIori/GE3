@@ -1,4 +1,17 @@
 #pragma once
+#include <d3d12.h>
+#include <dxgi1_6.h>
+#include <wrl.h>
+#include <array>
+#include <dxcapi.h>
+#include <string>
+#include <chrono>
+#include <vector>
+#include "Vector4.h"
+#include "Matrix4x4.h"
+#include "Vector2.h"
+#include "Vector3.h"
+
 
 class DirectXCommon;
 class SrvManager;
@@ -21,6 +34,19 @@ public:
 
 		// 利用してはいけない
 		kCount0fBlendMode,
+	};
+	struct VertexData {
+		Vector4 position;
+		Vector2 texcoord;
+		Vector3 normal;
+	};
+	struct MaterialData {
+		std::string textureFilePath;
+		uint32_t textureIndex = 0;
+	};
+	struct ModelData {
+		std::vector<VertexData> vertices;
+		MaterialData material;
 	};
 public:
     // シングルトンインスタンスの取得

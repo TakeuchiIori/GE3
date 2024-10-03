@@ -189,6 +189,8 @@ void ParticleManager::CreateGraphicsPipeline()
 
 void ParticleManager::CreateVertexResource()
 {
+
+
 }
 
 void ParticleManager::CreateVertexVBV()
