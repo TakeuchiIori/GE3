@@ -26,10 +26,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	winApp_ = new WinApp();
 	winApp_->Initialize();
 
-	ImGuiManager* imguiManager_ = nullptr;
-	imguiManager_ = new ImGuiManager();
-	imguiManager_->Initialize(winApp_);
-
 	Input* input_ = nullptr;
 	input_ = new Input();
 	input_->Initialize(winApp_);
@@ -38,6 +34,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	// DirectXの初期化
 	dxCommon_ = new DirectXCommon();
 	dxCommon_->Initialize(winApp_);
+
+	ImGuiManager* imguiManager_ = nullptr;
+	imguiManager_ = new ImGuiManager();
+	imguiManager_->Initialize(winApp_,dxCommon_);
 
 #pragma region 基礎システムの初期化
 

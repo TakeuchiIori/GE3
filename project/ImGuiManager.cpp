@@ -2,7 +2,8 @@
 #include "imgui.h"
 #include "imgui_impl_win32.h"
 #include "WinApp.h"
-void ImGuiManager::Initialize(WinApp* winApp)
+#include "DirectXCommon.h"
+void ImGuiManager::Initialize(WinApp* winApp, DirectXCommon* dxCommon)
 {
 	// ImGuiのコンテキストを生成
 	ImGui::CreateContext();
