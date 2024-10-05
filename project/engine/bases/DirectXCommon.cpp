@@ -274,7 +274,7 @@ void DirectXCommon::CreateDXCompiler()
 void DirectXCommon::PreDraw()
 {
 	// これから書き込むバックバッファのインデックスを取得
-	UINT backBufferIndex = swapChain_->GetCurrentBackBufferIndex();
+	backBufferIndex = swapChain_->GetCurrentBackBufferIndex();
 
 	
 	barrier_.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
@@ -312,7 +312,7 @@ void DirectXCommon::PreDraw()
 void DirectXCommon::PostDraw()
 {
 	HRESULT hr;
-	UINT backBufferIndex = swapChain_->GetCurrentBackBufferIndex();
+	backBufferIndex = swapChain_->GetCurrentBackBufferIndex();
 	// 今回はRendeerTargetからPresentにする
 	barrier_.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;
 	barrier_.Transition.StateAfter = D3D12_RESOURCE_STATE_PRESENT;

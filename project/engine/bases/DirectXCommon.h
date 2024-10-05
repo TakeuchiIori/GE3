@@ -185,36 +185,29 @@ public: // アクセッサ
 	Microsoft::WRL::ComPtr<IDxcUtils> GetdxcUtils() { return dxcUtils_; }
 	Microsoft::WRL::ComPtr<IDxcCompiler3> GetdxcCompiler() { return dxcCompiler_; }
 	Microsoft::WRL::ComPtr<IDxcIncludeHandler> GetincludeHandler() { return includeHandler_; }
-
 	Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> GetcommandList() { return commandList_; }
 	Microsoft::WRL::ComPtr<ID3D12CommandQueue> GetcommandQueue() { return commandQueue_; }
 	Microsoft::WRL::ComPtr<ID3D12CommandAllocator> GetcommandAllocator() { return commandAllocator_; }
-
 	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> GetrtvDescriptorHeap() const { return rtvDescriptorHeap_; }
-	//Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> GetsrvDescriptorHeap() const { return srvDescriptorHeap_; }
 	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> GetdsvDescriptorHeap() const { return dsvDescriptorHeap_; }
-
-	//uint32_t GetdescriptotSizeSRV() const { return descriptotSizeSRV_;}
-	uint32_t GetdescriptotSizeRTV() const { return descriptotSizeRTV_; }
-	uint32_t GetdescriptotSizeDSV() const { return descriptotSizeDSV_; }
-
 	Microsoft::WRL::ComPtr<IDXGISwapChain4> GetswapChain() { return swapChain_; }
+	Microsoft::WRL::ComPtr<ID3D12Fence> Getfence() { return fence_; }
+
 	std::array<Microsoft::WRL::ComPtr<ID3D12Resource>, 2> GetswapChainResources() { return swapChainResources_; }
 
+	uint32_t GetdescriptotSizeRTV() const { return descriptotSizeRTV_; }
+	uint32_t GetdescriptotSizeDSV() const { return descriptotSizeDSV_; }
+	uint64_t GetfenceValue() { return fenceValue_; }
+	uint64_t SetfenceValue(uint64_t val) { return fenceValue_ = val; }
 
 	D3D12_CPU_DESCRIPTOR_HANDLE* GetrtvHandles() { return rtvHandles_; }
-
-	Microsoft::WRL::ComPtr<ID3D12Fence> Getfence() { return fence_; }
 	HANDLE GetfenceEvent() { return fenceEvent_; }
-	uint64_t GetfenceValue() { return fenceValue_; }
-	uint64_t SetfenceValue(uint64_t val) {  return fenceValue_ = val; }
+	// バックバッファの数を取得
+	UINT GetBackBufferCount()const { return  backBufferIndex; }
 
 
 
 
-
-	// 最大SRV数（最大テクスチャ枚数）
-	//static const uint32_t kMaxSRVCount;
 private: // メンバ変数
 
 	// WindowsAPI
@@ -244,7 +237,6 @@ private: // メンバ変数
 	DXGI_SWAP_CHAIN_DESC1 swapChainDesc{};
 
 	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> rtvDescriptorHeap_;
-	//Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> srvDescriptorHeap_;
 	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> dsvDescriptorHeap_;
 																  
 	// 現時点ではincludeはしないが、includeに対応するための設定を行っておく
@@ -272,6 +264,6 @@ private: // メンバ変数
 	// TransitionBarrierの設定
 	D3D12_RESOURCE_BARRIER barrier_{};
 
-
+	UINT backBufferIndex;
 };
 
