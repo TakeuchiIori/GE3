@@ -19,7 +19,10 @@ public: // メンバ関数
 	/// </summary>
 	void CreateDescriptorHeap();
 
-
+	/// <summary>
+	/// DirextX12初期化
+	/// </summary>
+	void InitialzeDX12();
 
 
 private: // メンバ変数
