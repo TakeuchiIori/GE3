@@ -173,6 +173,13 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 				color.x -= 1.0f;
 			}
 			//sprite->SetColor(color);
+
+			Vector2 position = sprite->GetPosition();
+
+			ImGui::Begin("Sprite");
+			ImGui::DragFloat2("position", &position.x, 1.0f);
+			ImGui::End();
+			sprite->SetPosition(position);
 		}
 
 		// 3Dオブジェクトの更新
