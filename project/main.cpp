@@ -12,7 +12,7 @@
 #include "imgui_impl_win32.h"
 #include "Camera.h"
 #include "SrvManager.h"
-
+#include "Audio.h"
 
 
 #pragma comment(lib,"dxguid.lib")
