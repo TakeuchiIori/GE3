@@ -35,9 +35,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	dxCommon_ = new DirectXCommon();
 	dxCommon_->Initialize(winApp_);
 
-	ImGuiManager* imguiManager_ = nullptr;
-	imguiManager_ = new ImGuiManager();
-	imguiManager_->Initialize(winApp_,dxCommon_);
+
 
 #pragma region 基礎システムの初期化
 
@@ -72,7 +70,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	object3dCommon_->SetDefaultCamera(camera_);
 
 
-
+	ImGuiManager* imguiManager_ = nullptr;
+	imguiManager_ = new ImGuiManager();
+	imguiManager_->Initialize(winApp_, dxCommon_);
 
 #pragma endregion 基礎システムの初期化
 
@@ -139,6 +139,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			// ゲームループを抜ける
 			break;
 		}
+		// ImGui受付開始
+		imguiManager_->Begin();
+
 
 		// キーボード入力
 		input_->Update(winApp_);
@@ -192,16 +195,17 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		// デフォルトカメラの更新
 		camera_->Update();
 
-		/*================================================================//
-									ゲームの処理終了
-		//================================================================*/
+		///================================================================///
+								/*ゲームの処理終了*/
+		///================================================================///
 
-
+		// ImGui受付終了
+		imguiManager_->End();
 		// Srvの描画準備
 		srvManager_->PreDraw();
 		// DirectXの描画準備。全ての描画にグラフィックスコマンドを積む
 		dxCommon_->PreDraw();
-
+		
 
 		// 3Dオブジェクトの描画準備。3Dオブジェクトの描画に共通のグラフィックスコマンドを積む
 		object3dCommon_->DrawPreference();
@@ -219,14 +223,15 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			obj->Draw();
 		}
 
-
+		// ImGui描画
+		imguiManager_->Draw();
 		// DirectXの描画終了
 		dxCommon_->PostDraw();
 
 
 
 	}// ゲームループの終了
-
+	imguiManager_->Finalize();
 
 
 	// 各解放の処理
@@ -254,7 +259,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	// 3Dモデルマネージャの終了
 	ModelManager::GetInstance()->Finalize();
 
-	imguiManager_->Finalize();
+
 
 	return 0;// main関数のリターン
 }

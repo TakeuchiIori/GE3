@@ -2,7 +2,7 @@
 #include "Windows.h"
 #include <cstdint>
 #include "imgui.h"
-extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
+
 class WinApp
 {
 public: // 静的メンバ関数

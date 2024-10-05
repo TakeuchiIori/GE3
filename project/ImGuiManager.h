@@ -15,6 +15,21 @@ public: // メンバ関数
 	void Initialize(WinApp* winApp,DirectXCommon* dxCommon);
 
 	/// <summary>
+	/// ImGui受付開始
+	/// </summary>
+	void Begin();
+
+	/// <summary>
+	/// ImGui受付終了
+	/// </summary>
+	void End();
+
+	/// <summary>
+	/// 画面への描画
+	/// </summary>
+	void Draw();
+
+	/// <summary>
 	/// デスクリプターヒープ生成
 	/// </summary>
 	void CreateDescriptorHeap();
@@ -33,6 +48,7 @@ public: // メンバ関数
 private: // メンバ変数
 	// ポインタ
 	DirectXCommon* dxCommon_ = nullptr;
+	WinApp* winApp_ = nullptr;
 	// SRV用デスクリプターヒープ
 	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> srvHeap_;
 };

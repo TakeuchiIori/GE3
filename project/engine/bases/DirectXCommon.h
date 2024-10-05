@@ -203,7 +203,7 @@ public: // アクセッサ
 	D3D12_CPU_DESCRIPTOR_HANDLE* GetrtvHandles() { return rtvHandles_; }
 	HANDLE GetfenceEvent() { return fenceEvent_; }
 	// バックバッファの数を取得
-	UINT GetBackBufferCount()const { return  backBufferIndex; }
+	UINT GetBackBufferCount()const { return  backBufferIndex;}
 
 
 
@@ -264,6 +264,7 @@ private: // メンバ変数
 	// TransitionBarrierの設定
 	D3D12_RESOURCE_BARRIER barrier_{};
 
-	UINT backBufferIndex;
+	int backBuffers = 2; // ダブルバッファ
+	UINT backBufferIndex = backBuffers;
 };
 

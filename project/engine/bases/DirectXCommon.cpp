@@ -45,6 +45,7 @@ void DirectXCommon::Initialize(WinApp* winApp)
 	CreateDXCompiler();
 	// ImGuiの初期化
 	//InitializeImGui();
+
 }	 
 
 void DirectXCommon::InitializeDXGIDevice()
@@ -169,7 +170,7 @@ void DirectXCommon::CreateSwapChain()
 	swapChainDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;				//色の形成
 	swapChainDesc.SampleDesc.Count = 1;								//マルチサンプルしない
 	swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;	//描画のターゲットとして利用する
-	swapChainDesc.BufferCount = 2;									//ダブルバッファ
+	swapChainDesc.BufferCount = backBuffers;						//ダブルバッファ
 	swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;		//モニタに映したら、中身を破棄
 
 	//--------------- コマンドキュー、ウィンドウハンドル、設定を渡して生成する ---------------//		
@@ -248,13 +249,11 @@ void DirectXCommon::CreateDepthBuffer()
 void DirectXCommon::CreateDescriptorHeap()
 {
 	//　Descriptorのサイズ設定
-	//descriptotSizeSRV_ = device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 	descriptotSizeRTV_ = device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
 	descriptotSizeDSV_ = device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
 					 
 	// ディスクリプタヒープの生成 
 	rtvDescriptorHeap_ = CreateDescriptorHeap(device_.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_RTV, 2, false);
-	//srvDescriptorHeap_ = CreateDescriptorHeap(device_.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, kMaxSRVCount, true);
 	dsvDescriptorHeap_ = CreateDescriptorHeap(device_.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_DSV, 1, false);
 
 }
@@ -372,16 +371,7 @@ void DirectXCommon::InitializeScissorRevtangle()
 
 void DirectXCommon::InitializeImGui()
 {
-	//IMGUI_CHECKVERSION();
-	//ImGui::CreateContext();
-	//ImGui::StyleColorsDark();
-	//ImGui_ImplWin32_Init(winApp_->Gethwnd());
-	//ImGui_ImplDX12_Init(device_.Get(),
-	//	swapChainDesc.BufferCount,
-	//	rtvDesc_.Format,
-	//	srvDescriptorHeap_.Get(),
-	//	GetCPUDescriptorHandle(srvDescriptorHeap_, descriptotSizeSRV_, 0),
-	//	GetGPUDescriptorHandle(srvDescriptorHeap_, descriptotSizeSRV_, 0));
+
 
 }
 
