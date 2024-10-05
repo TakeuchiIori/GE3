@@ -1,5 +1,5 @@
-#include "imgui_impl_dx12.h"
 #include "WinApp.h"
+#include "ImGuiManager.h"
 #include "Input.h"
 #include "DirectXCommon.h"
 #include "SpriteCommon.h"
@@ -26,6 +26,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	winApp_ = new WinApp();
 	winApp_->Initialize();
 
+	ImGuiManager* imguiManager_ = nullptr;
+	imguiManager_ = new ImGuiManager();
+	imguiManager_->Initialize(winApp_);
 
 	Input* input_ = nullptr;
 	input_ = new Input();
@@ -232,6 +235,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	winApp_->Finalize();
 	delete winApp_;
 	winApp_ = nullptr;
+	delete imguiManager_;
 	delete dxCommon_;
 	delete spriteCommon_;
 	delete object3dCommon_;
