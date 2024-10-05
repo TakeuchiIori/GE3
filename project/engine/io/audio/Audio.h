@@ -4,9 +4,11 @@
 #include "wrl.h"
 
 
-#pragma comment(lib,"xaudio.lib")
+//#pragma comment(lib,"xaudio.lib")
+
 class Audio
 {
+
 public: // インナークラス
 	// チャンクヘッダ
 	struct ChunkHeader
@@ -51,7 +53,21 @@ public: // メンバ関数
 	/// <returns></returns>
 	SoundData LoadWave(const char* filename);
 
+	/// <summary>
+	/// 音声データの解放
+	/// </summary>
+	/// <param name="soundData"></param>
+	void SoundUnload(Microsoft::WRL::ComPtr<IXAudio2> xAudio2,SoundData* soundData);
 
+	/// <summary>
+	/// サウンド再生
+	/// </summary>
+	/// <param name="xAudio2"></param>
+	/// <param name="soundData"></param>
+	void SoundPlayWave(IXAudio2* xAudio2,const SoundData& soundData);
+
+public: // アクセッサ
+	Microsoft::WRL::ComPtr<IXAudio2> GetXAudio2() const {return xAudio2_;}
 
 private: // メンバ変数
 	Microsoft::WRL::ComPtr<IXAudio2> xAudio2_;

@@ -79,3 +79,35 @@ Audio::SoundData Audio::LoadWave(const char* filename)
 	
 	return soundData;
 }
+
+void Audio::SoundUnload(Microsoft::WRL::ComPtr<IXAudio2> xAudio2,SoundData* soundData)
+{
+	xAudio2.Reset();
+
+	// バッファのメモリを解放
+	delete[] soundData->pBuffer;
+
+	soundData->pBuffer = 0;
+	soundData->bufferSize = 0;
+	soundData->wfex = {};
+}
+
+// 音声再生
+void Audio::SoundPlayWave(IXAudio2* xAudio2, const Audio::SoundData& soundData) {
+	HRESULT hr;
+
+	// 波形フォーマットを元にSourceVoiceの生成
+	IXAudio2SourceVoice* pSourceVoice = nullptr;
+	hr = xAudio2->CreateSourceVoice(&pSourceVoice, reinterpret_cast<const WAVEFORMATEX*>(&soundData.wfex));
+	assert(SUCCEEDED(hr));
+
+	// 再生する波形データの設定
+	XAUDIO2_BUFFER buf{};
+	buf.pAudioData = soundData.pBuffer;
+	buf.AudioBytes = soundData.bufferSize;
+	buf.Flags = XAUDIO2_END_OF_STREAM;
+
+	// 波形データの再生
+	hr = pSourceVoice->SubmitSourceBuffer(&buf);
+	hr = pSourceVoice->Start();
+}

@@ -35,6 +35,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	dxCommon_ = new DirectXCommon();
 	dxCommon_->Initialize(winApp_);
 
+	Audio* audio_ = nullptr;
+	audio_ = new Audio();
+	audio_->Initialize();
 
 
 #pragma region 基礎システムの初期化
@@ -127,7 +130,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		object3ds.push_back(object);
 	}
 
-
+	Audio::SoundData soundData = audio_->LoadWave("Resources/harpohikunezumi.mp3");
+	audio_->SoundPlayWave(audio_->GetXAudio2().Get(), soundData);
 #pragma endregion 最初のシーンの終了
 
 
@@ -265,7 +269,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	TextureManager::GetInstance()->Finalize();
 	// 3Dモデルマネージャの終了
 	ModelManager::GetInstance()->Finalize();
-
+	audio_->SoundUnload(audio_->GetXAudio2(), &soundData);
 
 
 	return 0;// main関数のリターン
