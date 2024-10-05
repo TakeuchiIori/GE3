@@ -29,12 +29,12 @@ void ImGuiManager::CreateDescriptorHeap()
 {
 	// デスクリプタヒープの設定
 	D3D12_DESCRIPTOR_HEAP_DESC desc = {};
-	desc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;							 
-	desc.NumDescriptors =1;			 
+	desc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+	desc.NumDescriptors = 1;
 	desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
 
 	// デスクリプタヒープ生成
-	HRESULT hr = dxCommon_->Getdevice()->CreateDescriptorHeap(&desc,IID_PPV_ARGS(&srvHeap_));
+	HRESULT hr = dxCommon_->Getdevice()->CreateDescriptorHeap(&desc, IID_PPV_ARGS(&srvHeap_));
 	// ディスクリプタヒープが作れなかったので起動できない
 	assert(SUCCEEDED(hr));
 }
@@ -48,4 +48,15 @@ void ImGuiManager::InitialzeDX12()
 		srvHeap_->GetCPUDescriptorHandleForHeapStart(),
 		srvHeap_->GetGPUDescriptorHandleForHeapStart()
 	);
+}
+
+void ImGuiManager::Finalize()
+{
+	// 後始末
+	ImGui_ImplDX12_Shutdown();
+	ImGui_ImplWin32_Shutdown();
+	ImGui::DestroyContext();
+
+	// デスクリプターヒープを解放
+	srvHeap_.Reset();
 }

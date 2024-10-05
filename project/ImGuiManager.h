@@ -24,6 +24,11 @@ public: // メンバ関数
 	/// </summary>
 	void InitialzeDX12();
 
+	/// <summary>
+	/// 終了
+	/// </summary>
+	void Finalize();
+
 
 private: // メンバ変数
 	// ポインタ

@@ -254,9 +254,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	// 3Dモデルマネージャの終了
 	ModelManager::GetInstance()->Finalize();
 
-	//ImGui_ImplDX12_Shutdown();
-	//ImGui_ImplWin32_Shutdown();
-	//ImGui::DestroyContext();
+	imguiManager_->Finalize();
 
 	return 0;// main関数のリターン
 }
