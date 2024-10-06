@@ -130,8 +130,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		object3ds.push_back(object);
 	}
 
-	Audio::SoundData soundData = audio_->LoadWave("Resources./fanfare.wav");
-	audio_->SoundPlayWave(audio_->GetXAudio2().Get(), soundData);
+	//Audio::SoundData soundData = audio_->LoadWave("Resources./fanfare.wav");
+	//audio_->SoundPlayWave(audio_->GetXAudio2().Get(), soundData);
 #pragma endregion 最初のシーンの終了
 
 
