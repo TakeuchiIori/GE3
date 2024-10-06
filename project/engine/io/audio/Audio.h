@@ -4,7 +4,7 @@
 #include "wrl.h"
 
 
-//#pragma comment(lib,"xaudio.lib")
+#pragma comment(lib,"xaudio.lib")
 
 class Audio
 {
