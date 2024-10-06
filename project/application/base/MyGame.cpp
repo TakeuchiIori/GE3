@@ -142,7 +142,9 @@ void MyGame::Finalize()
 void MyGame::Update()
 {
 
-
+	if (winApp_->ProcessMessage()) {
+		endRequst_ = true;
+	}
 	// キーボード入力
 	input_->Update(winApp_);
 
