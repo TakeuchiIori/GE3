@@ -66,6 +66,18 @@ public: // メンバ関数
 	/// <param name="soundData"></param>
 	void SoundPlayWave(IXAudio2* xAudio2,const SoundData& soundData);
 
+	/// <summary>
+	/// サウンド停止
+	/// </summary>
+	void SoundStop(IXAudio2SourceVoice* pSourceVoice);
+
+	/// <summary>
+	/// 音量を設定
+	/// </summary>
+	/// <param name="pSourceVoice">音声ソース</param>
+	/// <param name="volume">設定する音量 (0.0f～1.0f)</param>
+	void SetVolume(IXAudio2SourceVoice* pSourceVoice, float volume);
+
 public: // アクセッサ
 	Microsoft::WRL::ComPtr<IXAudio2> GetXAudio2() const {return xAudio2_;}
 

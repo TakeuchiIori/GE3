@@ -34,19 +34,7 @@ Audio::SoundData Audio::LoadWave(const char* filename)
 		assert(0);
 	}
 
-
-	//// Formatチャンクの読み込み
-	//FormatChunk format = {};
-	//// チャンクヘッダーの確認
-	//file.read((char*)&format, sizeof(ChunkHeader));
-	//if (strncmp(format.chunk.id, "fmt", 4) != 0) {
-	//	assert(0);
-	//}
-	//// チャンク本体の読み込み
-	//assert(format.chunk.size <= sizeof(format.fmt));
-	//file.read((char*)&format.fmt, format.chunk.size);
-
-	  // チャンクのループを開始
+	// チャンクのループを開始
 	ChunkHeader chunkHeader;
 	FormatChunk format = {};
 
@@ -136,4 +124,21 @@ void Audio::SoundPlayWave(IXAudio2* xAudio2, const Audio::SoundData& soundData) 
 	// 波形データの再生
 	hr = pSourceVoice->SubmitSourceBuffer(&buf);
 	hr = pSourceVoice->Start();
+}
+
+// サウンド停止
+void Audio::SoundStop(IXAudio2SourceVoice* pSourceVoice)
+{
+	// サウンド停止
+	pSourceVoice->Stop();
+	// バッファをフラッシュして再生をリセット
+	pSourceVoice->FlushSourceBuffers();
+}
+
+/// 音量を設定
+void Audio::SetVolume(IXAudio2SourceVoice* pSourceVoice, float volume)
+{
+	// 0.0f ～ 1.0f の範囲で音量を設定
+	HRESULT hr = pSourceVoice->SetVolume(volume);
+	assert(SUCCEEDED(hr) && "Failed to set volume");
 }
