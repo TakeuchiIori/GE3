@@ -162,8 +162,11 @@
     <ClCompile Include="ParticleManager.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
+    <ClCompile Include="application\base\Framework.cpp">
+      <Filter>ソース ファイル\application\base</Filter>
+    </ClCompile>
     <ClCompile Include="application\base\MyGame.cpp">
-      <Filter>ソース ファイル</Filter>
+      <Filter>ソース ファイル\application\base</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -257,8 +260,11 @@
     <ClInclude Include="ImGuiManager.h">
       <Filter>ヘッダー ファイル\engine\base</Filter>
     </ClInclude>
+    <ClInclude Include="application\base\Framework.h">
+      <Filter>ヘッダー ファイル\application\base</Filter>
+    </ClInclude>
     <ClInclude Include="application\base\MyGame.h">
-      <Filter>ヘッダー ファイル</Filter>
+      <Filter>ヘッダー ファイル\application\base</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
