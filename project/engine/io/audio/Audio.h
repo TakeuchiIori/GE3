@@ -4,7 +4,7 @@
 #include "wrl.h"
 
 
-#pragma comment(lib,"xaudio.lib")
+#pragma comment(lib,"xaudio2.lib")
 
 class Audio
 {
@@ -26,13 +26,13 @@ public: // インナークラス
 	struct FormatChunk
 	{
 		ChunkHeader chunk;		// "fmt"
-		WAVEFORMAT fmt;			// 波形フォーマット
+		WAVEFORMATEX fmt;			// 波形フォーマット
 	};
 	// 音声データ
 	struct SoundData
 	{
 		// 波形フォーマット
-		WAVEFORMAT wfex;
+		WAVEFORMATEX wfex;
 		// バッファの先頭アドレス
 		BYTE* pBuffer;
 		// バッファサイズ
@@ -72,5 +72,6 @@ public: // アクセッサ
 private: // メンバ変数
 	Microsoft::WRL::ComPtr<IXAudio2> xAudio2_;
 	IXAudio2MasteringVoice* masterVoice_;
+	HRESULT hr;;
 };
 

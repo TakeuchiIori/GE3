@@ -4,7 +4,7 @@
 void Audio::Initialize()
 {
 	// xAudioエンジンのインスタンスを生成
-	HRESULT hr = XAudio2Create(&xAudio2_, 0, XAUDIO2_DEFAULT_PROCESSOR);
+	hr = XAudio2Create(&xAudio2_, 0, XAUDIO2_DEFAULT_PROCESSOR);
 	// マスターボイスを生成
 	hr = xAudio2_->CreateMasteringVoice(&masterVoice_);
 
@@ -13,7 +13,7 @@ void Audio::Initialize()
 
 Audio::SoundData Audio::LoadWave(const char* filename)
 {
-	HRESULT hr;
+	
 	// ファイル入力ストリームのインスタンス
 	std::ifstream file;
 	// .wavファイルをバイナリモードで開く
@@ -30,7 +30,7 @@ Audio::SoundData Audio::LoadWave(const char* filename)
 		assert(0);
 	}
 	// タイプがWAVEかチェック
-	if (strncmp(riff.chunk.id, "WAVE", 4) != 0) {
+	if (strncmp(riff.type, "WAVE", 4) != 0) {
 		assert(0);
 	}
 
@@ -58,7 +58,7 @@ Audio::SoundData Audio::LoadWave(const char* filename)
 		file.read((char*)&data, sizeof(data));
 	}
 
-	if (strncmp(data.id, "JUNK", 4) != 0) {
+	if (strncmp(data.id, "data", 4) != 0) {
 		assert(0);
 	}
 	
