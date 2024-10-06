@@ -1,4 +1,8 @@
 #pragma once
+#include "WinApp.h"
+#include "Input.h"
+#include "DirectXCommon.h"
+#include "Audio.h"
 
 // ゲーム全体
 class Framework
@@ -29,12 +33,23 @@ public: // メンバ関数
 	/// 終了フラグのチェック
 	/// </summary>
 	/// <returns></returns>
-	virtual bool isEndRequst() { return endRequst_; }
+	virtual bool IsEndRequst() { return endRequst_; }
 
 	// 呼び出さないとリークするぞ
 	virtual ~Framework() = default;
 
+	/// <summary>
+	/// 実行
+	/// </summary>
+	void Run();
+protected:
+	// 基本的なゲームのコンポーネント
+	WinApp* winApp_ = nullptr;
+	Input* input_ = nullptr;
+	DirectXCommon* dxCommon_ = nullptr;
+	Audio* audio_ = nullptr;
 private:
+
 	// ゲーム終了フラグ
 	bool endRequst_ = false;
 

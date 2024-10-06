@@ -1,30 +1,16 @@
 #include "MyGame.h"
-
+#include "Framework.h"
 #pragma comment(lib,"dxguid.lib")
 #pragma comment(lib,"dxcompiler.lib")
 
 //Windowsアプリのエントリーポイント(main関数)
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
-	MyGame game;
-	game.Initialize();
+	Framework* game = new MyGame();
 
-	// ウィンドウのxボタンが押されるまでループ
-	while (true)
-	{
-		game.Update();
-		if (game.isEndRequst()) {
-			break;
-		}
+	game->Run();
 
-
-
-		game.Draw();
-
-
-
-	}
-	game.Finalize();
+	delete game;
 
 
 	return 0;// main関数のリターン

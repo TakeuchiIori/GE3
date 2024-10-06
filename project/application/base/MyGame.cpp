@@ -2,22 +2,9 @@
 
 void MyGame::Initialize()
 {
-	
-	winApp_ = new WinApp();
-	winApp_->Initialize();
+	// 基底クラスの初期化
+	Framework::Initialize();
 
-	
-	input_ = new Input();
-	input_->Initialize(winApp_);
-
-	
-	
-	dxCommon_ = new DirectXCommon();
-	dxCommon_->Initialize(winApp_);
-
-
-	audio_ = new Audio();
-	audio_->Initialize();
 
 
 #pragma region 基礎システムの初期化
@@ -112,14 +99,7 @@ void MyGame::Initialize()
 
 void MyGame::Finalize()
 {
-	// 各解放の処理
 	CloseHandle(dxCommon_->GetfenceEvent());
-	delete input_;
-	winApp_->Finalize();
-	delete winApp_;
-	winApp_ = nullptr;
-	//delete imguiManager_;
-	delete dxCommon_;
 	delete spriteCommon_;
 	delete object3dCommon_;
 	delete camera_;
@@ -137,16 +117,13 @@ void MyGame::Finalize()
 	// 3Dモデルマネージャの終了
 	ModelManager::GetInstance()->Finalize();
 	audio_->SoundUnload(audio_->GetXAudio2(), &soundData);
+	Framework::Finalize();
 }
 
 void MyGame::Update()
 {
 
-	if (winApp_->ProcessMessage()) {
-		endRequst_ = true;
-	}
-	// キーボード入力
-	input_->Update(winApp_);
+	Framework::Update();
 
 	/*================================================================//
 							   ゲームの処理開始
