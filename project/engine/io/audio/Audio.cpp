@@ -35,16 +35,42 @@ Audio::SoundData Audio::LoadWave(const char* filename)
 	}
 
 
-	// Formatチャンクの読み込み
+	//// Formatチャンクの読み込み
+	//FormatChunk format = {};
+	//// チャンクヘッダーの確認
+	//file.read((char*)&format, sizeof(ChunkHeader));
+	//if (strncmp(format.chunk.id, "fmt", 4) != 0) {
+	//	assert(0);
+	//}
+	//// チャンク本体の読み込み
+	//assert(format.chunk.size <= sizeof(format.fmt));
+	//file.read((char*)&format.fmt, format.chunk.size);
+
+	  // チャンクのループを開始
+	ChunkHeader chunkHeader;
 	FormatChunk format = {};
-	// チャンクヘッダーの確認
-	file.read((char*)&format, sizeof(ChunkHeader));
-	if (strncmp(format.chunk.id, "fmt", 4) != 0) {
+
+	while (file.read((char*)&chunkHeader, sizeof(chunkHeader))) {
+		// チャンクIDが "fmt " かを確認
+		if (strncmp(chunkHeader.id, "fmt ", 4) == 0) {
+			// Formatチャンクのサイズを確認し、データを読み込む
+			assert(chunkHeader.size <= sizeof(format.fmt));
+			format.chunk = chunkHeader; // チャンクヘッダーをコピー
+			file.read((char*)&format.fmt, chunkHeader.size); // fmtのデータを読み込み
+			break;
+		}
+		else {
+			// 次のチャンクに移動
+			file.seekg(chunkHeader.size, std::ios_base::cur);
+		}
+	}
+
+	// "fmt "チャンクが見つからなかった場合のエラー処理
+	if (strncmp(format.chunk.id, "fmt ", 4) != 0) {
+		//std::cerr << "Error: 'fmt ' chunk not found!" << std::endl;
 		assert(0);
 	}
-	// チャンク本体の読み込み
-	assert(format.chunk.size <= sizeof(format.fmt));
-	file.read((char*)&format.fmt, format.chunk.size);
+
 
 
 	// Dataチャンクの読み込み
