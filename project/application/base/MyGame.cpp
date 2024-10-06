@@ -61,7 +61,7 @@ void MyGame::Initialize()
 #pragma region 最初のシーンの初期化
 
 	// スプライトの初期化
-	std::vector<Sprite*> sprites;
+
 	std::string textureFilePath[2] = { "Resources./monsterBall.png" ,"Resources./uvChecker.png" };
 	for (uint32_t i = 0; i < 1; ++i) {
 		Sprite* sprite = new Sprite();
@@ -85,7 +85,7 @@ void MyGame::Initialize()
 		sprites.push_back(sprite);
 	}
 
-	std::vector<Object3d*> object3ds;
+
 
 	// 複数のオブジェクトを初期化
 	uint32_t numObjects = 2;
@@ -107,17 +107,130 @@ void MyGame::Initialize()
 		object3ds.push_back(object);
 	}
 
-	Audio::SoundData soundData = audio_->LoadWave("Resources./fanfare.wav");
+	soundData = audio_->LoadWave("Resources./fanfare.wav");
 }
 
 void MyGame::Finalize()
 {
+	// 各解放の処理
+	CloseHandle(dxCommon_->GetfenceEvent());
+	delete input_;
+	winApp_->Finalize();
+	delete winApp_;
+	winApp_ = nullptr;
+	//delete imguiManager_;
+	delete dxCommon_;
+	delete spriteCommon_;
+	delete object3dCommon_;
+	delete camera_;
+	delete srvManager_;
+	// 描画処理
+	for (auto& obj : object3ds) {
+		delete obj;
+	}
+	// 描画
+	for (Sprite* sprite : sprites) {
+		delete sprite;
+	}
+	// テクスチャマネージャの終了
+	TextureManager::GetInstance()->Finalize();
+	// 3Dモデルマネージャの終了
+	ModelManager::GetInstance()->Finalize();
+	audio_->SoundUnload(audio_->GetXAudio2(), &soundData);
 }
 
 void MyGame::Update()
 {
+
+
+	// キーボード入力
+	input_->Update(winApp_);
+
+	/*================================================================//
+							   ゲームの処理開始
+	//================================================================*/
+
+	// 2Dスプライトの更新
+	for (size_t i = 0; i < sprites.size(); ++i) {
+		Sprite* sprite = sprites[i];
+		sprite->Update();
+
+		// 回転テスト
+		float rotation = sprite->GetRotation();
+		rotation += 0.01f;
+		//sprite->SetRotation(rotation);
+
+		// サイズ変化
+		Vector2 size = sprite->GetSize();
+		size.x += 0.01f;  // サイズ変化を少し小さくする
+		size.y += 0.01f;  // サイズ変化を少し小さくする
+		//sprite->SetSize(size);
+
+		// 色テスト
+		Vector4 color = sprite->GetColor();
+		color.x += 0.01f;
+		if (color.x > 1.0f) {
+			color.x -= 1.0f;
+		}
+		//sprite->SetColor(color);
+
+		Vector2 position = sprite->GetPosition();
+
+		//ImGui::Begin("Sprite");
+		//ImGui::DragFloat2("position", &position.x, 1.0f);
+		//ImGui::End();
+		sprite->SetPosition(position);
+	}
+
+	// 3Dオブジェクトの更新
+	for (int i = 0; i < object3ds.size(); ++i) {
+		Object3d* obj = object3ds[i];
+		obj->Update();
+		Vector3 rotate = obj->GetRotation();
+		if (i == 0) {
+			// 1つ目のオブジェクト: Y軸で回転
+			rotate.y += 0.01f;
+		}
+		else if (i == 1) {
+			// 2つ目のオブジェクト: Z軸で回転
+			rotate.z += 0.01f;
+		}
+		// 更新した回転、スケール、位置を適用
+		obj->SetRotation(rotate);
+	}
+
+	// デフォルトカメラの更新
+	camera_->Update();
+
 }
 
 void MyGame::Draw()
 {
+	// Srvの描画準備
+	srvManager_->PreDraw();
+	// DirectXの描画準備。全ての描画にグラフィックスコマンドを積む
+	dxCommon_->PreDraw();
+
+
+	// 3Dオブジェクトの描画準備。3Dオブジェクトの描画に共通のグラフィックスコマンドを積む
+	object3dCommon_->DrawPreference();
+
+	// 2DSpriteの描画準備。Spriteの描画に共通のグラフィックスコマンドを積む
+	spriteCommon_->DrawPreference();
+
+
+	// 描画
+	// 2Dスプライト
+	for (Sprite* sprite : sprites) {
+		sprite->Draw();
+	}
+	// 3Dオブジェクト
+	for (auto& obj : object3ds) {
+		obj->Draw();
+	}
+
+	// ImGui描画
+	//imguiManager_->Draw();
+	// DirectXの描画終了
+	dxCommon_->PostDraw();
 }

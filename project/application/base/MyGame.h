@@ -40,6 +40,12 @@ public: // メンバ関数
 	/// </summary>
 	void Draw();
 
+	/// <summary>
+	/// 終了フラグのチェック
+	/// </summary>
+	/// <returns></returns>
+	bool isEndRequst() { return endRequst_; }
+
 private: // メンバ変数
 	WinApp* winApp_ = nullptr;
 	Input* input_ = nullptr;
@@ -50,7 +56,10 @@ private: // メンバ変数
 	SpriteCommon* spriteCommon_ = nullptr;
 	Object3dCommon* object3dCommon_ = nullptr;
 	Camera* camera_ = nullptr;
-	
-
+	std::vector<Sprite*> sprites;
+	std::vector<Object3d*> object3ds;
+	// ゲーム終了フラグ
+	bool endRequst_ = false;
+	Audio::SoundData soundData;
 };
 
