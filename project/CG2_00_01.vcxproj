@@ -68,7 +68,7 @@
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(ProjectDir)engine\2d;$(ProjectDir)externals\DirectXTex;$(ProjectDir)engine\math;$(ProjectDir)engine\bases;$(ProjectDir)engine\3d;$(ProjectDir)externals\imgui;$(ProjectDir)engine\io\input;$(ProjectDir)engine\io\audio;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)engine\2d;$(ProjectDir)externals\DirectXTex;$(ProjectDir)engine\math;$(ProjectDir)engine\bases;$(ProjectDir)engine\3d;$(ProjectDir)externals\imgui;$(ProjectDir)engine\io\input;$(ProjectDir)engine\io\audio;$(ProjectDir)application\base;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -93,7 +93,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <TreatWarningAsError>false</TreatWarningAsError>
-      <AdditionalIncludeDirectories>$(ProjectDir)engine\2d;$(ProjectDir)engine\math;$(ProjectDir)externals\DirectXTex;$(ProjectDir)engine\3d;$(ProjectDir)engine\io\input;$(ProjectDir)engine\bases;$(ProjectDir)externals\imgui;$(ProjectDir)engine\io\audio;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)engine\2d;$(ProjectDir)engine\math;$(ProjectDir)externals\DirectXTex;$(ProjectDir)engine\3d;$(ProjectDir)engine\io\input;$(ProjectDir)engine\bases;$(ProjectDir)externals\imgui;$(ProjectDir)engine\io\audio;$(ProjectDir)application\base;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -133,6 +133,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="engine\bases\TextureManager.cpp" />
     <ClCompile Include="engine\bases\WinApp.cpp" />
     <ClCompile Include="engine\bases\SrvManager.cpp" />
+    <ClCompile Include="MyGame.cpp" />
     <ClCompile Include="ParticleManager.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -165,6 +166,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="engine\bases\WinApp.h" />
     <ClInclude Include="engine\bases\SrvManager.h" />
     <ClInclude Include="ImGuiManager.h" />
+    <ClInclude Include="MyGame.h" />
     <ClInclude Include="ParticleManager.h" />
   </ItemGroup>
   <ItemGroup>
