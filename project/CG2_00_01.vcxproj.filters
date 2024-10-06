@@ -25,9 +25,6 @@
     <Filter Include="ソース ファイル\engine\base">
       <UniqueIdentifier>{6c41a53a-b1f3-45f9-9ebc-9701ef6e6449}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ソース ファイル\engine\input">
-      <UniqueIdentifier>{7e55b7e3-348f-40b0-903f-46d57ddfa256}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ソース ファイル\engine\math">
       <UniqueIdentifier>{f2712022-22b6-4ff9-9952-e972872885bd}</UniqueIdentifier>
     </Filter>
@@ -49,11 +46,26 @@
     <Filter Include="ヘッダー ファイル\engine\imgui">
       <UniqueIdentifier>{4af1a868-48ed-4606-bdd3-57482703f5b9}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ヘッダー ファイル\engine\input">
-      <UniqueIdentifier>{645187a7-fb21-4437-bcd8-fd2e44486615}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ヘッダー ファイル\engine\model">
       <UniqueIdentifier>{03f79d55-d45d-4101-bea2-d20f5138150b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\io">
+      <UniqueIdentifier>{5b41c39a-434c-4dc1-9b6d-1465eef1793e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\io\input">
+      <UniqueIdentifier>{7e55b7e3-348f-40b0-903f-46d57ddfa256}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\io\audio">
+      <UniqueIdentifier>{51a17c1b-350b-4a28-8a84-33aaf0813d4f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\engine\io">
+      <UniqueIdentifier>{f808454f-18f8-4e74-b941-7b0e2949aba1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\engine\io\input">
+      <UniqueIdentifier>{645187a7-fb21-4437-bcd8-fd2e44486615}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\engine\io\audio">
+      <UniqueIdentifier>{5f13435a-72ab-4dc5-aee0-732a0c813915}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -97,7 +109,7 @@
       <Filter>ソース ファイル\engine\base</Filter>
     </ClCompile>
     <ClCompile Include="engine\io\input\Input.cpp">
-      <Filter>ソース ファイル\engine\input</Filter>
+      <Filter>ソース ファイル\io\input</Filter>
     </ClCompile>
     <ClCompile Include="engine\3d\ModelManager.cpp">
       <Filter>ソース ファイル\engine\model</Filter>
@@ -130,7 +142,7 @@
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="engine\io\audio\Audio.cpp">
-      <Filter>ソース ファイル</Filter>
+      <Filter>ソース ファイル\io\audio</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -198,7 +210,7 @@
       <Filter>ヘッダー ファイル\engine\base</Filter>
     </ClInclude>
     <ClInclude Include="engine\io\input\Input.h">
-      <Filter>ヘッダー ファイル\engine\input</Filter>
+      <Filter>ヘッダー ファイル\engine\io\input</Filter>
     </ClInclude>
     <ClInclude Include="engine\3d\ModelCommon.h">
       <Filter>ヘッダー ファイル\engine\model</Filter>
@@ -222,7 +234,7 @@
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="engine\io\audio\Audio.h">
-      <Filter>ヘッダー ファイル</Filter>
+      <Filter>ヘッダー ファイル\engine\io\audio</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
