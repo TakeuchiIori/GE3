@@ -1,6 +1,7 @@
 #include "Audio.h"
 #include "assert.h"
 
+
 void Audio::Initialize()
 {
 	// xAudioエンジンのインスタンスを生成

@@ -41,6 +41,8 @@ public: // インナークラス
 
 public: // メンバ関数
 
+
+
 	/// <summary>
 	/// 初期化
 	/// </summary>
@@ -78,10 +80,13 @@ public: // メンバ関数
 	/// <param name="volume">設定する音量 (0.0f～1.0f)</param>
 	void SetVolume(IXAudio2SourceVoice* pSourceVoice, float volume);
 
-public: // アクセッサ
+public: 
 	Microsoft::WRL::ComPtr<IXAudio2> GetXAudio2() const {return xAudio2_;}
 
-private: // メンバ変数
+private: 
+
+	static Audio* instance;
+
 	Microsoft::WRL::ComPtr<IXAudio2> xAudio2_;
 	IXAudio2MasteringVoice* masterVoice_;
 	HRESULT hr;;
