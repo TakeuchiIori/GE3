@@ -4,6 +4,11 @@
 class SpriteCommon
 {
 public: // メンバ関数
+	// シングルトン
+	static SpriteCommon* Getinstance();
+	// 終了
+	void Finalize();
+
 	/// <summary>
 	/// 初期化
 	/// </summary>
@@ -43,7 +48,15 @@ public: // アクセッサ
 
 	DirectXCommon* GetDxCommon() const { return dxCommon_; }
 
-private: // メンバ変数
+private:
+
+	static SpriteCommon* instance;
+	SpriteCommon() = default;
+	~SpriteCommon() = default;
+	SpriteCommon(SpriteCommon&) = delete;
+	SpriteCommon& operator = (SpriteCommon&) = delete;
+
+
 	DirectXCommon* dxCommon_;
 	// ディスクリプターレンジ
 	D3D12_DESCRIPTOR_RANGE descriptorRange[1] = {};
