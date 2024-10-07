@@ -7,7 +7,8 @@
 #include "SrvManager.h"
 #include "SpriteCommon.h"
 #include "Object3dCommon.h"
-
+#include "TextureManager.h"
+#include "ModelManager.h"
 
 // ゲーム全体
 class Framework
@@ -57,6 +58,8 @@ protected:
 	SrvManager* srvManager_ = nullptr;
 	SpriteCommon* spriteCommon_ = nullptr;
 	Object3dCommon* object3dCommon_ = nullptr;
+	TextureManager* textureManager_ = nullptr;
+	ModelManager* modelManager_ = nullptr;
 private:
 
 	// ゲーム終了フラグ

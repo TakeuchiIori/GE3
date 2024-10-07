@@ -1,14 +1,5 @@
 #pragma once
-#include "SpriteCommon.h"
-#include "Sprite.h"
-#include "TextureManager.h"
-#include "Object3dCommon.h"
-#include "Object3d.h"
-#include "Model.h"
-#include "ModelManager.h"
-#include "imgui_impl_win32.h"
-#include "Camera.h"
-#include "SrvManager.h"
+#include "GameScene.h"
 #include "Framework.h"
 
 class MyGame : public Framework
@@ -37,15 +28,6 @@ public: // メンバ関数
 	void Draw() override;
 
 private: // メンバ変数
-	// MyGame固有のメンバ変数
-	SrvManager* srvManager_ = nullptr;
-	SpriteCommon* spriteCommon_ = nullptr;
-	Object3dCommon* object3dCommon_ = nullptr;
-	Camera* camera_ = nullptr;
-	TextureManager* textureManager_ = nullptr;
-	ModelManager* modelManager_ = nullptr;
-	std::vector<Sprite*> sprites;
-	std::vector<Object3d*> object3ds;
-	Audio::SoundData soundData;
+	GameScene* scene_ = nullptr;
 };
 
