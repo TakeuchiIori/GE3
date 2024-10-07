@@ -50,6 +50,7 @@ protected:
 	Input* input_ = nullptr;
 	DirectXCommon* dxCommon_ = nullptr;
 	Audio* audio_ = nullptr;
+	ImGuiManager* imguiManager_ = nullptr;
 private:
 
 	// ゲーム終了フラグ

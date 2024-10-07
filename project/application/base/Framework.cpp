@@ -13,6 +13,10 @@ void Framework::Initialize()
 
 	audio_ = new Audio();
 	audio_->Initialize();
+
+	imguiManager_ = new ImGuiManager();
+	imguiManager_->Initialize(winApp_, dxCommon_);
+	imguiManager_->InitialzeDX12();
 }
 
 void Framework::Finalize()
