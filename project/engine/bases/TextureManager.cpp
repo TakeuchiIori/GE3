@@ -38,7 +38,7 @@ void TextureManager::LoadTexture(const std::string& filePath)
 		return;
 	}
 	// テクスチャ上限枚数チェック
-	assert(srvManager_->IsAllocation());
+	assert(SrvManager::GetInstance()->IsAllocation());
 
 
 	// テクスチャファイルを読んでプログラムで扱えるようにする

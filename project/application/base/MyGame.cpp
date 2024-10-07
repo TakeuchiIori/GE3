@@ -6,19 +6,16 @@ void MyGame::Initialize()
 	Framework::Initialize();
 
 	// SRVマネージャの初期化
-	srvManager_ = new SrvManager();
-	srvManager_->Initialize(dxCommon_);
-
+	SrvManager::GetInstance()->Initialize(dxCommon_);
+	
 	// スプライト共通部の初期化
-	spriteCommon_ = new SpriteCommon();
-	spriteCommon_->Initialize(dxCommon_);
+	SpriteCommon::Getinstance()->Initialize(dxCommon_);
 
 	// テクスチャマネージャの初期化
-	TextureManager::GetInstance()->Initialize(dxCommon_, srvManager_);
+	TextureManager::GetInstance()->Initialize(dxCommon_, SrvManager::GetInstance());
 
 	// 3Dオブジェクト共通部の初期化
-	object3dCommon_ = new Object3dCommon();
-	object3dCommon_->Initialize(dxCommon_);
+	Object3dCommon::Getinstance()->Initialize(dxCommon_);
 
 	// 3Dモデルマネージャの初期化
 	ModelManager::GetInstance()->Initialze(dxCommon_);
@@ -31,20 +28,20 @@ void MyGame::Initialize()
 	camera_ = new Camera();
 	camera_->SetRotate({ 0.0f,0.0f,0.0f });
 	camera_->SetTranslate({ 0.0f,4.0f,-10.0f });
-	object3dCommon_->SetDefaultCamera(camera_);
+	Object3dCommon::Getinstance()->SetDefaultCamera(camera_);
 
 
 	// スプライトの初期化
 	std::string textureFilePath[2] = { "Resources./monsterBall.png" ,"Resources./uvChecker.png" };
 	for (uint32_t i = 0; i < 1; ++i) {
 		Sprite* sprite = new Sprite();
-		sprite->Initialize(spriteCommon_, textureFilePath[1]);
+		sprite->Initialize(SpriteCommon::Getinstance(), textureFilePath[1]);
 		// 移動テスト: インデックスに応じてX、Y座標をずらして配置
 		Vector2 position;
 		position.x = i * 200.0f;
 		position.y = 0.0f;
 		sprite->SetPosition(position);
-		sprite->SetSrvManager(TextureManager::GetInstance()->GetSrvManager());
+		sprite->SetSrvManager(SrvManager::GetInstance());
 
 		// 初期色の設定（任意で設定）
 		Vector4 color = { 1.0f, 1.0f, 1.0f, 1.0f }; // 白色
@@ -64,7 +61,7 @@ void MyGame::Initialize()
 	uint32_t numObjects = 2;
 	for (uint32_t i = 0; i < numObjects; ++i) {
 		Object3d* object = new Object3d();
-		object->Initialize(object3dCommon_);
+		object->Initialize(Object3dCommon::Getinstance());
 		Vector3 position;
 		if (i == 0) {
 			position.x = -2;
@@ -86,10 +83,10 @@ void MyGame::Initialize()
 void MyGame::Finalize()
 {
 	CloseHandle(dxCommon_->GetfenceEvent());
-	delete spriteCommon_;
-	delete object3dCommon_;
+	SrvManager::GetInstance()->Finalize();
+	SpriteCommon::Getinstance()->Finalize();
+	Object3dCommon::Getinstance()->Finalize();
 	delete camera_;
-	delete srvManager_;
 	// 描画処理
 	for (auto& obj : object3ds) {
 		delete obj;
@@ -102,7 +99,7 @@ void MyGame::Finalize()
 	TextureManager::GetInstance()->Finalize();
 	// 3Dモデルマネージャの終了
 	ModelManager::GetInstance()->Finalize();
-	audio_->SoundUnload(audio_->GetXAudio2(), &soundData);
+	audio_->SoundUnload(Audio::GetInstance()->GetXAudio2(), &soundData);
 	Framework::Finalize();
 }
 
@@ -174,16 +171,16 @@ void MyGame::Draw()
 {
 	
 	// Srvの描画準備
-	srvManager_->PreDraw();
+	SrvManager::GetInstance()->PreDraw();
 	// DirectXの描画準備。全ての描画にグラフィックスコマンドを積む
 	dxCommon_->PreDraw();
 
 
 	// 3Dオブジェクトの描画準備。3Dオブジェクトの描画に共通のグラフィックスコマンドを積む
-	object3dCommon_->DrawPreference();
+	Object3dCommon::Getinstance()->DrawPreference();
 
 	// 2DSpriteの描画準備。Spriteの描画に共通のグラフィックスコマンドを積む
-	spriteCommon_->DrawPreference();
+	SpriteCommon::Getinstance()->DrawPreference();
 
 
 	// 描画

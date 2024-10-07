@@ -17,6 +17,10 @@ using namespace std;
 class DirectXCommon
 {
 public: // 各種初期化
+
+	static DirectXCommon* GetInstance();
+	void Finalize();
+
 	/// <summary>
 	/// DirectXの初期化
 	/// </summary>
@@ -208,7 +212,13 @@ public: // アクセッサ
 
 
 
-private: // メンバ変数
+private: 
+
+	static DirectXCommon* instance;
+	DirectXCommon() = default;
+	~DirectXCommon() = default;
+	DirectXCommon(DirectXCommon&) = delete;
+	DirectXCommon& operator = (DirectXCommon&) = delete;
 
 	// WindowsAPI
 	WinApp* winApp_ = nullptr;

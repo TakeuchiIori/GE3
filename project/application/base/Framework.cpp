@@ -11,8 +11,7 @@ void Framework::Initialize()
 	dxCommon_ = new DirectXCommon();
 	dxCommon_->Initialize(winApp_);
 
-	audio_ = new Audio();
-	audio_->Initialize();
+	Audio::GetInstance()->Initialize();
 
 	imguiManager_ = new ImGuiManager();
 	imguiManager_->Initialize(winApp_, dxCommon_);
@@ -20,13 +19,14 @@ void Framework::Initialize()
 
 void Framework::Finalize()
 {
+	Audio::GetInstance()->Finalize();
 	imguiManager_->Finalize();
 	delete input_;
 	winApp_->Finalize();
 	delete winApp_;
 	winApp_ = nullptr;
 	delete dxCommon_;
-	delete audio_;
+	
 }
 
 void Framework::Update()

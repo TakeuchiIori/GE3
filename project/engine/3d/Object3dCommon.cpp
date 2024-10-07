@@ -7,7 +7,7 @@ Object3dCommon* Object3dCommon::Getinstance()
 	if (instance == nullptr) {
 		instance = new Object3dCommon;
 	}
-	return nullptr;
+	return instance;
 }
 
 void Object3dCommon::Finalize()
