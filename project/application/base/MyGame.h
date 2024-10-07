@@ -37,6 +37,10 @@ public: // メンバ関数
 	void Draw() override;
 
 private: // メンバ変数
+	// MyGame固有のメンバ変数
+	SrvManager* srvManager_ = nullptr;
+	SpriteCommon* spriteCommon_ = nullptr;
+	Object3dCommon* object3dCommon_ = nullptr;
 	Camera* camera_ = nullptr;
 	std::vector<Sprite*> sprites;
 	std::vector<Object3d*> object3ds;
