@@ -44,7 +44,7 @@ void Framework::Initialize()
 
 	// シーンマネージャの生成
 	sceneManager_ = new SceneManager();
-	sceneManager_->Initialize();
+
 }
 
 void Framework::Finalize()
@@ -71,8 +71,8 @@ void Framework::Update()
 		endRequst_ = true;
 	}
 	imguiManager_->Begin();
-	sceneManager_->Update();
 	input_->Update(winApp_);
+	sceneManager_->Update();
 }
 
 void Framework::Run()
