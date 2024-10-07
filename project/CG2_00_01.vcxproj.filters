@@ -85,6 +85,12 @@
     <Filter Include="ヘッダー ファイル\application\base">
       <UniqueIdentifier>{3ccb0faf-1d78-4211-968c-52c22c340a29}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\engine\utility">
+      <UniqueIdentifier>{63f7c092-e16a-424d-ab4d-92d617e7647b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\engine\utility">
+      <UniqueIdentifier>{2579858e-5677-4c52-836e-d5c681946fab}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -129,13 +135,13 @@
     <ClCompile Include="engine\io\input\Input.cpp">
       <Filter>ソース ファイル\engine\io\input</Filter>
     </ClCompile>
-    <ClCompile Include="engine\3d\ModelManager.cpp">
+    <ClCompile Include="engine\model\ModelManager.cpp">
       <Filter>ソース ファイル\engine\model</Filter>
     </ClCompile>
-    <ClCompile Include="engine\3d\ModelCommon.cpp">
+    <ClCompile Include="engine\model\ModelCommon.cpp">
       <Filter>ソース ファイル\engine\model</Filter>
     </ClCompile>
-    <ClCompile Include="engine\3d\Model.cpp">
+    <ClCompile Include="engine\model\Model.cpp">
       <Filter>ソース ファイル\engine\model</Filter>
     </ClCompile>
     <ClCompile Include="engine\3d\Object3d.cpp">
@@ -159,9 +165,6 @@
     <ClCompile Include="engine\bases\ImGuiManager.cpp">
       <Filter>ソース ファイル\engine\base</Filter>
     </ClCompile>
-    <ClCompile Include="ParticleManager.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="application\base\Framework.cpp">
       <Filter>ソース ファイル\application\base</Filter>
     </ClCompile>
@@ -170,6 +173,9 @@
     </ClCompile>
     <ClCompile Include="application\scene\GameScene.cpp">
       <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\utility\ParticleManager.cpp">
+      <Filter>ソース ファイル\engine\utility</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -239,13 +245,13 @@
     <ClInclude Include="engine\io\input\Input.h">
       <Filter>ヘッダー ファイル\engine\io\input</Filter>
     </ClInclude>
-    <ClInclude Include="engine\3d\ModelCommon.h">
+    <ClInclude Include="engine\model\ModelCommon.h">
       <Filter>ヘッダー ファイル\engine\model</Filter>
     </ClInclude>
-    <ClInclude Include="engine\3d\ModelManager.h">
+    <ClInclude Include="engine\model\ModelManager.h">
       <Filter>ヘッダー ファイル\engine\model</Filter>
     </ClInclude>
-    <ClInclude Include="engine\3d\Model.h">
+    <ClInclude Include="engine\model\Model.h">
       <Filter>ヘッダー ファイル\engine\model</Filter>
     </ClInclude>
     <ClInclude Include="engine\3d\Camera.h">
@@ -253,9 +259,6 @@
     </ClInclude>
     <ClInclude Include="engine\bases\SrvManager.h">
       <Filter>ヘッダー ファイル\engine\base</Filter>
-    </ClInclude>
-    <ClInclude Include="ParticleManager.h">
-      <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="engine\io\audio\Audio.h">
       <Filter>ヘッダー ファイル\engine\io\audio</Filter>
@@ -271,6 +274,9 @@
     </ClInclude>
     <ClInclude Include="application\scene\GameScene.h">
       <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\utility\ParticleManager.h">
+      <Filter>ヘッダー ファイル\engine\utility</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
