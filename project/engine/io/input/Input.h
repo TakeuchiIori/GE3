@@ -15,6 +15,10 @@ template <class T> using ComPtr = Microsoft::WRL::ComPtr<T>;
 class Input
 {
 public:
+
+	static Input* GetInstance();
+	void Finalize();
+
 	/// <summary>
 	/// 初期化
 	/// </summary>
@@ -40,6 +44,11 @@ public:
 	bool TriggerKey(BYTE keyNumber);
 
 private:
+	static Input* instance;
+	Input() = default;
+	~Input() = default;
+	Input(Input&) = delete;
+	Input& operator = (Input&) = delete;
 	ComPtr<IDirectInput8> directInput;
 	ComPtr<IDirectInputDevice8> keyboard;
 	// 全キーの入力情報を取得する

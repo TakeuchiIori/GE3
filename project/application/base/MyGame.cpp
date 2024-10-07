@@ -14,18 +14,19 @@ void MyGame::Initialize()
 	spriteCommon_->Initialize(dxCommon_);
 
 	// テクスチャマネージャの初期化
-	TextureManager::GetInstance()->Initialize(dxCommon_, srvManager_);
+	textureManager_ = TextureManager::GetInstance();
+	textureManager_->Initialize(dxCommon_, srvManager_);
 
 	// 3Dオブジェクト共通部の初期化
 	object3dCommon_ = Object3dCommon::Getinstance();
 	object3dCommon_->Initialize(dxCommon_);
 
 	// 3Dモデルマネージャの初期化
-	ModelManager::GetInstance()->Initialze(dxCommon_);
-
+	modelManager_ = ModelManager::GetInstance();
+	modelManager_->Initialze(dxCommon_);
 	// .objファイルからモデルを読み込む
-	ModelManager::GetInstance()->LoadModel("plane.obj");
-	ModelManager::GetInstance()->LoadModel("axis.obj");
+	modelManager_->LoadModel("plane.obj");
+	modelManager_->LoadModel("axis.obj");
 
 	// デフォルトカメラ
 	camera_ = new Camera();
@@ -87,10 +88,6 @@ void MyGame::Initialize()
 void MyGame::Finalize()
 {
 	CloseHandle(dxCommon_->GetfenceEvent());
-	srvManager_->Finalize();
-	spriteCommon_->Finalize();
-	object3dCommon_->Finalize();
-	delete camera_;
 	// 描画処理
 	for (auto& obj : object3ds) {
 		delete obj;
@@ -99,11 +96,15 @@ void MyGame::Finalize()
 	for (Sprite* sprite : sprites) {
 		delete sprite;
 	}
-	// テクスチャマネージャの終了
-	TextureManager::GetInstance()->Finalize();
+	delete camera_;
 	// 3Dモデルマネージャの終了
-	ModelManager::GetInstance()->Finalize();
+	modelManager_->Finalize();
+	object3dCommon_->Finalize();
+	// テクスチャマネージャの終了
+	textureManager_->Finalize();
+	spriteCommon_->Finalize();
 	audio_->SoundUnload(audio_->GetXAudio2(), &soundData);
+	srvManager_->Finalize();
 	Framework::Finalize();
 }
 
@@ -173,12 +174,10 @@ void MyGame::Update()
 
 void MyGame::Draw()
 {
-	
 	// Srvの描画準備
 	srvManager_->PreDraw();
 	// DirectXの描画準備。全ての描画にグラフィックスコマンドを積む
 	dxCommon_->PreDraw();
-
 
 	// 3Dオブジェクトの描画準備。3Dオブジェクトの描画に共通のグラフィックスコマンドを積む
 	object3dCommon_->DrawPreference();
@@ -186,8 +185,6 @@ void MyGame::Draw()
 	// 2DSpriteの描画準備。Spriteの描画に共通のグラフィックスコマンドを積む
 	spriteCommon_->DrawPreference();
 
-
-	// 描画
 	// 2Dスプライト
 	for (Sprite* sprite : sprites) {
 		sprite->Draw();

@@ -42,6 +42,8 @@ private: // メンバ変数
 	SpriteCommon* spriteCommon_ = nullptr;
 	Object3dCommon* object3dCommon_ = nullptr;
 	Camera* camera_ = nullptr;
+	TextureManager* textureManager_ = nullptr;
+	ModelManager* modelManager_ = nullptr;
 	std::vector<Sprite*> sprites;
 	std::vector<Object3d*> object3ds;
 	Audio::SoundData soundData;

@@ -4,11 +4,20 @@
 #include "WinApp.h"
 #include "DirectXCommon.h"
 #include "imgui_impl_dx12.h"
+
+ImGuiManager* ImGuiManager::instance = nullptr;
+ImGuiManager* ImGuiManager::GetInstance()
+{
+	if (instance == nullptr) {
+		instance = new ImGuiManager;
+	}
+	return instance;
+}
+
 void ImGuiManager::Initialize(WinApp* winApp, DirectXCommon* dxCommon)
 {
 	// メンバ変数に引数を渡す
 	dxCommon_ = dxCommon;
-	//winApp_ = winApp;
 
 	// ImGuiのコンテキストを生成
 	ImGui::CreateContext();
@@ -77,8 +86,10 @@ void ImGuiManager::InitialzeDX12()
 	);
 }
 
+
 void ImGuiManager::Finalize()
 {
+	
 	// 後始末
 	ImGui_ImplDX12_Shutdown();
 	ImGui_ImplWin32_Shutdown();
@@ -86,4 +97,7 @@ void ImGuiManager::Finalize()
 
 	// デスクリプターヒープを解放
 	srvHeap_.Reset();
+
+	delete instance;
+	instance = nullptr;
 }

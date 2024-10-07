@@ -9,6 +9,8 @@ class ImGuiManager
 {
 public: // メンバ関数
 
+	static ImGuiManager* GetInstance();
+
 	/// <summary>
 	/// 初期化
 	/// </summary>
@@ -45,7 +47,13 @@ public: // メンバ関数
 	void Finalize();
 
 
-private: // メンバ変数
+private:
+	static ImGuiManager* instance;
+	ImGuiManager() = default;
+	~ImGuiManager() = default;
+	ImGuiManager(ImGuiManager&) = delete;
+	ImGuiManager& operator = (ImGuiManager&) = delete;
+
 	// ポインタ
 	DirectXCommon* dxCommon_ = nullptr;
 	WinApp* winApp_ = nullptr;

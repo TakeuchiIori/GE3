@@ -4,6 +4,9 @@
 #include "DirectXCommon.h"
 #include "Audio.h"
 #include "ImGuiManager.h"
+#include "SrvManager.h"
+#include "SpriteCommon.h"
+#include "Object3dCommon.h"
 
 
 // ゲーム全体
@@ -51,6 +54,9 @@ protected:
 	DirectXCommon* dxCommon_ = nullptr;
 	Audio* audio_ = nullptr;
 	ImGuiManager* imguiManager_ = nullptr;
+	SrvManager* srvManager_ = nullptr;
+	SpriteCommon* spriteCommon_ = nullptr;
+	Object3dCommon* object3dCommon_ = nullptr;
 private:
 
 	// ゲーム終了フラグ

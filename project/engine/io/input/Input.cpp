@@ -1,5 +1,20 @@
 #include "Input.h"
 
+Input* Input::instance = nullptr;
+Input* Input::GetInstance()
+{
+	if (instance == nullptr) {
+		instance = new Input;
+	}
+	return instance;
+}
+
+void Input::Finalize()
+{
+	delete instance;
+	instance = nullptr;
+}
+
 void Input::Initialize(WinApp* winApp)
 {
 	// 借りてきたwinAooのインスタンスを記録
