@@ -7,6 +7,11 @@ class DirectXCommon;
 class Object3dCommon
 {
 public: // メンバ関数
+	// シングルトン
+	static Object3dCommon* Getinstance();
+	// 終了
+	void Finalize();
+
 	/// <summary>
 	/// 初期化
 	/// </summary>
@@ -53,6 +58,12 @@ private:
 	void SetPrimitiveTopology();
 
 private:
+	static Object3dCommon* instance;
+	Object3dCommon() = default;
+	~Object3dCommon() = default;
+	Object3dCommon(Object3dCommon&) = delete;
+	Object3dCommon& operator = (Object3dCommon&) = delete;
+
 	// ポインタ
 	DirectXCommon* dxCommon_;
 	Camera* defaultCamera_ = nullptr;
