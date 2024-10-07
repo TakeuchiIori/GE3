@@ -1,4 +1,5 @@
 #pragma once
+#include "BaseScene.h"
 #include "Sprite.h"
 #include "SpriteCommon.h"
 #include "SrvManager.h"
@@ -7,28 +8,28 @@
 #include "Audio.h"
 #include "ModelManager.h"
 
-class GameScene
+class GameScene : public BaseScene
 {
 public:
 	/// <summary>
 	/// 初期化
 	/// </summary>
-	void Initialize();
+	void Initialize() override;
 
 	/// <summary>
 	/// 終了
 	/// </summary>
-	void Finalize();
+	void Finalize() override;
 
 	/// <summary>
 	/// 更新
 	/// </summary>
-	void Update();
+	void Update() override;
 
 	/// <summary>
 	/// 描画
 	/// </summary>
-	void Draw();
+	void Draw() override;
 
 private: // メンバ関数
 	// カメラ
