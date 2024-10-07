@@ -177,6 +177,9 @@
     <ClCompile Include="engine\utility\ParticleManager.cpp">
       <Filter>ソース ファイル\engine\utility</Filter>
     </ClCompile>
+    <ClCompile Include="application\scene\TitleScene.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="externals\imgui\imconfig.h">
@@ -277,6 +280,9 @@
     </ClInclude>
     <ClInclude Include="engine\utility\ParticleManager.h">
       <Filter>ヘッダー ファイル\engine\utility</Filter>
+    </ClInclude>
+    <ClInclude Include="application\scene\TitleScene.h">
+      <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

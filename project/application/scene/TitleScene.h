@@ -7,9 +7,10 @@
 #include "Audio.h"
 #include "ModelManager.h"
 
-class GameScene
-{
+class TitleScene
+{	
 public:
+
 	/// <summary>
 	/// 初期化
 	/// </summary>
@@ -40,6 +41,5 @@ private: // メンバ関数
 	std::vector<Sprite*> sprites;
 	// 3Dモデル
 	std::vector<Object3d*> object3ds;
-
 };
 
