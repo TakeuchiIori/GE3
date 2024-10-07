@@ -42,7 +42,5 @@ private: // メンバ関数
 	std::vector<Sprite*> sprites;
 	// 3Dモデル
 	std::vector<Object3d*> object3ds;
-
-	SceneManager* sceneManager_;
 };
 

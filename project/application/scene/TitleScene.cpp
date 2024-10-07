@@ -4,7 +4,10 @@
 #include "GameScene.h"
 void TitleScene::Initialize()
 {
+	
+
 	///============ モデル読み込み ============///
+	ModelManager::GetInstance()->Initialze(DirectXCommon::GetInstance());
 	ModelManager::GetInstance()->LoadModel("plane.obj");
 	ModelManager::GetInstance()->LoadModel("axis.obj");
 
@@ -73,7 +76,7 @@ void TitleScene::Finalize()
 	for (Sprite* sprite : sprites) {
 		delete sprite;
 	}
-	Object3dCommon::Getinstance()->Finalize();
+	//Object3dCommon::Getinstance()->Finalize();
 	Audio::GetInstance()->SoundUnload(Audio::GetInstance()->GetXAudio2(), &soundData);
 	delete camera_;
 	ModelManager::GetInstance()->Finalize();

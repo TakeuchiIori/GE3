@@ -43,14 +43,14 @@ void Framework::Initialize()
 	modelManager_->Initialze(dxCommon_);
 
 	// シーンマネージャの生成
-	sceneManager_ = new SceneManager();
+	sceneManager_ = SceneManager::GetInstance();
 
 }
 
 void Framework::Finalize()
 {
 	// 各解放処理
-	delete sceneManager_;
+	sceneManager_->Finalize();
 	modelManager_->Finalize();
 	object3dCommon_->Finalize();
 	textureManager_->Finalize();

@@ -1,10 +1,21 @@
 #include "SceneManager.h"
+SceneManager* SceneManager::instance = nullptr;
 
-SceneManager::~SceneManager()
+SceneManager* SceneManager::GetInstance()
+{
+	if (instance == nullptr) {
+		instance = new SceneManager;
+	}
+	return instance;
+}
+
+void SceneManager::Finalize()
 {
 	// 最後のシーンの終了と解放
 	scene_->Finalize();
 	delete scene_;
+	delete instance;
+	instance = nullptr;
 }
 
 void SceneManager::Initialize()
