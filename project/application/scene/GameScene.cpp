@@ -74,10 +74,8 @@ void GameScene::Finalize()
 	for (Sprite* sprite : sprites) {
 		delete sprite;
 	}
-	//Object3dCommon::Getinstance()->Finalize();
 	Audio::GetInstance()->SoundUnload(Audio::GetInstance()->GetXAudio2(), &soundData);
 	delete camera_;
-	ModelManager::GetInstance()->Finalize();
 }
 
 void GameScene::Update()
