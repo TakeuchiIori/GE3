@@ -35,7 +35,6 @@ void MyGame::Initialize()
 
 
 	// スプライトの初期化
-
 	std::string textureFilePath[2] = { "Resources./monsterBall.png" ,"Resources./uvChecker.png" };
 	for (uint32_t i = 0; i < 1; ++i) {
 		Sprite* sprite = new Sprite();

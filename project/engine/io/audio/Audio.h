@@ -41,7 +41,10 @@ public: // インナークラス
 
 public: // メンバ関数
 
-
+	// シングルトンインスタンスの取得
+	static Audio* GetInstance();
+	// 終了
+	void Finalize();
 
 	/// <summary>
 	/// 初期化
@@ -86,6 +89,10 @@ public:
 private: 
 
 	static Audio* instance;
+	Audio() = default;
+	~Audio() = default;
+	Audio(Audio&) = delete;
+	Audio& operator = (Audio&) = delete;
 
 	Microsoft::WRL::ComPtr<IXAudio2> xAudio2_;
 	IXAudio2MasteringVoice* masterVoice_;
