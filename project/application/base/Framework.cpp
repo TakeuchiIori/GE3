@@ -2,50 +2,55 @@
 
 void Framework::Initialize()
 {
-	// ウィンドウ初期化
+	// ウィンドウ生成
 	winApp_ = new WinApp();
 	winApp_->Initialize();
 
-	// 入力初期化
+	// 入力生成
 	input_ = Input::GetInstance();
 	input_->Initialize(winApp_);
 
-	// DirectX初期化
+	// DirectX生成
 	dxCommon_ = DirectXCommon::GetInstance();
 	dxCommon_->Initialize(winApp_);
 
-	// サウンド初期化
+	// サウンド生成
 	audio_ = Audio::GetInstance();
 	audio_->Initialize();
 
-	// ImGui初期化
+	// ImGui生成
 	imguiManager_ = ImGuiManager::GetInstance();
 	imguiManager_->Initialize(winApp_, dxCommon_);
 
-	// SRVマネージャの初期化
+	// SRVマネージャの生成
 	srvManager_ = SrvManager::GetInstance();
 	srvManager_->Initialize(dxCommon_);
 
-	// スプライト共通部の初期化
+	// スプライト共通部の生成
 	spriteCommon_ = SpriteCommon::Getinstance();
 	spriteCommon_->Initialize(dxCommon_);
 
-	// テクスチャマネージャの初期化
+	// テクスチャマネージャの生成
 	textureManager_ = TextureManager::GetInstance();
 	textureManager_->Initialize(dxCommon_, srvManager_);
 
-	// 3Dオブジェクト共通部の初期化
+	// 3Dオブジェクト共通部の生成
 	object3dCommon_ = Object3dCommon::Getinstance();
 	object3dCommon_->Initialize(dxCommon_);
 
-	// 3Dモデルマネージャの初期化
+	// 3Dモデルマネージャの生成
 	modelManager_ = ModelManager::GetInstance();
 	modelManager_->Initialze(dxCommon_);
+
+	// シーンマネージャの生成
+	sceneManager_ = new SceneManager();
+	sceneManager_->Initialize();
 }
 
 void Framework::Finalize()
 {
 	// 各解放処理
+	delete sceneManager_;
 	modelManager_->Finalize();
 	object3dCommon_->Finalize();
 	textureManager_->Finalize();
@@ -66,12 +71,13 @@ void Framework::Update()
 		endRequst_ = true;
 	}
 	imguiManager_->Begin();
+	sceneManager_->Update();
 	input_->Update(winApp_);
 }
 
 void Framework::Run()
 {
-	// ゲームの初期化
+	// ゲームの生成
 	Initialize();
 
 	while (true) // ゲームループ

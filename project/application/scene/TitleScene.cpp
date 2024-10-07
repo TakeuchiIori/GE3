@@ -1,4 +1,7 @@
 #include "TitleScene.h"
+#include "SceneManager.h"
+#include "Input.h"
+#include "GameScene.h"
 void TitleScene::Initialize()
 {
 	///============ モデル読み込み ============///
@@ -78,7 +81,15 @@ void TitleScene::Finalize()
 
 void TitleScene::Update()
 {
-
+	// ENTERキーを押したら
+	if (Input::GetInstance()->TriggerKey(DIK_RETURN)) {
+		// ゲームプレイシーン（次のシーン）を生成
+		BaseScene* scene = new GameScene();
+		// シーン切り替え依頼
+		sceneManager_->SetNextScene(scene);
+	}
+		
+	
 
 	// 2Dスプライトの更新
 	for (size_t i = 0; i < sprites.size(); ++i) {

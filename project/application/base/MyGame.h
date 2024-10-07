@@ -29,6 +29,5 @@ public: // メンバ関数
 	void Draw() override;
 
 private: // メンバ変数
-	TitleScene* scene_ = nullptr;
 };
 

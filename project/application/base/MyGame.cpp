@@ -6,8 +6,9 @@ void MyGame::Initialize()
 	Framework::Initialize();
 
 	// ゲームの初期化
-	scene_ = new TitleScene();
-	scene_ ->Initialize();
+	BaseScene* scene_ = new TitleScene();
+	// シーンマネージャに最初のシーンをセット
+	sceneManager_->SetNextScene(scene_);
 	
 }
 
@@ -15,8 +16,6 @@ void MyGame::Finalize()
 {
 	// 各解放処理
 	CloseHandle(dxCommon_->GetfenceEvent());
-	scene_ ->Finalize();
-	delete scene_ ;
 	Framework::Finalize();
 }
 
@@ -24,9 +23,6 @@ void MyGame::Update()
 {
 	// 基盤の更新
 	Framework::Update();
-	
-	// ゲームの更新
-	scene_ ->Update();
 
 	// ImGui受付終了
 	imguiManager_->End();
@@ -40,7 +36,7 @@ void MyGame::Draw()
 	dxCommon_->PreDraw();
 
 	// ゲームの描画
-	scene_ ->Draw();
+	sceneManager_->Draw();
 
 	// ImGui描画
 	imguiManager_->Draw();

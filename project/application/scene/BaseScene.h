@@ -1,5 +1,7 @@
 #pragma once
 
+// 前方宣言
+class SceneManager;
 // 基底クラス
 class BaseScene
 {
@@ -29,6 +31,11 @@ public: // 純粋仮想関数
 	/// </summary>
 	virtual ~BaseScene() = default;
 
+public: // アクセッサ
 
+	virtual void SetSceneManager(SceneManager* sceneManager) { sceneManager_ = sceneManager; }
+
+protected: // メンバ関数
+	SceneManager* sceneManager_ = nullptr;
 };
 

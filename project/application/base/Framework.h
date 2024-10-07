@@ -9,7 +9,7 @@
 #include "Object3dCommon.h"
 #include "TextureManager.h"
 #include "ModelManager.h"
-
+#include "SceneManager.h"
 // ゲーム全体
 class Framework
 {
@@ -60,6 +60,7 @@ protected:
 	Object3dCommon* object3dCommon_ = nullptr;
 	TextureManager* textureManager_ = nullptr;
 	ModelManager* modelManager_ = nullptr;
+	SceneManager* sceneManager_ = nullptr;
 private:
 
 	// ゲーム終了フラグ
