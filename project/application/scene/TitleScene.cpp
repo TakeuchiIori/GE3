@@ -4,8 +4,6 @@
 #include "GameScene.h"
 void TitleScene::Initialize()
 {
-	
-
 	///============ モデル読み込み ============///
 	ModelManager::GetInstance()->LoadModel("plane.obj");
 	ModelManager::GetInstance()->LoadModel("axis.obj");
@@ -39,8 +37,6 @@ void TitleScene::Initialize()
 		}
 		sprites.push_back(sprite);
 	}
-
-
 
 	///============ オブジェクト初期化 ============///
 	uint32_t numObjects = 2;
