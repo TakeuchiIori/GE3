@@ -124,6 +124,7 @@ void MyGame::Update()
 {
 
 	Framework::Update();
+	
 
 	/*================================================================//
 							   ゲームの処理開始
@@ -155,9 +156,9 @@ void MyGame::Update()
 
 		Vector2 position = sprite->GetPosition();
 
-		//ImGui::Begin("Sprite");
-		//ImGui::DragFloat2("position", &position.x, 1.0f);
-		//ImGui::End();
+		ImGui::Begin("Sprite");
+		ImGui::DragFloat2("position", &position.x, 1.0f);
+		ImGui::End();
 		sprite->SetPosition(position);
 	}
 
@@ -180,11 +181,12 @@ void MyGame::Update()
 
 	// デフォルトカメラの更新
 	camera_->Update();
-
+	imguiManager_->End();
 }
 
 void MyGame::Draw()
 {
+	
 	// Srvの描画準備
 	srvManager_->PreDraw();
 	// DirectXの描画準備。全ての描画にグラフィックスコマンドを積む
@@ -209,7 +211,7 @@ void MyGame::Draw()
 	}
 
 	// ImGui描画
-	//imguiManager_->Draw();
+	imguiManager_->Draw();
 	// DirectXの描画終了
 	dxCommon_->PostDraw();
 }

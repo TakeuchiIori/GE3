@@ -16,12 +16,11 @@ void Framework::Initialize()
 
 	imguiManager_ = new ImGuiManager();
 	imguiManager_->Initialize(winApp_, dxCommon_);
-	imguiManager_->InitialzeDX12();
 }
 
 void Framework::Finalize()
 {
-	
+	imguiManager_->Finalize();
 	delete input_;
 	winApp_->Finalize();
 	delete winApp_;
@@ -35,6 +34,7 @@ void Framework::Update()
 	if (winApp_->ProcessMessage()) {
 		endRequst_ = true;
 	}
+	imguiManager_->Begin();
 	input_->Update(winApp_);
 }
 
