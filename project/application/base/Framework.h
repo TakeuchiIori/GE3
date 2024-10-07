@@ -3,6 +3,8 @@
 #include "Input.h"
 #include "DirectXCommon.h"
 #include "Audio.h"
+#include "ImGuiManager.h"
+
 
 // ゲーム全体
 class Framework

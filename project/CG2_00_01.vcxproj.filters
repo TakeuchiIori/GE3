@@ -156,7 +156,7 @@
     <ClCompile Include="engine\io\audio\Audio.cpp">
       <Filter>ソース ファイル\engine\io\audio</Filter>
     </ClCompile>
-    <ClCompile Include="ImGuiManager.cpp">
+    <ClCompile Include="engine\bases\ImGuiManager.cpp">
       <Filter>ソース ファイル\engine\base</Filter>
     </ClCompile>
     <ClCompile Include="ParticleManager.cpp">
@@ -260,7 +260,7 @@
     <ClInclude Include="engine\io\audio\Audio.h">
       <Filter>ヘッダー ファイル\engine\io\audio</Filter>
     </ClInclude>
-    <ClInclude Include="ImGuiManager.h">
+    <ClInclude Include="engine\bases\ImGuiManager.h">
       <Filter>ヘッダー ファイル\engine\base</Filter>
     </ClInclude>
     <ClInclude Include="application\base\Framework.h">
