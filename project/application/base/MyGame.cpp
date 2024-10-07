@@ -6,7 +6,7 @@ void MyGame::Initialize()
 	Framework::Initialize();
 
 	// ゲームの初期化
-	scene_ = new GameScene();
+	scene_ = new TitleScene();
 	scene_ ->Initialize();
 	
 }

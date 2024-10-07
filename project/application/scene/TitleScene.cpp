@@ -135,11 +135,11 @@ void TitleScene::Draw()
 
 	// 2Dスプライト
 	for (Sprite* sprite : sprites) {
-		sprite->Draw();
+		//sprite->Draw();
 	}
 	// 3Dオブジェクト
 	for (auto& obj : object3ds) {
-		obj->Draw();
+		//obj->Draw();
 	}
 
 }
