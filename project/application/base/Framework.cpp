@@ -3,7 +3,7 @@
 void Framework::Initialize()
 {
 	// ウィンドウ生成
-	winApp_ = new WinApp();
+	winApp_ = WinApp::GetInstance();
 	winApp_->Initialize();
 
 	// 入力生成
@@ -61,7 +61,6 @@ void Framework::Finalize()
 	dxCommon_->Finalize();
 	input_->Finalize();
 	winApp_->Finalize();
-	delete winApp_;
 	winApp_ = nullptr;	
 }
 

@@ -1,5 +1,6 @@
 #include "WinApp.h"
 #pragma comment(lib,"winmm.lib")
+WinApp* WinApp::instance = nullptr;
 
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 LRESULT CALLBACK WinApp::WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
@@ -22,10 +23,22 @@ LRESULT CALLBACK WinApp::WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM l
 	}
 }
 
+WinApp* WinApp::GetInstance()
+{
+	if (instance == nullptr) {
+		instance = new WinApp;
+	}
+	return instance;
+}
+
 void WinApp::Initialize()
 {
 	HRESULT result = CoInitializeEx(0, COINIT_MULTITHREADED);
-	
+	if (FAILED(result)) {
+		// エラー処理
+		MessageBox(nullptr, L"COMライブラリの初期化に失敗しました", L"エラー", MB_OK);
+		return;
+	}
 
 	// ウィンドウプロージャ
 	wc.lpfnWndProc = WindowProc;
@@ -64,15 +77,13 @@ void WinApp::Initialize()
 	timeBeginPeriod(1);
 }
 
-void WinApp::Update()
-{
-
-}
 
 void WinApp::Finalize()
 {
 	CloseWindow(hwnd);
 	CoUninitialize();
+	delete instance;
+	instance = nullptr;
 }
 
 bool WinApp::ProcessMessage()

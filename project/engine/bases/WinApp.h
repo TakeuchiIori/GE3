@@ -9,15 +9,17 @@ public: // 静的メンバ関数
 	static LRESULT CALLBACK WindowProc(HWND hwnd, UINT msg,
 		WPARAM wparam, LPARAM lparam);
 public:
+
+	/// <summary>
+	/// インスタンス取得
+	/// </summary>
+	/// <returns></returns>
+	static WinApp* GetInstance();
+
 	/// <summary>
 	/// 初期化
 	/// </summary>
 	void Initialize();
-
-	/// <summary>
-	/// 更新
-	/// </summary>
-	void Update();
 
 	/// <summary>
 	/// 終了
@@ -38,7 +40,12 @@ public: // 定数
 	static const int32_t kClientWidth = 1280;
 	static const int32_t kClientHeight = 720;
 
-private: // メンバ変数
+private:
+	static WinApp* instance;
+	WinApp() = default; 
+	~WinApp() = default;
+	WinApp(const WinApp&) = delete;
+	WinApp& operator=(const WinApp&) = delete;
 	// ウィンドウクラスの設定
 	WNDCLASS wc{};
 	// ウィンドウハンドル
