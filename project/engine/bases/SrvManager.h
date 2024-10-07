@@ -9,8 +9,15 @@
 class SrvManager
 {
 	
+public:
+	// シングルトンインスタンスの取得
+	static SrvManager* GetInstance();
+	// 終了
+	void Finalize();
 
 public: // メンバ関数
+
+
 
 	/// <summary>
 	/// 初期化
@@ -71,11 +78,15 @@ public:
 		return descriptorHeap_;
 	}
 
-private: // メンバ変数
+private:
+	static SrvManager* instance;
+	SrvManager() = default;
+	~SrvManager() = default;
+	SrvManager(SrvManager&) = delete;
+	SrvManager& operator = (SrvManager&) = delete;
+
 	// ポインタ
 	DirectXCommon* dxCommon_ = nullptr;
-
-	
 	// 次に使用するSRVインデックス
 	uint32_t useIndex_ = 0;
 	// SRV用のデスクリプタサイズ

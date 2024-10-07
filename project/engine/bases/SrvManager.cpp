@@ -1,7 +1,24 @@
 #include "SrvManager.h"
 
-
+SrvManager* SrvManager::instance = nullptr;
 const uint32_t SrvManager::kMaxSRVCount_ = 512;
+
+SrvManager* SrvManager::GetInstance()
+{
+	if (instance == nullptr) {
+		instance = new SrvManager;
+	}
+	return instance;
+
+}
+
+void SrvManager::Finalize()
+{
+	delete instance;
+	instance = nullptr;
+}
+
+
 void SrvManager::Initialize(DirectXCommon* dxCommon)
 {
 	// 引数で受け取ってメンバ変数に記録する
