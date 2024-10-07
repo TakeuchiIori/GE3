@@ -1,4 +1,10 @@
 #pragma once
+#include "Sprite.h"
+#include "Object3d.h"
+#include "Audio.h"
+#include "Camera.h"
+#include "ModelManager.h"
+
 class GameScene
 {
 public:
@@ -21,5 +27,14 @@ public:
 	/// 描画
 	/// </summary>
 	void Draw();
+
+
+
+private: // メンバ関数
+
+	std::vector<Sprite*> sprites;
+	std::vector<Object3d*> object3ds;
+	Camera* camera_ = nullptr;
+	Audio::SoundData soundData;
 };
 

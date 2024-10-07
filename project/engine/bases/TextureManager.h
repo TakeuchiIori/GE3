@@ -58,6 +58,8 @@ public: // メンバ関数
 	// メタデータを取得
 	const DirectX::TexMetadata& GetMetaData(const std::string& filePath);
 
+	SrvManager* GetSrvManager() const { return srvManager_; };
+
 private: // メンバ変数
 
 	static TextureManager* instance;

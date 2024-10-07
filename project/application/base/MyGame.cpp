@@ -5,16 +5,10 @@ void MyGame::Initialize()
 	// 基底クラスの初期化
 	Framework::Initialize();
 
-
-
-#pragma region 基礎システムの初期化
-
 	// SRVマネージャの初期化
-	
 	srvManager_ = new SrvManager();
 	srvManager_->Initialize(dxCommon_);
 
-	
 	// スプライト共通部の初期化
 	spriteCommon_ = new SpriteCommon();
 	spriteCommon_->Initialize(dxCommon_);
@@ -23,12 +17,12 @@ void MyGame::Initialize()
 	TextureManager::GetInstance()->Initialize(dxCommon_, srvManager_);
 
 	// 3Dオブジェクト共通部の初期化
-	
 	object3dCommon_ = new Object3dCommon();
 	object3dCommon_->Initialize(dxCommon_);
 
 	// 3Dモデルマネージャの初期化
 	ModelManager::GetInstance()->Initialze(dxCommon_);
+
 	// .objファイルからモデルを読み込む
 	ModelManager::GetInstance()->LoadModel("plane.obj");
 	ModelManager::GetInstance()->LoadModel("axis.obj");
@@ -39,13 +33,6 @@ void MyGame::Initialize()
 	camera_->SetTranslate({ 0.0f,4.0f,-10.0f });
 	object3dCommon_->SetDefaultCamera(camera_);
 
-
-
-#pragma endregion 基礎システムの初期化
-
-
-
-#pragma region 最初のシーンの初期化
 
 	// スプライトの初期化
 
@@ -58,7 +45,7 @@ void MyGame::Initialize()
 		position.x = i * 200.0f;
 		position.y = 0.0f;
 		sprite->SetPosition(position);
-		sprite->SetSrvManager(srvManager_);
+		sprite->SetSrvManager(TextureManager::GetInstance()->GetSrvManager());
 
 		// 初期色の設定（任意で設定）
 		Vector4 color = { 1.0f, 1.0f, 1.0f, 1.0f }; // 白色

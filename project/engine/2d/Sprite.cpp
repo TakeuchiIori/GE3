@@ -58,7 +58,6 @@ void Sprite::Draw()
 	spriteCommon_->GetDxCommon()->GetcommandList()->SetGraphicsRootConstantBufferView(1, transformationMatrixResource_->GetGPUVirtualAddress());
 
 	// SRVの設定
-	//spriteCommon_->GetDxCommon()->GetcommandList()->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetsrvHandleGPU(textureIndex)); // SRVのパラメータインデックスを変更
 	srvManagaer_->SetGraphicsRootDescriptorTable(2, textureIndex_);
 	// 描画！！！DrawCall/ドローコール）
 	spriteCommon_->GetDxCommon()->GetcommandList()->DrawIndexedInstanced(6, 1, 0, 0, 0);
