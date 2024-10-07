@@ -7,7 +7,6 @@ void TitleScene::Initialize()
 	
 
 	///============ モデル読み込み ============///
-	ModelManager::GetInstance()->Initialze(DirectXCommon::GetInstance());
 	ModelManager::GetInstance()->LoadModel("plane.obj");
 	ModelManager::GetInstance()->LoadModel("axis.obj");
 
