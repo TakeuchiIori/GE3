@@ -2,11 +2,20 @@
 #include "DirectXCommon.h"
 #include "SrvManager.h"
 
+ParticleManager* ParticleManager::instance = nullptr;
 
 ParticleManager* ParticleManager::GetInstance()
 {
-    static ParticleManager instance;
-    return &instance;
+	if (instance == nullptr) {
+		instance = new ParticleManager();
+	}
+    return instance;
+}
+
+void ParticleManager::Finalize()
+{
+	delete instance;
+	instance = nullptr;
 }
 
 void ParticleManager::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager)

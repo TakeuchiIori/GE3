@@ -49,12 +49,9 @@ public:
 		std::vector<VertexData> vertices;
 		MaterialData material;
 	};
-public:
-    // シングルトンインスタンスの取得
+public: // シングルトン
     static ParticleManager* GetInstance();
-
-    // コピーコンストラクタと代入演算子を削除して、複製を防ぐ
-        // コンストラクタをプライベートにして、外部からの直接生成を防ぐ
+	void Finalize();
     ParticleManager() = default;
     ~ParticleManager() = default;
     ParticleManager(const ParticleManager&) = delete;
@@ -116,7 +113,8 @@ private:
 	
 
 
-private: // メンバ変数
+private:
+	static ParticleManager* instance;
 	DirectXCommon* dxCommon_;
 	SrvManager* srvManager_;
 	VertexData* vertexData = nullptr;
