@@ -6,9 +6,8 @@ void MyGame::Initialize()
 	Framework::Initialize();
 
 	// シーンファクトリを生成し、 シーンマネージャに最初のシーンをセット
-	sceneFactory_ = new SceneFactory();
-	
-	sceneManager_->SetSceneFactory(sceneFactory_);
+	sceneFactory_ = std::make_unique<SceneFactory>();
+	sceneManager_->SetSceneFactory(sceneFactory_.get());
 	sceneManager_->ChangeScene("TITLE");
 	
 }
@@ -18,7 +17,6 @@ void MyGame::Finalize()
 	// 各解放処理
 	CloseHandle(dxCommon_->GetfenceEvent());
 	Framework::Finalize();
-	delete sceneFactory_;
 }
 
 void MyGame::Update()
