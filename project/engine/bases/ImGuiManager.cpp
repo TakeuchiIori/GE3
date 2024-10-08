@@ -1,9 +1,12 @@
 #include "ImGuiManager.h"
-#include "imgui.h"
-#include "imgui_impl_win32.h"
+
+
+#ifdef _DEBUG
 #include "WinApp.h"
 #include "DirectXCommon.h"
-#include "imgui_impl_dx12.h"
+#include <imgui_impl_win32.h>
+#include <imgui_impl_dx12.h>
+#endif
 
 ImGuiManager* ImGuiManager::instance = nullptr;
 ImGuiManager* ImGuiManager::GetInstance()
@@ -16,6 +19,7 @@ ImGuiManager* ImGuiManager::GetInstance()
 
 void ImGuiManager::Initialize(WinApp* winApp, DirectXCommon* dxCommon)
 {
+#ifdef _DEBUG
 	// メンバ変数に引数を渡す
 	dxCommon_ = dxCommon;
 
@@ -32,26 +36,30 @@ void ImGuiManager::Initialize(WinApp* winApp, DirectXCommon* dxCommon)
 
 	// DirectX12の初期化
 	InitialzeDX12();
-
+#endif
 }
 
 void ImGuiManager::Begin()
 {
+#ifdef _DEBUG
 	// ImGuiフレーム開始
 	ImGui_ImplDX12_NewFrame();
 	ImGui_ImplWin32_NewFrame();
 	ImGui::NewFrame();
-
+#endif
 }
 
 void ImGuiManager::End()
 {
+#ifdef _DEBUG
 	// 描画前準備
 	ImGui::Render();
+#endif
 }
 
 void ImGuiManager::Draw()
 {
+#ifdef _DEBUG
 	ID3D12GraphicsCommandList* commandList = dxCommon_->GetcommandList().Get();
 
 	// デスクリプターヒープの配列をセットするコマンド
@@ -59,6 +67,7 @@ void ImGuiManager::Draw()
 	commandList->SetDescriptorHeaps(_countof(ppHeaps), ppHeaps);
 	// 描画コマンドを発行
 	ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), commandList);
+#endif
 }
 
 void ImGuiManager::CreateDescriptorHeap()

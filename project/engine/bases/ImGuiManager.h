@@ -1,7 +1,10 @@
 #pragma once
+
+#ifdef _DEBUG
+#include "imgui.h"
 #include <wrl.h>
 #include <d3d12.h>
-
+#endif
 
 class WinApp;
 class DirectXCommon;
@@ -53,11 +56,14 @@ private:
 	~ImGuiManager() = default;
 	ImGuiManager(ImGuiManager&) = delete;
 	ImGuiManager& operator = (ImGuiManager&) = delete;
-
+private:
+#ifdef _DEBUG
 	// ポインタ
 	DirectXCommon* dxCommon_ = nullptr;
 	WinApp* winApp_ = nullptr;
 	// SRV用デスクリプターヒープ
 	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> srvHeap_;
+#endif
+
 };
 
