@@ -13,6 +13,11 @@ public: // シングルトン
 	// 終了
 	void Finalize();
 
+	// コンストラクタ
+	// デストラクタ
+	ModelManager() = default;
+	~ModelManager() = default;
+
 public: // 公開メンバ関数
 	/// <summary>
 	/// 初期化
@@ -34,14 +39,12 @@ public: // 公開メンバ関数
 	Model* FindModel(const std::string& filePath);
 
 private:
-	static ModelManager* instance;
-	ModelManager() = default;
-	~ModelManager() = default;
+	static std::unique_ptr<ModelManager> instance;  // std::unique_ptrを使用
 	ModelManager(ModelManager&) = delete;
-	ModelManager& operator = (ModelManager&) = delete;
+	ModelManager& operator=(ModelManager&) = delete;
 	// モデルデータ
 	std::map<std::string, std::unique_ptr<Model>> models;
 private: // メンバ関数
-	ModelCommon* modelCommon_ = nullptr;
+	std::unique_ptr<ModelCommon> modelCommon_;
 };
 
