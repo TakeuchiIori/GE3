@@ -195,6 +195,9 @@
     <ClCompile Include="application\scene\BaseScene.cpp">
       <Filter>ソース ファイル\application\scene</Filter>
     </ClCompile>
+    <ClCompile Include="engine\utility\LeakChecker.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="externals\imgui\imconfig.h">
@@ -310,6 +313,9 @@
     </ClInclude>
     <ClInclude Include="application\scene\BaseScene.h">
       <Filter>ヘッダー ファイル\application\scene</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\utility\LeakChecker.h">
+      <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

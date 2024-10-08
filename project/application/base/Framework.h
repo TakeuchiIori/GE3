@@ -12,6 +12,7 @@
 #include "ModelManager.h"
 #include "SceneManager.h"
 #include "AbstractSceneFactory.h"
+#include <LeakChecker.h>
 // ゲーム全体
 class Framework
 {
@@ -66,7 +67,7 @@ protected:
 	// シーンファクトリー
 	std::unique_ptr<AbstractSceneFactory> sceneFactory_;
 private:
-	
+	std::unique_ptr<D3DResourceLeakChecker> leakCheck;
 	// ゲーム終了フラグ
 	bool endRequst_ = false;
 
