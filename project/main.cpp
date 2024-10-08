@@ -1,17 +1,15 @@
 #include "MyGame.h"
 #include "Framework.h"
+#include "wrl.h"
 #pragma comment(lib,"dxguid.lib")
 #pragma comment(lib,"dxcompiler.lib")
 
 //Windowsアプリのエントリーポイント(main関数)
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
-	Framework* game = new MyGame();
+	std::unique_ptr<Framework> game = std::make_unique<MyGame>();
 
 	game->Run();
-
-	delete game;
-
 
 	return 0;// main関数のリターン
 }
