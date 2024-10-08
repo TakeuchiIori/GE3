@@ -211,7 +211,7 @@ void ParticleManager::CreateVertexResource()
 	modelData.vertices.push_back({ .position = {1.0f, -1.0f, 0.0f, 1.0f}, .texcoord = {0.0f, 1.0f}, .normal = {0.0f, 0.0f, 1.0f} });
 	modelData.vertices.push_back({ .position = {-1.0f, 1.0f, 0.0f, 1.0f}, .texcoord = {1.0f, 0.0f}, .normal = {0.0f, 0.0f, 1.0f} });
 	modelData.vertices.push_back({ .position = {-1.0f, -1.0f, 0.0f, 1.0f}, .texcoord = {1.0f, 1.0f}, .normal = {0.0f, 0.0f, 1.0f} });
-	modelData.material.textureFilePath = "./resources/circle.png";
+	modelData.material.textureFilePath = "Resources/images/circle.png";
 
 	// バッファビュー作成
 	CreateVertexVBV();
