@@ -158,6 +158,9 @@ void ParticleManager::CreateRootSignature()
 
 void ParticleManager::CreateGraphicsPipeline()
 {
+	// ルートシグネチャ
+	CreateRootSignature();
+
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC graphicsPipelineStateDesc{};
 	graphicsPipelineStateDesc.pRootSignature = rootSignature.Get();					 // Rootsignature
 	graphicsPipelineStateDesc.InputLayout = inputLayoutDesc;					 // InputLayout
