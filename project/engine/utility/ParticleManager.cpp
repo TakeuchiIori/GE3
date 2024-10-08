@@ -23,6 +23,9 @@ void ParticleManager::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager
     // ポインタを渡す
     this->dxCommon_ = dxCommon;
     this->srvManager_ = srvManager;
+
+	// パイプライン生成
+	CreateGraphicsPipeline();
 }
 
 void ParticleManager::Update()
@@ -210,12 +213,10 @@ void ParticleManager::CreateVertexResource()
 	modelData.vertices.push_back({ .position = {-1.0f, -1.0f, 0.0f, 1.0f}, .texcoord = {1.0f, 1.0f}, .normal = {0.0f, 0.0f, 1.0f} });
 	modelData.material.textureFilePath = "./resources/circle.png";
 
-	//頂点リソース
-	vertexResource = dxCommon_->CreateBufferResource(sizeof(VertexData) * modelData.vertices.size());
-	//　データ書き込み
-	vertexResource->Map(0, nullptr, reinterpret_cast<void**>(&vertexData));
-	memcpy(vertexData, modelData.vertices.data(), sizeof(VertexData) * modelData.vertices.size());
-
+	// バッファビュー作成
+	CreateVertexVBV();
+	// 頂点データを書き込む
+	UploadVertexResource();
 }
 
 void ParticleManager::CreateVertexVBV()
@@ -224,6 +225,15 @@ void ParticleManager::CreateVertexVBV()
 	vertexBufferView.BufferLocation = vertexResource->GetGPUVirtualAddress();// リソースデータの先頭アドレスから使う
 	vertexBufferView.SizeInBytes = UINT(sizeof(VertexData) * modelData.vertices.size());// 使用するリソースのサイズは1頂点のサイズ
 	vertexBufferView.StrideInBytes = sizeof(VertexData);// 1頂点のサイズ
+}
+
+void ParticleManager::UploadVertexResource()
+{
+	//頂点リソース
+	vertexResource = dxCommon_->CreateBufferResource(sizeof(VertexData) * modelData.vertices.size());
+	//　データ書き込み
+	vertexResource->Map(0, nullptr, reinterpret_cast<void**>(&vertexData));
+	memcpy(vertexData, modelData.vertices.data(), sizeof(VertexData) * modelData.vertices.size());
 }
 
 void ParticleManager::InitRandomEngine()

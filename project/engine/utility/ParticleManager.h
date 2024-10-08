@@ -107,6 +107,11 @@ private:
 	void CreateVertexVBV();
 
 	/// <summary>
+	/// 頂点データに頂点リソースを書き込む
+	/// </summary>
+	void UploadVertexResource();
+
+	/// <summary>
 	/// ランダムエンジン
 	/// </summary>
 	void InitRandomEngine();
