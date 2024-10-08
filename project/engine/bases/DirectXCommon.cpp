@@ -383,12 +383,6 @@ void DirectXCommon::InitializeScissorRevtangle()
 	scissorRect_.bottom = WinApp::kClientHeight;
 }
 
-void DirectXCommon::InitializeImGui()
-{
-
-
-}
-
 Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> DirectXCommon::CreateDescriptorHeap(Microsoft::WRL::ComPtr<ID3D12Device> device_, D3D12_DESCRIPTOR_HEAP_TYPE heapType, UINT numDescriptors, bool shaderVisible)
 {
 	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> descriptorHeap = nullptr;

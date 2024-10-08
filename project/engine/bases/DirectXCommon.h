@@ -67,11 +67,6 @@ public: // 各種初期化
 	void InitializeScissorRevtangle();
 
 	/// <summary>
-	/// ImGuiの初期化
-	/// </summary>
-	void InitializeImGui();
-
-	/// <summary>
 	/// 深度バッファ生成
 	/// </summary>
 	void CreateDepthBuffer();

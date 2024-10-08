@@ -7,6 +7,7 @@
 #include "Object3dCommon.h"
 #include "Audio.h"
 #include "ModelManager.h"
+#include <memory>
 
 class TitleScene : public BaseScene
 {	
@@ -34,7 +35,7 @@ public:
 
 private: // メンバ関数
 	// カメラ
-	Camera* camera_ = nullptr;
+	std::unique_ptr<Camera> camera_;
 	// サウンド
 	Audio::SoundData soundData;
 

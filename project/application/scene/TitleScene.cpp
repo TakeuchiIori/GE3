@@ -9,10 +9,10 @@ void TitleScene::Initialize()
 	ModelManager::GetInstance()->LoadModel("axis.obj");
 
 	///============ カメラ初期化 ============///
-	camera_ = new Camera();
+	camera_ = std::make_unique<Camera>();
 	camera_->SetRotate({ 0.0f,0.0f,0.0f });
 	camera_->SetTranslate({ 0.0f,4.0f,-10.0f });
-	Object3dCommon::Getinstance()->SetDefaultCamera(camera_);
+	Object3dCommon::Getinstance()->SetDefaultCamera(camera_.get());
 
 	///============ スプライト初期化 ============///
 	std::string textureFilePath[2] = { "Resources./monsterBall.png" ,"Resources./uvChecker.png" };
@@ -72,7 +72,6 @@ void TitleScene::Finalize()
 		delete sprite;
 	}
 	Audio::GetInstance()->SoundUnload(Audio::GetInstance()->GetXAudio2(), &soundData);
-	delete camera_;
 }
 
 void TitleScene::Update()
