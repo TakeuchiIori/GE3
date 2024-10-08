@@ -9,6 +9,11 @@ public: // メンバ関数
 	// 終了
 	void Finalize();
 
+	// コンストラクタ
+	// デストラクタ
+	SpriteCommon() = default;
+	~SpriteCommon() = default;
+
 	/// <summary>
 	/// 初期化
 	/// </summary>
@@ -50,11 +55,10 @@ public: // アクセッサ
 
 private:
 
-	static SpriteCommon* instance;
-	SpriteCommon() = default;
-	~SpriteCommon() = default;
+	static std::unique_ptr<SpriteCommon> instance;
+
 	SpriteCommon(SpriteCommon&) = delete;
-	SpriteCommon& operator = (SpriteCommon&) = delete;
+	SpriteCommon& operator=(const SpriteCommon&) = delete;
 
 
 	DirectXCommon* dxCommon_;
@@ -78,11 +82,7 @@ private:
 
 
 	D3D12_INPUT_LAYOUT_DESC inputLayoutDesc{};
-
 	Microsoft::WRL::ComPtr<ID3D12RootSignature> rootSignature = nullptr;
-
-
-
 	Microsoft::WRL::ComPtr<ID3D12PipelineState> graphicsPipelineState = nullptr;
 
 };
