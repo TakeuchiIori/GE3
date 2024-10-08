@@ -5,9 +5,10 @@
 #include <array>
 #include <dxcapi.h>
 #include <string>
-#include <chrono>
 #include <vector>
 #include <random>
+#include <list>
+#include "Vector"
 #include "Vector4.h"
 #include "Matrix4x4.h"
 #include "Vector2.h"
@@ -19,6 +20,7 @@ class SrvManager;
 class ParticleManager {
 
 public:
+	// ブレンドモード構造体
 	enum BlendMode {
 		// ブレンド無し
 		kBlendModeNone,
@@ -43,12 +45,29 @@ public:
 	};
 	struct MaterialData {
 		std::string textureFilePath;
-		uint32_t textureIndex = 0;
+		uint32_t textureIndexSRV = 0;
 	};
 	struct ModelData {
 		std::vector<VertexData> vertices;
 		MaterialData material;
 	};
+	struct Particle {
+		Transform transform;
+		Vector3 velocity;
+		Vector4 color;
+		float lifeTime;
+		float currentTime;
+	};
+
+	struct ParticleGroup {
+		MaterialData materialData;								 // マテリアルデータ
+		std::list<Particle> particles;							 // パーティクルリスト
+		Microsoft::WRL::ComPtr<ID3D12Resource> IndexSRV;		 // インスタンシングデータ用SRVインデックス
+																 // インスタンシングリソース
+		UINT instance;											 // インスタンス数
+																 // インスタンシングデータを書き込むためのポインタ
+	};
+
 public: // シングルトン
     static ParticleManager* GetInstance();
 	void Finalize();

@@ -26,6 +26,12 @@ void ParticleManager::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager
 
 	// パイプライン生成
 	CreateGraphicsPipeline();
+
+	// 四角形の頂点を作成
+	CreateVertexResource();
+
+	// ランダムエンジン初期化
+	InitRandomEngine();
 }
 
 void ParticleManager::Update()
