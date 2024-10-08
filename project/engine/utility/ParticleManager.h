@@ -58,14 +58,18 @@ public:
 		float lifeTime;
 		float currentTime;
 	};
-
+	struct ParticleForGPU {
+		Matrix4x4 WVP;
+		Matrix4x4 World;
+		Vector4 color;
+	};
 	struct ParticleGroup {
-		MaterialData materialData;								 // マテリアルデータ
-		std::list<Particle> particles;							 // パーティクルリスト
-		Microsoft::WRL::ComPtr<ID3D12Resource> IndexSRV;		 // インスタンシングデータ用SRVインデックス
-																 // インスタンシングリソース
-		UINT instance;											 // インスタンス数
-																 // インスタンシングデータを書き込むためのポインタ
+		MaterialData materialData;										// マテリアルデータ
+		std::list<Particle> particles;									// パーティクルリスト
+		uint32_t IndexSRV;												// インスタンシングデータ用SRVインデックス
+		Microsoft::WRL::ComPtr<ID3D12Resource> instancingResource;		// インスタンシングリソース
+		UINT instance;													// インスタンス数
+		ParticleForGPU instancingData;									// インスタンシングデータを書き込むためのポインタ
 	};
 
 public: // シングルトン
