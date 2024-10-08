@@ -145,34 +145,36 @@ private:
 	static ParticleManager* instance;
 	DirectXCommon* dxCommon_;
 	SrvManager* srvManager_;
-	VertexData* vertexData = nullptr;
+	VertexData* vertexData_ = nullptr;
 
 
-	ModelData modelData;
-	D3D12_VERTEX_BUFFER_VIEW vertexBufferView{};
+	ModelData modelData_;
+	D3D12_VERTEX_BUFFER_VIEW vertexBufferView_{};
 	// 乱数生成器
-	std::random_device seedGenerator;
-	std::mt19937 randomEngine;
+	std::random_device seedGenerator_;
+	std::mt19937 randomEngine_;
+	// 最初のブレンドモード
+	BlendMode currentBlendMode_;
 
 	// ルートシグネチャ
-	D3D12_ROOT_SIGNATURE_DESC descriptionRootSignature{};
-	D3D12_DESCRIPTOR_RANGE descriptorRangeForInstancing[1] = {};
+	D3D12_ROOT_SIGNATURE_DESC descriptionRootSignature_{};
+	D3D12_DESCRIPTOR_RANGE descriptorRangeForInstancing_[1] = {};
 	// ルートパラメーター
-	D3D12_ROOT_PARAMETER rootParameters[4] = {};
+	D3D12_ROOT_PARAMETER rootParameters_[4] = {};
 	// サンプラー
-	D3D12_STATIC_SAMPLER_DESC staticSamplers[1] = {};
+	D3D12_STATIC_SAMPLER_DESC staticSamplers_[1] = {};
 	// インプットレイアウト
-	D3D12_INPUT_ELEMENT_DESC inputElementDescs[3] = {};
+	D3D12_INPUT_ELEMENT_DESC inputElementDescs_[3] = {};
 	// ブレンド
-	D3D12_BLEND_DESC blendDesc{};
-	D3D12_RASTERIZER_DESC rasterrizerDesc{};
-	D3D12_DEPTH_STENCIL_DESC depthStencilDesc{};
-	D3D12_INPUT_LAYOUT_DESC inputLayoutDesc{};
+	D3D12_BLEND_DESC blendDesc_{};
+	D3D12_RASTERIZER_DESC rasterrizerDesc_{};
+	D3D12_DEPTH_STENCIL_DESC depthStencilDesc_{};
+	D3D12_INPUT_LAYOUT_DESC inputLayoutDesc_{};
 
-	Microsoft::WRL::ComPtr<IDxcBlob> vertexShaderBlob;
-	Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob;
-	Microsoft::WRL::ComPtr<ID3D12Resource> vertexResource;
-	Microsoft::WRL::ComPtr<ID3D12RootSignature> rootSignature;
-	Microsoft::WRL::ComPtr<ID3D12PipelineState> graphicsPipelineState;
+	Microsoft::WRL::ComPtr<IDxcBlob> vertexShaderBlob_;
+	Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob_;
+	Microsoft::WRL::ComPtr<ID3D12Resource> vertexResource_;
+	Microsoft::WRL::ComPtr<ID3D12RootSignature> rootSignature_;
+	Microsoft::WRL::ComPtr<ID3D12PipelineState> graphicsPipelineState_;
 
 };

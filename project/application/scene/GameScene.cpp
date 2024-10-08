@@ -1,7 +1,10 @@
 #include "GameScene.h"
 #include "SceneManager.h"
 #include "Input.h"
-#include "TitleScene.h"
+#ifdef _DEBUG
+#include "imgui.h"
+#endif // DEBUG
+
 void GameScene::Initialize()
 {
 	///============ モデル読み込み ============///
@@ -96,9 +99,11 @@ void GameScene::Update()
 		}
 		//sprite->SetColor(color);
 		Vector2 position = sprite->GetPosition();
+#ifdef _DEBUG
 		ImGui::Begin("Sprite");
 		ImGui::DragFloat2("position", &position.x, 1.0f);
 		ImGui::End();
+#endif // DEBUG
 		sprite->SetPosition(position);
 	}
 

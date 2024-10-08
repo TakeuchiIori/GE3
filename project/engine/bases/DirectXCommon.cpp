@@ -2,12 +2,12 @@
 #include <cassert>
 #include <thread>
 #include <format>
-#include "imgui_impl_win32.h"
-#include "imgui_impl_dx12.h"
 #include "d3dx12.h"
 
 #pragma comment(lib,"d3d12.lib")
 #pragma comment(lib,"dxgi.lib")
+#pragma comment(lib, "dxguid.lib")
+#pragma comment(lib,"winmm.lib")
 
 using namespace Microsoft::WRL;
 //const uint32_t DirectXCommon::kMaxSRVCount = 512;

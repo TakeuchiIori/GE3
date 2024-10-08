@@ -72,6 +72,7 @@ void ImGuiManager::Draw()
 
 void ImGuiManager::CreateDescriptorHeap()
 {
+#ifdef _DEBUG
 	// デスクリプタヒープの設定
 	D3D12_DESCRIPTOR_HEAP_DESC desc = {};
 	desc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
@@ -82,23 +83,26 @@ void ImGuiManager::CreateDescriptorHeap()
 	HRESULT hr = dxCommon_->Getdevice()->CreateDescriptorHeap(&desc, IID_PPV_ARGS(&srvHeap_));
 	// ディスクリプタヒープが作れなかったので起動できない
 	assert(SUCCEEDED(hr));
+#endif // DEBUG
 }
 
 void ImGuiManager::InitialzeDX12()
 {
+#ifdef _DEBUG
 	ImGui_ImplDX12_Init(
 		dxCommon_->Getdevice().Get(),
 		static_cast<int> (dxCommon_->GetBackBufferCount()),
 		DXGI_FORMAT_R8G8B8A8_UNORM_SRGB, srvHeap_.Get(),
 		srvHeap_->GetCPUDescriptorHandleForHeapStart(),
 		srvHeap_->GetGPUDescriptorHandleForHeapStart()
-	);
+	); 
+#endif // DEBUG
 }
 
 
 void ImGuiManager::Finalize()
 {
-	
+#ifdef _DEBUG
 	// 後始末
 	ImGui_ImplDX12_Shutdown();
 	ImGui_ImplWin32_Shutdown();
@@ -109,4 +113,5 @@ void ImGuiManager::Finalize()
 
 	delete instance;
 	instance = nullptr;
+#endif // DEBUG
 }
