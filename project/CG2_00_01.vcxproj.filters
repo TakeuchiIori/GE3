@@ -159,7 +159,7 @@
     <ClCompile Include="engine\bases\TextureManager.cpp">
       <Filter>ソース ファイル\engine\base</Filter>
     </ClCompile>
-    <ClCompile Include="engine\3d\Camera.cpp">
+    <ClCompile Include="engine\utility\Camera.cpp">
       <Filter>ソース ファイル\engine\3d</Filter>
     </ClCompile>
     <ClCompile Include="engine\bases\SrvManager.cpp">
@@ -171,7 +171,7 @@
     <ClCompile Include="engine\bases\ImGuiManager.cpp">
       <Filter>ソース ファイル\engine\base</Filter>
     </ClCompile>
-    <ClCompile Include="application\base\Framework.cpp">
+    <ClCompile Include="engine\bases\Framework.cpp">
       <Filter>ソース ファイル\application\base</Filter>
     </ClCompile>
     <ClCompile Include="application\base\MyGame.cpp">
@@ -275,7 +275,7 @@
     <ClInclude Include="engine\model\Model.h">
       <Filter>ヘッダー ファイル\engine\model</Filter>
     </ClInclude>
-    <ClInclude Include="engine\3d\Camera.h">
+    <ClInclude Include="engine\utility\Camera.h">
       <Filter>ヘッダー ファイル\engine\3d</Filter>
     </ClInclude>
     <ClInclude Include="engine\bases\SrvManager.h">
@@ -287,7 +287,7 @@
     <ClInclude Include="engine\bases\ImGuiManager.h">
       <Filter>ヘッダー ファイル\engine\base</Filter>
     </ClInclude>
-    <ClInclude Include="application\base\Framework.h">
+    <ClInclude Include="engine\bases\Framework.h">
       <Filter>ヘッダー ファイル\application\base</Filter>
     </ClInclude>
     <ClInclude Include="application\base\MyGame.h">
