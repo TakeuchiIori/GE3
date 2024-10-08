@@ -17,7 +17,7 @@ void GameScene::Initialize()
 	///============ スプライト初期化 ============///
 	std::string textureFilePath[2] = { "Resources./monsterBall.png" ,"Resources./uvChecker.png" };
 	for (uint32_t i = 0; i < 1; ++i) {
-		Sprite* sprite = new Sprite();
+		auto sprite = std::make_unique<Sprite>();
 		sprite->Initialize(SpriteCommon::Getinstance(), textureFilePath[1]);
 		// 移動テスト
 		Vector2 position;
@@ -35,7 +35,7 @@ void GameScene::Initialize()
 		else {
 			sprite->ChangeTexture(textureFilePath[1]);
 		}
-		sprites.push_back(sprite);
+		sprites.push_back(std::move(sprite));
 	}
 
 
@@ -43,7 +43,7 @@ void GameScene::Initialize()
 	///============ オブジェクト初期化 ============///
 	uint32_t numObjects = 2;
 	for (uint32_t i = 0; i < numObjects; ++i) {
-		Object3d* object = new Object3d();
+		auto object = std::make_unique<Object3d>();
 		object->Initialize(Object3dCommon::Getinstance());
 		Vector3 position;
 		if (i == 0) {
@@ -57,7 +57,7 @@ void GameScene::Initialize()
 		position.y = 3;
 		position.z = 0.0f;
 		object->SetPosition(position);
-		object3ds.push_back(object);
+		object3ds.push_back(std::move(object));
 	}
 
 	soundData = Audio::GetInstance()->LoadWave("Resources./fanfare.wav");
@@ -66,13 +66,7 @@ void GameScene::Initialize()
 
 void GameScene::Finalize()
 {
-	/// 各解放処理
-	for (auto& obj : object3ds) {
-		delete obj;
-	}
-	for (Sprite* sprite : sprites) {
-		delete sprite;
-	}
+	/// 解放処理
 	Audio::GetInstance()->SoundUnload(Audio::GetInstance()->GetXAudio2(), &soundData);
 }
 
@@ -86,7 +80,7 @@ void GameScene::Update()
 
 	// 2Dスプライトの更新
 	for (size_t i = 0; i < sprites.size(); ++i) {
-		Sprite* sprite = sprites[i];
+		auto& sprite = sprites[i];
 		sprite->Update();
 		float rotation = sprite->GetRotation();
 		rotation += 0.01f;
@@ -110,7 +104,7 @@ void GameScene::Update()
 
 	// 3Dオブジェクトの更新
 	for (int i = 0; i < object3ds.size(); ++i) {
-		Object3d* obj = object3ds[i];
+		auto& obj = object3ds[i];
 		obj->Update();
 		Vector3 rotate = obj->GetRotation();
 		if (i == 0) {
@@ -138,8 +132,8 @@ void GameScene::Draw()
 	///======================  実際に描画  ========================///
 
 	// 2Dスプライト
-	for (Sprite* sprite : sprites) {
-		sprite->Draw();
+	for (auto& sprite : sprites) {
+		//sprite->Draw();
 	}
 	// 3Dオブジェクト
 	for (auto& obj : object3ds) {

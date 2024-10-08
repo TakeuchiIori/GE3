@@ -39,9 +39,9 @@ private: // メンバ関数
 	Audio::SoundData soundData;
 
 	// 2Dスプライト
-	std::vector<Sprite*> sprites;
+	std::vector<std::unique_ptr<Sprite>> sprites;
 	// 3Dモデル
-	std::vector<Object3d*> object3ds;
+	std::vector<std::unique_ptr<Object3d>> object3ds;
 
 };
 
