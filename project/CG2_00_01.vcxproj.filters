@@ -171,19 +171,19 @@
     <ClCompile Include="application\base\MyGame.cpp">
       <Filter>ソース ファイル\application\base</Filter>
     </ClCompile>
-    <ClCompile Include="application\scene\GameScene.cpp">
+    <ClCompile Include="application\base\scene\GameScene.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="engine\utility\ParticleManager.cpp">
       <Filter>ソース ファイル\engine\utility</Filter>
     </ClCompile>
-    <ClCompile Include="application\scene\TitleScene.cpp">
+    <ClCompile Include="application\base\scene\TitleScene.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="application\scene\BaseScene.cpp">
+    <ClCompile Include="application\base\scene\BaseScene.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="application\scene\SceneManager.cpp">
+    <ClCompile Include="application\base\scene\SceneManager.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="engine\utility\SceneFactory.cpp">
@@ -284,19 +284,19 @@
     <ClInclude Include="application\base\MyGame.h">
       <Filter>ヘッダー ファイル\application\base</Filter>
     </ClInclude>
-    <ClInclude Include="application\scene\GameScene.h">
+    <ClInclude Include="application\base\scene\GameScene.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="engine\utility\ParticleManager.h">
       <Filter>ヘッダー ファイル\engine\utility</Filter>
     </ClInclude>
-    <ClInclude Include="application\scene\TitleScene.h">
+    <ClInclude Include="application\base\scene\TitleScene.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="application\scene\BaseScene.h">
+    <ClInclude Include="application\base\scene\BaseScene.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="application\scene\SceneManager.h">
+    <ClInclude Include="application\base\scene\SceneManager.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="engine\utility\AbstractSceneFactory.h">

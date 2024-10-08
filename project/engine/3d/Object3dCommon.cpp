@@ -1,19 +1,18 @@
 #include "Object3dCommon.h"
 
-Object3dCommon* Object3dCommon::instance = nullptr;
+std::unique_ptr<Object3dCommon> Object3dCommon::instance = nullptr;
 
 Object3dCommon* Object3dCommon::Getinstance()
 {	
 	if (instance == nullptr) {
-		instance = new Object3dCommon;
+		instance = std::make_unique<Object3dCommon>();
 	}
-	return instance;
+	return instance.get();
 }
 
 void Object3dCommon::Finalize()
 {
-	delete instance;
-	instance = nullptr;
+	instance.reset();
 }
 
 void Object3dCommon::Initialize(DirectXCommon* dxCommon)

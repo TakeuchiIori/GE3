@@ -12,6 +12,11 @@ public: // メンバ関数
 	// 終了
 	void Finalize();
 
+	// コンストラクタ
+	// デストラクタ
+	Object3dCommon() = default;
+	~Object3dCommon() = default;
+
 	/// <summary>
 	/// 初期化
 	/// </summary>
@@ -58,11 +63,9 @@ private:
 	void SetPrimitiveTopology();
 
 private:
-	static Object3dCommon* instance;
-	Object3dCommon() = default;
-	~Object3dCommon() = default;
+	static std::unique_ptr<Object3dCommon> instance;
 	Object3dCommon(Object3dCommon&) = delete;
-	Object3dCommon& operator = (Object3dCommon&) = delete;
+	Object3dCommon& operator=(Object3dCommon&) = delete;
 
 	// ポインタ
 	DirectXCommon* dxCommon_;
