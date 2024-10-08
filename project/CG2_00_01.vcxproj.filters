@@ -323,4 +323,11 @@
       <Filter>ヘッダー ファイル\engine\imgui</Filter>
     </Text>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\shaders\Particle.hlsli" />
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="Resources\shaders\Particle.PS.hlsl" />
+    <FxCompile Include="Resources\shaders\Particle.VS.hlsl" />
+  </ItemGroup>
 </Project>
