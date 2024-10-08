@@ -5,10 +5,11 @@ void MyGame::Initialize()
 	// 基盤の初期化
 	Framework::Initialize();
 
-	// ゲームの初期化
-	BaseScene* scene_ = new TitleScene();
-	// シーンマネージャに最初のシーンをセット
-	sceneManager_->SetNextScene(scene_);
+	// シーンファクトリを生成し、 シーンマネージャに最初のシーンをセット
+	sceneFactory_ = new SceneFactory();
+	
+	sceneManager_->SetSceneFactory(sceneFactory_);
+	sceneManager_->ChangeScene("TITLE");
 	
 }
 
@@ -17,6 +18,7 @@ void MyGame::Finalize()
 	// 各解放処理
 	CloseHandle(dxCommon_->GetfenceEvent());
 	Framework::Finalize();
+	delete sceneFactory_;
 }
 
 void MyGame::Update()

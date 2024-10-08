@@ -1,4 +1,5 @@
 #include "SceneManager.h"
+#include <assert.h>
 SceneManager* SceneManager::instance = nullptr;
 
 SceneManager* SceneManager::GetInstance()
@@ -24,7 +25,7 @@ void SceneManager::Initialize()
 
 void SceneManager::Update()
 {
-	///========== TODO : シーン切り替え機構 ///==========///
+	//========== TODO : シーン切り替え機構 ///==========///
 	// 次のシーンがあるなら
 	//・旧シーンの終了
 	//・シーン切り替え
@@ -50,4 +51,13 @@ void SceneManager::Draw()
 {
 	// 描画
 	scene_->Draw();
+}
+
+void SceneManager::ChangeScene(const std::string& sceneName)
+{
+	assert(sceneFactory_);
+	assert(nextScene_ == nullptr);
+
+	// 次シーンを生成
+	nextScene_ = sceneFactory_->CreateScene(sceneName);
 }

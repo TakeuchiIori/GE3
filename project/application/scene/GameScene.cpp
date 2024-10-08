@@ -81,10 +81,8 @@ void GameScene::Update()
 {
 	// ENTERキーを押したら
 	if (Input::GetInstance()->TriggerKey(DIK_RETURN)) {
-		// ゲームプレイシーン（次のシーン）を生成
-		BaseScene* scene = new TitleScene();
 		// シーン切り替え依頼
-		sceneManager_->SetNextScene(scene);
+		sceneManager_->ChangeScene("TITLE");
 	}
 
 	// 2Dスプライトの更新

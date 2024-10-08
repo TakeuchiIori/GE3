@@ -6,8 +6,7 @@ class SceneManager
 public: // メンバ関数
 	static SceneManager* GetInstance();
 	void Finalize();
-	// 次シーン予約
-	void SetNextScene(BaseScene* nextScene) { nextScene_ = nextScene; }
+
 	/// <summary>
 	/// 初期化
 	/// </summary>
@@ -23,9 +22,15 @@ public: // メンバ関数
 	/// </summary>
 	void Draw();
 
+	/// <summary>
+	/// 次シーン予約
+	/// </summary>
+	/// <param name="sceneName"></param>
+	void ChangeScene(const std::string& sceneName);
+
 public: // アクセッサ
 	// シーンファクトリーのsetter
-	void SetAbstractSceneFactory(AbstractSceneFactory* sceneFactory) { sceneFactory_ = sceneFactory; }
+	void SetSceneFactory(AbstractSceneFactory* sceneFactory) { sceneFactory_ = sceneFactory; }
 
 private:
 	static SceneManager* instance;

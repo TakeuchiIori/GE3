@@ -62,9 +62,10 @@ protected:
 	TextureManager* textureManager_ = nullptr;
 	ModelManager* modelManager_ = nullptr;
 	SceneManager* sceneManager_ = nullptr;
-private:
 	// シーンファクトリー
 	AbstractSceneFactory* sceneFactory_ = nullptr;
+private:
+	
 	// ゲーム終了フラグ
 	bool endRequst_ = false;
 
