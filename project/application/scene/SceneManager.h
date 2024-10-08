@@ -1,5 +1,6 @@
 #pragma once
 #include "BaseScene.h"
+#include "AbstractSceneFactory.h"
 class SceneManager
 {
 public: // メンバ関数
@@ -22,6 +23,9 @@ public: // メンバ関数
 	/// </summary>
 	void Draw();
 
+public: // アクセッサ
+	// シーンファクトリーのsetter
+	void SetAbstractSceneFactory(AbstractSceneFactory* sceneFactory) { sceneFactory_ = sceneFactory; }
 
 private:
 	static SceneManager* instance;
@@ -33,6 +37,8 @@ private:
 	BaseScene* scene_ = nullptr;
 	// 次のシーン
 	BaseScene* nextScene_ = nullptr;
+	// シーンファクトリー（借りてくる）
+	AbstractSceneFactory* sceneFactory_ = nullptr;
 
 };
 

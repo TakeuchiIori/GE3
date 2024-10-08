@@ -10,6 +10,7 @@
 #include "TextureManager.h"
 #include "ModelManager.h"
 #include "SceneManager.h"
+#include "AbstractSceneFactory.h"
 // ゲーム全体
 class Framework
 {
@@ -62,7 +63,8 @@ protected:
 	ModelManager* modelManager_ = nullptr;
 	SceneManager* sceneManager_ = nullptr;
 private:
-
+	// シーンファクトリー
+	AbstractSceneFactory* sceneFactory_ = nullptr;
 	// ゲーム終了フラグ
 	bool endRequst_ = false;
 
