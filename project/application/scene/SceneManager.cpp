@@ -1,21 +1,19 @@
 #include "SceneManager.h"
 #include <assert.h>
-SceneManager* SceneManager::instance = nullptr;
 
+std::unique_ptr<SceneManager> SceneManager::instance = nullptr;
 SceneManager* SceneManager::GetInstance()
 {
-	if (instance == nullptr) {
-		instance = new SceneManager;
+	if (!instance) {
+		instance = std::make_unique<SceneManager>();
 	}
-	return instance;
+	return instance.get();
 }
 
 void SceneManager::Finalize()
 {
 	// 最後のシーンの終了と解放
 	scene_->Finalize();
-	delete scene_;
-	delete instance;
 	instance = nullptr;
 }
 
@@ -32,9 +30,8 @@ void SceneManager::Update()
 	if (nextScene_) {
 		if (scene_) {
 			scene_->Finalize();
-			delete scene_;
 		}
-		scene_ = nextScene_;
+		scene_ = std::move(nextScene_);
 		nextScene_ = nullptr;
 
 		// シーンマネージャをセット
@@ -59,5 +56,5 @@ void SceneManager::ChangeScene(const std::string& sceneName)
 	assert(nextScene_ == nullptr);
 
 	// 次シーンを生成
-	nextScene_ = sceneFactory_->CreateScene(sceneName);
+	nextScene_ = std::unique_ptr<BaseScene>(sceneFactory_->CreateScene(sceneName));
 }
