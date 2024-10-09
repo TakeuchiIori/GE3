@@ -111,7 +111,7 @@ void GameScene::Update()
 			
 #ifdef _DEBUG
 			ImGui::Begin("OBJ");
-			ImGui::SliderFloat4("color", &color.x, 0.0f,1.0f);
+			ImGui::ColorEdit4("material : Color", &color.x);
 			ImGui::End();
 #endif // DEBUG
 			obj->SetColor(color);
