@@ -32,11 +32,11 @@ void Object3dCommon::CreateRootSignature()
 	descriptorRange[0].NumDescriptors = 1; // 数は1つ
 	descriptorRange[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV; // SRV
 	descriptorRange[0].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND; // Offsetを自動計算
-	// 1. RootSignatureの作成
+	//=================== RootSignatureの作成 ===================//
 
-	descriptionRootSignature.Flags =
-		D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
-	// RootParameter作成。複数設定できるので配列。
+	descriptionRootSignature.Flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
+	//=================== RootParameter 複数設定できるので配列 ===================//
+
 	rootParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;		 			// CBVを使う
 	rootParameters[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;					// PixelShaderで使う
 	rootParameters[0].Descriptor.ShaderRegister = 0;									// レジスタ番号0とバインド
@@ -52,7 +52,8 @@ void Object3dCommon::CreateRootSignature()
 	rootParameters[3].Descriptor.ShaderRegister = 1;									// レジスタ番号1を使う
 	descriptionRootSignature.pParameters = rootParameters;								// ルートパラメーター配列へのポインタ
 	descriptionRootSignature.NumParameters = _countof(rootParameters);					// 配列の長さ
-	// Samplerの設定
+
+	//=================== Samplerの設定 ===================//
 	staticSamplers[0].Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR;							// バイリニアフィルタ
 	staticSamplers[0].AddressU = D3D12_TEXTURE_ADDRESS_MODE_WRAP;						// 0~1の範囲外をリピート
 	staticSamplers[0].AddressV = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
@@ -80,7 +81,7 @@ void Object3dCommon::CreateRootSignature()
 	assert(SUCCEEDED(hr));
 
 
-	// 2. InputLayoutの設定
+	//=================== InputLayoutの設定 ===================//
 	inputElementDescs[0].SemanticName = "POSITION";
 	inputElementDescs[0].SemanticIndex = 0;
 	inputElementDescs[0].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
@@ -97,19 +98,18 @@ void Object3dCommon::CreateRootSignature()
 	inputLayoutDesc.pInputElementDescs = inputElementDescs;
 	inputLayoutDesc.NumElements = _countof(inputElementDescs);
 
-	// 3. BlendDtateの設定
+	//=================== BlendDtateの設定 ===================//
 
 	// 全ての色要素を書き込む
-	blendDesc.RenderTarget[0].RenderTargetWriteMask =
-		D3D12_COLOR_WRITE_ENABLE_ALL;
+	blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
 	// RasterrizerStateの設定
-
 	// 裏面（時計回り）を表示しない  [カリング]
 	rasterrizerDesc.CullMode = D3D12_CULL_MODE_NONE;
 	// 三角形の中を塗りつぶす
 	rasterrizerDesc.FillMode = D3D12_FILL_MODE_SOLID;
 
-	// 4. Shaderをコンパイルする
+	//=================== Shaderをコンパイルする ===================//
+
 	vertexShaderBlob = dxCommon_->CompileShader(L"Resources/shaders/Object3d.VS.hlsl",
 		L"vs_6_0");
 	assert(vertexShaderBlob != nullptr);
@@ -117,7 +117,7 @@ void Object3dCommon::CreateRootSignature()
 		L"ps_6_0");
 	assert(pixelShaderBlob != nullptr);
 
-	// DepthStencilStateの設定
+	//=================== DepthStencilStateの設定 ===================//
 	// Depthの機能を有効化する
 	depthStencilDesc.DepthEnable = true;
 	//書き込みします
