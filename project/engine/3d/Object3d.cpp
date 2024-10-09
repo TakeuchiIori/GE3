@@ -20,6 +20,9 @@ void Object3d::Initialize(Object3dCommon* object3dCommon)
 
 	// 座標変換行列の初期化
 	TransformationInitialize();
+
+	// マテリアルリソース
+	MaterialResource();
 	
 	// Transform変数を作る
 	transform_ = { scale_ ,rotation_,position_ };
@@ -50,6 +53,8 @@ void Object3d::Update()
 
 void Object3d::Draw()
 {
+	// マテリアルCBufferの場所を指定
+	object3dCommon_->GetDxCommon()->GetcommandList()->SetGraphicsRootConstantBufferView(0, materialResource_->GetGPUVirtualAddress());
 	// TransformatonMatrixCBuffferの場所を設定
 	object3dCommon_->GetDxCommon()->GetcommandList()->SetGraphicsRootConstantBufferView(1, transformationMatrixResource_->GetGPUVirtualAddress());
 	// 平行光源のCBufferの場所を設定
@@ -89,6 +94,18 @@ void Object3d::DirectionalLightResource()
 	directionalLight_->direction = { 0.0f,-1.0f,0.0f };
 	directionalLight_->intensity = 1.0f;
 
+}
+
+void Object3d::MaterialResource()
+{
+	// リソース作成
+	materialResource_ = object3dCommon_->GetDxCommon()->CreateBufferResource(sizeof(Material));
+	// データを書き込むためのアドレスを取得して割り当て
+	materialResource_->Map(0, nullptr, reinterpret_cast<void**>(&materialData_));
+	// マテリアルデータの初期化
+	materialData_->color = { 1.0f,1.0f, 1.0f, 1.0f };
+	materialData_->enableLighting = true;
+	materialData_->uvTransform = MakeIdentity4x4();
 }
 
 void Object3d::SetModel(const std::string& filePath)

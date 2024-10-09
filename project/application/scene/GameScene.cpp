@@ -99,27 +99,36 @@ void GameScene::Update()
 		}
 		//sprite->SetColor(color);
 		Vector2 position = sprite->GetPosition();
-#ifdef _DEBUG
-		ImGui::Begin("Sprite");
-		ImGui::DragFloat2("position", &position.x, 1.0f);
-		ImGui::End();
-#endif // DEBUG
+//#ifdef _DEBUG
+//		ImGui::Begin("Sprite");
+//		ImGui::DragFloat2("position", &position.x, 1.0f);
+//		ImGui::End();
+//#endif // DEBUG
 		sprite->SetPosition(position);
 	}
 
 	// 3Dオブジェクトの更新
 	for (int i = 0; i < object3ds.size(); ++i) {
 		auto& obj = object3ds[i];
-		obj->Update();
+		
 		Vector3 rotate = obj->GetRotation();
 		if (i == 0) {
+			Vector4 color = { 1.0f, 1.0f, 1.0f, 1.0f };
+#ifdef _DEBUG
+			ImGui::Begin("OBJ");
+			ImGui::DragFloat4("color", &color.x, 0.01f);
+			ImGui::End();
+#endif // DEBUG
+			obj->SetColor(color);
 			rotate.y += 0.01f;
 		}
 		else if (i == 1) {
 			rotate.z += 0.01f;
 		}
 		obj->SetRotation(rotate);
+		obj->Update();
 	}
+
 
 	// デフォルトカメラの更新
 	camera_->Update();

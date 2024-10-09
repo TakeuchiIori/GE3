@@ -27,13 +27,7 @@ public: // 構造体
 		std::vector<VertexData> vertices;
 		MaterialData material;
 	};
-	// マテリアルデータ
-	struct Material {
-		Vector4 color;
-		int32_t enableLighting;
-		float padding[3];
-		Matrix4x4 uvTransform;
-	};
+
 	// 平行光源
 	struct DirectionalLight {
 		Vector4 color;		// ライトの色
@@ -91,9 +85,8 @@ private: // メンバ変数
 	// バッファリソース内のデータを指すポインタ
 	VertexData* vertexData_ = nullptr;
 	
-	// マテリアル
-	Microsoft::WRL::ComPtr<ID3D12Resource> materialResource_;
-	Material* materialData_ = nullptr;
+	
+	
 	
 	
 };

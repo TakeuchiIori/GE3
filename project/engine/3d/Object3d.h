@@ -84,7 +84,10 @@ private:
 	/// </summary>
 	void DirectionalLightResource();
 
-
+	/// <summary>
+	/// マテリアルリソース
+	/// </summary>
+	void MaterialResource();
 
 public: // アクセッサ
 
@@ -105,6 +108,12 @@ public: // アクセッサ
 	//===============================================*/
 	const Vector3& GetScale() { return scale_; }
 	void SetScale(const Vector3& scale) { scale_ = scale; }
+
+	/*===============================================//
+					　	 色を変更
+	//===============================================*/
+	const Vector4& GetColor()const { return materialData_->color; }
+	void SetColor(const Vector4& color) { materialData_->color = color; }
 
 	/*===============================================//
 					　アンカーポイント
@@ -133,7 +142,10 @@ private: // メンバ変数
 	Object3dCommon* object3dCommon_ = nullptr;
 	Model* model_ = nullptr;
 	Camera* camera_ = nullptr;
+	Material* materialData_ = nullptr;
 
+	// マテリアル
+	Microsoft::WRL::ComPtr<ID3D12Resource> materialResource_;
 	// 平行光源
 	Microsoft::WRL::ComPtr<ID3D12Resource> directionalLightResource_;
 	DirectionalLight* directionalLight_ = nullptr;

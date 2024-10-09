@@ -31,8 +31,6 @@ void Model::Draw()
 {
 	// VertexBufferView
 	modelCommon_->GetDxCommon()->GetcommandList()->IASetVertexBuffers(0, 1, &vertexBufferView_); // VBVを設定
-	// マテリアルCBufferの場所を指定
-	modelCommon_->GetDxCommon()->GetcommandList()->SetGraphicsRootConstantBufferView(0, materialResource_->GetGPUVirtualAddress());
 	// SRVの設定
 	modelCommon_->GetDxCommon()->GetcommandList()->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetsrvHandleGPU(modelData_.material.textureFilePath)); // SRVのパラメータインデックスを変更
 	// 描画！！！DrawCall/ドローコール）
@@ -63,14 +61,7 @@ void Model::CreateVertex()
 
 void Model::MaterialResource()
 {
-	// リソース作成
-	materialResource_ = modelCommon_->GetDxCommon()->CreateBufferResource(sizeof(Material));
-	// データを書き込むためのアドレスを取得して割り当て
-	materialResource_->Map(0, nullptr, reinterpret_cast<void**>(&materialData_));
-	// マテリアルデータの初期化
-	materialData_->color = { 1.0f,1.0f, 1.0f, 1.0f };
-	materialData_->enableLighting = true;
-	materialData_->uvTransform = MakeIdentity4x4();
+
 }
 
 Model::MaterialData Model::LoadMaterialTemplateFile(const std::string& directoryPath, const std::string& filename)
