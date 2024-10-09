@@ -57,9 +57,6 @@ void DirectXCommon::Initialize(WinApp* winApp)
 	InitializeScissorRevtangle();
 	// DXCコンパイラの生成
 	CreateDXCompiler();
-	// ImGuiの初期化
-	//InitializeImGui();
-
 }	 
 
 void DirectXCommon::InitializeDXGIDevice()
@@ -255,9 +252,9 @@ void DirectXCommon::InitializeFence()
 }
 
 void DirectXCommon::CreateDepthBuffer()
-{ //DepthStencilTextureをウィンドウサイズで作成
+{ 
+	//DepthStencilTextureをウィンドウサイズで作成
 	depthStencilResource_ = CreateDepthStencilTextureResource(device_.Get(), WinApp::kClientWidth, WinApp::kClientHeight);
-
 }
 
 void DirectXCommon::CreateDescriptorHeap()
