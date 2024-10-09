@@ -70,7 +70,7 @@ public:
 		uint32_t IndexSRV;												// インスタンシングデータ用SRVインデックス
 		Microsoft::WRL::ComPtr<ID3D12Resource> instancingResource;		// インスタンシングリソース
 		UINT instance;													// インスタンス数
-		ParticleForGPU instancingData;									// インスタンシングデータを書き込むためのポインタ
+		ParticleForGPU* instancingData;									// インスタンシングデータを書き込むためのポインタ
 	};
 
 public: // シングルトン
@@ -192,5 +192,6 @@ private:
 	// パーティクルグループコンテナ
 	std::unordered_map<std::string, ParticleGroup> particleGroups_;
 	const float kDeltaTime = 1.0f / 60.0f;
-
+	// インスタンシング用リソース作成
+	const uint32_t kNumMaxInstance = 100; // インスタンス数
 };

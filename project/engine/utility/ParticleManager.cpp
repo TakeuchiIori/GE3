@@ -2,6 +2,10 @@
 #include "DirectXCommon.h"
 #include "SrvManager.h"
 #include "TextureManager.h"
+#include "WinApp.h"
+#include <numbers>
+#include "Vector3.h"
+
 #ifdef _DEBUG
 #include "imgui.h"
 #endif
@@ -49,85 +53,92 @@ void ParticleManager::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager
 void ParticleManager::Update()
 {
 
-	//uint32_t numInstance = 0;
-	//Matrix4x4 cameraMatrix = MakeAffineMatrix(camera_->GetScale() , camera_->GetRotate(), camera_->GetTranslate());
-	//// パーティクルの更新処理を行う場合
-	//if (particleUpdate) {
-	//	for (auto& group : particleGroups_) {
-	//		auto& particles = group.second.particles; // 各パーティクルグループのパーティクルリストを取得
+	uint32_t numInstance = 0;
+	Matrix4x4 cameraMatrix = MakeAffineMatrix(camera_->GetScale(), camera_->GetRotate(), camera_->GetTranslate());
+	Matrix4x4 viewMatrix = Inverse(cameraMatrix);
+	Matrix4x4 backFrontMatirx = MakeRotateMatrixY(numbers::pi_v<float>);
+	Matrix4x4 viewProjectionMatrix = MakePerspectiveFovMatrix(0.45f, float(WinApp::kClientWidth) / float(WinApp::kClientHeight), 0.1f, 100.0f);
+	// パーティクルの更新処理を行う場合
+	if (particleUpdate) {
+		for (auto& group : particleGroups_) {
+			auto& particles = group.second.particles; // 各パーティクルグループのパーティクルリストを取得
+			uint32_t numInstance = 0; // パーティクルグループごとにインスタンス数をリセット
 
-	//		// パーティクルの更新
-	//		for (auto particleIterator = particles.begin(); particleIterator != particles.end();) {
-	//			// パーティクルの寿命をチェック
-	//			if (particleIterator->lifeTime <= particleIterator->currentTime) {
-	//				particleIterator = particles.erase(particleIterator);
-	//				continue;
-	//			}
+			// パーティクルの更新
+			for (auto particleIterator = particles.begin(); particleIterator != particles.end();) {
+				// パーティクルの寿命をチェック
+				if (particleIterator->lifeTime <= particleIterator->currentTime) {
+					particleIterator = particles.erase(particleIterator);
+					continue;
+				}
 
-	//			// 速度に加速度フィールドを適用
-	//			if (IsCollision(accelerationField.area, particleIterator->transform.translate)) {
-	//				particleIterator->velocity += accelerationField.acceleration * kDeltaTime;
-	//			}
+				// 速度に加速度フィールドを適用
+				if (IsCollision(accelerationField.area, particleIterator->transform.translate)) {
+					particleIterator->velocity += accelerationField.acceleration * kDeltaTime;
+				}
 
-	//			// 現在時間を更新
-	//			particleIterator->currentTime += kDeltaTime;
+				// 現在時間を更新
+				particleIterator->currentTime += kDeltaTime;
 
-	//			// 次のパーティクルに進む
-	//			++particleIterator;
-	//		}
+				// 次のパーティクルに進む
+				++particleIterator;
+			}
 
-	//		// パーティクルのエミッター処理
-	//		emitter.frequencyTime += kDeltaTime;
-	//		if (emitter.frequency <= emitter.frequencyTime) {
-	//			// 新しいパーティクルを発生させる
-	//			particles.splice(particles.end(), Emit(emitter, randomEngine_));
-	//			emitter.frequencyTime -= emitter.frequency; // 頻度をリセット
-	//		}
+			// パーティクルのエミッター処理
+			emitter.frequencyTime += kDeltaTime;
+			if (emitter.frequency <= emitter.frequencyTime) {
+				// 新しいパーティクルを発生させる
+				particles.splice(particles.end(), Emit(emitter, randomEngine_));
+				emitter.frequencyTime -= emitter.frequency; // 頻度をリセット
+			}
 
-	//		// インスタンシングデータの更新
-	//		for (auto particleIterator = particles.begin(); particleIterator != particles.end(); ++particleIterator) {
-	//			Matrix4x4 billboardMatrix;
-	//			if (useBillboard) {
-	//				// ビルボード行列の計算
-	//				billboardMatrix = Multiply(backFrontMatirx, cameraMatrix);
-	//				billboardMatrix.m[3][0] = 0.0f;
-	//				billboardMatrix.m[3][1] = 0.0f;
-	//				billboardMatrix.m[3][2] = 0.0f;
-	//			}
-	//			else {
-	//				// 単位行列を設定
-	//				billboardMatrix = MakeIdentity4x4();
-	//			}
+			// インスタンシングデータの更新
+			for (auto particleIterator = particles.begin(); particleIterator != particles.end(); ++particleIterator) {
+				Matrix4x4 billboardMatrix;
+				if (useBillboard) {
+					// ビルボード行列の計算
+					billboardMatrix = Multiply(backFrontMatirx, cameraMatrix);
+					billboardMatrix.m[3][0] = 0.0f;
+					billboardMatrix.m[3][1] = 0.0f;
+					billboardMatrix.m[3][2] = 0.0f;
+				}
+				else {
+					// 単位行列を設定
+					billboardMatrix = MakeIdentity4x4();
+				}
 
-	//			// ワールド行列の作成
-	//			Matrix4x4 worldMatrix = MakeAffineMatrix(particleIterator->transform.scale,
-	//				particleIterator->transform.rotate,
-	//				particleIterator->transform.translate);
+				// ワールド行列の作成
+				Matrix4x4 worldMatrix = MakeAffineMatrix(particleIterator->transform.scale,
+					particleIterator->transform.rotate,
+					particleIterator->transform.translate);
 
-	//			if (useBillboard) {
-	//				worldMatrix = Multiply(worldMatrix, billboardMatrix);
-	//			}
+				if (useBillboard) {
+					worldMatrix = Multiply(worldMatrix, billboardMatrix);
+				}
 
-	//			// インスタンシングデータの更新
-	//			if (numInstance < kNumMaxInstance) {
-	//				Matrix4x4 worldViewProjectionMatrix = Multiply(worldMatrix, Multiply(viewMatrix, viewProjectionMatrix));
-	//				instancingData[numInstance].WVP = worldViewProjectionMatrix;
-	//				instancingData[numInstance].World = worldMatrix;
-	//				instancingData[numInstance].color = particleIterator->color;
+				// インスタンシングデータの更新
+				if (numInstance < kNumMaxInstance) {
+					Matrix4x4 worldViewProjectionMatrix = Multiply(worldMatrix, Multiply(viewMatrix, viewProjectionMatrix));
 
-	//				// パーティクルのアルファ値を計算
-	//				float alpha = 1.0f - (particleIterator->currentTime / particleIterator->lifeTime);
-	//				instancingData[numInstance].color.w = alpha;
+					// instancingDataはポインタとして扱われるが、配列のようにインデックスアクセスを使用する
+					group.second.instancingData[numInstance].WVP = worldViewProjectionMatrix;
+					group.second.instancingData[numInstance].World = worldMatrix;
+					group.second.instancingData[numInstance].color = particleIterator->color;
 
-	//				// パーティクルの位置を更新
-	//				particleIterator->transform.translate += particleIterator->velocity * kDeltaTime;
+					// パーティクルのアルファ値を計算
+					float alpha = 1.0f - (particleIterator->currentTime / particleIterator->lifeTime);
+					group.second.instancingData[numInstance].color.w = alpha;
 
-	//				// インスタンス数をインクリメント
-	//				++numInstance;
-	//			}
-	//		}
-	//	}
-	//}
+					// パーティクルの位置を更新
+					particleIterator->transform.translate += particleIterator->velocity * kDeltaTime;
+
+					// インスタンス数をインクリメント
+					++numInstance;
+				}
+
+			}
+		}
+	}
 }
 
 
@@ -353,8 +364,7 @@ void ParticleManager::CreateParticleGroup(const std::string name, const std::str
 	TextureManager::GetInstance()->LoadTexture(newGroup.materialData.textureFilePath);
 	// マテリアルデータにテクスチャのSRVインデックスを記録
 	newGroup.materialData.textureIndexSRV = TextureManager::GetInstance()->GetTextureIndexByFilePath(newGroup.materialData.textureFilePath);
-	// インスタンシング用リソース作成
-	const uint32_t kNumMaxInstance = 100; // インスタンス数
+	
 	// Instancing用のTransformationMatrixリソースを作る
 	Microsoft::WRL::ComPtr<ID3D12Resource> instancingResource =
 		dxCommon_->CreateBufferResource( sizeof(ParticleForGPU) * kNumMaxInstance);
