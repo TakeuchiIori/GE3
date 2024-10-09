@@ -103,7 +103,7 @@ void Object3d::MaterialResource()
 	// データを書き込むためのアドレスを取得して割り当て
 	materialResource_->Map(0, nullptr, reinterpret_cast<void**>(&materialData_));
 	// マテリアルデータの初期化
-	materialData_->color = { 1.0f,1.0f, 1.0f, 1.0f };
+	materialData_->color = { 1.0f,1.0f,1.0f,1.0f};
 	materialData_->enableLighting = true;
 	materialData_->uvTransform = MakeIdentity4x4();
 }

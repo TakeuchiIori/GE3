@@ -99,11 +99,6 @@ void GameScene::Update()
 		}
 		//sprite->SetColor(color);
 		Vector2 position = sprite->GetPosition();
-//#ifdef _DEBUG
-//		ImGui::Begin("Sprite");
-//		ImGui::DragFloat2("position", &position.x, 1.0f);
-//		ImGui::End();
-//#endif // DEBUG
 		sprite->SetPosition(position);
 	}
 
@@ -113,10 +108,10 @@ void GameScene::Update()
 		
 		Vector3 rotate = obj->GetRotation();
 		if (i == 0) {
-			Vector4 color = { 1.0f, 1.0f, 1.0f, 1.0f };
+			
 #ifdef _DEBUG
 			ImGui::Begin("OBJ");
-			ImGui::DragFloat4("color", &color.x, 0.01f);
+			ImGui::SliderFloat4("color", &color.x, 0.0f,1.0f);
 			ImGui::End();
 #endif // DEBUG
 			obj->SetColor(color);
