@@ -60,7 +60,7 @@ void ImGuiManager::End()
 void ImGuiManager::Draw()
 {
 #ifdef _DEBUG
-	ID3D12GraphicsCommandList* commandList = dxCommon_->GetcommandList().Get();
+	ID3D12GraphicsCommandList* commandList = dxCommon_->GetCommandList().Get();
 
 	// デスクリプターヒープの配列をセットするコマンド
 	ID3D12DescriptorHeap* ppHeaps[] = { srvHeap_.Get() };
@@ -80,7 +80,7 @@ void ImGuiManager::CreateDescriptorHeap()
 	desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
 
 	// デスクリプタヒープ生成
-	HRESULT hr = dxCommon_->Getdevice()->CreateDescriptorHeap(&desc, IID_PPV_ARGS(&srvHeap_));
+	HRESULT hr = dxCommon_->GetDevice()->CreateDescriptorHeap(&desc, IID_PPV_ARGS(&srvHeap_));
 	// ディスクリプタヒープが作れなかったので起動できない
 	assert(SUCCEEDED(hr));
 #endif // DEBUG
@@ -90,7 +90,7 @@ void ImGuiManager::InitialzeDX12()
 {
 #ifdef _DEBUG
 	ImGui_ImplDX12_Init(
-		dxCommon_->Getdevice().Get(),
+		dxCommon_->GetDevice().Get(),
 		static_cast<int> (dxCommon_->GetBackBufferCount()),
 		DXGI_FORMAT_R8G8B8A8_UNORM_SRGB, srvHeap_.Get(),
 		srvHeap_->GetCPUDescriptorHandleForHeapStart(),

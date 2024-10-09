@@ -25,9 +25,9 @@ void SrvManager::Initialize(DirectXCommon* dxCommon)
 	this->dxCommon_ = dxCommon;
 
 	// デスクリプタヒープの生成
-	descriptorHeap_ = dxCommon_->CreateDescriptorHeap(dxCommon_->Getdevice(),D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, kMaxSRVCount_,true);
+	descriptorHeap_ = dxCommon_->CreateDescriptorHeap(dxCommon_->GetDevice(),D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, kMaxSRVCount_,true);
 	// デスクリプタ1個分のサイズを取得して記録
-	descriptorSize_ = dxCommon_->Getdevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	descriptorSize_ = dxCommon_->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 
 }
 
@@ -36,12 +36,12 @@ void SrvManager::PreDraw()
 
 	// 描画用のDescriptorHeapの設定
 	ID3D12DescriptorHeap* descriptorHeaps[] = { descriptorHeap_.Get() };
-	dxCommon_->GetcommandList()->SetDescriptorHeaps(1, descriptorHeaps);
+	dxCommon_->GetCommandList()->SetDescriptorHeaps(1, descriptorHeaps);
 }
 
 void SrvManager::SetGraphicsRootDescriptorTable(UINT RootParameterIndex, uint32_t srvIndex)
 {
-	dxCommon_->GetcommandList()->SetGraphicsRootDescriptorTable(RootParameterIndex, GetGPUSRVDescriptorHandle(srvIndex));
+	dxCommon_->GetCommandList()->SetGraphicsRootDescriptorTable(RootParameterIndex, GetGPUSRVDescriptorHandle(srvIndex));
 }
 
 uint32_t SrvManager::Allocate()
@@ -90,7 +90,7 @@ void SrvManager::CreateSRVforTexture2D(uint32_t srvIndex, ID3D12Resource* pResou
 	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;//2Dtexture
 	srvDesc.Texture2D.MipLevels = MipLevels;
 
-	dxCommon_->Getdevice()->CreateShaderResourceView(pResource, &srvDesc, GetCPUSRVDescriptorHandle(srvIndex));
+	dxCommon_->GetDevice()->CreateShaderResourceView(pResource, &srvDesc, GetCPUSRVDescriptorHandle(srvIndex));
 
 }
 
@@ -101,6 +101,6 @@ void SrvManager::CreateSRVforStructuredBuffer(uint32_t srvIndex, ID3D12Resource*
 	srvDesc.Buffer.StructureByteStride = structureByteStride; // 各構造体のサイズ
 
 	// SRV を作成
-	dxCommon_->Getdevice()->CreateShaderResourceView(pResource, &srvDesc, GetCPUSRVDescriptorHandle(srvIndex));
+	dxCommon_->GetDevice()->CreateShaderResourceView(pResource, &srvDesc, GetCPUSRVDescriptorHandle(srvIndex));
 }
 

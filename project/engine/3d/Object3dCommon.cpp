@@ -76,7 +76,7 @@ void Object3dCommon::CreateRootSignature()
 	}
 	// バイナリを元に生成
 
-	hr = dxCommon_->Getdevice()->CreateRootSignature(0, signatureBlob->GetBufferPointer(),
+	hr = dxCommon_->GetDevice()->CreateRootSignature(0, signatureBlob->GetBufferPointer(),
 		signatureBlob->GetBufferSize(), IID_PPV_ARGS(&rootSignature));
 	assert(SUCCEEDED(hr));
 
@@ -154,7 +154,7 @@ void Object3dCommon::CreateGraphicsPipeline()
 	graphicsPipelineStateDesc.SampleMask = D3D12_DEFAULT_SAMPLE_MASK;
 	// 実際に生成
 
-	hr = dxCommon_->Getdevice()->CreateGraphicsPipelineState(&graphicsPipelineStateDesc,
+	hr = dxCommon_->GetDevice()->CreateGraphicsPipelineState(&graphicsPipelineStateDesc,
 		IID_PPV_ARGS(&graphicsPipelineState));
 	assert(SUCCEEDED(hr));
 
@@ -174,15 +174,15 @@ void Object3dCommon::DrawPreference()
 
 void Object3dCommon::SetRootSignature()
 {
-	dxCommon_->GetcommandList()->SetGraphicsRootSignature(rootSignature.Get());
+	dxCommon_->GetCommandList()->SetGraphicsRootSignature(rootSignature.Get());
 }
 
 void Object3dCommon::SetGraphicsCommand()
 {
-	dxCommon_->GetcommandList()->SetPipelineState(graphicsPipelineState.Get());
+	dxCommon_->GetCommandList()->SetPipelineState(graphicsPipelineState.Get());
 }
 
 void Object3dCommon::SetPrimitiveTopology()
 {
-	dxCommon_->GetcommandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	dxCommon_->GetCommandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 }
