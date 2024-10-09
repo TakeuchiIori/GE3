@@ -258,6 +258,16 @@ void ParticleManager::InitRandomEngine()
 	randomEngine_ = std::mt19937(seedGenerator_());
 }
 
+void ParticleManager::CreateParticleGroup(const std::string name, const std::string textureFilePath)
+{
+	// 登録済みの名前かチェック
+	assert(particleGroups_.find(name) == particleGroups_.end());
+	
+	// 新たな空（から）
+
+
+}
+
 void ParticleManager::SetBlendMode(D3D12_BLEND_DESC& blendDesc, BlendMode blendMode)
 {
 	blendDesc.AlphaToCoverageEnable = FALSE;

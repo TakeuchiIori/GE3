@@ -8,6 +8,7 @@
 #include <vector>
 #include <random>
 #include <list>
+#include <map>
 #include "Vector"
 #include "Vector4.h"
 #include "Matrix4x4.h"
@@ -139,23 +140,15 @@ private:
 	/// </summary>
 	void InitRandomEngine();
 	
+	/// <summary>
+	/// パーティクルグループ生成
+	/// </summary>
+	/// <param name="name"></param>
+	/// <param name="textureFilePath"></param>
+	void CreateParticleGroup(const std::string name, const std::string textureFilePath);
 
 
 private:
-	static ParticleManager* instance;
-	DirectXCommon* dxCommon_;
-	SrvManager* srvManager_;
-	VertexData* vertexData_ = nullptr;
-
-
-	ModelData modelData_;
-	D3D12_VERTEX_BUFFER_VIEW vertexBufferView_{};
-	// 乱数生成器
-	std::random_device seedGenerator_;
-	std::mt19937 randomEngine_;
-	// 最初のブレンドモード
-	BlendMode currentBlendMode_;
-
 	// ルートシグネチャ
 	D3D12_ROOT_SIGNATURE_DESC descriptionRootSignature_{};
 	D3D12_DESCRIPTOR_RANGE descriptorRangeForInstancing_[1] = {};
@@ -170,11 +163,28 @@ private:
 	D3D12_RASTERIZER_DESC rasterrizerDesc_{};
 	D3D12_DEPTH_STENCIL_DESC depthStencilDesc_{};
 	D3D12_INPUT_LAYOUT_DESC inputLayoutDesc_{};
+	D3D12_VERTEX_BUFFER_VIEW vertexBufferView_{};
 
 	Microsoft::WRL::ComPtr<IDxcBlob> vertexShaderBlob_;
 	Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob_;
 	Microsoft::WRL::ComPtr<ID3D12Resource> vertexResource_;
 	Microsoft::WRL::ComPtr<ID3D12RootSignature> rootSignature_;
 	Microsoft::WRL::ComPtr<ID3D12PipelineState> graphicsPipelineState_;
+	// ポインタ
+	static ParticleManager* instance;
+	DirectXCommon* dxCommon_ = nullptr;
+	SrvManager* srvManager_ = nullptr;
+	VertexData* vertexData_ = nullptr;
+
+
+	ModelData modelData_;
+	// 乱数生成器
+	std::random_device seedGenerator_;
+	std::mt19937 randomEngine_;
+	// 最初のブレンドモード
+	BlendMode currentBlendMode_;
+	// パーティクルグループコンテナ
+	std::unordered_map<std::string, ParticleGroup> particleGroups_;
+
 
 };
