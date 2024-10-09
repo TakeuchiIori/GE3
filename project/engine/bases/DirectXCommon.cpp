@@ -445,17 +445,6 @@ D3D12_GPU_DESCRIPTOR_HANDLE DirectXCommon::GetGPUDescriptorHandle(Microsoft::WRL
 	return handleGPU;
 }
 
-
-//D3D12_CPU_DESCRIPTOR_HANDLE DirectXCommon::GetSRVCPUDescriptorHandle(uint32_t index)
-//{
-//	//return GetCPUDescriptorHandle(srvDescriptorHeap_, descriptotSizeSRV_, index);
-//}
-//
-//D3D12_GPU_DESCRIPTOR_HANDLE DirectXCommon::GetSRVGPUDescriptorHandle(uint32_t index)
-//{
-//	//return GetGPUDescriptorHandle(srvDescriptorHeap_, descriptotSizeSRV_, index);
-//}
-
 D3D12_CPU_DESCRIPTOR_HANDLE DirectXCommon::GetDSVCPUDescriptorHandle(uint32_t index)
 {
 	return GetCPUDescriptorHandle(dsvDescriptorHeap_, descriptotSizeDSV_, index);

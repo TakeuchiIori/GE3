@@ -34,7 +34,6 @@ public: // メンバ関数
 	/// </summary>
 	void Initialize(DirectXCommon* dxCommon,SrvManager* srvManager);
 
-
 	/// <summary>
 	/// テクスチャファイルの読み込み
 	/// </summary>

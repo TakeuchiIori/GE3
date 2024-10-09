@@ -1,9 +1,11 @@
 #include "ParticleManager.h"
 #include "DirectXCommon.h"
 #include "SrvManager.h"
+#include "TextureManager.h"
 #ifdef _DEBUG
 #include "imgui.h"
 #endif
+
 ParticleManager* ParticleManager::instance = nullptr;
 // ドロップダウンメニュー用の文字列
 const char* blendModeNames[] = {
@@ -47,8 +49,87 @@ void ParticleManager::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager
 void ParticleManager::Update()
 {
 
+	//uint32_t numInstance = 0;
+	//Matrix4x4 cameraMatrix = MakeAffineMatrix(camera_->GetScale() , camera_->GetRotate(), camera_->GetTranslate());
+	//// パーティクルの更新処理を行う場合
+	//if (particleUpdate) {
+	//	for (auto& group : particleGroups_) {
+	//		auto& particles = group.second.particles; // 各パーティクルグループのパーティクルリストを取得
 
+	//		// パーティクルの更新
+	//		for (auto particleIterator = particles.begin(); particleIterator != particles.end();) {
+	//			// パーティクルの寿命をチェック
+	//			if (particleIterator->lifeTime <= particleIterator->currentTime) {
+	//				particleIterator = particles.erase(particleIterator);
+	//				continue;
+	//			}
+
+	//			// 速度に加速度フィールドを適用
+	//			if (IsCollision(accelerationField.area, particleIterator->transform.translate)) {
+	//				particleIterator->velocity += accelerationField.acceleration * kDeltaTime;
+	//			}
+
+	//			// 現在時間を更新
+	//			particleIterator->currentTime += kDeltaTime;
+
+	//			// 次のパーティクルに進む
+	//			++particleIterator;
+	//		}
+
+	//		// パーティクルのエミッター処理
+	//		emitter.frequencyTime += kDeltaTime;
+	//		if (emitter.frequency <= emitter.frequencyTime) {
+	//			// 新しいパーティクルを発生させる
+	//			particles.splice(particles.end(), Emit(emitter, randomEngine_));
+	//			emitter.frequencyTime -= emitter.frequency; // 頻度をリセット
+	//		}
+
+	//		// インスタンシングデータの更新
+	//		for (auto particleIterator = particles.begin(); particleIterator != particles.end(); ++particleIterator) {
+	//			Matrix4x4 billboardMatrix;
+	//			if (useBillboard) {
+	//				// ビルボード行列の計算
+	//				billboardMatrix = Multiply(backFrontMatirx, cameraMatrix);
+	//				billboardMatrix.m[3][0] = 0.0f;
+	//				billboardMatrix.m[3][1] = 0.0f;
+	//				billboardMatrix.m[3][2] = 0.0f;
+	//			}
+	//			else {
+	//				// 単位行列を設定
+	//				billboardMatrix = MakeIdentity4x4();
+	//			}
+
+	//			// ワールド行列の作成
+	//			Matrix4x4 worldMatrix = MakeAffineMatrix(particleIterator->transform.scale,
+	//				particleIterator->transform.rotate,
+	//				particleIterator->transform.translate);
+
+	//			if (useBillboard) {
+	//				worldMatrix = Multiply(worldMatrix, billboardMatrix);
+	//			}
+
+	//			// インスタンシングデータの更新
+	//			if (numInstance < kNumMaxInstance) {
+	//				Matrix4x4 worldViewProjectionMatrix = Multiply(worldMatrix, Multiply(viewMatrix, viewProjectionMatrix));
+	//				instancingData[numInstance].WVP = worldViewProjectionMatrix;
+	//				instancingData[numInstance].World = worldMatrix;
+	//				instancingData[numInstance].color = particleIterator->color;
+
+	//				// パーティクルのアルファ値を計算
+	//				float alpha = 1.0f - (particleIterator->currentTime / particleIterator->lifeTime);
+	//				instancingData[numInstance].color.w = alpha;
+
+	//				// パーティクルの位置を更新
+	//				particleIterator->transform.translate += particleIterator->velocity * kDeltaTime;
+
+	//				// インスタンス数をインクリメント
+	//				++numInstance;
+	//			}
+	//		}
+	//	}
+	//}
 }
+
 
 void ParticleManager::CreateRootSignature()
 {
@@ -263,7 +344,47 @@ void ParticleManager::CreateParticleGroup(const std::string name, const std::str
 	// 登録済みの名前かチェック
 	assert(particleGroups_.find(name) == particleGroups_.end());
 	
-	// 新たな空（から）
+	// 新しい空のパーティクルグループを作成してコンテナに登録
+	ParticleGroup newGroup;
+
+	// マテリアルデータにテクスチャファイルパスを設定
+	newGroup.materialData.textureFilePath = textureFilePath;
+	// テクスチャ読み込み
+	TextureManager::GetInstance()->LoadTexture(newGroup.materialData.textureFilePath);
+	// マテリアルデータにテクスチャのSRVインデックスを記録
+	newGroup.materialData.textureIndexSRV = TextureManager::GetInstance()->GetTextureIndexByFilePath(newGroup.materialData.textureFilePath);
+	// インスタンシング用リソース作成
+	const uint32_t kNumMaxInstance = 100; // インスタンス数
+	// Instancing用のTransformationMatrixリソースを作る
+	Microsoft::WRL::ComPtr<ID3D12Resource> instancingResource =
+		dxCommon_->CreateBufferResource( sizeof(ParticleForGPU) * kNumMaxInstance);
+	// 書き込むためのアドレスを取得
+	ParticleForGPU* instancingData = nullptr;
+	instancingResource->Map(0, nullptr, reinterpret_cast<void**>(&instancingData));
+	// 単位行列を書き込む
+	for (uint32_t index = 0; index < kNumMaxInstance; ++index) {
+		instancingData[index].WVP = MakeIdentity4x4();
+		instancingData[index].World = MakeIdentity4x4();
+		instancingData[index].color = Vector4(1.0f, 1.0f, 1.0f, 1.0f);
+	}
+
+	D3D12_SHADER_RESOURCE_VIEW_DESC instancingSrvDesc{};
+	instancingSrvDesc.Format = DXGI_FORMAT_UNKNOWN;
+	instancingSrvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+	instancingSrvDesc.ViewDimension = D3D12_SRV_DIMENSION_BUFFER;
+	instancingSrvDesc.Buffer.FirstElement = 0;
+	instancingSrvDesc.Buffer.Flags = D3D12_BUFFER_SRV_FLAG_NONE;
+	instancingSrvDesc.Buffer.NumElements = kNumMaxInstance;
+	instancingSrvDesc.Buffer.StructureByteStride = sizeof(ParticleForGPU);
+	D3D12_CPU_DESCRIPTOR_HANDLE instancingSrvHandleCPU = srvManager_->GetCPUSRVDescriptorHandle(3);
+	D3D12_GPU_DESCRIPTOR_HANDLE instancingSrvHandleGPU = srvManager_->GetGPUSRVDescriptorHandle(3);
+
+	// 3 Particle
+	dxCommon_->Getdevice()->CreateShaderResourceView(instancingResource.Get(), &instancingSrvDesc, instancingSrvHandleCPU);
+
+
+	// パーティクルグループをコンテナに登録
+	particleGroups_[name] = newGroup;
 
 
 }

@@ -8,13 +8,13 @@
 #include <vector>
 #include <random>
 #include <list>
-#include <map>
+#include <unordered_map >
 #include "Vector"
 #include "Vector4.h"
 #include "Matrix4x4.h"
 #include "Vector2.h"
 #include "Vector3.h"
-
+#include "Camera.h"
 
 class DirectXCommon;
 class SrvManager;
@@ -147,6 +147,8 @@ private:
 	/// <param name="textureFilePath"></param>
 	void CreateParticleGroup(const std::string name, const std::string textureFilePath);
 
+public:
+	void SetCamera(Camera* camera) { camera_ = camera; }
 
 private:
 	// ルートシグネチャ
@@ -175,7 +177,11 @@ private:
 	DirectXCommon* dxCommon_ = nullptr;
 	SrvManager* srvManager_ = nullptr;
 	VertexData* vertexData_ = nullptr;
-
+	Camera* camera_ = nullptr;
+	// SRV切り替え
+	bool useTexture = true;
+	bool particleUpdate = false;
+	bool useBillboard = false;
 
 	ModelData modelData_;
 	// 乱数生成器
@@ -185,6 +191,6 @@ private:
 	BlendMode currentBlendMode_;
 	// パーティクルグループコンテナ
 	std::unordered_map<std::string, ParticleGroup> particleGroups_;
-
+	const float kDeltaTime = 1.0f / 60.0f;
 
 };
