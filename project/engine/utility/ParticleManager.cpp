@@ -141,6 +141,14 @@ void ParticleManager::Update()
 	}
 }
 
+void ParticleManager::Draw()
+{
+	dxCommon_->GetcommandList()->SetGraphicsRootSignature(rootSignature.Get());
+	dxCommon_->GetcommandList()->SetPipelineState(graphicsPipelineState.Get());   // PSOを設定
+	dxCommon_->GetcommandList()->IASetVertexBuffers(0, 1, &vertexBufferView);	  // VBVを設定
+	dxCommon_->GetcommandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+}
+
 
 void ParticleManager::CreateRootSignature()
 {

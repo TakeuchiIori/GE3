@@ -93,6 +93,11 @@ public: // メンバ関数
 	void Update();
 
 	/// <summary>
+	/// 描画
+	/// </summary>
+	void Draw();
+
+	/// <summary>
 	/// ブレンドモードせてい
 	/// </summary>
 	/// <param name="blendDesc"></param>
