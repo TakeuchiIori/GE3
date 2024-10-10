@@ -26,7 +26,7 @@ void TitleScene::Initialize()
 		position.x = i * 200.0f;
 		position.y = 0.0f;
 		sprite->SetPosition(position);
-		//sprite->SetSrvManager(SrvManager::GetInstance());
+		
 
 		// 初期色の設定
 		Vector4 color = { 1.0f, 1.0f, 1.0f, 1.0f };

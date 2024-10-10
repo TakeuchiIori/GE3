@@ -21,14 +21,13 @@ void GameScene::Initialize()
 	std::string textureFilePath[2] = { "Resources/monsterBall.png" ,"Resources/uvChecker.png" };
 	for (uint32_t i = 0; i < 1; ++i) {
 		auto sprite = std::make_unique<Sprite>();
-		sprite->Initialize(textureFilePath[0]);
+		sprite->Initialize(textureFilePath[1]);
 		// 移動テスト
 		Vector2 position;
 		position.x = i * 200.0f;
 		position.y = 0.0f;
 		sprite->SetPosition(position);
-		sprite->SetSrvManager(SrvManager::GetInstance());
-
+	
 		// 初期色の設定
 		Vector4 color = { 1.0f, 1.0f, 1.0f, 1.0f };
 		sprite->SetColor(color);
@@ -36,7 +35,7 @@ void GameScene::Initialize()
 			sprite->ChangeTexture(textureFilePath[0]);
 		}
 		else {
-			sprite->ChangeTexture(textureFilePath[1]);
+			sprite->ChangeTexture(textureFilePath[0]);
 		}
 		sprites.push_back(std::move(sprite));
 	}
