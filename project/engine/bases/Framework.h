@@ -42,7 +42,7 @@ public: // メンバ関数
 	/// 終了フラグのチェック
 	/// </summary>
 	/// <returns></returns>
-	virtual bool IsEndRequst() { return endRequst_; }
+	virtual bool IsEndRequst() { return winApp_->ProcessMessage(); }
 
 	// 呼び出さないとリークするぞ
 	virtual ~Framework() = default;

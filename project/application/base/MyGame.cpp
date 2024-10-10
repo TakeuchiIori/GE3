@@ -33,7 +33,7 @@ void MyGame::Draw()
 	// Srvの描画準備
 	srvManager_->PreDraw();
 	// DirectXの描画準備
-	dxCommon_->PreDraw();
+	dxCommon_->PreDraw();	
 
 	// ゲームの描画
 	sceneManager_->Draw();

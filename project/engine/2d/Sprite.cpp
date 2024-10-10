@@ -6,9 +6,9 @@ Sprite::Sprite()
 {
 }
 
-void Sprite::Initialize(SpriteCommon* spriteCommon, std::string& textureFilePath)
+void Sprite::Initialize( std::string& textureFilePath)
 {
-	this->spriteCommon_ = spriteCommon;
+	this->spriteCommon_ = SpriteCommon::Getinstance();
 
 	filePath_ = textureFilePath;
 

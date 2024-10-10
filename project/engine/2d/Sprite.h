@@ -37,7 +37,7 @@ public: // 基本的関数
 	/// <summary>
 	/// 初期化
 	/// </summary>
-	void Initialize(SpriteCommon* spriteCommon,std::string& textureFilePath);
+	void Initialize(std::string& textureFilePath);
 
 	/// <summary>
 	/// 更新

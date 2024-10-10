@@ -27,7 +27,7 @@ void TextureManager::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager)
 	this->srvManager_ = srvManager;
 
 	// SRVの数と同数のバケット数を確保
-	textureDatas.rehash(kSRVIndexTop < SrvManager::kMaxSRVCount_);
+	textureDatas.reserve(SrvManager::kMaxSRVCount_);
 }
 
 void TextureManager::LoadTexture(const std::string& filePath)
@@ -38,7 +38,7 @@ void TextureManager::LoadTexture(const std::string& filePath)
 		return;
 	}
 	// テクスチャ上限枚数チェック
-	assert(SrvManager::GetInstance()->IsAllocation());
+	assert(srvManager_->IsAllocation());
 
 
 	// テクスチャファイルを読んでプログラムで扱えるようにする

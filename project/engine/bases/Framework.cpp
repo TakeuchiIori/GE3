@@ -66,10 +66,10 @@ void Framework::Finalize()
 
 void Framework::Update()
 {
-	// Windowsメッセージ
-	if (winApp_->ProcessMessage()) {
-		endRequst_ = true;
-	}
+	//// Windowsメッセージ
+	//if (winApp_->ProcessMessage()) {
+	//	endRequst_ = true;
+	//}
 	// ImGui受付開始
 	imguiManager_->Begin();
 	// 入力は初めに更新

@@ -21,7 +21,7 @@ void GameScene::Initialize()
 	std::string textureFilePath[2] = { "Resources./monsterBall.png" ,"Resources./uvChecker.png" };
 	for (uint32_t i = 0; i < 1; ++i) {
 		auto sprite = std::make_unique<Sprite>();
-		sprite->Initialize(SpriteCommon::Getinstance(), textureFilePath[1]);
+		sprite->Initialize(textureFilePath[0]);
 		// 移動テスト
 		Vector2 position;
 		position.x = i * 200.0f;
@@ -32,16 +32,14 @@ void GameScene::Initialize()
 		// 初期色の設定
 		Vector4 color = { 1.0f, 1.0f, 1.0f, 1.0f };
 		sprite->SetColor(color);
-		if (i % 2 != 0) {
-			sprite->ChangeTexture(textureFilePath[0]);
-		}
-		else {
-			sprite->ChangeTexture(textureFilePath[1]);
-		}
+		//if (i % 2 != 0) {
+		//	sprite->ChangeTexture(textureFilePath[0]);
+		//}
+		//else {
+		//	sprite->ChangeTexture(textureFilePath[1]);
+		//}
 		sprites.push_back(std::move(sprite));
 	}
-
-
 
 	///============ オブジェクト初期化 ============///
 	uint32_t numObjects = 2;
@@ -78,7 +76,7 @@ void GameScene::Update()
 	// ENTERキーを押したら
 	if (Input::GetInstance()->TriggerKey(DIK_RETURN)) {
 		// シーン切り替え依頼
-		sceneManager_->ChangeScene("TITLE");
+		//sceneManager_->ChangeScene("TITLE");
 	}
 
 	// 2Dスプライトの更新
@@ -142,7 +140,7 @@ void GameScene::Draw()
 
 	// 2Dスプライト
 	for (auto& sprite : sprites) {
-		//sprite->Draw();
+		sprite->Draw();
 	}
 	// 3Dオブジェクト
 	for (auto& obj : object3ds) {

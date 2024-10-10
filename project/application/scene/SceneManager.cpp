@@ -14,6 +14,7 @@ void SceneManager::Finalize()
 {
 	// 最後のシーンの終了と解放
 	scene_->Finalize();
+	delete scene_;
 	instance = nullptr;
 }
 
@@ -30,8 +31,9 @@ void SceneManager::Update()
 	if (nextScene_) {
 		if (scene_) {
 			scene_->Finalize();
+			delete scene_;
 		}
-		scene_ = std::move(nextScene_);
+		scene_ = nextScene_;
 		nextScene_ = nullptr;
 
 		// シーンマネージャをセット
@@ -56,5 +58,5 @@ void SceneManager::ChangeScene(const std::string& sceneName)
 	assert(nextScene_ == nullptr);
 
 	// 次シーンを生成
-	nextScene_ = std::unique_ptr<BaseScene>(sceneFactory_->CreateScene(sceneName));
+	nextScene_ = sceneFactory_->CreateScene(sceneName);
 }
