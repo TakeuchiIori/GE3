@@ -9,6 +9,7 @@ Sprite::Sprite()
 void Sprite::Initialize( std::string& textureFilePath)
 {
 	this->spriteCommon_ = SpriteCommon::Getinstance();
+	srvManagaer_ = SrvManager::GetInstance();
 
 	filePath_ = textureFilePath;
 
@@ -20,7 +21,7 @@ void Sprite::Initialize( std::string& textureFilePath)
 
 	TextureManager::GetInstance()->LoadTexture(textureFilePath);
 	
-	//textureIndex_ = TextureManager::GetInstance()->GetTextureIndexByFilePath(textureFilePath);
+	textureIndex_ = TextureManager::GetInstance()->GetTextureIndexByFilePath(textureFilePath);
 
 	AdjustTaxtureSize();
 
@@ -230,7 +231,7 @@ void Sprite::ChangeTexture(std::string textureFilePath)
 	textureIndex_ = TextureManager::GetInstance()->GetTextureIndexByFilePath(textureFilePath);
 
 	// SRVのハンドルを更新
-	textureSrvHandleGPU = TextureManager::GetInstance()->GetsrvHandleGPU(textureFilePath);
+	//textureSrvHandleGPU = TextureManager::GetInstance()->GetsrvHandleGPU(textureFilePath);
 }
 
 

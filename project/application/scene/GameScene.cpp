@@ -18,7 +18,7 @@ void GameScene::Initialize()
 	Object3dCommon::Getinstance()->SetDefaultCamera(camera_.get());
 
 	///============ スプライト初期化 ============///
-	std::string textureFilePath[2] = { "Resources./monsterBall.png" ,"Resources./uvChecker.png" };
+	std::string textureFilePath[2] = { "Resources/monsterBall.png" ,"Resources/uvChecker.png" };
 	for (uint32_t i = 0; i < 1; ++i) {
 		auto sprite = std::make_unique<Sprite>();
 		sprite->Initialize(textureFilePath[0]);
@@ -36,7 +36,7 @@ void GameScene::Initialize()
 			sprite->ChangeTexture(textureFilePath[0]);
 		}
 		else {
-			sprite->ChangeTexture(textureFilePath[0]);
+			sprite->ChangeTexture(textureFilePath[1]);
 		}
 		sprites.push_back(std::move(sprite));
 	}
@@ -66,7 +66,16 @@ void GameScene::Initialize()
 }
 
 void GameScene::Finalize()
-{
+{ // シーン専用のリソース解放処理
+	for (auto& sprite : sprites) {
+		sprite.reset();
+	}
+	sprites.clear();
+
+	for (auto& obj : object3ds) {
+		obj.reset();
+	}
+	object3ds.clear();
 	/// 解放処理
 	Audio::GetInstance()->SoundUnload(Audio::GetInstance()->GetXAudio2(), &soundData);
 }

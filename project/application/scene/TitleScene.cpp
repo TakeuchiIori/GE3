@@ -17,7 +17,7 @@ void TitleScene::Initialize()
 	Object3dCommon::Getinstance()->SetDefaultCamera(camera_.get());
 
 	///============ スプライト初期化 ============///
-	std::string textureFilePath[2] = { "Resources./monsterBall.png" ,"Resources./uvChecker.png" };
+	std::string textureFilePath[2] = { "Resources/monsterBall.png" ,"Resources/uvChecker.png" };
 	for (uint32_t i = 0; i < 1; ++i) {
 		auto sprite = std::make_unique<Sprite>();
 		sprite->Initialize(textureFilePath[1]);
@@ -26,7 +26,7 @@ void TitleScene::Initialize()
 		position.x = i * 200.0f;
 		position.y = 0.0f;
 		sprite->SetPosition(position);
-		sprite->SetSrvManager(SrvManager::GetInstance());
+		//sprite->SetSrvManager(SrvManager::GetInstance());
 
 		// 初期色の設定
 		Vector4 color = { 1.0f, 1.0f, 1.0f, 1.0f };
@@ -35,7 +35,7 @@ void TitleScene::Initialize()
 			sprite->ChangeTexture(textureFilePath[0]);
 		}
 		else {
-			sprite->ChangeTexture(textureFilePath[1]);
+			sprite->ChangeTexture(textureFilePath[0]);
 		}
 		sprites.push_back(std::move(sprite));
 	}
@@ -65,7 +65,16 @@ void TitleScene::Initialize()
 }
 
 void TitleScene::Finalize()
-{
+{ // シーン専用のリソース解放処理
+	for (auto& sprite : sprites) {
+		sprite.reset();
+	}
+	sprites.clear();
+
+	for (auto& obj : object3ds) {
+		obj.reset();
+	}
+	object3ds.clear();
 	 //解放処理
 	Audio::GetInstance()->SoundUnload(Audio::GetInstance()->GetXAudio2(), &soundData);
 }
