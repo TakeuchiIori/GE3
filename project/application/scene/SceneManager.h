@@ -2,6 +2,7 @@
 #include "BaseScene.h"
 #include "AbstractSceneFactory.h"
 #include <memory>
+#include <mutex>
 class SceneManager
 {
 public: // メンバ関数
@@ -42,6 +43,7 @@ public: // アクセッサ
 	
 private:
 	static std::unique_ptr<SceneManager> instance;
+	static std::once_flag initInstanceFlag;
 	SceneManager(SceneManager&) = delete;
 	SceneManager& operator = (SceneManager&) = delete;
 	// 今のシーン（実行中シーン）

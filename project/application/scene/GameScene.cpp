@@ -32,12 +32,12 @@ void GameScene::Initialize()
 		// 初期色の設定
 		Vector4 color = { 1.0f, 1.0f, 1.0f, 1.0f };
 		sprite->SetColor(color);
-		//if (i % 2 != 0) {
-		//	sprite->ChangeTexture(textureFilePath[0]);
-		//}
-		//else {
-		//	sprite->ChangeTexture(textureFilePath[1]);
-		//}
+		if (i % 2 != 0) {
+			sprite->ChangeTexture(textureFilePath[0]);
+		}
+		else {
+			sprite->ChangeTexture(textureFilePath[0]);
+		}
 		sprites.push_back(std::move(sprite));
 	}
 
@@ -76,7 +76,7 @@ void GameScene::Update()
 	// ENTERキーを押したら
 	if (Input::GetInstance()->TriggerKey(DIK_RETURN)) {
 		// シーン切り替え依頼
-		//sceneManager_->ChangeScene("TITLE");
+		sceneManager_->ChangeScene("TITLE");
 	}
 
 	// 2Dスプライトの更新

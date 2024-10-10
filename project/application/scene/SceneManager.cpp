@@ -2,11 +2,12 @@
 #include <assert.h>
 
 std::unique_ptr<SceneManager> SceneManager::instance = nullptr;
+std::once_flag SceneManager::initInstanceFlag;
 SceneManager* SceneManager::GetInstance()
 {
-	if (!instance) {
+	std::call_once(initInstanceFlag, []() {
 		instance = std::make_unique<SceneManager>();
-	}
+		});
 	return instance.get();
 }
 
