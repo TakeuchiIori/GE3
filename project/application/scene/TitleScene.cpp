@@ -20,7 +20,7 @@ void TitleScene::Initialize()
 	std::string textureFilePath[2] = { "Resources/monsterBall.png" ,"Resources/uvChecker.png" };
 	for (uint32_t i = 0; i < 1; ++i) {
 		auto sprite = std::make_unique<Sprite>();
-		sprite->Initialize(textureFilePath[1]);
+		sprite->Initialize(textureFilePath[0]);
 		// 移動テスト
 		Vector2 position;
 		position.x = i * 200.0f;

@@ -35,7 +35,7 @@ void GameScene::Initialize()
 			sprite->ChangeTexture(textureFilePath[0]);
 		}
 		else {
-			sprite->ChangeTexture(textureFilePath[0]);
+			sprite->ChangeTexture(textureFilePath[1]);
 		}
 		sprites.push_back(std::move(sprite));
 	}
