@@ -12,11 +12,7 @@ void Model::Initialize(ModelCommon* modelCommon, const std::string& directorypat
 	// モデル読み込み
 	modelData_ = LoadObjFile(directorypath, filename);
 
-	// 頂点データの初期化
-	VertexResource();
-
-	// マテリアルの初期化
-	MaterialResource();
+	
 
 	// .objの参照しているテクスチャファイル読み込み
 	TextureManager::GetInstance()->LoadTexture(modelData_.material.textureFilePath);
@@ -24,6 +20,12 @@ void Model::Initialize(ModelCommon* modelCommon, const std::string& directorypat
 	// 読み込んだテクスチャ番号の取得
 	modelData_.material.textureIndex =
 		TextureManager::GetInstance()->GetTextureIndexByFilePath(modelData_.material.textureFilePath);
+
+	// 頂点データの初期化
+	VertexResource();
+
+	// マテリアルの初期化
+	MaterialResource();
 	
 }
 
@@ -76,16 +78,38 @@ Model::MaterialData Model::LoadMaterialTemplateFile(const std::string& directory
 		std::istringstream s(line);
 		s >> identifier;
 
-		if (identifier == "map_Kd") {
+		if (identifier == "newmtl") {
+			s >> materialData.name;
+		}
+		else if (identifier == "Ns") {
+			s >> materialData.Ns;
+		}
+		else if (identifier == "Ka") {
+			s >> materialData.Ka.r >> materialData.Ka.g >> materialData.Ka.b;
+		}
+		else if (identifier == "Kd") {
+			s >> materialData.Kd.r >> materialData.Kd.g >> materialData.Kd.b;
+		}
+		else if (identifier == "Ks") {
+			s >> materialData.Ks.r >> materialData.Ks.g >> materialData.Ks.b;
+		}
+		else if (identifier == "Ni") {
+			s >> materialData.Ni;
+		}
+		else if (identifier == "d") {
+			s >> materialData.d;
+		}
+		else if (identifier == "illum") {
+			s >> materialData.illum;
+		}
+		else if (identifier == "map_Kd") {
 			std::string textureFilename;
 			s >> textureFilename;
-
 			materialData.textureFilePath = directoryPath + "/" + textureFilename;
 		}
 	}
 	return materialData;
 }
-
 Model::ModelData Model::LoadObjFile(const std::string& directoryPath, const std::string& filename)
 {
 	// 1. 必要な変数宣言

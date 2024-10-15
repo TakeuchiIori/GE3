@@ -19,7 +19,19 @@ public: // 構造体
 		Vector2 texcoord;
 		Vector3 normal;
 	};
+	struct Color {
+		float r, g, b;
+	};
+
 	struct MaterialData {
+		std::string name;
+		float Ns;
+		Color Ka;	// 環境光色
+		Color Kd;	// 拡散反射色
+		Color Ks;	// 鏡面反射光
+		float Ni;
+		float d;
+		uint32_t illum;
 		std::string textureFilePath;
 		uint32_t textureIndex = 0;
 	};
