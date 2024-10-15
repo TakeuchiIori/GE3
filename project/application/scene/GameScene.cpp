@@ -8,7 +8,7 @@
 void GameScene::Initialize()
 {
 	///============ モデル読み込み ============///
-	ModelManager::GetInstance()->LoadModel("plane.obj");
+	ModelManager::GetInstance()->LoadModel("float_body.obj");
 	ModelManager::GetInstance()->LoadModel("axis.obj");
 
 	///============ カメラ初期化 ============///
@@ -48,7 +48,7 @@ void GameScene::Initialize()
 		Vector3 position;
 		if (i == 0) {
 			position.x = -2;
-			object->SetModel("plane.obj");
+			object->SetModel("float_body.obj");
 		}
 		else if (i == 1) {
 			position.x = 3;
