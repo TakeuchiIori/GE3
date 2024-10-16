@@ -66,16 +66,14 @@ void Framework::Finalize()
 
 void Framework::Update()
 {
-	//// Windowsメッセージ
-	//if (winApp_->ProcessMessage()) {
-	//	endRequst_ = true;
-	//}
 	// ImGui受付開始
 	imguiManager_->Begin();
 	// 入力は初めに更新
 	input_->Update(winApp_);
 	// シーン全体の更新
 	sceneManager_->Update();
+	// ImGui受付終了
+	imguiManager_->End();
 }
 
 void Framework::Run()

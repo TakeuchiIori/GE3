@@ -8,8 +8,8 @@
 void GameScene::Initialize()
 {
 	///============ モデル読み込み ============///
+	//ModelManager::GetInstance()->LoadModel("axis.obj");
 	ModelManager::GetInstance()->LoadModel("float_body.obj");
-	ModelManager::GetInstance()->LoadModel("axis.obj");
 
 	///============ カメラ初期化 ============///
 	camera_ = std::make_unique<Camera>();
@@ -84,7 +84,7 @@ void GameScene::Update()
 	// ENTERキーを押したら
 	if (Input::GetInstance()->TriggerKey(DIK_RETURN)) {
 		// シーン切り替え依頼
-		sceneManager_->ChangeScene("TITLE");
+		SceneManager::GetInstance()->ChangeScene("TITLE");
 	}
 
 	// 2Dスプライトの更新

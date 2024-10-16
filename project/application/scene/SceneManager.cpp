@@ -16,7 +16,6 @@ void SceneManager::Finalize()
 	// 最後のシーンの終了と解放
 	scene_->Finalize();
 	delete scene_;
-	instance = nullptr;
 }
 
 void SceneManager::Initialize()

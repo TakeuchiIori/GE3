@@ -7,8 +7,8 @@ void MyGame::Initialize()
 
 	// シーンファクトリを生成し、 シーンマネージャに最初のシーンをセット
 	sceneFactory_ = std::make_unique<SceneFactory>();
-	sceneManager_->SetSceneFactory(sceneFactory_.get());
-	sceneManager_->ChangeScene("TITLE");
+	SceneManager::GetInstance()->SetSceneFactory(sceneFactory_.get());
+	SceneManager::GetInstance()->ChangeScene("TITLE");
 	
 }
 
@@ -23,9 +23,6 @@ void MyGame::Update()
 {
 	// 基盤の更新
 	Framework::Update();
-
-	// ImGui受付終了
-	imguiManager_->End();
 }
 
 void MyGame::Draw()

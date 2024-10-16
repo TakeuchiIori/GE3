@@ -9,6 +9,7 @@ void TitleScene::Initialize()
 	///============ モデル読み込み ============///
 	ModelManager::GetInstance()->LoadModel("plane.obj");
 	ModelManager::GetInstance()->LoadModel("axis.obj");
+	
 
 	///============ カメラ初期化 ============///
 	camera_ = std::make_unique<Camera>();
@@ -20,7 +21,7 @@ void TitleScene::Initialize()
 	std::string textureFilePath[2] = { "Resources/monsterBall.png" ,"Resources/uvChecker.png" };
 	for (uint32_t i = 0; i < 1; ++i) {
 		auto sprite = std::make_unique<Sprite>();
-		sprite->Initialize(textureFilePath[0]);
+		sprite->Initialize(textureFilePath[1]);
 		// 移動テスト
 		Vector2 position;
 		position.x = i * 200.0f;
@@ -35,7 +36,7 @@ void TitleScene::Initialize()
 			sprite->ChangeTexture(textureFilePath[0]);
 		}
 		else {
-			sprite->ChangeTexture(textureFilePath[0]);
+			sprite->ChangeTexture(textureFilePath[1]);
 		}
 		sprites.push_back(std::move(sprite));
 	}
@@ -84,7 +85,7 @@ void TitleScene::Update()
 	// ENTERキーを押したら
 	if (Input::GetInstance()->TriggerKey(DIK_RETURN)) {
 	 //シーン切り替え依頼
-	sceneManager_->ChangeScene("GAME");
+		SceneManager::GetInstance()->ChangeScene("GAME");
 }
 		
 	// 2Dスプライトの更新
@@ -148,7 +149,7 @@ void TitleScene::Draw()
 	}
 	// 3Dオブジェクト
 	for (auto& obj : object3ds) {
-		//obj->Draw();
+		obj->Draw();
 	}
 
 }

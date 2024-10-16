@@ -12,6 +12,7 @@ ModelManager* ModelManager::GetInstance()
 void ModelManager::Finalize()
 {
 	instance.reset();  // インスタンスを解放
+	instance = nullptr;
 }
 
 void ModelManager::Initialze(DirectXCommon* dxCommon)
