@@ -9,7 +9,7 @@ void GameScene::Initialize()
 {
 	///============ モデル読み込み ============///
 	//ModelManager::GetInstance()->LoadModel("axis.obj");
-	ModelManager::GetInstance()->LoadModel("float_body.obj");
+	
 
 	///============ カメラ初期化 ============///
 	camera_ = std::make_unique<Camera>();
