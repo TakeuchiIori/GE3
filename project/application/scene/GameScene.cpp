@@ -13,7 +13,7 @@ void GameScene::Initialize()
 	///============ カメラ初期化 ============///
 	camera_ = std::make_unique<Camera>();
 	camera_->SetRotate({ 0.0f,0.0f,0.0f });
-	camera_->SetTranslate({ 0.0f,4.0f,-10.0f });
+	camera_->SetTranslate({ 0.0f,4.0f,-20.0f });
 	Object3dCommon::Getinstance()->SetDefaultCamera(camera_.get());
 
 	///============ オブジェクト初期化 ============///
@@ -31,7 +31,8 @@ void GameScene::Initialize()
 		object->SetPosition(position);
 		object3ds.push_back(std::move(object));
 	}
-
+	player_ = make_unique<Player>();
+	player_->Initailize();
 }
 
 void GameScene::Finalize()
@@ -63,6 +64,8 @@ void GameScene::Update()
 		obj->Update();
 	}
 
+	player_->Update();
+
 	// デフォルトカメラの更新
 	camera_->Update();
 }
@@ -83,4 +86,5 @@ void GameScene::Draw()
 		obj->Draw();
 	}
 
+	player_->Draw();
 }
