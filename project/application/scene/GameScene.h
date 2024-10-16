@@ -7,6 +7,7 @@
 #include "Object3dCommon.h"
 #include "Audio.h"
 #include "ModelManager.h"
+#include "Camera.h"
 #include <memory>
 
 class GameScene : public BaseScene

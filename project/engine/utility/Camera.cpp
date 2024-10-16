@@ -23,9 +23,4 @@ void Camera::Update()
     projectionMatrix_ = MakePerspectiveFovMatrix(fovY_, aspectRatio_, nearClip_, farClip_);
     // 合成行列
     viewProjectionMatrix_ = Multiply(viewMatrix_, projectionMatrix_);
-	
-	
-	
-
-
 }
