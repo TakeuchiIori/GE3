@@ -39,7 +39,8 @@ private: // メンバ関数（非公開）
 
 
 public: // アクセッサ
-
+	// プレイヤーの位置を取得する関数
+	const Vector3& GetPosition() const { return transform_.translate; }
 
 
 private: // メンバ変数

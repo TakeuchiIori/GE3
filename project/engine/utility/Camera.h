@@ -15,6 +15,9 @@ public: // メンバ関数
 	/// </summary>
 	void Update();
 
+	// カメラを指定した位置に向ける
+	void LookAt(const Vector3& target);
+
 
 public: // アクセッサ
     // Setter
