@@ -4,6 +4,16 @@ struct Vector3 final {
 	float y;
 	float z;
 
+	// ベクトルの加算演算子オーバーロード
+	Vector3 operator+(const Vector3& other) const {
+		return { x + other.x, y + other.y, z + other.z };
+	}
+
+	// ベクトルの引き算演算子オーバーロード
+	Vector3 operator-(const Vector3& other) const {
+		return { x - other.x, y - other.y, z - other.z };
+	}
+
 	// スカラ値との乗算を行うオペレーター
 	Vector3& operator+=(const Vector3& other) {
 		this->x += other.x;

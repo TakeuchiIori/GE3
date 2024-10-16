@@ -33,6 +33,9 @@ void GameScene::Initialize()
 	}
 	player_ = make_unique<Player>();
 	player_->Initailize();
+
+
+
 }
 
 void GameScene::Finalize()
@@ -64,10 +67,26 @@ void GameScene::Update()
 		obj->Update();
 	}
 
-	player_->Update();
+	
 
+	
+	// プレイヤーの位置を取得
+	Vector3 playerPos = player_->GetPosition();
+
+	// カメラの位置をプレイヤーの背後に設定（例: Z軸方向に-10、Y軸方向に+3）
+	Vector3 cameraOffset = { 0.0f, 5.0f, -50.0f };
+	Vector3 cameraPos = playerPos + cameraOffset;
+
+	// カメラの位置を更新
+	camera_->SetTranslate(cameraPos);
+	player_->Update();
+	// カメラをプレイヤーの方向に向ける
+	Vector3 lookAtPos = playerPos;  // プレイヤーの位置を注視点に設定
+	camera_->LookAt(lookAtPos);
+	
 	// デフォルトカメラの更新
 	camera_->Update();
+	
 }
 
 void GameScene::Draw()
