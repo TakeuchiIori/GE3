@@ -49,45 +49,43 @@ void GameScene::Finalize()
 
 void GameScene::Update()
 {
+	// プレイヤーの更新
+	player_->Update();
+
+	// プレイヤーの位置を取得
+	Vector3 playerPos = player_->GetPosition();
+
+	// カメラの注視点と位置をプレイヤーの相対位置に合わせて設定
+	Vector3 cameraOffset = { 0.0f, 5.0f, -20.0f };  // カメラのオフセット（背後や高さを調整）
+	Vector3 cameraPos = playerPos + cameraOffset;    // プレイヤーに基づいたカメラの位置を設定
+
+	// カメラの位置を更新
+	camera_->SetTranslate(cameraPos);
+
+	// カメラをプレイヤーの方向に向ける
+	Vector3 lookAtPos = playerPos;  // プレイヤーの位置を注視点に設定
+	camera_->LookAt(lookAtPos);
+
+	// カメラの更新
+	camera_->Update();
 
 	// 3Dオブジェクトの更新
 	for (int i = 0; i < object3ds.size(); ++i) {
 		auto& obj = object3ds[i];
-		
+
 		Vector3 rotate = obj->GetRotation();
 		if (i == 0) {
-
 			rotate.y += 0.01f;
 		}
 		else if (i == 1) {
-
 			rotate.z += 0.01f;
 		}
 		obj->SetRotation(rotate);
 		obj->Update();
 	}
-
-	
-
-	
-	// プレイヤーの位置を取得
-	Vector3 playerPos = player_->GetPosition();
-
-	// カメラの位置をプレイヤーの背後に設定（例: Z軸方向に-10、Y軸方向に+3）
-	Vector3 cameraOffset = { 0.0f, 5.0f, -50.0f };
-	Vector3 cameraPos = playerPos + cameraOffset;
-
-	// カメラの位置を更新
-	camera_->SetTranslate(cameraPos);
-	player_->Update();
-	// カメラをプレイヤーの方向に向ける
-	Vector3 lookAtPos = playerPos;  // プレイヤーの位置を注視点に設定
-	camera_->LookAt(lookAtPos);
-	
-	// デフォルトカメラの更新
-	camera_->Update();
-	
 }
+
+
 
 void GameScene::Draw()
 {
