@@ -97,8 +97,13 @@ void SrvManager::CreateSRVforTexture2D(uint32_t srvIndex, ID3D12Resource* pResou
 void SrvManager::CreateSRVforStructuredBuffer(uint32_t srvIndex, ID3D12Resource* pResource, UINT numElements, UINT structureByteStride)
 {
 	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc{};
-	srvDesc.Buffer.NumElements = numElements; // 要素数
-	srvDesc.Buffer.StructureByteStride = structureByteStride; // 各構造体のサイズ
+	srvDesc.Format = DXGI_FORMAT_UNKNOWN; // 構造化バッファの場合、フォーマットは不明（UNKNOWN）
+	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_BUFFER; // バッファとしてビューを作成
+	srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING; // デフォルトのシェーダマッピング
+	srvDesc.Buffer.FirstElement = 0; // バッファ内の最初の要素のインデックス
+	srvDesc.Buffer.NumElements = numElements; // バッファ内の要素数
+	srvDesc.Buffer.StructureByteStride = structureByteStride; // 構造体のバイト単位のサイズ
+	srvDesc.Buffer.Flags = D3D12_BUFFER_SRV_FLAG_NONE; // 特殊なフラグは無し
 
 	// SRV を作成
 	dxCommon_->GetDevice()->CreateShaderResourceView(pResource, &srvDesc, GetCPUSRVDescriptorHandle(srvIndex));

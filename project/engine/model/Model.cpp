@@ -25,7 +25,7 @@ void Model::Initialize(ModelCommon* modelCommon, const std::string& directorypat
 	VertexResource();
 
 	// マテリアルの初期化
-	MaterialResource();
+	//MaterialResource();
 	
 }
 

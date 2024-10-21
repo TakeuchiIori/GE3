@@ -29,6 +29,11 @@ public: // メンバ関数
 	// 終了
 	void Finalize();
 
+	// コンストラクタ
+	TextureManager() = default;
+	// デストラクタ
+	~TextureManager() = default;
+
 	/// <summary>
 	/// 初期化
 	/// </summary>
@@ -62,9 +67,6 @@ public: // メンバ関数
 private: // メンバ変数
 
 	static TextureManager* instance;
-	SrvManager* srvManager_ = nullptr;
-	TextureManager() = default;
-	~TextureManager() = default;
 	TextureManager(TextureManager&) = delete;
 	TextureManager& operator = (TextureManager&) = delete;
 
@@ -72,11 +74,7 @@ private: // メンバ変数
 	std::unordered_map<std::string,TextureData> textureDatas;
 	// DirectXCommon
 	DirectXCommon* dxCommon_ = nullptr;
-
-
-	// テクスチャハンドル
-	D3D12_CPU_DESCRIPTOR_HANDLE textureSrvHandleCPU;
-	D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHandleGPU;
+	SrvManager* srvManager_ = nullptr;
 
 	// SRVインデックスの開始番号
 	static uint32_t kSRVIndexTop;
