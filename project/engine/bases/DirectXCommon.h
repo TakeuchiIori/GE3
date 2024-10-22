@@ -239,7 +239,7 @@ private:
 	// RTV
 	D3D12_RENDER_TARGET_VIEW_DESC rtvDesc_{};
 	
-
+	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> descriptorHeap;
 	uint64_t fenceValue_ = 0;
 	HANDLE fenceEvent_;
 	// ビューポート

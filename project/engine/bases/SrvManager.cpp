@@ -1,4 +1,5 @@
 #include "SrvManager.h"
+#include <TextureManager.h>
 
 SrvManager* SrvManager::instance = nullptr;
 const uint32_t SrvManager::kMaxSRVCount_ = 512;

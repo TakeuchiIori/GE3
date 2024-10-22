@@ -53,9 +53,12 @@ void Framework::Finalize()
 	sceneManager_->Finalize();
 	modelManager_->Finalize();
 	object3dCommon_->Finalize();
-	textureManager_->Finalize();
 	spriteCommon_->Finalize();
+	textureManager_->Finalize();
+	textureManager_ = nullptr;
+
 	srvManager_->Finalize();
+	srvManager_ = nullptr;
 	imguiManager_->Finalize();
 	audio_->Finalize();
 	input_->Finalize();

@@ -10,7 +10,7 @@
 #pragma comment(lib,"winmm.lib")
 
 using namespace Microsoft::WRL;
-//const uint32_t DirectXCommon::kMaxSRVCount = 512;
+
 
 
 void DirectXCommon::Initialize(WinApp* winApp)
@@ -369,7 +369,6 @@ void DirectXCommon::InitializeScissorRevtangle()
 
 Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> DirectXCommon::CreateDescriptorHeap(Microsoft::WRL::ComPtr<ID3D12Device> device_, D3D12_DESCRIPTOR_HEAP_TYPE heapType, UINT numDescriptors, bool shaderVisible)
 {
-	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> descriptorHeap = nullptr;
 	D3D12_DESCRIPTOR_HEAP_DESC descriptorHeapDesc{};
 	descriptorHeapDesc.Type = heapType;							 //レンダーターゲットビュー用
 	descriptorHeapDesc.NumDescriptors = numDescriptors;			 //ダブルバッファ用に2つ。多くても別に構わない
