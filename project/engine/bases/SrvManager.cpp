@@ -23,7 +23,7 @@ void SrvManager::Finalize()
 void SrvManager::Initialize(DirectXCommon* dxCommon)
 {
 	// 引数で受け取ってメンバ変数に記録する
-	this->dxCommon_ = dxCommon;
+	dxCommon_ = dxCommon;
 
 	// デスクリプタヒープの生成
 	descriptorHeap_ = dxCommon_->CreateDescriptorHeap(dxCommon_->GetDevice(),D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, kMaxSRVCount_,true);

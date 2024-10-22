@@ -26,13 +26,15 @@ void Framework::Initialize()
 	srvManager_ = SrvManager::GetInstance();
 	srvManager_->Initialize(dxCommon_.get());
 
-	// スプライト共通部の生成
-	spriteCommon_ = SpriteCommon::Getinstance();
-	spriteCommon_->Initialize(dxCommon_.get());
 
 	// テクスチャマネージャの生成
 	textureManager_ = TextureManager::GetInstance();
 	textureManager_->Initialize(dxCommon_.get(), srvManager_);
+
+	// スプライト共通部の生成
+	spriteCommon_ = SpriteCommon::Getinstance();
+	spriteCommon_->Initialize(dxCommon_.get());
+
 
 	// 3Dオブジェクト共通部の生成
 	object3dCommon_ = Object3dCommon::Getinstance();
@@ -55,10 +57,7 @@ void Framework::Finalize()
 	object3dCommon_->Finalize();
 	spriteCommon_->Finalize();
 	textureManager_->Finalize();
-	textureManager_ = nullptr;
-
 	srvManager_->Finalize();
-	srvManager_ = nullptr;
 	imguiManager_->Finalize();
 	audio_->Finalize();
 	input_->Finalize();
