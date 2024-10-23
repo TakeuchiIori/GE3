@@ -55,7 +55,8 @@ protected:
 	// 基本的なゲームのコンポーネント
 	WinApp* winApp_ = nullptr;
 	Input* input_ = nullptr;
-	DirectXCommon* dxCommon_ = nullptr;
+
+	std::unique_ptr<DirectXCommon> dxCommon_;
 	Audio* audio_ = nullptr;
 	ImGuiManager* imguiManager_ = nullptr;
 	SrvManager* srvManager_ = nullptr;

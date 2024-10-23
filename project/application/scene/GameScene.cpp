@@ -4,6 +4,7 @@
 #ifdef _DEBUG
 #include "imgui.h"
 #endif // DEBUG
+#include <TextureManager.h>
 
 void GameScene::Initialize()
 {

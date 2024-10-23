@@ -12,7 +12,8 @@ void Model::Initialize(ModelCommon* modelCommon, const std::string& directorypat
 	// モデル読み込み
 	modelData_ = LoadObjFile(directorypath, filename);
 
-	
+	// 頂点データの初期化
+	VertexResource();
 
 	// .objの参照しているテクスチャファイル読み込み
 	TextureManager::GetInstance()->LoadTexture(modelData_.material.textureFilePath);
@@ -21,11 +22,10 @@ void Model::Initialize(ModelCommon* modelCommon, const std::string& directorypat
 	modelData_.material.textureIndex =
 		TextureManager::GetInstance()->GetTextureIndexByFilePath(modelData_.material.textureFilePath);
 
-	// 頂点データの初期化
-	VertexResource();
+	
 
 	// マテリアルの初期化
-	MaterialResource();
+	//MaterialResource();
 	
 }
 

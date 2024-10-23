@@ -21,13 +21,13 @@ void TextureManager::Finalize()
 
 void TextureManager::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager)
 {
-	 // dxCommon_ を設定
-    this->dxCommon_ = dxCommon;
-	// SrvManagerを設定
-	this->srvManager_ = srvManager;
-
 	// SRVの数と同数のバケット数を確保
 	textureDatas.reserve(SrvManager::kMaxSRVCount_);
+	 // dxCommon_ を設定
+    dxCommon_ = dxCommon;
+	// SrvManagerを設定
+	srvManager_ = srvManager;
+
 }
 
 void TextureManager::LoadTexture(const std::string& filePath)
@@ -55,6 +55,7 @@ void TextureManager::LoadTexture(const std::string& filePath)
 	// テクスチャデータを追加
 	TextureData& textureData = textureDatas[filePath];
 	
+	textureData.srvIndex = srvManager_->Allocate();
 	textureData.metadata = image.GetMetadata();
 	textureData.resource = dxCommon_->CreateTextureResource(textureData.metadata);
 	// テクスチャデータをGPUにアップロード
@@ -62,7 +63,7 @@ void TextureManager::LoadTexture(const std::string& filePath)
 
 
 	// テクスチャデータの要素番号をSRVのインデックスとする
-	textureData.srvIndex = srvManager_->Allocate();
+	//uint32_t srvIndex = static_cast<uint32_t>(textureDatas.size() - 1) + kSRVIndexTop;
 	textureData.srvHandleCPU = srvManager_->GetCPUSRVDescriptorHandle(textureData.srvIndex);
 	textureData.srvHandleGPU = srvManager_->GetGPUSRVDescriptorHandle(textureData.srvIndex);
 
@@ -77,7 +78,7 @@ void TextureManager::LoadTexture(const std::string& filePath)
     textureData.metadata.format,                // フォーマット
     UINT(textureData.metadata.mipLevels)        // ミップレベル
 );
-
+	
 }
 
 uint32_t TextureManager::GetTextureIndexByFilePath(const std::string& filePath)

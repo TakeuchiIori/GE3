@@ -40,6 +40,7 @@ public: // 公開メンバ関数
 
 private:
 	static std::unique_ptr<ModelManager> instance;  // std::unique_ptrを使用
+	static std::once_flag initInstanceFlag;
 	ModelManager(ModelManager&) = delete;
 	ModelManager& operator=(ModelManager&) = delete;
 	// モデルデータ

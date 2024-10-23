@@ -47,9 +47,9 @@ private:
 	SceneManager(SceneManager&) = delete;
 	SceneManager& operator = (SceneManager&) = delete;
 	// 今のシーン（実行中シーン）
-	BaseScene* scene_;
+	BaseScene* scene_ = nullptr;
 	// 次のシーン
-	BaseScene* nextScene_;
+	BaseScene* nextScene_ = nullptr;
 	// シーンファクトリー（借りてくる）
 	AbstractSceneFactory* sceneFactory_ = nullptr;
 

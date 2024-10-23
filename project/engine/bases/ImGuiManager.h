@@ -13,6 +13,8 @@ class ImGuiManager
 public: // メンバ関数
 
 	static ImGuiManager* GetInstance();
+	ImGuiManager() = default;
+	~ImGuiManager() = default;
 
 	/// <summary>
 	/// 初期化
@@ -52,8 +54,6 @@ public: // メンバ関数
 
 private:
 	static ImGuiManager* instance;
-	ImGuiManager() = default;
-	~ImGuiManager() = default;
 	ImGuiManager(ImGuiManager&) = delete;
 	ImGuiManager& operator = (ImGuiManager&) = delete;
 private:
