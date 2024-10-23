@@ -15,11 +15,16 @@ public: // メンバ関数
 	/// </summary>
 	void Update();
 
-	
+public: // カメラ
 	/// <summary>
-	/// カメラを指定した位置に向ける
+	/// 追従カメラ
 	/// </summary>
 	void FollowCamera(Vector3& target );
+
+	/// <summary>
+   /// 神視点カメラを設定する
+   /// </summary>
+	void SetTopDownCamera(const Vector3& position);
 
 
 public: // アクセッサ
