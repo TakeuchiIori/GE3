@@ -10,7 +10,7 @@ void Player::Initailize()
 
     // OBject3dの初期化
     base_ = std::make_unique<Object3d>();
-    base_->Initialize(Object3dCommon::GetInstance());
+    base_->Initialize();
     base_->SetModel("player.obj");
 
     // その他初期化

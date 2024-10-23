@@ -44,4 +44,12 @@ void Camera::FollowCamera(Vector3& target)
     viewMatrix_ = Inverse(worldMatrix_);
 }
 
+void Camera::SetTopDownCamera(const Vector3& position)
+{
+    transform_.translate = position;
+    transform_.rotate = Vector3(1.57f, 0.0f, 0.0f); // 真上から見下ろすように設定
+    worldMatrix_ = MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.translate);
+    viewMatrix_ = Inverse(worldMatrix_);
+}
+
 

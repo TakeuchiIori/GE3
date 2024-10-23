@@ -45,7 +45,7 @@ void TitleScene::Initialize()
 	uint32_t numObjects = 2;
 	for (uint32_t i = 0; i < numObjects; ++i) {
 		auto object = std::make_unique<Object3d>();
-		object->Initialize(Object3dCommon::GetInstance());
+		object->Initialize();
 		Vector3 position;
 		if (i == 0) {
 			position.x = -2;
