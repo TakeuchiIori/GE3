@@ -110,6 +110,12 @@ public: // アクセッサ
 	void SetScale(const Vector3& scale) { scale_ = scale; }
 
 	/*===============================================//
+						  SRTすべて
+	//===============================================*/
+	const Transform& GetTransform() { return transform_; }
+	void SetTransform(const Transform& transform) { transform_ = transform; }
+
+	/*===============================================//
 					　	 色を変更
 	//===============================================*/
 	const Vector4& GetColor()const { return materialData_->color; }

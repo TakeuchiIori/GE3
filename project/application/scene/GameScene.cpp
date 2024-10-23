@@ -9,37 +9,14 @@
 void GameScene::Initialize()
 {
 	///============ モデル読み込み ============///
-	//ModelManager::GetInstance()->LoadModel("axis.obj");
 	ModelManager::GetInstance()->LoadModel("float_body.obj");
 
 	///============ カメラ初期化 ============///
 	camera_ = std::make_unique<Camera>();
-	camera_->SetRotate({ 0.0f,0.0f,0.0f });
-	camera_->SetTranslate({ 0.0f,4.0f,-10.0f });
-	Object3dCommon::Getinstance()->SetDefaultCamera(camera_.get());
+	/*camera_->SetRotate({ 0.0f,0.0f,0.0f });
+	camera_->SetTranslate({ 0.0f,4.0f,-20.0f });*/
 
-	///============ スプライト初期化 ============///
-	std::string textureFilePath[2] = { "Resources/monsterBall.png" ,"Resources/uvChecker.png" };
-	for (uint32_t i = 0; i < 1; ++i) {
-		auto sprite = std::make_unique<Sprite>();
-		sprite->Initialize(textureFilePath[1]);
-		// 移動テスト
-		Vector2 position;
-		position.x = i * 200.0f;
-		position.y = 0.0f;
-		sprite->SetPosition(position);
-	
-		// 初期色の設定
-		Vector4 color = { 1.0f, 1.0f, 1.0f, 1.0f };
-		sprite->SetColor(color);
-		if (i % 2 != 0) {
-			sprite->ChangeTexture(textureFilePath[0]);
-		}
-		else {
-			sprite->ChangeTexture(textureFilePath[1]);
-		}
-		sprites.push_back(std::move(sprite));
-	}
+	Object3dCommon::Getinstance()->SetDefaultCamera(camera_.get());
 
 	///============ オブジェクト初期化 ============///
 	uint32_t numObjects = 2;
@@ -51,77 +28,45 @@ void GameScene::Initialize()
 			position.x = -2;
 			object->SetModel("float_body.obj");
 		}
-		else if (i == 1) {
-			position.x = 3;
-			object->SetModel("axis.obj");
-		}
 		position.y = 3;
 		position.z = 0.0f;
 		object->SetPosition(position);
 		object3ds.push_back(std::move(object));
 	}
 
-	soundData = Audio::GetInstance()->LoadWave("Resources./fanfare.wav");
-	
+	player_ = std::make_unique<Player>();
+	player_->Initailize();
+
 }
 
 void GameScene::Finalize()
-{ // シーン専用のリソース解放処理
-	for (auto& sprite : sprites) {
-		sprite.reset();
-	}
-	sprites.clear();
-
+{ 
+	// シーン専用のリソース解放処理
 	for (auto& obj : object3ds) {
 		obj.reset();
 	}
 	object3ds.clear();
-	/// 解放処理
-	Audio::GetInstance()->SoundUnload(Audio::GetInstance()->GetXAudio2(), &soundData);
 }
 
 void GameScene::Update()
 {
-	// ENTERキーを押したら
-	if (Input::GetInstance()->TriggerKey(DIK_RETURN)) {
-		// シーン切り替え依頼
-		SceneManager::GetInstance()->ChangeScene("TITLE");
-	}
+	// プレイヤーの更新
+	player_->Update();
 
-	// 2Dスプライトの更新
-	for (size_t i = 0; i < sprites.size(); ++i) {
-		auto& sprite = sprites[i];
-		sprite->Update();
-		float rotation = sprite->GetRotation();
-		rotation += 0.01f;
-		//sprite->SetRotation(rotation);
-		Vector2 size = sprite->GetSize();
-		size.x += 0.01f;
-		size.y += 0.01f;
-		//sprite->SetSize(size);
-		Vector4 color = sprite->GetColor();
-		color.x += 0.01f;
-		if (color.x > 1.0f) {
-			color.x -= 1.0f;
-		}
-		//sprite->SetColor(color);
-		Vector2 position = sprite->GetPosition();
-		sprite->SetPosition(position);
-	}
+	// プレイヤーの位置を取得
+	Vector3 playerPos = player_->GetPosition();
+	camera_->FollowCamera(playerPos);
+
+	
+	// カメラの更新
+	camera_->Update();
 
 	// 3Dオブジェクトの更新
 	for (int i = 0; i < object3ds.size(); ++i) {
 		auto& obj = object3ds[i];
-		
+
 		Vector3 rotate = obj->GetRotation();
 		if (i == 0) {
-			
-#ifdef _DEBUG
-			ImGui::Begin("OBJ");
-			ImGui::ColorEdit4("material : Color", &color.x);
-			ImGui::End();
-#endif // DEBUG
-			obj->SetColor(color);
 			rotate.y += 0.01f;
 		}
 		else if (i == 1) {
@@ -130,11 +75,10 @@ void GameScene::Update()
 		obj->SetRotation(rotate);
 		obj->Update();
 	}
-
-
-	// デフォルトカメラの更新
-	camera_->Update();
+	
 }
+
+
 
 void GameScene::Draw()
 {
@@ -147,13 +91,10 @@ void GameScene::Draw()
 
 	///======================  実際に描画  ========================///
 
-	// 2Dスプライト
-	for (auto& sprite : sprites) {
-		sprite->Draw();
-	}
 	// 3Dオブジェクト
 	for (auto& obj : object3ds) {
 		obj->Draw();
 	}
 
+	player_->Draw();
 }

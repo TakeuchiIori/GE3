@@ -7,8 +7,9 @@
 #include "Object3dCommon.h"
 #include "Audio.h"
 #include "ModelManager.h"
+#include "Camera.h"
 #include <memory>
-
+#include "Player.h"
 class GameScene : public BaseScene
 {
 public:
@@ -37,11 +38,11 @@ private: // メンバ関数
 	std::unique_ptr<Camera> camera_;
 	// サウンド
 	Audio::SoundData soundData;
-	Vector4 color = { 1.0f, 1.0f, 1.0f, 1.0f };
-	// 2Dスプライト
-	std::vector<std::unique_ptr<Sprite>> sprites;
+
 	// 3Dモデル
 	std::vector<std::unique_ptr<Object3d>> object3ds;
+
+	std::unique_ptr<Player> player_;
 
 };
 
