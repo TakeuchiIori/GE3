@@ -94,7 +94,7 @@ void GameScene::UpdateCamera()
     case CameraMode::TOP_DOWN:
     {
         Vector3 topDownPosition = Vector3(0.0f, 100.0f, 0.0f);
-        currentCamera_->SetTopDownCamera(topDownPosition);
+        currentCamera_->SetTopDownCamera(topDownPosition + player_->GetPosition());
     }
     break;
     default:
