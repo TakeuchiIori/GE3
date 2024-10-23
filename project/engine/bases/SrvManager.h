@@ -14,6 +14,8 @@ public:
 	static SrvManager* GetInstance();
 	// 終了
 	void Finalize();
+	SrvManager() = default;
+	~SrvManager() = default;
 
 public: // メンバ関数
 
@@ -68,20 +70,9 @@ public:
 	// 最大SRV数（最大テクスチャ枚数）
 	static const uint32_t kMaxSRVCount_;
 
-	// descriptorSize_ の Getter
-	uint32_t GetDescriptorSize() const {
-		return descriptorSize_;
-	}
-
-	// descriptorHeap_ の Getter
-	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> GetDescriptorHeap() const {
-		return descriptorHeap_;
-	}
 
 private:
 	static SrvManager* instance;
-	SrvManager() = default;
-	~SrvManager() = default;
 	SrvManager(SrvManager&) = delete;
 	SrvManager& operator = (SrvManager&) = delete;
 
@@ -92,6 +83,6 @@ private:
 	// SRV用のデスクリプタサイズ
 	uint32_t descriptorSize_ = 0;
 	// SRV用デスクリプタヒープ
-	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> descriptorHeap_;
+	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> descriptorHeap_ = nullptr;
 };
 

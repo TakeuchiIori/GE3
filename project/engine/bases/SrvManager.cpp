@@ -1,4 +1,5 @@
 #include "SrvManager.h"
+#include <TextureManager.h>
 
 SrvManager* SrvManager::instance = nullptr;
 const uint32_t SrvManager::kMaxSRVCount_ = 512;
@@ -22,7 +23,7 @@ void SrvManager::Finalize()
 void SrvManager::Initialize(DirectXCommon* dxCommon)
 {
 	// 引数で受け取ってメンバ変数に記録する
-	this->dxCommon_ = dxCommon;
+	dxCommon_ = dxCommon;
 
 	// デスクリプタヒープの生成
 	descriptorHeap_ = dxCommon_->CreateDescriptorHeap(dxCommon_->GetDevice(),D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, kMaxSRVCount_,true);
@@ -97,8 +98,13 @@ void SrvManager::CreateSRVforTexture2D(uint32_t srvIndex, ID3D12Resource* pResou
 void SrvManager::CreateSRVforStructuredBuffer(uint32_t srvIndex, ID3D12Resource* pResource, UINT numElements, UINT structureByteStride)
 {
 	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc{};
-	srvDesc.Buffer.NumElements = numElements; // 要素数
-	srvDesc.Buffer.StructureByteStride = structureByteStride; // 各構造体のサイズ
+	srvDesc.Format = DXGI_FORMAT_UNKNOWN; // 構造化バッファの場合、フォーマットは不明（UNKNOWN）
+	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_BUFFER; // バッファとしてビューを作成
+	srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING; // デフォルトのシェーダマッピング
+	srvDesc.Buffer.FirstElement = 0; // バッファ内の最初の要素のインデックス
+	srvDesc.Buffer.NumElements = numElements; // バッファ内の要素数
+	srvDesc.Buffer.StructureByteStride = structureByteStride; // 構造体のバイト単位のサイズ
+	srvDesc.Buffer.Flags = D3D12_BUFFER_SRV_FLAG_NONE; // 特殊なフラグは無し
 
 	// SRV を作成
 	dxCommon_->GetDevice()->CreateShaderResourceView(pResource, &srvDesc, GetCPUSRVDescriptorHandle(srvIndex));

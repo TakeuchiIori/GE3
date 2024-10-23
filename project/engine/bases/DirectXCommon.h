@@ -18,9 +18,6 @@ class DirectXCommon
 {
 public: // 各種初期化
 
-	static DirectXCommon* GetInstance();
-	void Finalize();
-
 	/// <summary>
 	/// DirectXの初期化
 	/// </summary>
@@ -199,11 +196,6 @@ public: // アクセッサ
 
 private: 
 
-	static DirectXCommon* instance;
-	DirectXCommon() = default;
-	~DirectXCommon() = default;
-	DirectXCommon(DirectXCommon&) = delete;
-	DirectXCommon& operator = (DirectXCommon&) = delete;
 
 	// WindowsAPI
 	WinApp* winApp_ = nullptr;
@@ -247,7 +239,7 @@ private:
 	// RTV
 	D3D12_RENDER_TARGET_VIEW_DESC rtvDesc_{};
 	
-
+	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> descriptorHeap;
 	uint64_t fenceValue_ = 0;
 	HANDLE fenceEvent_;
 	// ビューポート

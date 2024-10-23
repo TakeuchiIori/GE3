@@ -1,18 +1,19 @@
 #include "ModelManager.h"
 std::unique_ptr<ModelManager> ModelManager::instance = nullptr;
+std::once_flag ModelManager::initInstanceFlag;
 
 ModelManager* ModelManager::GetInstance()
 {
-	if (instance == nullptr) {
+	std::call_once(initInstanceFlag, []() {
 		instance = std::make_unique<ModelManager>();
-	}
+		});
 	return instance.get();
 }
 
 void ModelManager::Finalize()
 {
-	instance.reset();  // インスタンスを解放
-	instance = nullptr;
+	//instance.reset(); 
+	//instance = nullptr;
 }
 
 void ModelManager::Initialze(DirectXCommon* dxCommon)

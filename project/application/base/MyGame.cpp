@@ -15,7 +15,7 @@ void MyGame::Initialize()
 void MyGame::Finalize()
 {
 	// 各解放処理
-	CloseHandle(dxCommon_->GetFenceEvent());
+	//CloseHandle(dxCommon_->GetFenceEvent());
 	Framework::Finalize();
 }
 
@@ -27,10 +27,11 @@ void MyGame::Update()
 
 void MyGame::Draw()
 {
+	// DirectXの描画準備
+	dxCommon_->PreDraw();
 	// Srvの描画準備
 	srvManager_->PreDraw();
-	// DirectXの描画準備
-	dxCommon_->PreDraw();	
+	
 
 	// ゲームの描画
 	sceneManager_->Draw();
