@@ -8,20 +8,16 @@
 #include "Model.h"
 #include "WorldTransform.h"
 
-void Object3d::Initialize(Object3dCommon* object3dCommon)
+void Object3d::Initialize()
 {
 	// 引数で受け取ってメンバ変数に記録する
-	this->object3dCommon_ = object3dCommon;
-
+	this->object3dCommon_ = Object3dCommon::GetInstance();
 	// デフォルトカメラのセット
 	this->camera_ = object3dCommon_->GetDefaultCamera();
 
 
 	// 平行光源の初期化
 	DirectionalLightResource();
-
-	// 座標変換行列の初期化
-	//TransformationInitialize();
 
 	// マテリアルリソース
 	MaterialResource();
@@ -59,18 +55,6 @@ void Object3d::ChangeTexture(std::string textureFilePath)
 {
 
 }
-
-
-//void Object3d::TransformationInitialize()
-//{
-//	////	TextureManager::GetInstance()->GetTextureIndexByFilePath(modelData_.material.textureFilePath);
-//	//transformationMatrixResource_ = object3dCommon_->GetDxCommon()->CreateBufferResource(sizeof(TransformationMatrix));
-//	//// データを書き込むためのアドレスを取得して割り当て
-//	//transformationMatrixResource_->Map(0, nullptr, reinterpret_cast<void**>(&transformationMatrixData_));
-//	//// 単位行列を書き込む
-//	//transformationMatrixData_->WVP = MakeIdentity4x4();
-//	//transformationMatrixData_->World = MakeIdentity4x4();
-//}
 
 void Object3d::DirectionalLightResource()
 {
