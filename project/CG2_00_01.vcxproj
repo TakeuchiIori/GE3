@@ -68,7 +68,7 @@
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(ProjectDir)engine\2d;$(ProjectDir)externals\DirectXTex;$(ProjectDir)engine\math;$(ProjectDir)engine\bases;$(ProjectDir)externals\imgui;$(ProjectDir)engine\io\input;$(ProjectDir)engine\3d;$(ProjectDir)engine\io\audio;$(ProjectDir)application\base;$(ProjectDir)application\scene;$(ProjectDir)engine\model;$(ProjectDir)engine\utility;$(ProjectDir)externals\FFmpeg\include;$(ProjectDir)application\player;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)engine\2d;$(ProjectDir)externals\DirectXTex;$(ProjectDir)engine\math;$(ProjectDir)engine\bases;$(ProjectDir)externals\imgui;$(ProjectDir)engine\io\input;$(ProjectDir)engine\3d;$(ProjectDir)engine\io\audio;$(ProjectDir)application\base;$(ProjectDir)application\scene;$(ProjectDir)engine\model;$(ProjectDir)engine\utility;$(ProjectDir)externals\FFmpeg\include;$(ProjectDir)application\player;$(ProjectDir)application\enemy;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -93,7 +93,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <TreatWarningAsError>false</TreatWarningAsError>
-      <AdditionalIncludeDirectories>$(ProjectDir)engine\2d;$(ProjectDir)engine\math;$(ProjectDir)externals\DirectXTex;$(ProjectDir)engine\3d;$(ProjectDir)engine\io\input;$(ProjectDir)engine\bases;$(ProjectDir)engine\io\audio;$(ProjectDir)application\base;$(ProjectDir)application\scene;$(ProjectDir)engine\model;$(ProjectDir)engine\utility;$(ProjectDir)externals\FFmpeg\include;$(ProjectDir)application\player;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)engine\2d;$(ProjectDir)engine\math;$(ProjectDir)externals\DirectXTex;$(ProjectDir)engine\3d;$(ProjectDir)engine\io\input;$(ProjectDir)engine\bases;$(ProjectDir)engine\io\audio;$(ProjectDir)application\base;$(ProjectDir)application\scene;$(ProjectDir)engine\model;$(ProjectDir)engine\utility;$(ProjectDir)externals\FFmpeg\include;$(ProjectDir)application\player;$(ProjectDir)application\enemy;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -144,6 +144,8 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="engine\utility\SceneFactory.cpp" />
     <ClCompile Include="application\player\Player.cpp" />
     <ClCompile Include="engine\math\MathFunc.cpp" />
+    <ClCompile Include="application\player\PlayerBullet.cpp" />
+    <ClCompile Include="engine\3d\WorldTransform.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="application\scene\BaseScene.h" />
@@ -186,6 +188,8 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="engine\utility\ParticleManager.h" />
     <ClInclude Include="engine\utility\SceneFactory.h" />
     <ClInclude Include="application\player\Player.h" />
+    <ClInclude Include="application\player\PlayerBullet.h" />
+    <ClInclude Include="engine\3d\WorldTransform.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="externals\imgui\LICENSE.txt" />
