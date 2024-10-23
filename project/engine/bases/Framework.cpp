@@ -37,7 +37,7 @@ void Framework::Initialize()
 
 
 	// 3Dオブジェクト共通部の生成
-	object3dCommon_ = Object3dCommon::Getinstance();
+	object3dCommon_ = Object3dCommon::GetInstance();
 	object3dCommon_->Initialize(dxCommon_.get());
 
 	// 3Dモデルマネージャの生成
