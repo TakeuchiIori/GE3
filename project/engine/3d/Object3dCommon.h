@@ -8,7 +8,7 @@ class Object3dCommon
 {
 public: // メンバ関数
 	// シングルトン
-	static Object3dCommon* Getinstance();
+	static Object3dCommon* GetInstance();
 	// 終了
 	void Finalize();
 

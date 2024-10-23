@@ -2,7 +2,7 @@
 
 std::unique_ptr<Object3dCommon> Object3dCommon::instance = nullptr;
 
-Object3dCommon* Object3dCommon::Getinstance()
+Object3dCommon* Object3dCommon::GetInstance()
 {	
 	if (instance == nullptr) {
 		instance = std::make_unique<Object3dCommon>();

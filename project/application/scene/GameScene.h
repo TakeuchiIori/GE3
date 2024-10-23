@@ -10,6 +10,7 @@
 #include "Camera.h"
 #include <memory>
 #include "Player.h"
+#include "WorldTransform.h"
 class GameScene : public BaseScene
 {
 public:
@@ -40,9 +41,11 @@ private: // メンバ関数
 	Audio::SoundData soundData;
 
 	// 3Dモデル
-	std::vector<std::unique_ptr<Object3d>> object3ds;
+	std::unique_ptr<Object3d> test_;
+	WorldTransform testWorldTransform_;
 
 	std::unique_ptr<Player> player_;
+	
 
 };
 
