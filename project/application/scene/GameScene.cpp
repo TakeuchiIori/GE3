@@ -12,8 +12,9 @@ void GameScene::Initialize()
 
 	///============ カメラ初期化 ============///
 	camera_ = std::make_unique<Camera>();
-	camera_->SetRotate({ 0.0f,0.0f,0.0f });
-	camera_->SetTranslate({ 0.0f,4.0f,-20.0f });
+	/*camera_->SetRotate({ 0.0f,0.0f,0.0f });
+	camera_->SetTranslate({ 0.0f,4.0f,-20.0f });*/
+
 	Object3dCommon::Getinstance()->SetDefaultCamera(camera_.get());
 
 	///============ オブジェクト初期化 ============///
@@ -31,10 +32,9 @@ void GameScene::Initialize()
 		object->SetPosition(position);
 		object3ds.push_back(std::move(object));
 	}
-	player_ = make_unique<Player>();
+
+	player_ = std::make_unique<Player>();
 	player_->Initailize();
-
-
 
 }
 
@@ -54,18 +54,9 @@ void GameScene::Update()
 
 	// プレイヤーの位置を取得
 	Vector3 playerPos = player_->GetPosition();
+	camera_->FollowCamera(playerPos);
 
-	// カメラの注視点と位置をプレイヤーの相対位置に合わせて設定
-	Vector3 cameraOffset = { 0.0f, 5.0f, -20.0f };  // カメラのオフセット（背後や高さを調整）
-	Vector3 cameraPos = playerPos + cameraOffset;    // プレイヤーに基づいたカメラの位置を設定
-
-	// カメラの位置を更新
-	camera_->SetTranslate(cameraPos);
-
-	// カメラをプレイヤーの方向に向ける
-	Vector3 lookAtPos = playerPos;  // プレイヤーの位置を注視点に設定
-	camera_->LookAt(lookAtPos);
-
+	
 	// カメラの更新
 	camera_->Update();
 
@@ -83,6 +74,7 @@ void GameScene::Update()
 		obj->SetRotation(rotate);
 		obj->Update();
 	}
+	
 }
 
 

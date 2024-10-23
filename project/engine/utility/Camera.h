@@ -15,8 +15,11 @@ public: // メンバ関数
 	/// </summary>
 	void Update();
 
-	// カメラを指定した位置に向ける
-	void LookAt(const Vector3& target);
+	
+	/// <summary>
+	/// カメラを指定した位置に向ける
+	/// </summary>
+	void FollowCamera(Vector3& target );
 
 
 public: // アクセッサ
@@ -47,6 +50,10 @@ private: // メンバ変数
 	float aspectRatio_;          // アスペクト比
 	float nearClip_;			 // ニアクリップ距離
 	float farClip_;				 // ファークリップ距離
+
+	Vector3 followCameraOffsetPosition_ = Vector3(0.0f, 30.0f, -50.0f);
+
+	Vector3 followCameraOffsetRotare_ = Vector3(0.51f, 0.0f, 0.0f);
 
 };
 
