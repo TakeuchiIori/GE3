@@ -10,6 +10,7 @@ void TitleScene::Initialize()
 	ModelManager::GetInstance()->LoadModel("plane.obj");
 	ModelManager::GetInstance()->LoadModel("axis.obj");
 	
+	
 
 	///============ カメラ初期化 ============///
 	camera_ = std::make_unique<Camera>();

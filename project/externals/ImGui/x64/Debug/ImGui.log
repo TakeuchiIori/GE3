@@ -5,10 +5,5 @@
   imgui_impl_win32.cpp
   imgui_tables.cpp
   imgui_widgets.cpp
-  C/C++ のコード分析を実行しています...
   コードを生成中...
   ImGui.vcxproj -> C:\Users\iori0\Lessons\2024A\GE3\project\x64\Debug\ImGui.lib
-C:\Users\iori0\Lessons\2024A\GE3\project\externals\ImGui\imgui.cpp(8632): warning C33011: インデックスとして使用される列挙型 key の上限は確認されていません。
-C:\Users\iori0\Lessons\2024A\GE3\project\externals\ImGui\imgui.cpp(9703): warning C33010: インデックスとして使用される列挙型 source の下限は確認されていません。
-C:\Users\iori0\Lessons\2024A\GE3\project\externals\ImGui\imgui.cpp(9709): warning C33010: インデックスとして使用される列挙型 source の下限は確認されていません。
-C:\Users\iori0\Lessons\2024A\GE3\project\externals\ImGui\imgui.cpp(12394): warning C6011: NULL ポインター 'window' を逆参照しています。

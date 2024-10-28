@@ -49,6 +49,7 @@ void Framework::Initialize()
 void Framework::Finalize()
 {
 	// 各解放処理
+	CloseHandle(dxCommon_->GetFenceEvent());
 	imguiManager_->Finalize();
 	SceneManager::GetInstance()->Finalize();
 	textureManager_->Finalize();

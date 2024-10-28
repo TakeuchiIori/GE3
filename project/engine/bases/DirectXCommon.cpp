@@ -346,7 +346,7 @@ void DirectXCommon::PostDraw()
 	assert(SUCCEEDED(hr));
 	hr = commandList_->Reset(commandAllocator_.Get(), nullptr);
 	assert(SUCCEEDED(hr));
-	CoUninitialize();
+	//CoUninitialize();
 }
 
 void DirectXCommon::InitializeViewPortRevtangle()

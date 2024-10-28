@@ -14,8 +14,6 @@ void MyGame::Initialize()
 
 void MyGame::Finalize()
 {
-	// 各解放処理
-	//CloseHandle(dxCommon_->GetFenceEvent());
 	Framework::Finalize();
 }
 
