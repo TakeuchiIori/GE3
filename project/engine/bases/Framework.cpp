@@ -54,7 +54,6 @@ void Framework::Finalize()
 	// 各解放処理
 	imguiManager_->Finalize();
 	SceneManager::GetInstance()->Finalize();
-	object3dCommon_->Finalize();
 	textureManager_->Finalize();
 	srvManager_->Finalize();
 	audio_->Finalize();

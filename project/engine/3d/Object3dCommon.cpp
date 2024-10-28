@@ -1,18 +1,18 @@
 #include "Object3dCommon.h"
 
+// シングルトンインスタンスの初期化
 std::unique_ptr<Object3dCommon> Object3dCommon::instance = nullptr;
+std::once_flag Object3dCommon::initInstanceFlag;
 
+/// <summary>
+/// シングルトンインスタンスの取得
+/// </summary>
 Object3dCommon* Object3dCommon::GetInstance()
-{	
-	if (instance == nullptr) {
-		instance = std::make_unique<Object3dCommon>();
-	}
-	return instance.get();
-}
-
-void Object3dCommon::Finalize()
 {
-	instance.reset();
+	std::call_once(initInstanceFlag, []() {
+		instance.reset(new Object3dCommon());
+		});
+	return instance.get();
 }
 
 void Object3dCommon::Initialize(DirectXCommon* dxCommon)
