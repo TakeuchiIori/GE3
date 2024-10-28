@@ -10,6 +10,7 @@ void TitleScene::Initialize()
 	ModelManager::GetInstance()->LoadModel("plane.obj");
 	ModelManager::GetInstance()->LoadModel("axis.obj");
 	
+	
 
 	///============ カメラ初期化 ============///
 	camera_ = std::make_unique<Camera>();
@@ -45,7 +46,7 @@ void TitleScene::Initialize()
 	uint32_t numObjects = 2;
 	for (uint32_t i = 0; i < numObjects; ++i) {
 		auto object = std::make_unique<Object3d>();
-		object->Initialize(Object3dCommon::GetInstance());
+		object->Initialize();
 		Vector3 position;
 		if (i == 0) {
 			position.x = -2;
@@ -139,7 +140,7 @@ void TitleScene::Draw()
 	/// 3Dオブジェクトの描画準備
 	Object3dCommon::GetInstance()->DrawPreference();
 	/// 2DSpriteの描画準備
-	SpriteCommon::Getinstance()->DrawPreference();
+	SpriteCommon::GetInstance()->DrawPreference();
 
 	///======================  実際に描画  ========================///
 

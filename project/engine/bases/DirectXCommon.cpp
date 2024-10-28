@@ -8,6 +8,8 @@
 #pragma comment(lib,"dxgi.lib")
 #pragma comment(lib, "dxguid.lib")
 #pragma comment(lib,"winmm.lib")
+#pragma comment(lib,"dxguid.lib")
+#pragma comment(lib,"dxcompiler.lib")
 
 using namespace Microsoft::WRL;
 
@@ -344,7 +346,6 @@ void DirectXCommon::PostDraw()
 	assert(SUCCEEDED(hr));
 	hr = commandList_->Reset(commandAllocator_.Get(), nullptr);
 	assert(SUCCEEDED(hr));
-	CoUninitialize();
 }
 
 void DirectXCommon::InitializeViewPortRevtangle()

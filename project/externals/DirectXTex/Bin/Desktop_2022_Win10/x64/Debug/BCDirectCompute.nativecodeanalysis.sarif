@@ -1,0 +1,187 @@
+{
+  "version": "2.1.0",
+  "$schema": "https://schemastore.azurewebsites.net/schemas/json/sarif-2.1.0-rtm.5.json",
+  "runs": [
+    {
+      "results": [],
+      "tool": {
+        "driver": {
+          "name": "PREfast",
+          "fullName": "PREfast Code Analysis",
+          "version": "14.41.34120.0",
+          "informationUri": "https://aka.ms/cpp/ca"
+        }
+      },
+      "invocations": [
+        {
+          "executionSuccessful": true
+        }
+      ],
+      "artifacts": [
+        {
+          "location": {
+            "uri": "file:///c:/users/iori0/lessons/2024a/ge3/project/externals/directxtex/bcdirectcompute.cpp"
+          },
+          "roles": [
+            "analysisTarget"
+          ],
+          "hashes": {
+            "sha-256": "97e89603bb34161e07a3cc160b74644f099b204934814d26759a4ae964cf05c2"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/users/iori0/lessons/2024a/ge3/project/externals/directxtex/directxtexp.h"
+          },
+          "hashes": {
+            "sha-256": "0c8c9e3a67c2df8e86bdfa32ace893bbe0d57f2aa7eb5cc09c0854e18e0626b8"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/users/iori0/lessons/2024a/ge3/project/externals/directxtex/directxtex.h"
+          },
+          "hashes": {
+            "sha-256": "63095f689bac26bbe6265f0cda77c024a7976b930d0027ea494347c939b43be2"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/users/iori0/lessons/2024a/ge3/project/externals/directxtex/directxtex.inl"
+          },
+          "hashes": {
+            "sha-256": "2896f740bacea922a09cfbd44a3f6a1c85639d07dfa40165927cbf7fed9b22bd"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/users/iori0/lessons/2024a/ge3/project/externals/directxtex/scoped.h"
+          },
+          "hashes": {
+            "sha-256": "81eeadc0de6331df6fb6e94249ce0d1ec8f077c356253f50a8a50ef51870ab9a"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/users/iori0/lessons/2024a/ge3/project/externals/directxtex/bcdirectcompute.h"
+          },
+          "hashes": {
+            "sha-256": "a9818417d9a4db23d1ff1b5498faea72d0fe7cb0a0b2e59ac1118a69a32cb544"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/users/iori0/lessons/2024a/ge3/project/externals/directxtex/shaders/compiled/bc7encode_encodeblockcs.inc"
+          },
+          "hashes": {
+            "sha-256": "6d54afc2d3565f08a1a8d8ae81f027037404838c9a96a5b28bf8705712ba836c"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/users/iori0/lessons/2024a/ge3/project/externals/directxtex/shaders/compiled/bc7encode_trymode02cs.inc"
+          },
+          "hashes": {
+            "sha-256": "0af7b96761316ddda7d3dc594042c9c5bc34861903430160aabd612c9d97e26b"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/users/iori0/lessons/2024a/ge3/project/externals/directxtex/shaders/compiled/bc7encode_trymode137cs.inc"
+          },
+          "hashes": {
+            "sha-256": "c3e4dcb13b7e5445838be5884a4af84c264c3d0174cec0403d6abb8204fa011a"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/users/iori0/lessons/2024a/ge3/project/externals/directxtex/shaders/compiled/bc7encode_trymode456cs.inc"
+          },
+          "hashes": {
+            "sha-256": "27d9403ea52db9d02fac533eface1c2ae1bfefad558aad519471481761f18bc9"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/users/iori0/lessons/2024a/ge3/project/externals/directxtex/shaders/compiled/bc6hencode_encodeblockcs.inc"
+          },
+          "hashes": {
+            "sha-256": "b9df85cd9293c2a548505f19e7921ce4b2da6c4dfaa2ba2efdcd571b83b8fe03"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/users/iori0/lessons/2024a/ge3/project/externals/directxtex/shaders/compiled/bc6hencode_trymodeg10cs.inc"
+          },
+          "hashes": {
+            "sha-256": "a9ade3f49c01f94b700fb9479f445a299194e36ca363a025d06a3cb747b49533"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/users/iori0/lessons/2024a/ge3/project/externals/directxtex/shaders/compiled/bc6hencode_trymodele10cs.inc"
+          },
+          "hashes": {
+            "sha-256": "86dc508b88271d29da29bcb610b02396eb7caf9cd3df977fda83c5712111e7ca"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/users/iori0/lessons/2024a/ge3/project/externals/directxtex/shaders/compiled/bc7encode_encodeblockcs_cs40.inc"
+          },
+          "hashes": {
+            "sha-256": "a58a9d87dd677ce3c01f54a37d39354817acf0081a974f36615dea3ced8f0fcb"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/users/iori0/lessons/2024a/ge3/project/externals/directxtex/shaders/compiled/bc7encode_trymode02cs_cs40.inc"
+          },
+          "hashes": {
+            "sha-256": "5cccb9e7a5ff3077af6bd99300c4002f8f0acc15c479b208d1e26a5b56eda1ef"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/users/iori0/lessons/2024a/ge3/project/externals/directxtex/shaders/compiled/bc7encode_trymode137cs_cs40.inc"
+          },
+          "hashes": {
+            "sha-256": "706e153740f3e8d0549876b5e6eff146cb968c1a18fde7126842e15f8e252523"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/users/iori0/lessons/2024a/ge3/project/externals/directxtex/shaders/compiled/bc7encode_trymode456cs_cs40.inc"
+          },
+          "hashes": {
+            "sha-256": "51ae936a55e862b5c603d05f045f65fc35266449d14dacf1527585d9e94189c0"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/users/iori0/lessons/2024a/ge3/project/externals/directxtex/shaders/compiled/bc6hencode_encodeblockcs_cs40.inc"
+          },
+          "hashes": {
+            "sha-256": "dabcabd6b9adc40a356d43ba9d023c1fecbdf648c2c1b11f6a60087b41a9d8f8"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/users/iori0/lessons/2024a/ge3/project/externals/directxtex/shaders/compiled/bc6hencode_trymodeg10cs_cs40.inc"
+          },
+          "hashes": {
+            "sha-256": "c6f1eafd1f86825561cd64f804cd92abbc5b35bce8dfd1bb7bbb56751034c4d7"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/users/iori0/lessons/2024a/ge3/project/externals/directxtex/shaders/compiled/bc6hencode_trymodele10cs_cs40.inc"
+          },
+          "hashes": {
+            "sha-256": "841e348bde419e98f07e64f5a0a395569b70f320b85e2ee73d1e968060269094"
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,7 +1,11 @@
 #include "Player.h"
 #include "ModelManager.h"
 #include "Object3dCommon.h"
+#ifdef _DEBUG
 #include "imgui.h" 
+#endif // _DEBUG
+
+
 
 void Player::Initailize()
 {
@@ -10,7 +14,7 @@ void Player::Initailize()
 
     // OBject3dの初期化
     base_ = std::make_unique<Object3d>();
-    base_->Initialize(Object3dCommon::GetInstance());
+    base_->Initialize();
     base_->SetModel("player.obj");
 
     // その他初期化
@@ -56,10 +60,12 @@ void Player::Move()
 
 void Player::ShowCoordinatesImGui()
 {
+#ifdef _DEBUG
     // ImGuiウィンドウを利用してプレイヤーの座標を表示
     ImGui::Begin("Player Coordinates");
     ImGui::Text("Position X: %.2f", worldTransform_.translation_.x);
     ImGui::Text("Position Y: %.2f", worldTransform_.translation_.y);
     ImGui::Text("Position Z: %.2f", worldTransform_.translation_.z);
     ImGui::End();
+#endif
 }

@@ -82,7 +82,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <WarningLevel>EnableAllWarnings</WarningLevel>
+      <WarningLevel>Level4</WarningLevel>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
@@ -113,8 +113,9 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="application\scene\GameScene.cpp" />
     <ClCompile Include="application\scene\SceneManager.cpp" />
     <ClCompile Include="application\scene\TitleScene.cpp" />
+    <ClCompile Include="engine\3d\CameraManager.cpp" />
     <ClCompile Include="engine\io\audio\Audio.cpp" />
-    <ClCompile Include="engine\utility\Camera.cpp" />
+    <ClCompile Include="engine\3d\Camera.cpp" />
     <ClCompile Include="engine\bases\DirectXCommon.cpp" />
     <ClCompile Include="engine\utility\LeakChecker.cpp" />
     <ClCompile Include="externals\imgui\imgui.cpp" />
@@ -152,9 +153,10 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\scene\GameScene.h" />
     <ClInclude Include="application\scene\SceneManager.h" />
     <ClInclude Include="application\scene\TitleScene.h" />
+    <ClInclude Include="engine\3d\CameraManager.h" />
     <ClInclude Include="engine\utility\AbstractSceneFactory.h" />
     <ClInclude Include="engine\io\audio\Audio.h" />
-    <ClInclude Include="engine\utility\Camera.h" />
+    <ClInclude Include="engine\3d\Camera.h" />
     <ClInclude Include="engine\bases\DirectXCommon.h" />
     <ClInclude Include="engine\utility\LeakChecker.h" />
     <ClInclude Include="externals\imgui\imconfig.h" />

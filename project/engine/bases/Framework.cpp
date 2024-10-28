@@ -32,9 +32,8 @@ void Framework::Initialize()
 	textureManager_->Initialize(dxCommon_.get(), srvManager_);
 
 	// スプライト共通部の生成
-	spriteCommon_ = SpriteCommon::Getinstance();
+	spriteCommon_ = SpriteCommon::GetInstance();
 	spriteCommon_->Initialize(dxCommon_.get());
-
 
 	// 3Dオブジェクト共通部の生成
 	object3dCommon_ = Object3dCommon::GetInstance();
@@ -44,21 +43,17 @@ void Framework::Initialize()
 	modelManager_ = ModelManager::GetInstance();
 	modelManager_->Initialze(dxCommon_.get());
 
-	// シーンマネージャの生成
-	sceneManager_ = SceneManager::GetInstance();
 
 }
 
 void Framework::Finalize()
 {
 	// 各解放処理
-	sceneManager_->Finalize();
-	modelManager_->Finalize();
-	object3dCommon_->Finalize();
-	spriteCommon_->Finalize();
+	CloseHandle(dxCommon_->GetFenceEvent());
+	imguiManager_->Finalize();
+	SceneManager::GetInstance()->Finalize();
 	textureManager_->Finalize();
 	srvManager_->Finalize();
-	imguiManager_->Finalize();
 	audio_->Finalize();
 	input_->Finalize();
 	winApp_->Finalize();
@@ -72,7 +67,7 @@ void Framework::Update()
 	// 入力は初めに更新
 	input_->Update(winApp_);
 	// シーン全体の更新
-	sceneManager_->Update();
+	SceneManager::GetInstance()->Update();
 	// ImGui受付終了
 	imguiManager_->End();
 }
