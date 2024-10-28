@@ -22,6 +22,9 @@ void GameScene::Finalize()
 
 void GameScene::Update()
 {
+    if (Input::GetInstance()->TriggerKey(DIK_RETURN)) {
+        SceneManager::GetInstance()->ChangeScene("TITLE");
+    }
     UpdatePlayer();
     UpdateCameraMode();
     UpdateCamera();
@@ -105,7 +108,7 @@ void GameScene::UpdateCamera()
 void GameScene::PrepareDraw()
 {
     Object3dCommon::GetInstance()->DrawPreference();
-    SpriteCommon::Getinstance()->DrawPreference();
+    SpriteCommon::GetInstance()->DrawPreference();
 }
 
 void GameScene::DrawObjects()

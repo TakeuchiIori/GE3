@@ -139,7 +139,7 @@ void TitleScene::Draw()
 	/// 3Dオブジェクトの描画準備
 	Object3dCommon::GetInstance()->DrawPreference();
 	/// 2DSpriteの描画準備
-	SpriteCommon::Getinstance()->DrawPreference();
+	SpriteCommon::GetInstance()->DrawPreference();
 
 	///======================  実際に描画  ========================///
 
