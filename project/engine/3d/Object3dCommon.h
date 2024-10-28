@@ -99,6 +99,9 @@ private:
     Microsoft::WRL::ComPtr<IDxcBlob> vertexShaderBlob;
     Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob;
 
+    Microsoft::WRL::ComPtr<ID3DBlob> signatureBlob;
+    Microsoft::WRL::ComPtr<ID3DBlob> errorBlob;
+
     // 入力レイアウトの説明構造体
     D3D12_INPUT_LAYOUT_DESC inputLayoutDesc{};
 

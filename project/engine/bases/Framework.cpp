@@ -35,7 +35,6 @@ void Framework::Initialize()
 	spriteCommon_ = SpriteCommon::GetInstance();
 	spriteCommon_->Initialize(dxCommon_.get());
 
-
 	// 3Dオブジェクト共通部の生成
 	object3dCommon_ = Object3dCommon::GetInstance();
 	object3dCommon_->Initialize(dxCommon_.get());
@@ -44,8 +43,6 @@ void Framework::Initialize()
 	modelManager_ = ModelManager::GetInstance();
 	modelManager_->Initialze(dxCommon_.get());
 
-	// シーンマネージャの生成
-	//sceneManager_ = SceneManager::GetInstance();
 
 }
 

@@ -64,7 +64,7 @@ protected:
 	Object3dCommon* object3dCommon_ = nullptr;
 	TextureManager* textureManager_ = nullptr;
 	ModelManager* modelManager_ = nullptr;
-	//SceneManager* sceneManager_ = nullptr;
+
 	// シーンファクトリー
 	std::unique_ptr<AbstractSceneFactory> sceneFactory_;
 private:
