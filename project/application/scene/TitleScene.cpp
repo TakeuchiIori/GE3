@@ -10,6 +10,7 @@ void TitleScene::Initialize()
 	ModelManager::GetInstance()->LoadModel("plane.obj");
 	ModelManager::GetInstance()->LoadModel("axis.obj");
 	
+	
 
 	///============ カメラ初期化 ============///
 	camera_ = std::make_unique<Camera>();
@@ -139,7 +140,7 @@ void TitleScene::Draw()
 	/// 3Dオブジェクトの描画準備
 	Object3dCommon::GetInstance()->DrawPreference();
 	/// 2DSpriteの描画準備
-	SpriteCommon::Getinstance()->DrawPreference();
+	SpriteCommon::GetInstance()->DrawPreference();
 
 	///======================  実際に描画  ========================///
 

@@ -41,6 +41,7 @@ public: // 定数
 
 private:
 	static WinApp* instance;
+	static HWND hwndImgui;
 	WinApp() = default; 
 	~WinApp() = default;
 	WinApp(const WinApp&) = delete;

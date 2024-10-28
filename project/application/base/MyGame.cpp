@@ -14,8 +14,6 @@ void MyGame::Initialize()
 
 void MyGame::Finalize()
 {
-	// 各解放処理
-	//CloseHandle(dxCommon_->GetFenceEvent());
 	Framework::Finalize();
 }
 
@@ -34,7 +32,7 @@ void MyGame::Draw()
 	
 
 	// ゲームの描画
-	sceneManager_->Draw();
+	SceneManager::GetInstance()->Draw();
 
 	// ImGui描画
 	imguiManager_->Draw();

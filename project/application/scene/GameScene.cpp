@@ -8,51 +8,14 @@
 
 void GameScene::Initialize()
 {
-    LoadModels();
-    InitializeCamera();
-    InitializeObjects();
-    // 初期カメラモード設定
-    cameraMode_ = CameraMode::FOLLOW;
-}
-
-void GameScene::Finalize()
-{
-    FinalizeCamera();
-}
-
-void GameScene::Update()
-{
-    UpdatePlayer();
-    UpdateCameraMode();
-    UpdateCamera();
-    testWorldTransform_.TransferMatrix();
-    cameraManager_.UpdateAllCameras();
-}
-
-void GameScene::Draw()
-{
-    PrepareDraw();
-    DrawObjects();
-}
-
-void GameScene::LoadModels()
-{
+    // モデル読み込み
     ModelManager::GetInstance()->LoadModel("float_body.obj");
-}
 
-void GameScene::InitializeCamera()
-{
+    // カメラの生成
     currentCamera_ = cameraManager_.AddCamera();
     Object3dCommon::GetInstance()->SetDefaultCamera(currentCamera_.get());
-}
-
-void GameScene::FinalizeCamera()
-{
-    cameraManager_.RemoveCamera(currentCamera_);
-}
-
-void GameScene::InitializeObjects()
-{
+   
+    // 各オブジェクトの初期化
     player_ = std::make_unique<Player>();
     player_->Initailize();
 
@@ -60,11 +23,34 @@ void GameScene::InitializeObjects()
     test_->Initialize();
     test_->SetModel("float_body.obj");
     testWorldTransform_.Initialize();
+    // 初期カメラモード設定
+    cameraMode_ = CameraMode::FOLLOW;
 }
 
-void GameScene::UpdatePlayer()
+void GameScene::Finalize()
 {
+    cameraManager_.RemoveCamera(currentCamera_);
+}
+
+void GameScene::Update()
+{
+    if (Input::GetInstance()->TriggerKey(DIK_RETURN)) {
+        SceneManager::GetInstance()->ChangeScene("TITLE");
+    }
     player_->Update();
+    UpdateCameraMode();
+    UpdateCamera();
+
+    // ワールドトランスフォーム更新
+    testWorldTransform_.TransferMatrix();
+    cameraManager_.UpdateAllCameras();
+}
+
+void GameScene::Draw()
+{
+    PrepareDraw();
+    player_->Draw();
+    test_->Draw(testWorldTransform_);
 }
 
 void GameScene::UpdateCameraMode()
@@ -94,7 +80,7 @@ void GameScene::UpdateCamera()
     case CameraMode::TOP_DOWN:
     {
         Vector3 topDownPosition = Vector3(0.0f, 100.0f, 0.0f);
-        currentCamera_->SetTopDownCamera(topDownPosition);
+        currentCamera_->SetTopDownCamera(topDownPosition + player_->GetPosition());
     }
     break;
     default:
@@ -105,11 +91,5 @@ void GameScene::UpdateCamera()
 void GameScene::PrepareDraw()
 {
     Object3dCommon::GetInstance()->DrawPreference();
-    SpriteCommon::Getinstance()->DrawPreference();
-}
-
-void GameScene::DrawObjects()
-{
-    player_->Draw();
-    test_->Draw(testWorldTransform_);
+    SpriteCommon::GetInstance()->DrawPreference();
 }

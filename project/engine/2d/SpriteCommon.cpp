@@ -1,19 +1,21 @@
 #include "SpriteCommon.h"
 
 
+// シングルトンインスタンスの初期化
 std::unique_ptr<SpriteCommon> SpriteCommon::instance = nullptr;
-SpriteCommon* SpriteCommon::Getinstance()
+std::once_flag SpriteCommon::initInstanceFlag;
+
+/// <summary>
+/// シングルトンのインスタンスを取得
+/// </summary>
+SpriteCommon* SpriteCommon::GetInstance()
 {
-	if (instance == nullptr) {
-		instance = std::make_unique<SpriteCommon>();
-	}
+	std::call_once(initInstanceFlag, []() {
+		instance.reset(new SpriteCommon());
+		});
 	return instance.get();
 }
 
-void SpriteCommon::Finalize()
-{
-	instance = nullptr;
-}
 
 void SpriteCommon::Initialize(DirectXCommon* dxCommon)
 {
@@ -64,8 +66,8 @@ void SpriteCommon::CreateRootSignature()
 	descriptionRootSignature.NumStaticSamplers = _countof(staticSamplers);
 
 	// シリアライズしてバイナリにする
-	Microsoft::WRL::ComPtr<ID3DBlob> signatureBlob = nullptr;
-	Microsoft::WRL::ComPtr<ID3DBlob> errorBlob = nullptr;
+	signatureBlob = nullptr;
+	errorBlob = nullptr;
 	hr = D3D12SerializeRootSignature(&descriptionRootSignature,
 		D3D_ROOT_SIGNATURE_VERSION_1, &signatureBlob, &errorBlob);
 	if (FAILED(hr)) {

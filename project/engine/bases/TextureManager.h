@@ -7,77 +7,89 @@
 #include "DirectXTex.h"
 #include "SrvManager.h"
 #include <unordered_map>
+#include <mutex>
 
 // テクスチャマネージャー
 class TextureManager
 {
 private:
-	// テクスチャ1枚分のデータ
-	struct TextureData {
-		DirectX::TexMetadata metadata;
-		Microsoft::WRL::ComPtr<ID3D12Resource> resource;
-		Microsoft::WRL::ComPtr<ID3D12Resource> intermediateResource;
-		uint32_t srvIndex;
-		D3D12_CPU_DESCRIPTOR_HANDLE srvHandleCPU;
-		D3D12_GPU_DESCRIPTOR_HANDLE srvHandleGPU;
-	};
+    // テクスチャ1枚分のデータ
+    struct TextureData {
+        DirectX::TexMetadata metadata;
+        Microsoft::WRL::ComPtr<ID3D12Resource> resource;
+        Microsoft::WRL::ComPtr<ID3D12Resource> intermediateResource;
+        uint32_t srvIndex;
+        D3D12_CPU_DESCRIPTOR_HANDLE srvHandleCPU;
+        D3D12_GPU_DESCRIPTOR_HANDLE srvHandleGPU;
+    };
 
 public: // メンバ関数
 
-	// シングルトンインスタンスの取得
-	static TextureManager* GetInstance();
-	// 終了
-	void Finalize();
+    /// <summary>
+    /// シングルトンインスタンスの取得
+    /// </summary>
+    static TextureManager* GetInstance();
 
-	// コンストラクタ
-	TextureManager() = default;
-	// デストラクタ
-	~TextureManager() = default;
+    /// <summary>
+    /// 終了処理
+    /// </summary>
+    void Finalize();
 
-	/// <summary>
-	/// 初期化
-	/// </summary>
-	void Initialize(DirectXCommon* dxCommon,SrvManager* srvManager);
+    // コンストラクタ
+    TextureManager() = default;
+    // デストラクタ
+    ~TextureManager() = default;
 
-	/// <summary>
-	/// テクスチャファイルの読み込み
-	/// </summary>
-	void LoadTexture(const std::string& filePath);
+    /// <summary>
+    /// 初期化
+    /// </summary>
+    void Initialize(DirectXCommon* dxCommon, SrvManager* srvManager);
 
-	/// <summary>
-	/// SRVインデックスの開始番号
-	/// </summary>
-	uint32_t GetTextureIndexByFilePath(const std::string& filePath);
+    /// <summary>
+    /// テクスチャファイルの読み込み
+    /// </summary>
+    void LoadTexture(const std::string& filePath);
 
-	
-	/// <summary>
-	/// テクスチャ番号からGPUハンドルを取得
-	/// </summary>
-	D3D12_GPU_DESCRIPTOR_HANDLE GetsrvHandleGPU(const std::string& filePath);
+    /// <summary>
+    /// SRVインデックスの取得
+    /// </summary>
+    uint32_t GetTextureIndexByFilePath(const std::string& filePath);
 
-	std::wstring ConvertString(const std::string& str);
-	std::string ConvertString(const std::wstring& str);
-	void Log(const std::string& message);
+    /// <summary>
+    /// テクスチャ番号からGPUハンドルを取得
+    /// </summary>
+    D3D12_GPU_DESCRIPTOR_HANDLE GetsrvHandleGPU(const std::string& filePath);
 
-	// メタデータを取得
-	const DirectX::TexMetadata& GetMetaData(const std::string& filePath);
+    // 文字列の変換
+    std::wstring ConvertString(const std::string& str);
+    std::string ConvertString(const std::wstring& str);
+    // ログ出力
+    void Log(const std::string& message);
 
-	
+    /// <summary>
+    /// メタデータの取得
+    /// </summary>
+    const DirectX::TexMetadata& GetMetaData(const std::string& filePath);
 
 private: // メンバ変数
 
-	static TextureManager* instance;
-	TextureManager(TextureManager&) = delete;
-	TextureManager& operator = (TextureManager&) = delete;
+    // シングルトンインスタンス
+    static std::unique_ptr<TextureManager> instance;
+    static std::once_flag initInstanceFlag;
 
-	// テクスチャデータ
-	std::unordered_map<std::string,TextureData> textureDatas;
-	// DirectXCommon
-	DirectXCommon* dxCommon_ = nullptr;
-	SrvManager* srvManager_ = nullptr;
+    // コピーコンストラクタと代入演算子を削除
+    TextureManager(TextureManager&) = delete;
+    TextureManager& operator=(TextureManager&) = delete;
 
-	// SRVインデックスの開始番号
-	static uint32_t kSRVIndexTop;
+    // テクスチャデータ
+    std::unordered_map<std::string, TextureData> textureDatas;
 
+    // DirectX共通オブジェクト
+    DirectXCommon* dxCommon_ = nullptr;
+
+    // SRVマネージャー
+    SrvManager* srvManager_ = nullptr;
+
+    // SRVインデックスの開始番号
+    static uint32_t kSRVIndexTop;
 };
-

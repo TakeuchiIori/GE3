@@ -18,10 +18,6 @@ void SceneManager::Finalize()
 	delete scene_;
 }
 
-void SceneManager::Initialize()
-{
-}
-
 void SceneManager::Update()
 {
 	//========== TODO : シーン切り替え機構 ///==========///
