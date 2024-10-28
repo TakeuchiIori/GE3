@@ -8,7 +8,7 @@ Sprite::Sprite()
 
 void Sprite::Initialize( std::string& textureFilePath)
 {
-	this->spriteCommon_ = SpriteCommon::Getinstance();
+	this->spriteCommon_ = SpriteCommon::GetInstance();
 
 	srvManagaer_ = SrvManager::GetInstance();
 

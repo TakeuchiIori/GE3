@@ -105,7 +105,7 @@ void GameScene::UpdateCamera()
 void GameScene::PrepareDraw()
 {
     Object3dCommon::GetInstance()->DrawPreference();
-    SpriteCommon::Getinstance()->DrawPreference();
+    SpriteCommon::GetInstance()->DrawPreference();
 }
 
 void GameScene::DrawObjects()

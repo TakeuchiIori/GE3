@@ -32,7 +32,7 @@ void Framework::Initialize()
 	textureManager_->Initialize(dxCommon_.get(), srvManager_);
 
 	// スプライト共通部の生成
-	spriteCommon_ = SpriteCommon::Getinstance();
+	spriteCommon_ = SpriteCommon::GetInstance();
 	spriteCommon_->Initialize(dxCommon_.get());
 
 
@@ -54,9 +54,7 @@ void Framework::Finalize()
 	// 各解放処理
 	imguiManager_->Finalize();
 	SceneManager::GetInstance()->Finalize();
-	modelManager_->Finalize();
 	object3dCommon_->Finalize();
-	spriteCommon_->Finalize();
 	textureManager_->Finalize();
 	srvManager_->Finalize();
 	audio_->Finalize();

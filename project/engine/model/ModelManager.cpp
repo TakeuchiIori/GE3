@@ -10,11 +10,6 @@ ModelManager* ModelManager::GetInstance()
 	return instance.get();
 }
 
-void ModelManager::Finalize()
-{
-	//instance.reset(); 
-	//instance = nullptr;
-}
 
 void ModelManager::Initialze(DirectXCommon* dxCommon)
 {
