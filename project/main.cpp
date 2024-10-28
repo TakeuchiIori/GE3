@@ -1,6 +1,6 @@
 #include "MyGame.h"
-#include "Framework.h"
-#include "wrl.h"
+//#include "Framework.h"
+//#include "wrl.h"
 #pragma comment(lib,"dxguid.lib")
 #pragma comment(lib,"dxcompiler.lib")
 
