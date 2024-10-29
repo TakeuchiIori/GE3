@@ -1,2 +1,0 @@
-C:\Users\iori0\Lessons\2024A\GE3\project\x64\Debug\ImGui.lib.lastcodeanalysissucceeded
-C:\Users\iori0\Lessons\2024A\GE3\project\externals\ImGui\x64\Debug\NativeCodeAnalysis.read.1.tlog
