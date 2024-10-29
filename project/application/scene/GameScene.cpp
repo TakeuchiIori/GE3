@@ -1,11 +1,16 @@
 #include "GameScene.h"
 #include "SceneManager.h"
 #include "Input.h"
+#include "TextureManager.h"
+#include "ParticleManager.h"
+
 #ifdef _DEBUG
 #include "imgui.h"
 #endif // DEBUG
-#include <TextureManager.h>
 
+/// <summary>
+/// 初期化処理
+/// </summary>
 void GameScene::Initialize()
 {
     // モデル読み込み
@@ -25,13 +30,18 @@ void GameScene::Initialize()
     testWorldTransform_.Initialize();
     // 初期カメラモード設定
     cameraMode_ = CameraMode::FOLLOW;
+
+    // パーティクル
+    std::string particleName = "Circle";
+    ParticleManager::GetInstance()->SetCamera(currentCamera_.get());
+    ParticleManager::GetInstance()->CreateParticleGroup(particleName, "Resources/images/circle.png");
+    particleEmitter_ = std::make_unique<ParticleEmitter>(particleName,Vector3{1.0f,1.0f,1.0f},10);
+    
 }
 
-void GameScene::Finalize()
-{
-    cameraManager_.RemoveCamera(currentCamera_);
-}
-
+/// <summary>
+/// 更新処理
+/// </summary>
 void GameScene::Update()
 {
     if (Input::GetInstance()->TriggerKey(DIK_RETURN)) {
@@ -40,23 +50,42 @@ void GameScene::Update()
     player_->Update();
     UpdateCameraMode();
     UpdateCamera();
-
+    ParticleManager::GetInstance()->Update();
+    particleEmitter_->Update();
+    particleEmitter_->Emit();
     // ワールドトランスフォーム更新
     testWorldTransform_.TransferMatrix();
     cameraManager_.UpdateAllCameras();
 }
 
+
+/// <summary>
+/// 描画処理
+/// </summary>
 void GameScene::Draw()
 {
+    // 描画準備
     PrepareDraw();
     player_->Draw();
     test_->Draw(testWorldTransform_);
+    ParticleManager::GetInstance()->Draw();
+}
+
+/// <summary>
+/// 解放処理
+/// </summary>
+void GameScene::Finalize()
+{
+    cameraManager_.RemoveCamera(currentCamera_);
 }
 
 void GameScene::UpdateCameraMode()
 {
 #ifdef _DEBUG
     ImGui::Begin("Camera Mode");
+    if (ImGui::Button("DEFAULT Camera")) {
+        cameraMode_ = CameraMode::DEFAULT;
+    }
     if (ImGui::Button("Follow Camera")) {
         cameraMode_ = CameraMode::FOLLOW;
     }
@@ -71,6 +100,11 @@ void GameScene::UpdateCamera()
 {
     switch (cameraMode_)
     {
+    case CameraMode::DEFAULT:
+    {
+        currentCamera_->ResetToOrigin();
+    }
+    break;
     case CameraMode::FOLLOW:
     {
         Vector3 playerPos = player_->GetPosition();

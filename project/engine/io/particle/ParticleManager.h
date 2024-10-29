@@ -67,7 +67,7 @@ public:
 	struct ParticleGroup {
 		MaterialData materialData;										// マテリアルデータ
 		std::list<Particle> particles;									// パーティクルリスト
-		uint32_t IndexSRV;												// インスタンシングデータ用SRVインデックス
+		uint32_t srvIndex;												// インスタンシングデータ用SRVインデックス
 		Microsoft::WRL::ComPtr<ID3D12Resource> instancingResource;		// インスタンシングリソース
 		UINT instance;													// インスタンス数
 		ParticleForGPU* instancingData;									// インスタンシングデータを書き込むためのポインタ
@@ -113,7 +113,24 @@ public: // メンバ関数
 
 	void Render(D3D12_BLEND_DESC& blendDesc, BlendMode& currentBlendMode);
 
-private:
+	/// <summary>
+	/// パーティクルグループ生成
+	/// </summary>
+	/// <param name="name"></param>
+	/// <param name="textureFilePath"></param>
+	void CreateParticleGroup(const std::string name, const std::string textureFilePath);
+
+
+	/// <summary>
+	/// パーティクルの発生
+	/// </summary>
+	/// <param name="name"></param>
+	/// <param name="position"></param>
+	/// <param name="count"></param>
+	void Emit(const std::string& name, const Vector3& position, uint32_t count);
+
+
+private: 
 
 	/// <summary>
 	///  ルートシグネチャ生成
@@ -145,17 +162,25 @@ private:
 	/// </summary>
 	void InitRandomEngine();
 	
-	/// <summary>
-	/// パーティクルグループ生成
-	/// </summary>
-	/// <param name="name"></param>
-	/// <param name="textureFilePath"></param>
-	void CreateParticleGroup(const std::string name, const std::string textureFilePath);
+	
+
+
 
 public:
 	void SetCamera(Camera* camera) { camera_ = camera; }
 
-private:
+private: // メンバ変数
+
+	// シングルトン
+	static std::unique_ptr<ParticleManager> instance;
+	static std::once_flag initInstanceFlag;
+
+	// ポインタ
+	DirectXCommon* dxCommon_ = nullptr;
+	SrvManager* srvManager_ = nullptr;
+	VertexData* vertexData_ = nullptr;
+	Camera* camera_ = nullptr;
+
 	// ルートシグネチャ
 	D3D12_ROOT_SIGNATURE_DESC descriptionRootSignature_{};
 	D3D12_DESCRIPTOR_RANGE descriptorRangeForInstancing_[1] = {};
@@ -165,6 +190,7 @@ private:
 	D3D12_STATIC_SAMPLER_DESC staticSamplers_[1] = {};
 	// インプットレイアウト
 	D3D12_INPUT_ELEMENT_DESC inputElementDescs_[3] = {};
+
 	// ブレンド
 	D3D12_BLEND_DESC blendDesc_{};
 	D3D12_RASTERIZER_DESC rasterrizerDesc_{};
@@ -172,21 +198,17 @@ private:
 	D3D12_INPUT_LAYOUT_DESC inputLayoutDesc_{};
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferView_{};
 
-	Microsoft::WRL::ComPtr<IDxcBlob> vertexShaderBlob_;
-	Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob_;
+
 	Microsoft::WRL::ComPtr<ID3D12Resource> vertexResource_;
 	Microsoft::WRL::ComPtr<ID3D12RootSignature> rootSignature_;
 	Microsoft::WRL::ComPtr<ID3D12PipelineState> graphicsPipelineState_;
+	Microsoft::WRL::ComPtr<IDxcBlob> vertexShaderBlob_;
+	Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob_;
 
-	D3D12_CPU_DESCRIPTOR_HANDLE instancingSrvHandleCPU;
-	D3D12_GPU_DESCRIPTOR_HANDLE instancingSrvHandleGPU;
+	D3D12_CPU_DESCRIPTOR_HANDLE srvHandleCPU;
+	D3D12_GPU_DESCRIPTOR_HANDLE srvHandleGPU;
 
-	// ポインタ
-	static ParticleManager* instance;
-	DirectXCommon* dxCommon_ = nullptr;
-	SrvManager* srvManager_ = nullptr;
-	VertexData* vertexData_ = nullptr;
-	Camera* camera_ = nullptr;
+
 	// SRV切り替え
 	bool useTexture = true;
 	bool particleUpdate = false;
