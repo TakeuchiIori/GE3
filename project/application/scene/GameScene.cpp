@@ -35,7 +35,7 @@ void GameScene::Initialize()
     std::string particleName = "Circle";
     ParticleManager::GetInstance()->SetCamera(currentCamera_.get());
     ParticleManager::GetInstance()->CreateParticleGroup(particleName, "Resources/images/circle.png");
-    particleEmitter_ = std::make_unique<ParticleEmitter>(particleName,Vector3{1.0f,1.0f,1.0f},10);
+    particleEmitter_ = std::make_unique<ParticleEmitter>(particleName,Vector3{0.0f,0.0f,0.0f},1);
     
 }
 
@@ -51,8 +51,9 @@ void GameScene::Update()
     UpdateCameraMode();
     UpdateCamera();
     ParticleManager::GetInstance()->Update();
-    particleEmitter_->Update();
     particleEmitter_->Emit();
+    particleEmitter_->Update();
+    
     // ワールドトランスフォーム更新
     testWorldTransform_.TransferMatrix();
     cameraManager_.UpdateAllCameras();
@@ -64,11 +65,19 @@ void GameScene::Update()
 /// </summary>
 void GameScene::Draw()
 {
-    // 描画準備
-    PrepareDraw();
+    //================== 2D ==================//
+    SpriteCommon::GetInstance()->DrawPreference();
+    ParticleManager::GetInstance()->Draw();
+    
+
+    //================== 3D ==================//
+    Object3dCommon::GetInstance()->DrawPreference();
+
+
+   
     player_->Draw();
     test_->Draw(testWorldTransform_);
-    ParticleManager::GetInstance()->Draw();
+  
 }
 
 /// <summary>
@@ -124,6 +133,5 @@ void GameScene::UpdateCamera()
 
 void GameScene::PrepareDraw()
 {
-    Object3dCommon::GetInstance()->DrawPreference();
-    SpriteCommon::GetInstance()->DrawPreference();
+
 }

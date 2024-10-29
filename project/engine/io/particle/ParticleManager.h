@@ -52,6 +52,13 @@ public:
 		std::vector<VertexData> vertices;
 		MaterialData material;
 	};
+	// マテリアルデータ
+	struct Material {
+		Vector4 color;
+		int32_t enableLighting;
+		float padding[3];
+		Matrix4x4 uvTransform;
+	};
 	struct Particle {
 		Transform transform;
 		Vector3 velocity;
@@ -148,24 +155,25 @@ private:
 	void CreateVertexResource();
 
 	/// <summary>
+	/// マテリアルリソース
+	/// </summary>
+	void CreateMaterialResource();
+
+	/// <summary>
 	/// 頂点バッファビュー
 	/// </summary>
 	void CreateVertexVBV();
-
-	/// <summary>
-	/// 頂点データに頂点リソースを書き込む
-	/// </summary>
-	void UploadVertexResource();
 
 	/// <summary>
 	/// ランダムエンジン
 	/// </summary>
 	void InitRandomEngine();
 	
+	/// <summary>
+	/// パイプラインの設定
+	/// </summary>
+	void SetGraphicsPipeline();
 	
-
-
-
 public:
 	void SetCamera(Camera* camera) { camera_ = camera; }
 
@@ -179,6 +187,7 @@ private: // メンバ変数
 	DirectXCommon* dxCommon_ = nullptr;
 	SrvManager* srvManager_ = nullptr;
 	VertexData* vertexData_ = nullptr;
+	Material* materialData_ = nullptr;
 	Camera* camera_ = nullptr;
 
 	// ルートシグネチャ
@@ -192,18 +201,23 @@ private: // メンバ変数
 	D3D12_INPUT_ELEMENT_DESC inputElementDescs_[3] = {};
 
 	// ブレンド
+	BlendMode blendMode{};
 	D3D12_BLEND_DESC blendDesc_{};
 	D3D12_RASTERIZER_DESC rasterrizerDesc_{};
 	D3D12_DEPTH_STENCIL_DESC depthStencilDesc_{};
 	D3D12_INPUT_LAYOUT_DESC inputLayoutDesc_{};
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferView_{};
 
-
+	// 頂点リソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> vertexResource_;
+	// マテリアル
+	Microsoft::WRL::ComPtr<ID3D12Resource> materialResource_;
+
 	Microsoft::WRL::ComPtr<ID3D12RootSignature> rootSignature_;
 	Microsoft::WRL::ComPtr<ID3D12PipelineState> graphicsPipelineState_;
 	Microsoft::WRL::ComPtr<IDxcBlob> vertexShaderBlob_;
 	Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob_;
+	
 
 	D3D12_CPU_DESCRIPTOR_HANDLE srvHandleCPU;
 	D3D12_GPU_DESCRIPTOR_HANDLE srvHandleGPU;
@@ -225,4 +239,8 @@ private: // メンバ変数
 	const float kDeltaTime = 1.0f / 60.0f;
 	// インスタンシング用リソース作成
 	const uint32_t kNumMaxInstance = 100; // インスタンス数
+
+
+	Matrix4x4 scaleMatrix;
+	Matrix4x4 translateMatrix;
 };
