@@ -4,6 +4,7 @@
 #ifdef _DEBUG
 #include "imgui.h" 
 #endif // _DEBUG
+#include <iostream>
 
 
 
@@ -38,7 +39,7 @@ void Player::Draw()
 void Player::LastUpdate()
 {
     // 最後に必ずセット
-    worldTransform_.TransferMatrix();
+    worldTransform_.UpdateMatrix();
 }
 
 void Player::Move()
@@ -56,6 +57,18 @@ void Player::Move()
     if (input_->PushKey(DIK_D)) {
         worldTransform_.translation_.x += moveSpeed_.y;
     }
+
+    // マウスの押下をチェック
+    if (input_->IsPressMouse(0)) {
+        worldTransform_.translation_.y += moveSpeed_.z;
+    }
+
+    // マウスの押下をチェック
+    if (input_->IsPressMouse(1)) {
+        worldTransform_.translation_.y -= moveSpeed_.z;
+    }
+
+
 }
 
 void Player::ShowCoordinatesImGui()

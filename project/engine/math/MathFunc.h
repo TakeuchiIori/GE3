@@ -3,6 +3,8 @@
 #include "Vector3.h"
 #include "Vector4.h"
 #include "Matrix4x4.h"
+#include "vector"
+#include <stdexcept>
 
 // 関数の宣言
 float Dot(const Vector3& a, const Vector3& b);
@@ -16,3 +18,5 @@ float Normalize(const float& v);
 Vector3 Normalize(const Vector3& v);
 Vector4 Normalize(const Vector4& v);
 float Distance(const Vector3& a, const Vector3& b);
+Vector3 CatmullRomSpline(const std::vector<Vector3>& controlPoints, float t);
+std::vector<Vector3> GenerateCatmullRomSplinePoints(const std::vector<Vector3>& controlPoints, size_t segmentCount);

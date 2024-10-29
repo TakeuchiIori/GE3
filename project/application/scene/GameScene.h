@@ -12,7 +12,7 @@
 #include "Player.h"
 #include "WorldTransform.h"
 #include "CameraManager.h"
-
+#include "Spline.h"
 enum class CameraMode
 {
     FOLLOW,
@@ -99,4 +99,5 @@ private: // メンバ変数
     WorldTransform testWorldTransform_;
 
     std::unique_ptr<Player> player_;
+    std::unique_ptr< Spline> spline_;
 };

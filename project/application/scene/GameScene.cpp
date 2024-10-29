@@ -28,7 +28,7 @@ void GameScene::Update()
     UpdatePlayer();
     UpdateCameraMode();
     UpdateCamera();
-    testWorldTransform_.TransferMatrix();
+    testWorldTransform_.UpdateMatrix();
     cameraManager_.UpdateAllCameras();
 }
 
@@ -63,11 +63,15 @@ void GameScene::InitializeObjects()
     test_->Initialize();
     test_->SetModel("float_body.obj");
     testWorldTransform_.Initialize();
+
+    spline_ = std::make_unique<Spline>();
+    spline_->Initialize();
 }
 
 void GameScene::UpdatePlayer()
 {
     player_->Update();
+    spline_->Update();
 }
 
 void GameScene::UpdateCameraMode()
@@ -115,4 +119,5 @@ void GameScene::DrawObjects()
 {
     player_->Draw();
     test_->Draw(testWorldTransform_);
+    spline_->Draw();
 }
