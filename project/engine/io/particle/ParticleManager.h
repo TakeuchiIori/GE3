@@ -173,6 +173,12 @@ private:
 	/// パイプラインの設定
 	/// </summary>
 	void SetGraphicsPipeline();
+
+	/// <summary>
+	/// パーティクルの生成
+	/// </summary>
+	Particle CreateParticle(std::mt19937& randomEngine, const Vector3& position);
+
 	
 public:
 	void SetCamera(Camera* camera) { camera_ = camera; }
@@ -189,6 +195,7 @@ private: // メンバ変数
 	VertexData* vertexData_ = nullptr;
 	Material* materialData_ = nullptr;
 	Camera* camera_ = nullptr;
+	ParticleForGPU* instancingData_ = nullptr;
 
 	// ルートシグネチャ
 	D3D12_ROOT_SIGNATURE_DESC descriptionRootSignature_{};
@@ -208,6 +215,7 @@ private: // メンバ変数
 	D3D12_INPUT_LAYOUT_DESC inputLayoutDesc_{};
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferView_{};
 
+	Microsoft::WRL::ComPtr<ID3D12Resource> instancingResource_;
 	// 頂点リソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> vertexResource_;
 	// マテリアル
@@ -238,8 +246,9 @@ private: // メンバ変数
 	std::unordered_map<std::string, ParticleGroup> particleGroups_;
 	const float kDeltaTime = 1.0f / 60.0f;
 	// インスタンシング用リソース作成
-	const uint32_t kNumMaxInstance = 100; // インスタンス数
-
+	const uint32_t kNumMaxInstance = 16; // インスタンス数
+	// ブレンドモードごとのPSOを保持するマップ
+	std::unordered_map<BlendMode, Microsoft::WRL::ComPtr<ID3D12PipelineState>> pipelineStates_;
 
 	Matrix4x4 scaleMatrix;
 	Matrix4x4 translateMatrix;

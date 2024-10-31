@@ -36,6 +36,7 @@ void GameScene::Initialize()
     ParticleManager::GetInstance()->SetCamera(currentCamera_.get());
     ParticleManager::GetInstance()->CreateParticleGroup(particleName, "Resources/images/circle.png");
     particleEmitter_ = std::make_unique<ParticleEmitter>(particleName,Vector3{0.0f,0.0f,0.0f},1);
+    particleEmitter_->Initialize();
     
 }
 

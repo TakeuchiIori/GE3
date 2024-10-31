@@ -3,6 +3,14 @@
 ParticleEmitter::ParticleEmitter(const std::string& name, const Vector3& transform, uint32_t count)
     : emitter_{ name, Transform{transform}, count }{}
 
+void ParticleEmitter::Initialize()
+{
+	emitter_.count = 3;
+	emitter_.frequency = 10.0f;	  // 0.5秒ごとに発生
+	emitter_.frequencyTime = 0.0f; // 発生頻度の時刻、0で初期化
+
+}
+
 
 void ParticleEmitter::Update()
 {

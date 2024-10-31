@@ -21,6 +21,11 @@ public: // メンバ関数
 	ParticleEmitter(const std::string& name, const Vector3& transform, uint32_t count);
 
 	/// <summary>
+	/// 初期化
+	/// </summary>
+	void Initialize();
+
+	/// <summary>
 	/// 更新
 	/// </summary>
 	void Update();
