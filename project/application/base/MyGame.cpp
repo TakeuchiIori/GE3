@@ -1,4 +1,5 @@
 #include "MyGame.h"
+#include "ParticleManager.h"
 
 void MyGame::Initialize()
 {
@@ -9,6 +10,8 @@ void MyGame::Initialize()
 	sceneFactory_ = std::make_unique<SceneFactory>();
 	SceneManager::GetInstance()->SetSceneFactory(sceneFactory_.get());
 	SceneManager::GetInstance()->ChangeScene("GAME");
+	// パーティクルマネージャ生成
+	ParticleManager::GetInstance()->Initialize(dxCommon_.get(), srvManager_);
 	
 }
 
@@ -21,6 +24,8 @@ void MyGame::Update()
 {
 	// 基盤の更新
 	Framework::Update();
+
+
 }
 
 void MyGame::Draw()
@@ -33,6 +38,7 @@ void MyGame::Draw()
 
 	// ゲームの描画
 	SceneManager::GetInstance()->Draw();
+	
 
 	// ImGui描画
 	imguiManager_->Draw();

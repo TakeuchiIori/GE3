@@ -16,3 +16,6 @@ float Normalize(const float& v);
 Vector3 Normalize(const Vector3& v);
 Vector4 Normalize(const Vector4& v);
 float Distance(const Vector3& a, const Vector3& b);
+
+Matrix4x4 ScaleMatrixFromVector3(const Vector3& scale);
+Matrix4x4 TranslationMatrixFromVector3(const Vector3& translate);
