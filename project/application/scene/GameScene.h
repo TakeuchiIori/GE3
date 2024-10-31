@@ -12,9 +12,11 @@
 #include "Player.h"
 #include "WorldTransform.h"
 #include "CameraManager.h"
+#include "ParticleEmitter.h"
 
 enum class CameraMode
 {
+    DEFAULT,
     FOLLOW,
     TOP_DOWN
 };
@@ -43,30 +45,6 @@ public:
     void Draw() override;
 
 private:
-    /// <summary>
-    /// モデルを読み込む
-    /// </summary>
-    void LoadModels();
-
-    /// <summary>
-    /// カメラを初期化する
-    /// </summary>
-    void InitializeCamera();
-
-    /// <summary>
-    /// カメラを解放する
-    /// </summary>
-    void FinalizeCamera();
-
-    /// <summary>
-    /// オブジェクトを初期化する
-    /// </summary>
-    void InitializeObjects();
-
-    /// <summary>
-    /// プレイヤーを更新する
-    /// </summary>
-    void UpdatePlayer();
 
     /// <summary>
     /// カメラモードを更新する
@@ -83,20 +61,22 @@ private:
     /// </summary>
     void PrepareDraw();
 
-    /// <summary>
-    /// オブジェクトを描画する
-    /// </summary>
-    void DrawObjects();
+\
 
-private: // メンバ変数
+private:
+    // カメラ
     CameraMode cameraMode_;
     std::shared_ptr<Camera> currentCamera_;
     CameraManager cameraManager_;
+    // サウンド
     Audio::SoundData soundData;
+    // パーティクルエミッター
+    std::unique_ptr<ParticleEmitter> particleEmitter_;
 
     // 3Dモデル
     std::unique_ptr<Object3d> test_;
     WorldTransform testWorldTransform_;
 
+    // プレイヤー
     std::unique_ptr<Player> player_;
 };

@@ -1,11 +1,16 @@
 #include "GameScene.h"
 #include "SceneManager.h"
 #include "Input.h"
+#include "TextureManager.h"
+#include "ParticleManager.h"
+
 #ifdef _DEBUG
 #include "imgui.h"
 #endif // DEBUG
-#include <TextureManager.h>
 
+/// <summary>
+/// 初期化処理
+/// </summary>
 void GameScene::Initialize()
 {
     // モデル読み込み
@@ -25,13 +30,19 @@ void GameScene::Initialize()
     testWorldTransform_.Initialize();
     // 初期カメラモード設定
     cameraMode_ = CameraMode::FOLLOW;
+
+    // パーティクル
+    std::string particleName = "Circle";
+    ParticleManager::GetInstance()->SetCamera(currentCamera_.get());
+    ParticleManager::GetInstance()->CreateParticleGroup(particleName, "Resources/images/circle.png");
+    particleEmitter_ = std::make_unique<ParticleEmitter>(particleName,Vector3{0.0f,0.0f,0.0f},1);
+    particleEmitter_->Initialize();
+    
 }
 
-void GameScene::Finalize()
-{
-    cameraManager_.RemoveCamera(currentCamera_);
-}
-
+/// <summary>
+/// 更新処理
+/// </summary>
 void GameScene::Update()
 {
     if (Input::GetInstance()->TriggerKey(DIK_RETURN)) {
@@ -40,23 +51,51 @@ void GameScene::Update()
     player_->Update();
     UpdateCameraMode();
     UpdateCamera();
-
+    ParticleManager::GetInstance()->Update();
+    particleEmitter_->Emit();
+    particleEmitter_->Update();
+    
     // ワールドトランスフォーム更新
     testWorldTransform_.TransferMatrix();
     cameraManager_.UpdateAllCameras();
 }
 
+
+/// <summary>
+/// 描画処理
+/// </summary>
 void GameScene::Draw()
 {
-    PrepareDraw();
+    //================== 2D ==================//
+    SpriteCommon::GetInstance()->DrawPreference();
+    ParticleManager::GetInstance()->Draw();
+    
+
+    //================== 3D ==================//
+    Object3dCommon::GetInstance()->DrawPreference();
+
+
+   
     player_->Draw();
     test_->Draw(testWorldTransform_);
+  
+}
+
+/// <summary>
+/// 解放処理
+/// </summary>
+void GameScene::Finalize()
+{
+    cameraManager_.RemoveCamera(currentCamera_);
 }
 
 void GameScene::UpdateCameraMode()
 {
 #ifdef _DEBUG
     ImGui::Begin("Camera Mode");
+    if (ImGui::Button("DEFAULT Camera")) {
+        cameraMode_ = CameraMode::DEFAULT;
+    }
     if (ImGui::Button("Follow Camera")) {
         cameraMode_ = CameraMode::FOLLOW;
     }
@@ -71,6 +110,11 @@ void GameScene::UpdateCamera()
 {
     switch (cameraMode_)
     {
+    case CameraMode::DEFAULT:
+    {
+        currentCamera_->ResetToOrigin();
+    }
+    break;
     case CameraMode::FOLLOW:
     {
         Vector3 playerPos = player_->GetPosition();
@@ -90,6 +134,5 @@ void GameScene::UpdateCamera()
 
 void GameScene::PrepareDraw()
 {
-    Object3dCommon::GetInstance()->DrawPreference();
-    SpriteCommon::GetInstance()->DrawPreference();
+
 }
