@@ -35,7 +35,7 @@ void GameScene::Initialize()
     std::string particleName = "Circle";
     ParticleManager::GetInstance()->SetCamera(currentCamera_.get());
     ParticleManager::GetInstance()->CreateParticleGroup(particleName, "Resources/images/circle.png");
-    emitterPosition_ = Vector3{ 0.0f, 5.0f, 0.0f }; // エミッタの初期位置
+    emitterPosition_ = Vector3{ 0.0f, 0.0f, 0.0f }; // エミッタの初期位置
     particleEmitter_ = std::make_unique<ParticleEmitter>(particleName, emitterPosition_,1);
    
     

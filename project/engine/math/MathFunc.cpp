@@ -73,3 +73,25 @@ Matrix4x4 TranslationMatrixFromVector3(const Vector3& translate)
 
     return translationMatrix;
 }
+bool IsCollision(const AABB& aabb, const Vector3& point) {
+    if (point.x < aabb.min.x || point.x > aabb.max.x) return false;
+    if (point.y < aabb.min.y || point.y > aabb.max.y) return false;
+    if (point.z < aabb.min.z || point.z > aabb.max.z) return false;
+    return true;
+}
+bool IsCollision(const AABB& aabb, const Sphere& sphere) {
+    Vector3 closestPointInAABB = sphere.center;
+
+    if (sphere.center.x < aabb.min.x) closestPointInAABB.x = aabb.min.x;
+    if (sphere.center.y < aabb.min.y) closestPointInAABB.y = aabb.min.y;
+    if (sphere.center.z < aabb.min.z) closestPointInAABB.z = aabb.min.z;
+
+    if (sphere.center.x > aabb.max.x) closestPointInAABB.x = aabb.max.x;
+    if (sphere.center.y > aabb.max.y) closestPointInAABB.y = aabb.max.y;
+    if (sphere.center.z > aabb.max.z) closestPointInAABB.z = aabb.max.z;
+
+    Vector3 difference = closestPointInAABB - sphere.center;
+    float distanceSquared = difference.x * difference.x + difference.y * difference.y + difference.z * difference.z;
+
+    return distanceSquared < (sphere.radius * sphere.radius);
+}
