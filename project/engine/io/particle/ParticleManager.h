@@ -1,4 +1,6 @@
 #pragma once
+
+// C++
 #include <d3d12.h>
 #include <dxgi1_6.h>
 #include <wrl.h>
@@ -9,12 +11,15 @@
 #include <random>
 #include <list>
 #include <unordered_map >
+
+// 
 #include "Vector"
 #include "Vector4.h"
 #include "Matrix4x4.h"
 #include "Vector2.h"
 #include "Vector3.h"
 #include "Camera.h"
+#include "Mathfunc.h"
 
 class DirectXCommon;
 class SrvManager;
@@ -78,6 +83,11 @@ public:
 		Microsoft::WRL::ComPtr<ID3D12Resource> instancingResource;		// インスタンシングリソース
 		UINT instance;													// インスタンス数
 		ParticleForGPU* instancingData;									// インスタンシングデータを書き込むためのポインタ
+	};
+
+	struct AccelerationField {
+		Vector3 acceleration; // 加速度
+		AABB area;			  // 範囲
 	};
 
 public: // シングルトン
@@ -235,6 +245,9 @@ private: // メンバ変数
 	bool useTexture = true;
 	bool particleUpdate = false;
 	bool useBillboard = false;
+
+	AccelerationField accelerationField;
+
 
 	ModelData modelData_;
 	// 乱数生成器
