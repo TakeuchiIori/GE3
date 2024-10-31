@@ -35,8 +35,9 @@ void GameScene::Initialize()
     std::string particleName = "Circle";
     ParticleManager::GetInstance()->SetCamera(currentCamera_.get());
     ParticleManager::GetInstance()->CreateParticleGroup(particleName, "Resources/images/circle.png");
-    particleEmitter_ = std::make_unique<ParticleEmitter>(particleName,Vector3{0.0f,0.0f,0.0f},1);
-    particleEmitter_->Initialize();
+    emitterPosition_ = Vector3{ 0.0f, 5.0f, 0.0f }; // エミッタの初期位置
+    particleEmitter_ = std::make_unique<ParticleEmitter>(particleName, emitterPosition_,1);
+   
     
 }
 
@@ -48,13 +49,19 @@ void GameScene::Update()
     if (Input::GetInstance()->TriggerKey(DIK_RETURN)) {
         SceneManager::GetInstance()->ChangeScene("TITLE");
     }
+    // プレイヤーの更新
     player_->Update();
+
+    // カメラ更新
     UpdateCameraMode();
     UpdateCamera();
+
+    // パーティクル更新
     ParticleManager::GetInstance()->Update();
-    particleEmitter_->Emit();
+    particleEmitter_->SetPosition(emitterPosition_); // 更新した位置をエミッタに反映
     particleEmitter_->Update();
-    
+   
+
     // ワールドトランスフォーム更新
     testWorldTransform_.TransferMatrix();
     cameraManager_.UpdateAllCameras();
@@ -130,9 +137,4 @@ void GameScene::UpdateCamera()
     default:
         break;
     }
-}
-
-void GameScene::PrepareDraw()
-{
-
 }

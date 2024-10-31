@@ -21,11 +21,6 @@ public: // メンバ関数
 	ParticleEmitter(const std::string& name, const Vector3& transform, uint32_t count);
 
 	/// <summary>
-	/// 初期化
-	/// </summary>
-	void Initialize();
-
-	/// <summary>
 	/// 更新
 	/// </summary>
 	void Update();
@@ -36,6 +31,10 @@ public: // メンバ関数
 	/// </summary>
 	void Emit();
 
+
+
+	void SetPosition(Vector3& position) { emitter_.transform = position; };
+
 private:
 
 	/// <summary>
@@ -43,7 +42,7 @@ private:
 	/// </summary>
 	struct Emitter {
 		std::string name; 
-		Transform transform; 
+		Vector3 transform; 
 		uint32_t count; 
 		float frequency; 
 		float frequencyTime; 
