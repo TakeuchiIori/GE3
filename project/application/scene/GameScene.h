@@ -56,12 +56,6 @@ private:
     /// </summary>
     void UpdateCamera();
 
-    /// <summary>
-    /// 描画の準備をする
-    /// </summary>
-    void PrepareDraw();
-
-\
 
 private:
     // カメラ
@@ -72,7 +66,8 @@ private:
     Audio::SoundData soundData;
     // パーティクルエミッター
     std::unique_ptr<ParticleEmitter> particleEmitter_;
-
+    Vector3 emitterPosition_;
+    Transform t;
     // 3Dモデル
     std::unique_ptr<Object3d> test_;
     WorldTransform testWorldTransform_;
