@@ -130,9 +130,6 @@ void ParticleManager::Update()
 	}
 
    #ifdef _DEBUG
-    ImGui::Checkbox("useTexture", &useTexture);
-    ImGui::Checkbox("particleUpdate", &particleUpdate);
-    ImGui::Checkbox("useBillboard", &useBillboard);
 	// ブレンドモードの設定を反映
 	Render(blendDesc_, currentBlendMode_);
 
@@ -520,6 +517,7 @@ void ParticleManager::ShowBlendModeDropdown(BlendMode& currentBlendMode)
 {
 #ifdef _DEBUG
 	ImGui::Begin("Particle");
+	ImGui::Checkbox("useBillboard", &useBillboard);
 	if (ImGui::BeginCombo("Blend Mode", blendModeNames[currentBlendMode]))
 	{
 		for (int i = 0; i < kCount0fBlendMode; ++i)
