@@ -30,6 +30,19 @@ void Camera::Update()
     viewProjectionMatrix_ = Multiply(viewMatrix_, projectionMatrix_);
 }
 
+void Camera::ResetToOrigin()
+{
+    // カメラの位置と回転をリセット（原点に設定）
+    transform_.translate = Vector3(0.0f, 5.0f, -60.0f);
+    transform_.rotate = Vector3(0.0f, 0.0f, 0.0f);
+
+    // ワールド行列、ビュー行列の更新
+    worldMatrix_ = MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.translate);
+    viewMatrix_ = Inverse(worldMatrix_);
+    viewProjectionMatrix_ = Multiply(viewMatrix_, projectionMatrix_);
+
+}
+
 void Camera::FollowCamera(Vector3& target)
 {	// カメラの位置を対象の後方に設定
 #ifdef _DEBUG

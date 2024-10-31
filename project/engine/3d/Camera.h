@@ -16,6 +16,12 @@ public: // メンバ関数
 	void Update();
 
 public: // カメラ
+
+	/// <summary>
+    /// カメラの位置を原点にリセットする
+    /// </summary>
+	void ResetToOrigin();
+
 	/// <summary>
 	/// 追従カメラ
 	/// </summary>
