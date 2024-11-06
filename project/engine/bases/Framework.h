@@ -53,9 +53,12 @@ public: // メンバ関数
 	void Run();
 protected:
 	// 基本的なゲームのコンポーネント
+	std::unique_ptr<DirectXCommon> dxCommon_;
+	std::unique_ptr<AbstractSceneFactory> sceneFactory_;
+
+	//  ポインタ
 	WinApp* winApp_ = nullptr;
 	Input* input_ = nullptr;
-	DirectXCommon* dxCommon_ = nullptr;
 	Audio* audio_ = nullptr;
 	ImGuiManager* imguiManager_ = nullptr;
 	SrvManager* srvManager_ = nullptr;
@@ -63,9 +66,7 @@ protected:
 	Object3dCommon* object3dCommon_ = nullptr;
 	TextureManager* textureManager_ = nullptr;
 	ModelManager* modelManager_ = nullptr;
-	SceneManager* sceneManager_ = nullptr;
-	// シーンファクトリー
-	std::unique_ptr<AbstractSceneFactory> sceneFactory_;
+	
 private:
 	std::unique_ptr<D3DResourceLeakChecker> leakCheck;
 	// ゲーム終了フラグ

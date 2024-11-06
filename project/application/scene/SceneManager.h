@@ -16,11 +16,6 @@ public: // メンバ関数
 	~SceneManager() = default;
 
 	/// <summary>
-	/// 初期化
-	/// </summary>
-	void Initialize();
-
-	/// <summary>
 	/// 更新
 	/// </summary>
 	void Update();
@@ -47,9 +42,9 @@ private:
 	SceneManager(SceneManager&) = delete;
 	SceneManager& operator = (SceneManager&) = delete;
 	// 今のシーン（実行中シーン）
-	BaseScene* scene_;
+	BaseScene* scene_ = nullptr;
 	// 次のシーン
-	BaseScene* nextScene_;
+	BaseScene* nextScene_ = nullptr;
 	// シーンファクトリー（借りてくる）
 	AbstractSceneFactory* sceneFactory_ = nullptr;
 

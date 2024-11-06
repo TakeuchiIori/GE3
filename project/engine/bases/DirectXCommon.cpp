@@ -8,23 +8,12 @@
 #pragma comment(lib,"dxgi.lib")
 #pragma comment(lib, "dxguid.lib")
 #pragma comment(lib,"winmm.lib")
+#pragma comment(lib,"dxguid.lib")
+#pragma comment(lib,"dxcompiler.lib")
 
 using namespace Microsoft::WRL;
-//const uint32_t DirectXCommon::kMaxSRVCount = 512;
-DirectXCommon* DirectXCommon::instance = nullptr;
-DirectXCommon* DirectXCommon::GetInstance()
-{
-	if (instance == nullptr) {
-		instance = new DirectXCommon;
-	}
-	return instance;
-}
 
-void DirectXCommon::Finalize()
-{
-	delete instance;
-	instance = nullptr;
-}
+
 
 void DirectXCommon::Initialize(WinApp* winApp)
 {
@@ -357,7 +346,7 @@ void DirectXCommon::PostDraw()
 	assert(SUCCEEDED(hr));
 	hr = commandList_->Reset(commandAllocator_.Get(), nullptr);
 	assert(SUCCEEDED(hr));
-	CoUninitialize();
+	
 }
 
 void DirectXCommon::InitializeViewPortRevtangle()
@@ -382,7 +371,6 @@ void DirectXCommon::InitializeScissorRevtangle()
 
 Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> DirectXCommon::CreateDescriptorHeap(Microsoft::WRL::ComPtr<ID3D12Device> device_, D3D12_DESCRIPTOR_HEAP_TYPE heapType, UINT numDescriptors, bool shaderVisible)
 {
-	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> descriptorHeap = nullptr;
 	D3D12_DESCRIPTOR_HEAP_DESC descriptorHeapDesc{};
 	descriptorHeapDesc.Type = heapType;							 //レンダーターゲットビュー用
 	descriptorHeapDesc.NumDescriptors = numDescriptors;			 //ダブルバッファ用に2つ。多くても別に構わない

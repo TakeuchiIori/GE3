@@ -8,10 +8,11 @@
 #include "Vector2.h"
 #include "Vector3.h"
 #include "Camera.h"
-//　構造体
+
 
 
 //前方宣言
+class WorldTransform;
 class Object3dCommon;
 class Model;
 // 3Dオブジェクト
@@ -49,23 +50,19 @@ public: // 構造体
 	struct TransformationMatrix {
 		Matrix4x4 WVP;
 		Matrix4x4 World;
+		Matrix4x4 WorldInverse;
 	};
 
 public: // メンバ関数
 	/// <summary>
 	/// 初期化
 	/// </summary>
-	void Initialize(Object3dCommon* object3dCommon);
-
-	/// <summary>
-	/// 更新
-	/// </summary>
-	void Update();
+	void Initialize();
 
 	/// <summary>
 	/// 描画
 	/// </summary>
-	void Draw();
+	void Draw(WorldTransform& worldTransform);
 
 	/// <summary>
 	/// テクスチャ変更
@@ -74,10 +71,6 @@ public: // メンバ関数
 
 	
 private:
-	/// <summary>
-	/// 座標変換行列の初期化
-	/// </summary>
-	void TransformationInitialize();
 
 	/// <summary>
 	/// 平行光源リソース
@@ -90,30 +83,6 @@ private:
 	void MaterialResource();
 
 public: // アクセッサ
-
-	/*===============================================//
-						  座標
-	//===============================================*/
-	const Vector3& GetPosition()const { return position_; }
-	void SetPosition(const Vector3& position) { position_ = position; }
-
-	/*===============================================//
-						  回転
-	//===============================================*/
-	const Vector3& GetRotation()const { return rotation_; }
-	void SetRotation(const Vector3& rotation) { rotation_ = rotation; }
-
-	/*===============================================//
-						  拡縮
-	//===============================================*/
-	const Vector3& GetScale() { return scale_; }
-	void SetScale(const Vector3& scale) { scale_ = scale; }
-
-	/*===============================================//
-						  SRTすべて
-	//===============================================*/
-	const Transform& GetTransform() { return transform_; }
-	void SetTransform(const Transform& transform) { transform_ = transform; }
 
 	/*===============================================//
 					　	 色を変更
@@ -155,20 +124,14 @@ private: // メンバ変数
 	// 平行光源
 	Microsoft::WRL::ComPtr<ID3D12Resource> directionalLightResource_;
 	DirectionalLight* directionalLight_ = nullptr;
-	// 座標変換
-	Microsoft::WRL::ComPtr<ID3D12Resource> transformationMatrixResource_;
-	TransformationMatrix* transformationMatrixData_ = nullptr;
-
+	
 
 	// テクスチャ左上座標
 	Vector2 textureLeftTop_ = { 0.0f,0.0f };
 	// テクスチャ切り出しサイズ
 	Vector2 textureSize_ = { 64.0f,64.0f };
 
-	// 3DオブジェクトのSRT
-	Vector3 scale_ = { 1.0f,1.0f,1.0f };
-	Vector3 position_ = { 0.0f,3.0f,0.0f};
-	Vector3 rotation_ = { 0.0f,0.0f,0.0f };
+	
 	
 
 	// アンカーポイント
@@ -177,9 +140,5 @@ private: // メンバ変数
 	bool isFlipX_ = false;
 	// 上下フリップ
 	bool isFlipY_ = false;
-
-	Transform transform_;
-	
-
 };
 
