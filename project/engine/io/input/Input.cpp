@@ -68,21 +68,68 @@ void Input::Update(WinApp* winApp)
 	mousePosition_.y = static_cast<float>(point.y);
 }
 
+/// <summary>
+/// キーの押下をチェック
+/// </summary>
+// 指定したキーを押していればtrueを返す
 bool Input::PushKey(BYTE keyNumber)
 {
-	// 指定したキーを押していればtrueを返す
+	
 	if (key[keyNumber]) {
 		return true;
 	}
 	return false;
 }
 
+/// <summary>
+/// キーのトリガーをチェック
+/// </summary>
+// 指定したキーを押した瞬間trueを返す
 bool Input::TriggerKey(BYTE keyNumber)
 {
 	if (key[keyNumber] && !keyPre[keyNumber]) {
 		return true;
 	}
 	return false;
+}
+
+/// <summary>
+/// 特定のキーが押され続けている時間を取得する
+/// </summary>
+int32_t Input::GetKeyPressDuration(BYTE keyNumber)
+{
+	auto now = std::chrono::steady_clock::now();
+	if (PushKey(keyNumber)) {
+		if (keyPressStart[keyNumber] == std::chrono::steady_clock::time_point()) {
+			keyPressStart[keyNumber] = now;
+		}
+		return static_cast<int32_t>(std::chrono::duration_cast<std::chrono::milliseconds>(now - keyPressStart[keyNumber]).count());
+	}
+	else {
+		keyPressStart[keyNumber] = std::chrono::steady_clock::time_point();
+		return 0;
+	}
+}
+
+/// <summary>
+/// 特定のキーが押されたかをバッファリングして判定する
+/// </summary>
+bool Input::BufferedKeyPress(BYTE keyNumber)
+{
+	return TriggerKey(keyNumber);
+}
+
+/// <summary>
+/// 特定のキーの組み合わせをチェックする
+/// </summary>
+bool Input::AreKeysPressed(const std::vector<BYTE>& keyNumbers)
+{
+	for (BYTE keyNumber : keyNumbers) {
+		if (!PushKey(keyNumber)) {
+			return false;
+		}
+	}
+	return true;
 }
 
 /// <summary>
@@ -143,4 +190,116 @@ int32_t Input::GetWheel() const {
 /// <returns>マウスの位置</returns>
 const Vector2& Input::GetMousePosition() const {
 	return mousePosition_;
+}
+
+/// <summary>
+/// マウスカーソルの表示・非表示を設定する
+/// </summary>
+void Input::SetMouseCursorVisibility(bool isVisible)
+{
+	ShowCursor(isVisible);
+}
+
+/// <summary>
+/// ジョイスティックの現在の状態を取得する
+/// </summary>
+bool Input::GetJoystickState(int32_t stickNo, DIJOYSTATE2& out) const
+{
+	if (stickNo < 0 || stickNo >= devJoysticks_.size()) {
+		return false;
+	}
+	out = devJoysticks_[stickNo].state_.directInput_;
+	return true;
+}
+
+/// <summary>
+/// 前回のジョイスティックの状態を取得する
+/// </summary>
+bool Input::GetJoystickStatePrevious(int32_t stickNo, DIJOYSTATE2& out) const
+{
+	if (stickNo < 0 || stickNo >= devJoysticks_.size()) return false;
+	if (devJoysticks_[stickNo].type_ != PadType::XInput) return false;
+
+	out = devJoysticks_[stickNo].statePre_.directInput_;
+	return true;
+}
+
+/// <summary>
+/// XInput を使用したジョイスティックの現在の状態を取得する
+/// </summary>
+bool Input::GetJoystickState(int32_t stickNo, XINPUT_STATE& out) const
+{
+	if (stickNo < 0 || stickNo >= devJoysticks_.size()) {
+		return false;
+	}
+	out = devJoysticks_[stickNo].state_.xInput_;
+	return true;
+}
+
+/// <summary>
+/// 前回の XInput を使用したジョイスティックの状態を取得する
+/// </summary>
+bool Input::GetJoystickStatePrevious(int32_t stickNo, XINPUT_STATE& out) const
+{
+	if (stickNo < 0 || stickNo >= devJoysticks_.size()) return false;
+	if (devJoysticks_[stickNo].type_ != PadType::XInput) return false;
+
+	out = devJoysticks_[stickNo].statePre_.xInput_;
+	return true;
+}
+
+/// <summary>
+/// ジョイスティックのデッドゾーンを設定する
+/// </summary>
+void Input::SetJoystickDeadZone(int32_t stickNo, int32_t deadZoneL, int32_t deadZoneR)
+{
+	if (stickNo < 0 || stickNo >= devJoysticks_.size()) return;
+	devJoysticks_[stickNo].deadZoneL_ = deadZoneL;
+	devJoysticks_[stickNo].deadZoneR_ = deadZoneR;
+}
+
+/// <summary>
+/// ジョイスティックの振動を設定する
+/// </summary>
+void Input::SetJoystickVibration(int32_t stickNo, uint16_t leftMotorSpeed, uint16_t rightMotorSpeed)
+{
+	if (stickNo < 0 || stickNo >= devJoysticks_.size()) return;
+	if (devJoysticks_[stickNo].type_ == PadType::XInput) {
+		XINPUT_VIBRATION vibration = {};
+		vibration.wLeftMotorSpeed = leftMotorSpeed;
+		vibration.wRightMotorSpeed = rightMotorSpeed;
+		XInputSetState(stickNo, &vibration);
+	}
+}
+
+/// <summary>
+/// ジョイスティックのスティックの角度を取得する
+/// </summary>
+float Input::GetJoystickAngle(int32_t stickNo)
+{
+	if (stickNo < 0 || stickNo >= devJoysticks_.size()) return 0.0f;
+	const DIJOYSTATE2& state = devJoysticks_[stickNo].state_.directInput_;
+	float angle = atan2f(static_cast<float>(state.lY), static_cast<float>(state.lX)) * (180.0f / 3.14159265f);
+	if (angle < 0) {
+		angle += 360.0f;
+	}
+	return angle;
+}
+
+/// <summary>
+/// 接続されているジョイスティックの数を取得する
+/// </summary>
+size_t Input::GetNumberOfJoysticks()
+{
+	return size_t();
+}
+
+/// <summary>
+/// ジョイスティックのキャリブレーションを行う
+/// </summary>
+void Input::CalibrateJoystick(int32_t stickNo)
+{
+	if (stickNo < 0 || stickNo >= devJoysticks_.size()) return;
+	// キャリブレーション処理（例：初期位置の記録などを行う）
+	devJoysticks_[stickNo].statePre_ = devJoysticks_[stickNo].state_;
 }
