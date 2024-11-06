@@ -13,6 +13,7 @@
 
 #pragma comment(lib,"dinput8.lib")
 #pragma comment(lib,"dxguid.lib")
+#pragma comment(lib,"xinput.lib")
 
 template <class T> using ComPtr = Microsoft::WRL::ComPtr<T>;
 /// <summary>

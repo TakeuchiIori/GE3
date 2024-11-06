@@ -45,6 +45,15 @@ void Input::Initialize(WinApp* winApp)
 	// 排他制御レベルのセット
 	result = devMouse_->SetCooperativeLevel(winApp_->Gethwnd(), DISCL_FOREGROUND | DISCL_NONEXCLUSIVE);
 	assert(SUCCEEDED(result));
+
+	// コントローラーデバイス生成
+	
+	// XInputパッドの準備（4つのパッドに対応）
+	for (int i = 0; i < 4; ++i) {
+		Joystick joystick = {};
+		joystick.type_ = PadType::XInput;
+		devJoysticks_.push_back(joystick);
+	}
 }
 
 void Input::Update(WinApp* winApp)
@@ -66,6 +75,30 @@ void Input::Update(WinApp* winApp)
 	ScreenToClient(winApp_->Gethwnd(), &point);
 	mousePosition_.x = static_cast<float>(point.x);
 	mousePosition_.y = static_cast<float>(point.y);
+
+	// XInputコントローラーの更新処理
+	for (int i = 0; i < 4; ++i) {
+		Joystick& joystick = devJoysticks_[i];
+
+		if (joystick.type_ == PadType::XInput) {
+			joystick.statePre_ = joystick.state_; // 前回の状態を保存
+
+			// XInputのステートを取得
+			if (XInputGetState(i, &joystick.state_.xInput_) == ERROR_SUCCESS) {
+				auto& gamepad = joystick.state_.xInput_.Gamepad;
+
+				// スティックのデッドゾーン処理
+				gamepad.sThumbLX = (std::abs(gamepad.sThumbLX) < XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE) ? 0 : gamepad.sThumbLX;
+				gamepad.sThumbLY = (std::abs(gamepad.sThumbLY) < XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE) ? 0 : gamepad.sThumbLY;
+				gamepad.sThumbRX = (std::abs(gamepad.sThumbRX) < XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE) ? 0 : gamepad.sThumbRX;
+				gamepad.sThumbRY = (std::abs(gamepad.sThumbRY) < XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE) ? 0 : gamepad.sThumbRY;
+
+				// トリガーのデッドゾーン処理
+				gamepad.bLeftTrigger = (gamepad.bLeftTrigger < XINPUT_GAMEPAD_TRIGGER_THRESHOLD) ? 0 : gamepad.bLeftTrigger;
+				gamepad.bRightTrigger = (gamepad.bRightTrigger < XINPUT_GAMEPAD_TRIGGER_THRESHOLD) ? 0 : gamepad.bRightTrigger;
+			}
+		}
+	}
 }
 
 /// <summary>

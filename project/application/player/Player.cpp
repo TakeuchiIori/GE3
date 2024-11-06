@@ -68,7 +68,33 @@ void Player::Move()
         worldTransform_.translation_.y -= moveSpeed_.z;
     }
 
+    // コントローラーの入力による移動処理
+    XINPUT_STATE state;
+    // ゲームパッド未接続なら何もせず抜ける
+    if (!Input::GetInstance()->GetJoystickState(0, state)) {
+        return;
+    }
 
+    if (input_->GetJoystickState(0, state)) {
+        // 左スティックのX軸とY軸の値を取得し、プレイヤーの移動に反映
+        float LX = (float)state.Gamepad.sThumbLX;
+        float LY = (float)state.Gamepad.sThumbLY;
+
+       
+         worldTransform_.translation_.x += (LX / SHRT_MAX) * moveSpeed_.x;
+         worldTransform_.translation_.z += (LY / SHRT_MAX) * moveSpeed_.z;
+        
+
+        // Aボタンでジャンプ処理
+        if (state.Gamepad.wButtons & XINPUT_GAMEPAD_A) {
+            worldTransform_.translation_.y += moveSpeed_.y;
+        }
+
+        // Bボタンでしゃがみ処理
+        if (state.Gamepad.wButtons & XINPUT_GAMEPAD_B) {
+            worldTransform_.translation_.y -= moveSpeed_.y;
+        }
+    }
 }
 
 void Player::ShowCoordinatesImGui()
