@@ -48,8 +48,11 @@ public: // アクセッサ
 	// プレイヤーの位置を取得する関数
 	const Vector3& GetPosition() const { return worldTransform_.translation_; }
 
+	const Vector3& GetRotation() const { return worldTransform_.rotation_; }
 
-private: // メンバ変数
+	// プレイヤーの回転を設定する関数
+	void SetRotation(const Vector3& rotation) { worldTransform_.rotation_ = rotation; }
+private: 
 
 	WorldTransform worldTransform_;
 	std::unique_ptr<Object3d> base_ = nullptr;

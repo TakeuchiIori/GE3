@@ -16,7 +16,8 @@
 enum class CameraMode
 {
     FOLLOW,
-    TOP_DOWN
+    TOP_DOWN,
+    FPS
 };
 
 class GameScene : public BaseScene
@@ -77,6 +78,11 @@ private:
     /// カメラを更新する
     /// </summary>
     void UpdateCamera();
+
+    /// <summary>
+    /// 右スティックの入力に基づきカメラを操作し、プレイヤーの向きも同期させる
+    /// </summary>
+    void UpdateCameraWithRightStick();
 
     /// <summary>
     /// 描画の準備をする

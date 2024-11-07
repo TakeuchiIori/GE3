@@ -28,6 +28,7 @@ void GameScene::Update()
     UpdatePlayer();
     UpdateCameraMode();
     UpdateCamera();
+    UpdateCameraWithRightStick();
     testWorldTransform_.UpdateMatrix();
     cameraManager_.UpdateAllCameras();
 }
@@ -84,6 +85,9 @@ void GameScene::UpdateCameraMode()
     if (ImGui::Button("Top-Down Camera")) {
         cameraMode_ = CameraMode::TOP_DOWN;
     }
+    if (ImGui::Button("FPS Camera")) {
+        cameraMode_ = CameraMode::FPS;
+    }
     ImGui::End();
 #endif
 }
@@ -104,10 +108,40 @@ void GameScene::UpdateCamera()
         currentCamera_->SetTopDownCamera(topDownPosition + player_->GetPosition());
     }
     break;
+    case CameraMode::FPS:
+        // プレイヤーの位置と回転を取得してFPS視点にセット
+        // 調整中。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。
+        //currentCamera_->SetFPSCamera(player_->GetPosition(), player_->GetRotation());
+
+        break;
+
     default:
         break;
     }
+
 }
+
+/// <summary>
+/// 右スティックの入力に基づきカメラを操作し、プレイヤーの向きも同期させる
+/// </summary>
+void GameScene::UpdateCameraWithRightStick()
+{
+    XINPUT_STATE state;
+    if (Input::GetInstance()->GetJoystickState(0, state)) {
+        float rightStickX = state.Gamepad.sThumbRX / 5000.0f;
+        float rightStickY = state.Gamepad.sThumbRY / 5000.0f;
+
+        // カメラを右スティックで回転
+        if (rightStickX != 0.0f || rightStickY != 0.0f) {
+            currentCamera_->ControlCameraWithRightStick(rightStickX, rightStickY, 0.1f);
+
+            // カメラの向きに基づいてプレイヤーの向きを設定
+            Vector3 cameraRotation = currentCamera_->GetRotate();
+            player_->SetRotation(Vector3(cameraRotation.x, cameraRotation.y, 0.0f)); // 水平方向のみ同期
+        }
+    }
+}
+
 
 void GameScene::PrepareDraw()
 {

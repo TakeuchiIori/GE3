@@ -1,6 +1,7 @@
 #include "Player.h"
 #include "ModelManager.h"
 #include "Object3dCommon.h"
+#include "Camera.h"
 #ifdef _DEBUG
 #include "imgui.h" 
 #endif // _DEBUG
@@ -86,12 +87,12 @@ void Player::Move()
         
 
         // Aボタンでジャンプ処理
-        if (state.Gamepad.wButtons & XINPUT_GAMEPAD_A) {
+        if (state.Gamepad.wButtons & XINPUT_GAMEPAD_LEFT_THUMB) {
             worldTransform_.translation_.y += moveSpeed_.y;
         }
 
         // Bボタンでしゃがみ処理
-        if (state.Gamepad.wButtons & XINPUT_GAMEPAD_B) {
+        if (state.Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_THUMB) {
             worldTransform_.translation_.y -= moveSpeed_.y;
         }
     }
