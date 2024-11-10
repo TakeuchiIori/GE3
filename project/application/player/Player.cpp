@@ -2,12 +2,25 @@
 #include "ModelManager.h"
 #include "Object3dCommon.h"
 #include "Camera.h"
+#include "Matrix4x4.h"
 #ifdef _DEBUG
 #include "imgui.h" 
 #endif // _DEBUG
 #include <iostream>
 
 
+
+Player::Player()
+{
+}
+
+Player::~Player()
+{
+    for (PlayerBullet* bullet : bullets_) {
+        delete bullet;
+    }
+
+}
 
 void Player::Initailize()
 {
@@ -28,12 +41,23 @@ void Player::Initailize()
 void Player::Update()
 {
     Move();
+
+    Fire();
+
+    // 弾の更新
+    for (PlayerBullet* bullet : bullets_) {
+        bullet->Update();
+    }
+
     ShowCoordinatesImGui(); 
     LastUpdate();
 }
 
 void Player::Draw()
 {
+    for (PlayerBullet* bullet : bullets_) {
+        bullet->Draw();
+    }
     base_->Draw(worldTransform_);
 }
 
@@ -59,15 +83,15 @@ void Player::Move()
         worldTransform_.translation_.x += moveSpeed_.y;
     }
 
-    // マウスの押下をチェック
-    if (input_->IsPressMouse(0)) {
-        worldTransform_.translation_.y += moveSpeed_.z;
-    }
+    //// マウスの押下をチェック
+    //if (input_->IsPressMouse(0)) {
+    //    worldTransform_.translation_.y += moveSpeed_.z;
+    //}
 
-    // マウスの押下をチェック
-    if (input_->IsPressMouse(1)) {
-        worldTransform_.translation_.y -= moveSpeed_.z;
-    }
+    //// マウスの押下をチェック
+    //if (input_->IsPressMouse(1)) {
+    //    worldTransform_.translation_.y -= moveSpeed_.z;
+    //}
 
     // コントローラーの入力による移動処理
     XINPUT_STATE state;
@@ -97,6 +121,36 @@ void Player::Move()
         }
     }
 }
+Vector3 Player::GetWorldPosition()
+{
+    // ワールド座標を入れる変数
+    Vector3 worldPos;
+    worldPos.x = worldTransform_.matWorld_.m[3][0];
+    worldPos.y = worldTransform_.matWorld_.m[3][1];
+    worldPos.z = worldTransform_.matWorld_.m[3][2];
+
+    return worldPos;
+}
+void Player::Fire()
+{
+    if (input_->PushKey(DIK_SPACE)) {
+        // 弾の速度
+        const float kBulletSpeed = 1.0f;
+        Vector3 velocity(0, 0, kBulletSpeed);
+        // 速度ベクトルを自機の向きに合わせて回転させる
+        velocity = TransformNormal(velocity, worldTransform_.matWorld_);
+        //velocity = GetReticleWorldPosition() - GetWorldPosition();
+        velocity = Normalize(velocity) * kBulletSpeed;
+
+        // 弾を生成し、初期化
+        PlayerBullet* newBullet = new PlayerBullet();
+        newBullet->Initialize(GetWorldPosition(), velocity);
+        // 弾を登録する
+        bullets_.push_back(newBullet);
+    }
+}
+
+
 
 void Player::ShowCoordinatesImGui()
 {

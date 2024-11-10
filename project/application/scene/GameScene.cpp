@@ -23,7 +23,7 @@ void GameScene::Finalize()
 void GameScene::Update()
 {
     if (Input::GetInstance()->TriggerKey(DIK_SPACE)) {
-        SceneManager::GetInstance()->ChangeScene("TITLE");
+       // SceneManager::GetInstance()->ChangeScene("TITLE");
     }
     UpdatePlayer();
     UpdateCameraMode();

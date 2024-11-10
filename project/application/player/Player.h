@@ -4,12 +4,18 @@
 #include "Vector3.h" 
 #include "Input.h"
 #include <memory>
+#include <list>
 #include "WorldTransform.h"
-
+#include "PlayerBullet.h"
 class Player
 {
 
 public: // メンバ関数（公開）
+
+	// コンストラクタ
+	// デストラクタ
+	Player();
+	~Player();
 
 	/// <summary>
 	/// 初期化
@@ -43,15 +49,20 @@ private: // メンバ関数（非公開）
 	/// </summary>
 	void Move();
 
+	/// <summary>
+	/// 射撃
+	/// </summary>
+	void Fire();
 
-public: // アクセッサ
+public:
 	// プレイヤーの位置を取得する関数
+	Vector3 GetWorldPosition();
 	const Vector3& GetPosition() const { return worldTransform_.translation_; }
-
 	const Vector3& GetRotation() const { return worldTransform_.rotation_; }
 
 	// プレイヤーの回転を設定する関数
 	void SetRotation(const Vector3& rotation) { worldTransform_.rotation_ = rotation; }
+	
 private: 
 
 	WorldTransform worldTransform_;
@@ -60,5 +71,7 @@ private:
 
 	Vector3 moveSpeed_;
 
+	// 弾
+	std::list<PlayerBullet*> bullets_;
 };
 
