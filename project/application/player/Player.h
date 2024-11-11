@@ -86,15 +86,16 @@ private: // メンバ関数（非公開）
 	
 
 public:
-	// プレイヤーの位置を取得する関数
+	
 	Vector3 GetWorldPosition();
+	Vector3 GetReticleWorldPosition();
 	const Vector3& GetPosition() const { return worldTransform_.translation_; }
 	const Vector3& GetRotation() const { return worldTransform_.rotation_; }
 	
 	float Setradius() { return rad_; }
 	float GetRadius() { return rad_; }
 
-	// プレイヤーの回転を設定する関数
+	
 	void SetRotation(const Vector3& rotation) { worldTransform_.rotation_ = rotation; }
 	
 private: 
@@ -103,7 +104,7 @@ private:
 	WorldTransform worldTransform_;
 
 	// レティクルのワールドトランスフォーム
-	
+	WorldTransform worldTransform3DReticle_;
 	// 2Dスプライト
 	Sprite* sprite_;
 	Vector3 posNear;

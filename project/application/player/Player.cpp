@@ -40,11 +40,13 @@ void Player::Initailize()
 	sprite_ = new Sprite();
 	sprite_->Initialize(textureFilePath);
 	sprite_->AdjustTaxtureSize();
+	sprite_->SetAnchorPoint(Vector2(0.5f, 0.5f));
 
 	// その他初期化
 	input_ = Input::GetInstance();
 	moveSpeed_ = { 0.5f, 0.5f , 0.5f };
 	worldTransform_.Initialize();
+	worldTransform3DReticle_.Initialize();
 	worldTransform_.translation_.z = -70.0f;
 }
 
@@ -101,6 +103,15 @@ void Player::ReticleUpdate()
 	// スクリーン座標からワールド座標
 	posNear = TransformCoordinates(posNear, matInverseVPV);
 	posFar = TransformCoordinates(posFar, matInverseVPV);
+
+	//----- 3Dレティクルの座標計算 -----//
+	Vector3 mouseDirection = posFar - posNear;
+	mouseDirection = Normalize(mouseDirection);
+	// カメラから照準オブジェクトの距離
+	const float kDistanceTestObject = 100.0f;
+
+	worldTransform3DReticle_.translation_ = posNear + mouseDirection * kDistanceTestObject;
+	worldTransform3DReticle_.UpdateMatrix();
 
 	sprite_->Update();
 }
@@ -205,21 +216,35 @@ Vector3 Player::GetWorldPosition()
 
 	return worldPos;
 }
+Vector3 Player::GetReticleWorldPosition()
+{
+	// ワールド座標を入れる変数
+	Vector3 worldPos;
+	worldPos.x = worldTransform3DReticle_.matWorld_.m[3][0];
+	worldPos.y = worldTransform3DReticle_.matWorld_.m[3][1];
+	worldPos.z = worldTransform3DReticle_.matWorld_.m[3][2];
+
+	return worldPos;
+}
 void Player::Fire()
 {
 	if (input_->PushKey(DIK_SPACE)) {
 		// 弾の速度
 		const float kBulletSpeed = 1.0f;
-		Vector3 velocity(0, 0, kBulletSpeed);
-		// 速度ベクトルを自機の向きに合わせて回転させる
-		velocity = TransformNormal(velocity, worldTransform_.matWorld_);
-		//velocity = GetReticleWorldPosition() - GetWorldPosition();
-		velocity = Normalize(velocity) * kBulletSpeed;
+
+		// プレイヤー位置とレティクル位置を取得
+		Vector3 playerPosition = GetWorldPosition();
+		Vector3 reticlePosition = GetReticleWorldPosition();
+
+		// 発射方向を算出（プレイヤー位置からレティクル位置へ向かうベクトル）
+		Vector3 direction = reticlePosition - playerPosition;
+		direction = Normalize(direction) * kBulletSpeed;
 
 		// 弾を生成し、初期化
 		PlayerBullet* newBullet = new PlayerBullet();
-		newBullet->Initialize(GetWorldPosition(), velocity);
-		// 弾を登録する
+		newBullet->Initialize(playerPosition, direction);
+
+		// 弾をリストに追加
 		bullets_.push_back(newBullet);
 	}
 }
