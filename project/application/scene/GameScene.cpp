@@ -168,6 +168,9 @@ void GameScene::UpdateCameraMode()
 	if (ImGui::Button("FPS Camera")) {
 		cameraMode_ = CameraMode::FPS;
 	}
+	if (ImGui::Button("DEBUG Camera")) {
+		cameraMode_ = CameraMode::DEBUG;
+	}
 	ImGui::End();
 #endif
 }
@@ -195,6 +198,11 @@ void GameScene::UpdateCamera()
 
 		break;
 
+	case CameraMode::DEBUG:
+
+		currentCamera_->DebugCamera(player_->GetPosition(),10.0f, 0.001f);
+
+		break;
 	default:
 		break;
 	}

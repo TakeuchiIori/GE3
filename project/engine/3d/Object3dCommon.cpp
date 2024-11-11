@@ -159,6 +159,17 @@ void Object3dCommon::CreateGraphicsPipeline()
 
 }
 
+void Object3dCommon::CreateLineRootSignature()
+{
+
+}
+
+void Object3dCommon::CreateLinePipelineState()
+{
+	CreateLineRootSignature();
+
+}
+
 void Object3dCommon::DrawPreference()
 {
 	// ルートシグネチャをセット

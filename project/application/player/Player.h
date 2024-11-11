@@ -97,7 +97,7 @@ public:
 
 	
 	void SetRotation(const Vector3& rotation) { worldTransform_.rotation_ = rotation; }
-	
+	void SetParent(const WorldTransform* parent);
 private: 
 
 	// 自機のワールドトランスフォーム

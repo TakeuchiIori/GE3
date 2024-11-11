@@ -22,7 +22,8 @@ enum class CameraMode
 {
     FOLLOW,
     TOP_DOWN,
-    FPS
+    FPS,
+    DEBUG
 };
 
 class GameScene : public BaseScene

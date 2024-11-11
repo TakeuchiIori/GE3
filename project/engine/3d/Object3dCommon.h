@@ -36,7 +36,8 @@ public: // アクセッサ
     // setter
     DirectXCommon* GetDxCommon() const { return dxCommon_; }
     void SetDefaultCamera(Camera* camera) { this->defaultCamera_ = camera; }
-
+    // 線描画用パイプラインステートを取得する
+    ID3D12PipelineState* GetLinePipelineState() const { return linePipelineState_.Get(); }
 private:
     /// <summary>
     /// ルートシグネチャの作成
@@ -47,6 +48,13 @@ private:
     /// グラフィックスパイプラインの生成
     /// </summary>
     void CreateGraphicsPipeline();
+
+    /// <summary>
+    /// 
+    /// </summary>
+    void CreateLineRootSignature();
+
+    void CreateLinePipelineState();
 
     /// <summary>
     /// ルートシグネチャをセット
@@ -102,10 +110,15 @@ private:
     Microsoft::WRL::ComPtr<ID3DBlob> signatureBlob;
     Microsoft::WRL::ComPtr<ID3DBlob> errorBlob;
 
+    Microsoft::WRL::ComPtr<ID3DBlob> signature;
+    Microsoft::WRL::ComPtr<ID3DBlob> error;
+
     // 入力レイアウトの説明構造体
     D3D12_INPUT_LAYOUT_DESC inputLayoutDesc{};
 
     // ルートシグネチャとグラフィックパイプラインステートのポインタ
-    Microsoft::WRL::ComPtr<ID3D12RootSignature> rootSignature = nullptr;
+    Microsoft::WRL::ComPtr<ID3D12RootSignature> rootSignature = nullptr; 
+    Microsoft::WRL::ComPtr<ID3D12RootSignature> lineRootSignature = nullptr;
     Microsoft::WRL::ComPtr<ID3D12PipelineState> graphicsPipelineState = nullptr;
+    Microsoft::WRL::ComPtr<ID3D12PipelineState> linePipelineState_ = nullptr;
 };

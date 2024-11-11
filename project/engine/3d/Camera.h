@@ -40,6 +40,11 @@ public: // カメラ
 	/// <param name="playerRotation">回転</param>
 	void SetFPSCamera(const Vector3& position, const Vector3& rotation);
 
+	/// <summary>
+	/// デバッグ用自由視点カメラ
+	/// </summary>
+	void DebugCamera(const Vector3& position,float moveSpeed, float rotationSpeed);
+
 
 public: // アクセッサ
     // Setter

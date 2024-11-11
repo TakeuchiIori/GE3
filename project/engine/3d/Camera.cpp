@@ -87,6 +87,20 @@ void Camera::SetFPSCamera(const Vector3& position, const Vector3& rotation)
     worldMatrix_ = MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.translate);
     viewMatrix_ = Inverse(worldMatrix_);
     viewProjectionMatrix_ = Multiply(viewMatrix_, projectionMatrix_);
+#ifdef _DEBUG
+    // ImGuiでFPSカメラのパラメータを変更
+    ImGui::Begin("FPS Camera Controls");
+    ImGui::DragFloat3("Position", &transform_.translate.x, 0.1f);
+    ImGui::DragFloat3("Rotation", &transform_.rotate.x, 0.01f);
+    ImGui::End();
+#endif
+}
+
+void Camera::DebugCamera(const Vector3& position, float moveSpeed, float rotationSpeed)
+{
+#ifdef _DEBUG
+
+#endif
 }
 
 
