@@ -143,7 +143,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="engine\bases\WinApp.cpp" />
     <ClCompile Include="engine\bases\SrvManager.cpp" />
     <ClCompile Include="application\base\MyGame.cpp" />
-    <ClCompile Include="engine\utility\ParticleManager.cpp" />
     <ClCompile Include="engine\utility\SceneFactory.cpp" />
     <ClCompile Include="application\player\Player.cpp" />
     <ClCompile Include="engine\math\MathFunc.cpp" />
@@ -192,7 +191,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="engine\bases\Framework.h" />
     <ClInclude Include="engine\bases\ImGuiManager.h" />
     <ClInclude Include="application\base\MyGame.h" />
-    <ClInclude Include="engine\utility\ParticleManager.h" />
     <ClInclude Include="engine\utility\SceneFactory.h" />
     <ClInclude Include="application\player\Player.h" />
     <ClInclude Include="application\player\PlayerBullet.h" />
