@@ -4,7 +4,7 @@
 void Spline::Initialize()
 {
 	// .objモデルの読み込み
-	ModelManager::GetInstance()->LoadModel("player.obj");
+	ModelManager::GetInstance()->LoadModel("rail.obj");
 
 	// 制御点の初期化
 	controlPoints_ = {
@@ -40,7 +40,7 @@ void Spline::Initialize()
 		// Object3dの生成と初期化
 		auto obj = std::make_unique<Object3d>();
 		obj->Initialize();
-		obj->SetModel("player.obj");
+		obj->SetModel("rail.obj");
 		obj_.push_back(std::move(obj));
 
 		// WorldTransformの生成と初期化
