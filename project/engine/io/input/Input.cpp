@@ -31,7 +31,7 @@ void Input::Initialize(WinApp* winApp)
 	result = keyboard->SetDataFormat(&c_dfDIKeyboard);
 	assert(SUCCEEDED(result));
 	// 排他制御レベルのセット
-	result = keyboard->SetCooperativeLevel(winApp_->Gethwnd(), DISCL_FOREGROUND | DISCL_NONEXCLUSIVE | DISCL_NOWINKEY);
+	result = keyboard->SetCooperativeLevel(winApp_->GetHwnd(), DISCL_FOREGROUND | DISCL_NONEXCLUSIVE | DISCL_NOWINKEY);
 	assert(SUCCEEDED(result));
 
 	// マウスデバイス生成
@@ -43,7 +43,7 @@ void Input::Initialize(WinApp* winApp)
 	assert(SUCCEEDED(result));
 
 	// 排他制御レベルのセット
-	result = devMouse_->SetCooperativeLevel(winApp_->Gethwnd(), DISCL_FOREGROUND | DISCL_NONEXCLUSIVE);
+	result = devMouse_->SetCooperativeLevel(winApp_->GetHwnd(), DISCL_FOREGROUND | DISCL_NONEXCLUSIVE);
 	assert(SUCCEEDED(result));
 
 	// コントローラーデバイス生成
@@ -72,7 +72,7 @@ void Input::Update(WinApp* winApp)
 	// マウスの位置を更新する
 	POINT point;
 	GetCursorPos(&point);
-	ScreenToClient(winApp_->Gethwnd(), &point);
+	ScreenToClient(winApp_->GetHwnd(), &point);
 	mousePosition_.x = static_cast<float>(point.x);
 	mousePosition_.y = static_cast<float>(point.y);
 

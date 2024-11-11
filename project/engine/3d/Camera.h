@@ -1,6 +1,7 @@
 #pragma once
 #include "Vector3.h"
 #include "Matrix4x4.h"
+#include "Input.h"
 
 class Camera
 {
@@ -22,9 +23,22 @@ public: // カメラ
 	void FollowCamera(Vector3& target );
 
 	/// <summary>
-   /// 神視点カメラを設定する
-   /// </summary>
+    /// 神視点カメラを設定する
+    /// </summary>
 	void SetTopDownCamera(const Vector3& position);
+
+
+	/// <summary>
+	/// カメラの向きを右スティックで操作する関数
+	/// </summary>
+	void ControlCameraWithRightStick(float rightStickX, float rightStickY, float sensitivity);
+
+	/// <summary>
+	/// FPS視点に設定する
+	/// </summary>
+	/// <param name="playerPosition">位置</param>
+	/// <param name="playerRotation">回転</param>
+	void SetFPSCamera(const Vector3& position, const Vector3& rotation);
 
 
 public: // アクセッサ

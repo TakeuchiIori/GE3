@@ -116,14 +116,13 @@ Matrix4x4 MakeRotateMatrixZ(float radian);
 // 11. 3次元のアフィン変換行列
 Matrix4x4 MakeAffineMatrix(const Vector3& scale, const Vector3& rotate, const Vector3& translate);
 
+Vector3 TransformNormal(const Vector3& v, const Matrix4x4& m);
 // 12. レンタリングパイプラインVer2
-
 //  透視投影行列
 Matrix4x4 MakePerspectiveFovMatrix(float FovY, float aspectRatio, float nearClip, float farClip);
 //  正射影行列
 Matrix4x4 MakeOrthographicMatrix(float left, float top, float right, float bottom, float nearClip, float farClip);
 //  ビューポート変換行列
 Matrix4x4 MakeViewportMatrix(float left, float top, float width, float height, float minDepth, float maxDepth);
-// クロス積
-Vector3 Cross(const Vector3& v1, const Vector3& v2);
+
 

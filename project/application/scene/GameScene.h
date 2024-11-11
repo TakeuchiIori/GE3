@@ -1,4 +1,6 @@
 #pragma once
+
+// Game
 #include "BaseScene.h"
 #include "Sprite.h"
 #include "SpriteCommon.h"
@@ -8,15 +10,19 @@
 #include "Audio.h"
 #include "ModelManager.h"
 #include "Camera.h"
-#include <memory>
 #include "Player.h"
 #include "WorldTransform.h"
 #include "CameraManager.h"
 #include "Spline.h"
+#include "Enemy.h"
+#include "EnemyBullet.h"
+// C++
+#include <memory>
 enum class CameraMode
 {
     FOLLOW,
-    TOP_DOWN
+    TOP_DOWN,
+    FPS
 };
 
 class GameScene : public BaseScene
@@ -43,30 +49,17 @@ public:
     void Draw() override;
 
 private:
-    /// <summary>
-    /// モデルを読み込む
-    /// </summary>
-    void LoadModels();
 
     /// <summary>
-    /// カメラを初期化する
+    /// 衝突判定を応答
     /// </summary>
-    void InitializeCamera();
+    void CheackAllCollisions();
+
 
     /// <summary>
     /// カメラを解放する
     /// </summary>
     void FinalizeCamera();
-
-    /// <summary>
-    /// オブジェクトを初期化する
-    /// </summary>
-    void InitializeObjects();
-
-    /// <summary>
-    /// プレイヤーを更新する
-    /// </summary>
-    void UpdatePlayer();
 
     /// <summary>
     /// カメラモードを更新する
@@ -79,14 +72,14 @@ private:
     void UpdateCamera();
 
     /// <summary>
+    /// 右スティックの入力に基づきカメラを操作し、プレイヤーの向きも同期させる
+    /// </summary>
+    void UpdateCameraWithRightStick();
+
+    /// <summary>
     /// 描画の準備をする
     /// </summary>
     void PrepareDraw();
-
-    /// <summary>
-    /// オブジェクトを描画する
-    /// </summary>
-    void DrawObjects();
 
 private: // メンバ変数
     CameraMode cameraMode_;
@@ -100,4 +93,8 @@ private: // メンバ変数
 
     std::unique_ptr<Player> player_;
     std::unique_ptr< Spline> spline_;
+
+    // まだ複数化していない
+    std::list<Enemy*> enemies_;
+    std::list<EnemyBullet*> enemyBullets_;
 };

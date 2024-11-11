@@ -52,4 +52,42 @@ void Camera::SetTopDownCamera(const Vector3& position)
     viewMatrix_ = Inverse(worldMatrix_);
 }
 
+/// <summary>
+/// カメラの向きを右スティックで操作する関数
+/// </summary>
+/// <param name="rightStickX">右スティックのX軸の入力値</param>
+/// <param name="rightStickY">右スティックのY軸の入力値</param>
+/// <param name="sensitivity">回転の感度</param>
+void Camera::ControlCameraWithRightStick(float rightStickX, float rightStickY, float sensitivity = 0.1f)
+{
+    // 入力値に基づき回転量を計算
+    transform_.rotate.y += rightStickX * sensitivity; // 左右回転
+    transform_.rotate.x -= rightStickY * sensitivity; // 上下回転
+
+    // 回転制限 (上下回転を制限し、カメラが真上や真下を向かないようにする)
+    if (transform_.rotate.x > 1.57f) transform_.rotate.x = 1.57f;   // 上方向の限界
+    if (transform_.rotate.x < -1.57f) transform_.rotate.x = -1.57f; // 下方向の限界
+
+    // 変換行列を更新
+    worldMatrix_ = MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.translate);
+    viewMatrix_ = Inverse(worldMatrix_);
+    viewProjectionMatrix_ = Multiply(viewMatrix_, projectionMatrix_);
+}
+
+void Camera::SetFPSCamera(const Vector3& position, const Vector3& rotation)
+{
+    // カメラ位置をプレイヤー位置に設定
+    transform_.translate = position;
+    transform_.translate.y += 2.0f;
+    transform_.translate.z += 12.0f;
+    // カメラの回転をプレイヤーの回転と同じに設定
+    transform_.rotate = rotation;
+
+    // 変換行列を更新
+    worldMatrix_ = MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.translate);
+    viewMatrix_ = Inverse(worldMatrix_);
+    viewProjectionMatrix_ = Multiply(viewMatrix_, projectionMatrix_);
+}
+
+
 

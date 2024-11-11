@@ -44,3 +44,7 @@ void WorldTransform::UpdateMatrix()
         constMap_->WorldInverse = Inverse(matWorld_);
     }
 }
+
+void WorldTransform::Update()
+{
+}
