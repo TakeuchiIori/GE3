@@ -1,150 +1,183 @@
 #include "Billboard.h"
-#include "Vector4.h"
-void Billboard::Initialize(DirectXCommon* dxCommon, const std::string& textureFilePath)
-{
-	dxCommon_ = dxCommon;
-	textureFilePath_ = textureFilePath;
+#include "DirectXCommon.h"
+#include "Object3dCommon.h"
 
-	// 頂点バッファ、マテリアル、グラフィックスパイプラインの初期化
-	CreateVertexResource();
-	CreateMaterialResource();
-	CreateGraphicsPipeline();
+void Billboard::Initialize(DirectXCommon* dxCommon)
+{
 }
 
-void Billboard::Draw(const Camera& camera)
+void Billboard::Update(Camera* camera)
 {
-	dxCommon_->GetCommandList()->SetGraphicsRootSignature(rootSignature_.Get());
-	dxCommon_->GetCommandList()->SetPipelineState(graphicsPipelineState_.Get());
-	dxCommon_->GetCommandList()->IASetVertexBuffers(0, 1, &vertexBufferView_);
-	dxCommon_->GetCommandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-	Matrix4x4 viewMatrix = Inverse(MakeAffineMatrix(camera.GetScale(), camera.GetRotate(), camera.GetTranslate()));
-	Matrix4x4 projectionMatrix = MakePerspectiveFovMatrix(0.45f, 1280.0f / 720.0f, 0.1f, 100.0f);
-	Matrix4x4 viewProjectionMatrix = Multiply(viewMatrix, projectionMatrix);
-
-	for (const auto& point : railPoints_) {
-		Matrix4x4 worldMatrix = MakeTranslationMatrix(point);
-		Matrix4x4 worldViewProjectionMatrix = Multiply(worldMatrix, viewProjectionMatrix);
-
-		// WVP行列をシェーダーに送信
-		dxCommon_->GetCommandList()->SetGraphicsRoot32BitConstants(0, 16, &worldViewProjectionMatrix, 0);
-
-		// 板ポリの描画
-		dxCommon_->GetCommandList()->DrawInstanced(6, 1, 0, 0);
-	}
 }
 
-void Billboard::SetRailPoints(const std::vector<Vector3>& points)
+void Billboard::Draw()
 {
-	railPoints_ = points;
-}
-
-void Billboard::CreateVertexResource()
-{
-	// 板ポリ用の四角形を定義
-	struct VertexData {
-		Vector4 position;
-		Vector2 texcoord;
-	};
-	std::vector<VertexData> vertices = {
-		{ { 1.0f, 1.0f, 0.0f, 1.0f }, { 1.0f, 0.0f } },
-		{ { -1.0f, 1.0f, 0.0f, 1.0f }, { 0.0f, 0.0f } },
-		{ { 1.0f, -1.0f, 0.0f, 1.0f }, { 1.0f, 1.0f } },
-		{ { -1.0f, -1.0f, 0.0f, 1.0f }, { 0.0f, 1.0f } },
-	};
-
-	vertexResource_ = dxCommon_->CreateBufferResource(sizeof(VertexData) * vertices.size());
-	vertexBufferView_.BufferLocation = vertexResource_->GetGPUVirtualAddress();
-	vertexBufferView_.SizeInBytes = sizeof(VertexData) * vertices.size();
-	vertexBufferView_.StrideInBytes = sizeof(VertexData);
-
-	// リソースにデータを書き込む
-	VertexData* vertexData = nullptr;
-	vertexResource_->Map(0, nullptr, reinterpret_cast<void**>(&vertexData));
-	memcpy(vertexData, vertices.data(), sizeof(VertexData) * vertices.size());
-	vertexResource_->Unmap(0, nullptr);
 }
 
 void Billboard::CreateRootSignature()
 {
-	D3D12_ROOT_SIGNATURE_DESC rootSignatureDesc{};
-	D3D12_ROOT_PARAMETER rootParameters[1] = {};
+	D3D12_DESCRIPTOR_RANGE descriptorRange[1] = {};
+	descriptorRange[0].BaseShaderRegister = 0; // 0から始まる
+	descriptorRange[0].NumDescriptors = 1; // 数は1つ
+	descriptorRange[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV; // SRV
+	descriptorRange[0].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND; // Offsetを自動計算
 
-	// WVP行列の定数バッファ
-	rootParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_32BIT_CONSTANTS;
-	rootParameters[0].Constants.Num32BitValues = 16;
-	rootParameters[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;
-	rootParameters[0].Constants.ShaderRegister = 0;
 
-	rootSignatureDesc.pParameters = rootParameters;
-	rootSignatureDesc.NumParameters = _countof(rootParameters);
-	rootSignatureDesc.Flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
+	// 1. RootSignatureの作成
 
+	descriptionRootSignature_.Flags =
+		D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
+	// RootParameter作成。複数設定できるので配列。
+	rootParameters_[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;		 			// CBVを使う
+	rootParameters_[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;					// PixelShaderで使う
+	rootParameters_[0].Descriptor.ShaderRegister = 0;									// レジスタ番号0とバインド
+
+	rootParameters_[1].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;					// CBVを使う
+	rootParameters_[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;				// VertexShaderで使う
+	rootParameters_[1].Descriptor.ShaderRegister = 0;									// レジスタ番号0とバインド
+
+	rootParameters_[2].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;		// DescriptorTableを使う
+	rootParameters_[2].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;				// PixelShaderで使う
+	rootParameters_[2].DescriptorTable.pDescriptorRanges = descriptorRange;				// Tableの中身の配列を指定
+	rootParameters_[2].DescriptorTable.NumDescriptorRanges = _countof(descriptorRange);	// Tableで利用する数
+
+	rootParameters_[3].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;					// CBVを使う
+	rootParameters_[3].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;					// VertexShaderで使う
+	rootParameters_[3].Descriptor.ShaderRegister = 1;									// レジスタ番号1を使う
+	descriptionRootSignature_.pParameters = rootParameters_;								// ルートパラメーター配列へのポインタ
+	descriptionRootSignature_.NumParameters = _countof(rootParameters_);					// 配列の長さ
+
+
+	// 1. パーティクルのRootSignatureの作成
+	descriptorRangeForInstancing_[0].BaseShaderRegister = 0;
+	descriptorRangeForInstancing_[0].NumDescriptors = 1;
+	descriptorRangeForInstancing_[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
+	descriptorRangeForInstancing_[0].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
+
+	rootParameters_[1].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
+	rootParameters_[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;
+	rootParameters_[1].DescriptorTable.pDescriptorRanges = descriptorRangeForInstancing_;
+	rootParameters_[1].DescriptorTable.NumDescriptorRanges = _countof(descriptorRangeForInstancing_);
+
+
+	// Samplerの設定
+	staticSamplers_[0].Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR;							// バイリニアフィルタ
+	staticSamplers_[0].AddressU = D3D12_TEXTURE_ADDRESS_MODE_WRAP;						// 0~1の範囲外をリピート
+	staticSamplers_[0].AddressV = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+	staticSamplers_[0].AddressW = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+	staticSamplers_[0].ComparisonFunc = D3D12_COMPARISON_FUNC_NEVER;						// 比較しない
+	staticSamplers_[0].MaxLOD = D3D12_FLOAT32_MAX;										// ありったけのMipmapｗｐ使う
+	staticSamplers_[0].ShaderRegister = 0;												// レジスタ番号0を使う
+	staticSamplers_[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;					// PixelShaderで使う
+	descriptionRootSignature_.pStaticSamplers = staticSamplers_;
+	descriptionRootSignature_.NumStaticSamplers = _countof(staticSamplers_);
+
+	// シリアライズしてバイナリにする
 	Microsoft::WRL::ComPtr<ID3DBlob> signatureBlob = nullptr;
 	Microsoft::WRL::ComPtr<ID3DBlob> errorBlob = nullptr;
-	HRESULT hr = D3D12SerializeRootSignature(&rootSignatureDesc, D3D_ROOT_SIGNATURE_VERSION_1, &signatureBlob, &errorBlob);
+	HRESULT hr = D3D12SerializeRootSignature(&descriptionRootSignature_,
+		D3D_ROOT_SIGNATURE_VERSION_1, &signatureBlob, &errorBlob);
+	if (FAILED(hr)) {
+		DirectXCommon::Log(reinterpret_cast<char*>(errorBlob->GetBufferPointer()));
+		assert(false);
+	}
+	// バイナリを元に生成
+
+	hr = dxCommon_->GetDevice()->CreateRootSignature(0, signatureBlob->GetBufferPointer(),
+		signatureBlob->GetBufferSize(), IID_PPV_ARGS(&rootSignature_));
 	assert(SUCCEEDED(hr));
 
-	hr = dxCommon_->GetDevice()->CreateRootSignature(0, signatureBlob->GetBufferPointer(), signatureBlob->GetBufferSize(), IID_PPV_ARGS(&rootSignature_));
-	assert(SUCCEEDED(hr));
+
+	// 2. InputLayoutの設定
+	inputElementDescs_[0].SemanticName = "POSITION";
+	inputElementDescs_[0].SemanticIndex = 0;
+	inputElementDescs_[0].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+	inputElementDescs_[0].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
+
+	inputElementDescs_[1].SemanticName = "TEXCOORD";
+	inputElementDescs_[1].SemanticIndex = 0;
+	inputElementDescs_[1].Format = DXGI_FORMAT_R32G32_FLOAT;
+	inputElementDescs_[1].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
+
+	inputElementDescs_[2].SemanticName = "NORMAL";
+	inputElementDescs_[2].SemanticIndex = 0;
+	inputElementDescs_[2].Format = DXGI_FORMAT_R32G32B32_FLOAT;
+	inputElementDescs_[2].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
+	inputLayoutDesc_.pInputElementDescs = inputElementDescs_;
+	inputLayoutDesc_.NumElements = _countof(inputElementDescs_);
+
+	// 3. BlendDtateの設定
+	blendDesc_.RenderTarget[0].RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
+	blendDesc_.RenderTarget[0].BlendEnable = true;
+
+	// α値のブレンド
+	blendDesc_.RenderTarget[0].SrcBlendAlpha = D3D12_BLEND_ONE;
+	blendDesc_.RenderTarget[0].BlendOpAlpha = D3D12_BLEND_OP_ADD;
+	blendDesc_.RenderTarget[0].DestBlendAlpha = D3D12_BLEND_ZERO;
+	// RasterrizerStateの設定
+	// 裏面（時計回り）を表示しない  [カリング]
+	rasterrizerDesc_.CullMode = D3D12_CULL_MODE_NONE;/* D3D12_CULL_MODE_*/
+	// 三角形の中を塗りつぶす
+	rasterrizerDesc_.FillMode = D3D12_FILL_MODE_SOLID;
+	// 4. Shaderをコンパイルする
+	vertexShaderBlob_ = dxCommon_->CompileShader(L"Resources/shaders/Particle.VS.hlsl",
+		L"vs_6_0");
+	assert(vertexShaderBlob_ != nullptr);
+	pixelShaderBlob_ = dxCommon_->CompileShader(L"Resources/shaders/Particle.PS.hlsl",
+		L"ps_6_0");
+	assert(pixelShaderBlob_ != nullptr);
+
+	// DepthStencilStateの設定
+	// Depthの機能を有効化する
+	depthStencilDesc_.DepthEnable = true;
+	//書き込みします
+	depthStencilDesc_.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ZERO;
+	//比較関数はLessEqual。つまり、近ければ描画される
+	depthStencilDesc_.DepthFunc = D3D12_COMPARISON_FUNC_LESS_EQUAL;
 }
 
 void Billboard::CreateGraphicsPipeline()
 {
 	CreateRootSignature();
 
-	// 入力レイアウトの設定
-	D3D12_INPUT_ELEMENT_DESC inputElementDescs[] = {
-		{ "POSITION", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
-		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D12_APPEND_ALIGNED_ELEMENT, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
-	};
+	SetGraphicsPipeline();
+}
 
-	inputLayoutDesc_.pInputElementDescs = inputElementDescs;
-	inputLayoutDesc_.NumElements = _countof(inputElementDescs);
-
-	// シェーダーのロード
-	Microsoft::WRL::ComPtr<IDxcBlob> vertexShaderBlob = dxCommon_->CompileShader(L"Resources/shaders/Particle.VS.hlsl", L"vs_6_0");
-	Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob = dxCommon_->CompileShader(L"Resources/shaders/Particle.PS.hlsl", L"ps_6_0");
-	assert(vertexShaderBlob != nullptr);
-	assert(pixelShaderBlob != nullptr);
-
-	// グラフィックスパイプラインステートの作成
-	D3D12_GRAPHICS_PIPELINE_STATE_DESC pipelineStateDesc{};
-	pipelineStateDesc.pRootSignature = rootSignature_.Get();
-	pipelineStateDesc.InputLayout = inputLayoutDesc_;
-	pipelineStateDesc.VS = { vertexShaderBlob->GetBufferPointer(), vertexShaderBlob->GetBufferSize() };
-	pipelineStateDesc.PS = { pixelShaderBlob->GetBufferPointer(), pixelShaderBlob->GetBufferSize() };
-	pipelineStateDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
-	pipelineStateDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
-	pipelineStateDesc.NumRenderTargets = 1;
-	pipelineStateDesc.SampleDesc.Count = 1;
-
-	// ブレンドステートの設定
-	pipelineStateDesc.BlendState.RenderTarget[0].RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
-	pipelineStateDesc.BlendState.RenderTarget[0].BlendEnable = true;
-	pipelineStateDesc.BlendState.RenderTarget[0].SrcBlend = D3D12_BLEND_SRC_ALPHA;
-	pipelineStateDesc.BlendState.RenderTarget[0].DestBlend = D3D12_BLEND_INV_SRC_ALPHA;
-	pipelineStateDesc.BlendState.RenderTarget[0].BlendOp = D3D12_BLEND_OP_ADD;
-
-	// ラスタライザーステートの設定
-	pipelineStateDesc.RasterizerState.CullMode = D3D12_CULL_MODE_NONE;
-	pipelineStateDesc.RasterizerState.FillMode = D3D12_FILL_MODE_SOLID;
-
-	// デプスステンシルの設定
-	pipelineStateDesc.DepthStencilState.DepthEnable = true;
-	pipelineStateDesc.DepthStencilState.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ALL;
-	pipelineStateDesc.DepthStencilState.DepthFunc = D3D12_COMPARISON_FUNC_LESS_EQUAL;
-
-	HRESULT hr = dxCommon_->GetDevice()->CreateGraphicsPipelineState(&pipelineStateDesc, IID_PPV_ARGS(&graphicsPipelineState_));
+void Billboard::SetGraphicsPipeline()
+{
+	D3D12_GRAPHICS_PIPELINE_STATE_DESC graphicsPipelineStateDesc{};//graphicsPipelineState_
+	graphicsPipelineStateDesc.pRootSignature = rootSignature_.Get();					 // Rootsignature
+	graphicsPipelineStateDesc.InputLayout = inputLayoutDesc_;					 // InputLayout
+	graphicsPipelineStateDesc.VS = { vertexShaderBlob_->GetBufferPointer(),
+	vertexShaderBlob_->GetBufferSize() };										 // VertexShader
+	graphicsPipelineStateDesc.PS = { pixelShaderBlob_->GetBufferPointer(),
+	pixelShaderBlob_->GetBufferSize() };											 // PixelShader
+	graphicsPipelineStateDesc.BlendState = blendDesc_;							 // BlendState
+	graphicsPipelineStateDesc.RasterizerState = rasterrizerDesc_;   				 // RasterrizerState
+	// Depthstencitの設定
+	graphicsPipelineStateDesc.DepthStencilState = depthStencilDesc_;
+	graphicsPipelineStateDesc.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
+	// 書き込むRTVの情報
+	graphicsPipelineStateDesc.NumRenderTargets = 1;
+	graphicsPipelineStateDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
+	// 利用するトポロジ（形状）のタイプ。三角形
+	graphicsPipelineStateDesc.PrimitiveTopologyType =
+		D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
+	// どのように画面に色を打ち込むのか設定（気にしなくて良い）
+	graphicsPipelineStateDesc.SampleDesc.Count = 1;
+	graphicsPipelineStateDesc.SampleMask = D3D12_DEFAULT_SAMPLE_MASK;
+	// 実際に生成
+	HRESULT hr = dxCommon_->GetDevice()->CreateGraphicsPipelineState(&graphicsPipelineStateDesc,
+		IID_PPV_ARGS(&graphicsPipelineState_));
 	assert(SUCCEEDED(hr));
+}
+
+void Billboard::CreateVertexBuffer()
+{
+
 }
 
 void Billboard::CreateMaterialResource()
 {
-	// マテリアルリソースを作成
-	materialResource_ = dxCommon_->CreateBufferResource(sizeof(Vector4));
-	Vector4* materialData = nullptr;
-	materialResource_->Map(0, nullptr, reinterpret_cast<void**>(&materialData));
-	*materialData = { 1.0f, 1.0f, 1.0f, 1.0f };
-	materialResource_->Unmap(0, nullptr);
+
 }
