@@ -22,29 +22,24 @@ public:
     /// </summary>
     void Update();
 
+    std::vector<Vector3> GenerateCatmullRomSplinePoints(const std::vector<Vector3>& controlPoints, size_t index, size_t segmentCount);
+
+    std::vector<Vector3> SampleSplineEquidistant(const std::vector<Vector3>& points, size_t sampleCount);
+
     /// <summary>
     /// 描画
     /// </summary>
     void Draw();
 
 private:
-    /// <summary>
-    /// Catmull-Romスプラインのポイントを生成
-    /// </summary>
-    /// <param name="controlPoints">制御点のリスト</param>
-    /// <param name="segmentCount">各セグメントにおける生成ポイント数</param>
-    /// <returns>生成されたスプラインのポイントリスト</returns>
-    std::vector<Vector3> GenerateCatmullRomSplinePoints(const std::vector<Vector3>& controlPoints, size_t segmentCount);
+    std::vector<Vector3> controlPoints_; // 制御点
+    std::vector<size_t> segmentCounts_;  // 各セグメントの分割数
+    std::vector<Vector3> pointsDrawing_; // 描画用のスプラインポイント
 
-    std::vector<Vector3> SamplePoints(const std::vector<Vector3>& points, size_t step);
+    std::vector<std::unique_ptr<Object3d>> obj_; // 各ポイントに対応するObject3d
+    std::vector<std::unique_ptr<WorldTransform>> worldTransforms_; // 各ポイントのワールド変換
 
-    std::vector<Vector3> SampleSplineEquidistant(const std::vector<Vector3>& points, float interval);
+    const size_t sampleCount = 1000; // サンプル数を設定（任意の数に設定）
 
-    float interval = 5.0f; 
-
-    std::vector<std::unique_ptr<WorldTransform>> worldTransforms_;
-    std::vector<std::unique_ptr<Object3d>> obj_;
-    std::vector<Vector3> controlPoints_;
-    std::vector<Vector3> pointsDrawing_;
-    const size_t segmentCount = 100;
+   
 };

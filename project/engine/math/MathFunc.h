@@ -4,6 +4,8 @@
 #include "Vector4.h"
 #include "Matrix4x4.h"
 #include "vector"
+#include <cmath>
+#include <numbers>
 #include <stdexcept>
 
 struct Sphere {
@@ -132,3 +134,6 @@ float Dot(const Quaternion& q0, const Quaternion& q1);
 
 // 2つのクォータニオン間で球面線形補間（Slerp）を行う関数
 Quaternion Slerp(const Quaternion& q0, const Quaternion& q1, float t);
+
+// クォータニオンからオイラー角を作成する関数
+Vector3 QuaternionToEuler(const Quaternion& q);

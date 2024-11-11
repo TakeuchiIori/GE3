@@ -320,3 +320,28 @@ Quaternion Slerp(const Quaternion& q0, const Quaternion& q1, float t) {
         s0 * q0.w + s1 * q1.w
     };
 }
+
+// クォータニオンからオイラー角を作成する関数
+Vector3 QuaternionToEuler(const Quaternion& q)
+{
+    Vector3 euler;
+
+    // Roll (X軸回転)
+    double sinr_cosp = 2 * (q.w * q.x + q.y * q.z);
+    double cosr_cosp = 1 - 2 * (q.x * q.x + q.y * q.y);
+    euler.x = std::atan2(sinr_cosp, cosr_cosp);
+
+    // Pitch (Y軸回転)
+    double sinp = 2 * (q.w * q.y - q.z * q.x);
+    if (std::abs(sinp) >= 1)
+        euler.y = std::copysign(std::numbers::pi / 2, sinp); // Gimbal lock
+    else
+        euler.y = std::asin(sinp);
+
+    // Yaw (Z軸回転)
+    double siny_cosp = 2 * (q.w * q.z + q.x * q.y);
+    double cosy_cosp = 1 - 2 * (q.y * q.y + q.z * q.z);
+    euler.z = std::atan2(siny_cosp, cosy_cosp);
+
+    return euler;
+}
