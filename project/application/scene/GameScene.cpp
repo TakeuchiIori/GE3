@@ -8,11 +8,30 @@
 
 void GameScene::Initialize()
 {
-    LoadModels();
-    InitializeCamera();
-    InitializeObjects();
+    // モデル読み込み
+    ModelManager::GetInstance()->LoadModel("float_body.obj");
+
+    // カメラの初期化
+    currentCamera_ = cameraManager_.AddCamera();
+    Object3dCommon::GetInstance()->SetDefaultCamera(currentCamera_.get());
+
+    // オブジェクト生成
+    player_ = std::make_unique<Player>();
+    player_->Initailize();
+
+    enemy_ = std::make_unique<Enemy>();
+    enemy_->Initialize(Vector3{0,0,-12});
+
+
+    test_ = std::make_unique<Object3d>();
+    test_->Initialize();
+    test_->SetModel("float_body.obj");
+    testWorldTransform_.Initialize();
+
+    spline_ = std::make_unique<Spline>();
+    spline_->Initialize();
     // 初期カメラモード設定
-    cameraMode_ = CameraMode::FOLLOW;
+    cameraMode_ = CameraMode::FPS;
 }
 
 void GameScene::Finalize()
@@ -25,10 +44,17 @@ void GameScene::Update()
     if (Input::GetInstance()->TriggerKey(DIK_SPACE)) {
        // SceneManager::GetInstance()->ChangeScene("TITLE");
     }
-    UpdatePlayer();
+    // 各オブジェクトの更新
+    player_->Update();
+    spline_->Update();
+    enemy_->Update();
+
+    // カメラの更新
     UpdateCameraMode();
     UpdateCamera();
     UpdateCameraWithRightStick();
+
+    // ワールドトランスフォーム更新
     testWorldTransform_.UpdateMatrix();
     cameraManager_.UpdateAllCameras();
 }
@@ -36,18 +62,12 @@ void GameScene::Update()
 void GameScene::Draw()
 {
     PrepareDraw();
-    DrawObjects();
-}
 
-void GameScene::LoadModels()
-{
-    ModelManager::GetInstance()->LoadModel("float_body.obj");
-}
-
-void GameScene::InitializeCamera()
-{
-    currentCamera_ = cameraManager_.AddCamera();
-    Object3dCommon::GetInstance()->SetDefaultCamera(currentCamera_.get());
+    // 各オブジェクトの描画
+    player_->Draw();
+    enemy_->Draw();
+    test_->Draw(testWorldTransform_);
+    spline_->Draw();
 }
 
 void GameScene::FinalizeCamera()
@@ -55,25 +75,6 @@ void GameScene::FinalizeCamera()
     cameraManager_.RemoveCamera(currentCamera_);
 }
 
-void GameScene::InitializeObjects()
-{
-    player_ = std::make_unique<Player>();
-    player_->Initailize();
-
-    test_ = std::make_unique<Object3d>();
-    test_->Initialize();
-    test_->SetModel("float_body.obj");
-    testWorldTransform_.Initialize();
-
-    spline_ = std::make_unique<Spline>();
-    spline_->Initialize();
-}
-
-void GameScene::UpdatePlayer()
-{
-    player_->Update();
-    spline_->Update();
-}
 
 void GameScene::UpdateCameraMode()
 {
@@ -111,7 +112,7 @@ void GameScene::UpdateCamera()
     case CameraMode::FPS:
         // プレイヤーの位置と回転を取得してFPS視点にセット
         // 調整中。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。
-        //currentCamera_->SetFPSCamera(player_->GetPosition(), player_->GetRotation());
+        currentCamera_->SetFPSCamera(player_->GetPosition(), player_->GetRotation());
 
         break;
 
@@ -147,11 +148,4 @@ void GameScene::PrepareDraw()
 {
     Object3dCommon::GetInstance()->DrawPreference();
     SpriteCommon::GetInstance()->DrawPreference();
-}
-
-void GameScene::DrawObjects()
-{
-    player_->Draw();
-    test_->Draw(testWorldTransform_);
-    spline_->Draw();
 }

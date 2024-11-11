@@ -54,6 +54,10 @@ private: // メンバ関数（非公開）
 	/// </summary>
 	void Fire();
 
+	/// <summary>
+	/// 弾を削除
+	/// </summary>
+	void BulletDelete();
 public:
 	// プレイヤーの位置を取得する関数
 	Vector3 GetWorldPosition();

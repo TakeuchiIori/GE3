@@ -1,4 +1,6 @@
 #pragma once
+
+// Game
 #include "BaseScene.h"
 #include "Sprite.h"
 #include "SpriteCommon.h"
@@ -8,11 +10,14 @@
 #include "Audio.h"
 #include "ModelManager.h"
 #include "Camera.h"
-#include <memory>
 #include "Player.h"
 #include "WorldTransform.h"
 #include "CameraManager.h"
 #include "Spline.h"
+#include "Enemy.h"
+
+// C++
+#include <memory>
 enum class CameraMode
 {
     FOLLOW,
@@ -44,30 +49,11 @@ public:
     void Draw() override;
 
 private:
-    /// <summary>
-    /// モデルを読み込む
-    /// </summary>
-    void LoadModels();
-
-    /// <summary>
-    /// カメラを初期化する
-    /// </summary>
-    void InitializeCamera();
 
     /// <summary>
     /// カメラを解放する
     /// </summary>
     void FinalizeCamera();
-
-    /// <summary>
-    /// オブジェクトを初期化する
-    /// </summary>
-    void InitializeObjects();
-
-    /// <summary>
-    /// プレイヤーを更新する
-    /// </summary>
-    void UpdatePlayer();
 
     /// <summary>
     /// カメラモードを更新する
@@ -89,11 +75,6 @@ private:
     /// </summary>
     void PrepareDraw();
 
-    /// <summary>
-    /// オブジェクトを描画する
-    /// </summary>
-    void DrawObjects();
-
 private: // メンバ変数
     CameraMode cameraMode_;
     std::shared_ptr<Camera> currentCamera_;
@@ -105,5 +86,6 @@ private: // メンバ変数
     WorldTransform testWorldTransform_;
 
     std::unique_ptr<Player> player_;
+    std::unique_ptr<Enemy> enemy_;
     std::unique_ptr< Spline> spline_;
 };

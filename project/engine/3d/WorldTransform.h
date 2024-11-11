@@ -44,6 +44,11 @@ public:
 	void UpdateMatrix();
 
 	/// <summary>
+	/// 更新
+	/// </summary>
+	void Update();
+
+	/// <summary>
 	/// 定数バッファの取得
 	/// </summary>
 	/// <returns>定数バッファ</returns>
