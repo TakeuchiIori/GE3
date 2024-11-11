@@ -19,6 +19,20 @@ struct Segment {
 	Vector3 diff;
 };
 
+struct Triangle {
+	Vector3 vertex[3];
+};
+
+struct AABB {
+	Vector3 min;
+	Vector3 max;
+};
+struct OBB {
+	Vector3 center;
+	Vector3 orientations[3];
+	Vector3 size;
+};
+
 // 関数の宣言
 float Dot(const Vector3& a, const Vector3& b);
 float MagnitudeSquared(const Vector3& v);
@@ -42,3 +56,7 @@ Vector3 Cross(const Vector3& v1, const Vector3& v2);
 // 正規化
 float LengthSquared(const Vector3&);
 float Length(const Vector3& v);
+Matrix4x4 ScaleMatrixFromVector3(const Vector3& scale);
+Matrix4x4 TranslationMatrixFromVector3(const Vector3& translate);
+bool IsCollision(const AABB& aabb, const Vector3& point);
+bool IsCollision(const AABB& aabb, const Sphere& sphere);
