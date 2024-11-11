@@ -124,6 +124,5 @@ Matrix4x4 MakePerspectiveFovMatrix(float FovY, float aspectRatio, float nearClip
 Matrix4x4 MakeOrthographicMatrix(float left, float top, float right, float bottom, float nearClip, float farClip);
 //  ビューポート変換行列
 Matrix4x4 MakeViewportMatrix(float left, float top, float width, float height, float minDepth, float maxDepth);
-// クロス積
-Vector3 Cross(const Vector3& v1, const Vector3& v2);
+
 

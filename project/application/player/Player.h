@@ -37,6 +37,17 @@ public: // メンバ関数（公開）
 	/// </summary>
 	void ShowCoordinatesImGui();
 
+	/// <summary>
+	/// 弾リスト取得
+	/// </summary>
+	const std::list<PlayerBullet*>& GetBullets() const { return bullets_; }
+
+	/// <summary>
+	/// 衝突を検出したら呼び出されるコールバック関数
+	/// </summary>
+	void OnCollision();
+
+
 private: // メンバ関数（非公開）
 
 	/// <summary>
@@ -58,11 +69,17 @@ private: // メンバ関数（非公開）
 	/// 弾を削除
 	/// </summary>
 	void BulletDelete();
+
+	
+
 public:
 	// プレイヤーの位置を取得する関数
 	Vector3 GetWorldPosition();
 	const Vector3& GetPosition() const { return worldTransform_.translation_; }
 	const Vector3& GetRotation() const { return worldTransform_.rotation_; }
+	
+	float Setradius() { return rad; }
+	float GetRadius() { return rad; }
 
 	// プレイヤーの回転を設定する関数
 	void SetRotation(const Vector3& rotation) { worldTransform_.rotation_ = rotation; }
@@ -74,6 +91,9 @@ private:
 	Input* input_ = nullptr;
 
 	Vector3 moveSpeed_;
+
+	// 半径
+	static inline const float rad = 1.0f;
 
 	// 弾
 	std::list<PlayerBullet*> bullets_;

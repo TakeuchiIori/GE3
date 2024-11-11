@@ -78,8 +78,8 @@ void Camera::SetFPSCamera(const Vector3& position, const Vector3& rotation)
 {
     // カメラ位置をプレイヤー位置に設定
     transform_.translate = position;
-    transform_.translate.y += 5.0f;
-    transform_.translate.z -= 12.0f;
+    transform_.translate.y += 2.0f;
+    transform_.translate.z += 12.0f;
     // カメラの回転をプレイヤーの回転と同じに設定
     transform_.rotate = rotation;
 

@@ -15,7 +15,7 @@
 #include "CameraManager.h"
 #include "Spline.h"
 #include "Enemy.h"
-
+#include "EnemyBullet.h"
 // C++
 #include <memory>
 enum class CameraMode
@@ -49,6 +49,12 @@ public:
     void Draw() override;
 
 private:
+
+    /// <summary>
+    /// 衝突判定を応答
+    /// </summary>
+    void CheackAllCollisions();
+
 
     /// <summary>
     /// カメラを解放する
@@ -86,6 +92,9 @@ private: // メンバ変数
     WorldTransform testWorldTransform_;
 
     std::unique_ptr<Player> player_;
-    std::unique_ptr<Enemy> enemy_;
     std::unique_ptr< Spline> spline_;
+
+    // まだ複数化していない
+    std::list<Enemy*> enemies_;
+    std::list<EnemyBullet*> enemyBullets_;
 };

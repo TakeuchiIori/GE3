@@ -9,8 +9,31 @@ float MagnitudeSquared(const Vector3& v) {
     return v.x * v.x + v.y * v.y + v.z * v.z;
 }
 
-Vector3 Subtract(const Vector3& a, const Vector3& b) {
-    return { a.x - b.x, a.y - b.y, a.z - b.z };
+
+// Vector3 : 加算
+Vector3 Add(const Vector3& v1, const Vector3& v2) {
+    Vector3 result;
+    result.x = v1.x + v2.x;
+    result.y = v1.y + v2.y;
+    result.z = v1.z + v2.z;
+    return result;
+}
+// Vector3 : 減算
+Vector3 Subtract(const Vector3& v1, const Vector3& v2) {
+    Vector3 result;
+    result.x = v1.x - v2.x;
+    result.y = v1.y - v2.y;
+    result.z = v1.z - v2.z;
+    return result;
+}
+// クロス積
+Vector3 Cross(const Vector3& v1, const Vector3& v2) {
+    Vector3 result;
+    result.x = (v1.y * v2.z) - (v1.z * v2.y);
+    result.y = (v1.z * v2.x) - (v1.x * v2.z);
+    result.z = (v1.x * v2.y) - (v1.y * v2.x);
+
+    return result;
 }
 
 Vector3 Multiply(const Vector3& v, float scalar) {
@@ -102,3 +125,8 @@ std::vector<Vector3> GenerateCatmullRomSplinePoints(const std::vector<Vector3>& 
 
     return pointsDrawing;
 }
+
+
+float LengthSquared(const Vector3& v) { return v.x * v.x + v.y * v.y + v.z * v.z; }
+
+float Length(const Vector3& v) { return std::sqrt(LengthSquared(v)); }

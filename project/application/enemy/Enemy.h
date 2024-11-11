@@ -75,6 +75,11 @@ private: // メンバ関数
 	/// </summary>
 	void Fire();
 
+	/// <summary>
+	/// 敵を復活させる
+	/// </summary>
+	void Revive();
+
 public: // アクセッサ
 
 	/// <summary>
@@ -86,6 +91,10 @@ public: // アクセッサ
 	/// ワールド座標を取得
 	/// </summary>
 	Vector3 GetWorldPosition();
+
+	float Setradius() { return rad; }
+	float GetRadius() { return rad; }
+	bool GetIsAlive() const { return isAlive_; }
 
 private:
 
@@ -122,6 +131,7 @@ private:
 
 	static void (Enemy::* phaseEnemy[])();
 
-
+	int32_t respawnTimer_ = 0; // 復活待機タイマー
+	static const int32_t kRespawnTime = 180; // 復活までの待機時間 (フレーム数) 
 };
 

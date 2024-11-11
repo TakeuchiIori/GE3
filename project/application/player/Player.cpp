@@ -63,6 +63,10 @@ void Player::Draw()
 	base_->Draw(worldTransform_);
 }
 
+void Player::OnCollision()
+{
+}
+
 void Player::LastUpdate()
 {
 	// 最後に必ずセット

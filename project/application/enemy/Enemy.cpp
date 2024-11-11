@@ -47,11 +47,16 @@ void Enemy::Update()
 	//Matrix4x4 moveMatrix = MakeAffineMatrix(worldTransform_.scale_, worldTransform_.rotation_, worldTransform_.translation_);
 	//// ワールド行列に代入
 	//worldTransform_.matWorld_ = moveMatrix;
-	 
-	
+
+	if (!isAlive_) {
+		Revive();
+	}
 	// 行列を定数バッファに転送
 	worldTransform_.UpdateMatrix();
 
+	ImGui::Begin("Enemy");
+	ImGui::Text("isAlive_: %s", isAlive_ ? "true" : "false");
+	ImGui::End();
 
 }
 
@@ -86,6 +91,19 @@ void Enemy::UpdateLeave()
 
 void Enemy::Fire()
 {
+
+}
+
+void Enemy::Revive()
+{
+
+	// 復活待機タイマーをカウントダウン
+	respawnTimer_++;
+	// 待機時間が経過したら復活
+	if (respawnTimer_ >= kRespawnTime) {
+		isAlive_ = true;
+		respawnTimer_ = 0; // 復活タイマーをリセット
+	}
 
 }
 
