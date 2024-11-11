@@ -22,6 +22,7 @@ Player::~Player()
 		delete bullet;
 	}
 
+	delete sprite_;
 }
 
 void Player::Initailize()
@@ -38,15 +39,19 @@ void Player::Initailize()
 	std::string textureFilePath = "Resources/2DReticle.png";
 	sprite_ = new Sprite();
 	sprite_->Initialize(textureFilePath);
+	sprite_->AdjustTaxtureSize();
 
 	// その他初期化
 	input_ = Input::GetInstance();
 	moveSpeed_ = { 0.5f, 0.5f , 0.5f };
 	worldTransform_.Initialize();
+	worldTransform_.translation_.z = -70.0f;
 }
 
 void Player::Update()
 {
+	
+
 	BulletDelete();
 
 	Move();
@@ -58,7 +63,10 @@ void Player::Update()
 		bullet->Update();
 	}
 
+	ReticleUpdate();
+
 	ShowCoordinatesImGui();
+
 	LastUpdate();
 }
 
