@@ -3,10 +3,12 @@
 #include "MathFunc.h"
 #include "Vector3.h" 
 #include "Input.h"
-#include <memory>
-#include <list>
 #include "WorldTransform.h"
 #include "PlayerBullet.h"
+#include "Sprite.h"
+// C++
+#include <memory>
+#include <list>
 class Player
 {
 
@@ -28,9 +30,20 @@ public: // メンバ関数（公開）
 	void Update();
 
 	/// <summary>
+	/// レティクルの更新
+	/// </summary>
+	void ReticleUpdate();
+
+	/// <summary>
 	/// 描画
 	/// </summary>
 	void Draw();
+
+	/// <summary>
+	/// レティクルの描画
+	/// </summary>
+	void ReticleDraw();
+		
 
 	/// <summary>
 	/// ImGui
@@ -78,22 +91,31 @@ public:
 	const Vector3& GetPosition() const { return worldTransform_.translation_; }
 	const Vector3& GetRotation() const { return worldTransform_.rotation_; }
 	
-	float Setradius() { return rad; }
-	float GetRadius() { return rad; }
+	float Setradius() { return rad_; }
+	float GetRadius() { return rad_; }
 
 	// プレイヤーの回転を設定する関数
 	void SetRotation(const Vector3& rotation) { worldTransform_.rotation_ = rotation; }
 	
 private: 
 
+	// 自機のワールドトランスフォーム
 	WorldTransform worldTransform_;
+
+	// レティクルのワールドトランスフォーム
+	
+	// 2Dスプライト
+	Sprite* sprite_;
+	Vector3 posNear;
+	Vector3 posFar;
+
 	std::unique_ptr<Object3d> base_ = nullptr;
 	Input* input_ = nullptr;
 
 	Vector3 moveSpeed_;
 
 	// 半径
-	static inline const float rad = 1.0f;
+	static inline const float rad_ = 1.0f;
 
 	// 弾
 	std::list<PlayerBullet*> bullets_;

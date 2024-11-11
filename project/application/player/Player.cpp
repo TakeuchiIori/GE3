@@ -5,9 +5,11 @@
 #include "Matrix4x4.h"
 #ifdef _DEBUG
 #include "imgui.h" 
-#endif // _DEBUG
-#include <iostream>
+#endif
 
+// C++
+#include <iostream>
+#include <string>
 
 
 Player::Player()
@@ -32,6 +34,11 @@ void Player::Initailize()
 	base_->Initialize();
 	base_->SetModel("player.obj");
 
+	// 2Dスプライト
+	std::string textureFilePath = "Resources/2DReticle.png";
+	sprite_ = new Sprite();
+	sprite_->Initialize(textureFilePath);
+
 	// その他初期化
 	input_ = Input::GetInstance();
 	moveSpeed_ = { 0.5f, 0.5f , 0.5f };
@@ -55,12 +62,53 @@ void Player::Update()
 	LastUpdate();
 }
 
+void Player::ReticleUpdate()
+{
+	POINT mousePosition;
+	// マウスの座標を取得する
+	GetCursorPos(&mousePosition);
+	HWND hwnd = WinApp::GetInstance()->GetHwnd();
+	ScreenToClient(hwnd, &mousePosition);
+
+	// スプライトのレティクル座標に設定
+	sprite_->SetPosition(Vector2(static_cast<float>(mousePosition.x), static_cast<float>(mousePosition.y)));
+
+	// デフォルトカメラからビュープロジェクション行列を取得
+	Camera* camera = Object3dCommon::GetInstance()->GetDefaultCamera();
+	if (!camera) return; // カメラが存在しない場合は終了
+
+	Matrix4x4 viewProjectionMatrix = camera->GetViewProjectionMatrix();
+
+	// ビュープロジェクションビューポート合成行列
+	Matrix4x4 matViewport = MakeViewportMatrix(0, 0, WinApp::kClientWidth, WinApp::kClientHeight, 0, 1);
+	Matrix4x4 matVPV = Multiply(viewProjectionMatrix, matViewport);
+
+	// 合成行列の逆行列を計算
+	Matrix4x4 matInverseVPV = Inverse(matVPV);
+
+	// 2点のワールド行列
+	posNear = Vector3(static_cast<float>(mousePosition.x), static_cast<float>(mousePosition.y), 0);
+	posFar = Vector3(static_cast<float>(mousePosition.x), static_cast<float>(mousePosition.y), 1);
+
+	// スクリーン座標からワールド座標
+	posNear = TransformCoordinates(posNear, matInverseVPV);
+	posFar = TransformCoordinates(posFar, matInverseVPV);
+
+	sprite_->Update();
+}
+
 void Player::Draw()
 {
 	for (PlayerBullet* bullet : bullets_) {
 		bullet->Draw();
 	}
 	base_->Draw(worldTransform_);
+	ReticleDraw();
+}
+
+void Player::ReticleDraw()
+{
+	sprite_->Draw();
 }
 
 void Player::OnCollision()
