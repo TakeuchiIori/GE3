@@ -319,6 +319,7 @@ void GameScene::PrepareDraw()
 	SpriteCommon::GetInstance()->DrawPreference();
 }
 
+
 void GameScene::SpawnEnemyNearSpline()
 {
 	if (spline_->GetSplinePoints().empty()) return;  // スプラインポイントが空なら処理しない
