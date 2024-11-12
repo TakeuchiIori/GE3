@@ -159,12 +159,12 @@ void Player::Move()
 	}
 
 	// マウスの押下をチェック
-	if (input_->IsPressMouse(0)) {
+	if (input_->IsPressMouse(4)) {
 	    worldTransform_.translation_.y += moveSpeed_.z;
 	}
 
 	// マウスの押下をチェック
-	if (input_->IsPressMouse(1)) {
+	if (input_->IsPressMouse(3)) {
 	    worldTransform_.translation_.y -= moveSpeed_.z;
 	}
 

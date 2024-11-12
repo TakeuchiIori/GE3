@@ -345,3 +345,101 @@ Vector3 QuaternionToEuler(const Quaternion& q)
 
     return euler;
 }
+
+Quaternion MakeAlignQuaternion(const Vector3& from, const Vector3& to) {
+    Vector3 cross = Cross(from, to);
+    float dot = Dot(from, to);
+
+    if (dot >= 1.0f) {
+        return Quaternion(0, 0, 0, 1); // 同じ方向の場合、回転なし
+    }
+    else if (dot <= -1.0f) {
+        // 反対方向の場合、回転軸を選択する必要がある
+        Vector3 axis = (std::abs(from.x) < std::abs(from.y)) ? Vector3(1, 0, 0) : Vector3(0, 1, 0);
+        axis = Normalize(Cross(from, axis));
+        return Quaternion(axis.x, axis.y, axis.z, 0); // 180度回転
+    }
+
+    float s = std::sqrt((1 + dot) * 2);
+    float invs = 1 / s;
+
+    return Quaternion(cross.x * invs, cross.y * invs, cross.z * invs, s * 0.5f);
+}
+
+/// <summary>
+/// 2つのベクトルの間の回転を計算する関数
+/// </summary>
+Vector3 SetFromTo(const Vector3& from, const Vector3& to) {
+    // ベクトルを正規化
+    Vector3 normalizedFrom = Normalize(from);
+    Vector3 normalizedTo = Normalize(to);
+
+    // 内積を計算して、ベクトルの関係性を判断
+    float dot = Dot(normalizedFrom, normalizedTo);
+    Vector3 rotationAxis;
+    float rotationAngle;
+
+    // ベクトルが同じ方向の場合、回転は不要
+    if (dot > 0.9999f) {
+        return Vector3(0.0f, 0.0f, 0.0f);
+    }
+    // ベクトルが逆方向の場合、任意の垂直軸を使用して180度回転
+    else if (dot < -0.9999f) {
+        rotationAxis = Cross(Vector3(1.0f, 0.0f, 0.0f), normalizedFrom);
+        if (Length(rotationAxis) < 0.0001f) {
+            rotationAxis = Cross(Vector3(0.0f, 1.0f, 0.0f), normalizedFrom);
+        }
+        rotationAxis = Normalize(rotationAxis);
+        rotationAngle = std::numbers::pi;
+    }
+    // それ以外の場合、通常の回転を計算
+    else {
+        rotationAxis = Normalize(Cross(normalizedFrom, normalizedTo));
+        rotationAngle = acos(dot);
+    }
+
+    // オイラー角に変換（クォータニオン不要の場合）
+    return rotationAxis * rotationAngle;
+}
+
+/// <summary>
+/// 2つのベクトル間の回転を表すクォータニオンを生成する関数
+/// </summary>
+Quaternion SetFromToQuaternion(const Vector3& from, const Vector3& to) {
+    Vector3 f = Normalize(from);
+    Vector3 t = Normalize(to);
+
+    // 内積を計算して、ベクトルの関係性を判断
+    float dot = Dot(f, t);
+
+    // ベクトルが同じ方向の場合、回転は不要
+    if (dot > 0.9999f) {
+        return Quaternion(0.0f, 0.0f, 0.0f, 1.0f); // 単位クォータニオン（回転なし）
+    }
+    // ベクトルが逆方向の場合、任意の垂直軸を使用して180度回転
+    else if (dot < -0.9999f) {
+        Vector3 rotationAxis = Cross(Vector3(1.0f, 0.0f, 0.0f), f);
+        if (Length(rotationAxis) < 0.0001f) {
+            rotationAxis = Cross(Vector3(0.0f, 1.0f, 0.0f), f);
+        }
+        rotationAxis = Normalize(rotationAxis);
+        return Quaternion(rotationAxis.x, rotationAxis.y, rotationAxis.z, 0.0f); // 180度回転のクォータニオン
+    }
+
+    // 回転軸を計算
+    Vector3 rotationAxis = Cross(f, t);
+    rotationAxis = Normalize(rotationAxis);
+
+    // 回転角を計算
+    float rotationAngle = acos(dot);
+
+    // 回転角と回転軸からクォータニオンを生成
+    float sinHalfAngle = sin(rotationAngle / 2.0f);
+    float cosHalfAngle = cos(rotationAngle / 2.0f);
+    return Quaternion(
+        rotationAxis.x * sinHalfAngle,
+        rotationAxis.y * sinHalfAngle,
+        rotationAxis.z * sinHalfAngle,
+        cosHalfAngle
+    );
+}

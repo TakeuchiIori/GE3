@@ -37,6 +37,10 @@ struct OBB {
 struct Quaternion
 {
     float w, x, y, z;
+	// 単位クォータニオンを簡単に返すための静的メンバ
+	static Quaternion Identity() {
+		return { 0.0f, 0.0f, 0.0f, 1.0f };
+	}
 };
 
 // ベクトルの内積を計算する関数
@@ -137,3 +141,10 @@ Quaternion Slerp(const Quaternion& q0, const Quaternion& q1, float t);
 
 // クォータニオンからオイラー角を作成する関数
 Vector3 QuaternionToEuler(const Quaternion& q);
+
+// 2つの方向ベクトルを揃えるクォータニオンを計算
+Quaternion MakeAlignQuaternion(const Vector3& from, const Vector3& to);
+
+Vector3 SetFromTo(const Vector3& from, const Vector3& to);
+
+Quaternion SetFromToQuaternion(const Vector3& from, const Vector3& to);

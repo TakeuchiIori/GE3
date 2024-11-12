@@ -1,4 +1,5 @@
 #pragma once
+#include <cmath>
 struct Vector3 final {
     float x;
     float y;
@@ -46,6 +47,20 @@ struct Vector3 final {
 
     // 引数付きコンストラクタ
     Vector3(float x, float y, float z) : x(x), y(y), z(z) {}
+
+    // ベクトルの外積を計算する関数
+    Vector3 Cross(const Vector3& a, const Vector3& b) {
+        return Vector3(
+            a.y * b.z - a.z * b.y,
+            a.z * b.x - a.x * b.z,
+            a.x * b.y - a.y * b.x
+        );
+    }
+    // ベクトルの長さを計算する関数
+    float Length(const Vector3& v) {
+        return std::sqrt(v.x * v.x + v.y * v.y + v.z * v.z);
+    }
+
 };
 struct Transform {
 	Vector3 scale;
