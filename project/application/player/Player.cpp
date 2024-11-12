@@ -254,7 +254,7 @@ void Player::Fire()
 {
 	if (input_->PushKey(DIK_SPACE)) {
 		// 弾の速度
-		const float kBulletSpeed = 1.0f;
+		const float kBulletSpeed = 10.0f;
 
 		// プレイヤー位置とレティクル位置を取得
 		Vector3 playerPosition = GetWorldPosition();
@@ -267,6 +267,7 @@ void Player::Fire()
 		// 弾を生成し、初期化
 		PlayerBullet* newBullet = new PlayerBullet();
 		newBullet->Initialize(playerPosition, direction);
+		newBullet->SetRotation(worldTransform_.rotation_);
 
 		// 弾をリストに追加
 		bullets_.push_back(newBullet);
