@@ -25,9 +25,8 @@
 #include "WorldTransform.h"
 #include <MathFunc.h>
 
-/// <summary>
-/// 初期化
-/// </summary>
+#include <cmath>
+
 void Spline::Initialize()
 {
     obj_.clear();
@@ -36,13 +35,26 @@ void Spline::Initialize()
     // .objモデルの読み込み
     ModelManager::GetInstance()->LoadModel("rail.obj");
 
-    // 制御点の初期化
-    controlPoints_ = {
-        {0, 0, 0}, {30, 10, 10}, {60, 20, 15}, {90, 25, 20},
-        {120, 20, 15}, {150, 10, 5}, {180, 15, -5}, {210, 20, -10},
-        {240, 15, -5}, {270, 10, 5}, {300, 0, 10}, {330, -10, 5}
-    };
-    segmentCounts_ = { 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50 }; // 分割数設定
+    // 円を描くための設定
+    Vector3 center = { 0, 0, 0 };  // 円の中心
+    float radius = 100.0f;        // 円の半径
+    int numControlPoints = 12;    // 制御点の数（大きくすると滑らかになります）
+
+    // 制御点の初期化（円形に配置し、最初のポイントを再追加してループを閉じる）
+    controlPoints_.clear();
+    for (int i = 0; i < numControlPoints; ++i) {
+        float angle = (2.0f *std::numbers::pi * i) / numControlPoints;  // 角度をラジアンで計算
+        float x = center.x + radius * cos(angle);
+        float z = center.z + radius * sin(angle);
+        float y = 0;  // 高さは一定にするため0としていますが、任意で変更可能です
+        controlPoints_.emplace_back(x, y, z);
+    }
+    controlPoints_.push_back(controlPoints_.front());  // 最初のポイントを再度追加してループ
+
+    // 分割数設定（各セグメントで均等な分割数）
+    segmentCounts_.clear();
+    int segmentsPerControlPoint = 70;  // 各セグメントの分割数
+    segmentCounts_.resize(numControlPoints, segmentsPerControlPoint);
 
     // 制御点間でCatmull-Romスプラインを使用して滑らかなスプラインポイントを生成
     pointsDrawing_.clear();
@@ -75,19 +87,12 @@ void Spline::Initialize()
             worldTransform->rotation_ = QuaternionToEuler(rotationQuat);
         }
 
-        // スケールの設定
+        // スケールの設定（ポイント間の距離に基づく）
         if (i > 0) {
             float segmentLength = Length(pointsDrawing_[i] - pointsDrawing_[i - 1]);
-
-            // 分割数に応じた縦（Y）スケールと横（X）スケールの自動調整
-            int segmentCount = segmentCounts_[(std::min)(i, segmentCounts_.size() - 1)];
-            float xScaleFactor = segmentLength / static_cast<float>(segmentCount); // Xスケール：セグメント間の距離に基づく
-            float yScaleFactor = 10.0f / static_cast<float>(segmentCount);         // Yスケール：分割数が増えると小さく、減ると大きくなる
-
-            worldTransform->scale_ = Vector3(1.0f, xScaleFactor, 1.0f);
+            worldTransform->scale_ = Vector3(segmentLength, 1.0f, 1.0f);
         }
         else {
-            // 最初のポイントはデフォルトスケール
             worldTransform->scale_ = Vector3(1.0f, 1.0f, 1.0f);
         }
 
@@ -155,17 +160,40 @@ void Spline::Draw() {
     }
 }
 
+///// <summary>
+///// Catmull-Rom スプラインでスムーズなポイントを生成
+///// </summary>
+//std::vector<Vector3> Spline::GenerateCatmullRomSplinePoints(const std::vector<Vector3>& controlPoints, size_t index, size_t segmentCount)
+//{
+//    std::vector<Vector3> splinePoints;
+//
+//    const Vector3& p0 = controlPoints[(std::max)(static_cast<int>(index) - 1, 0)];
+//    const Vector3& p1 = controlPoints[index];
+//    const Vector3& p2 = controlPoints[index + 1];
+//    const Vector3& p3 = controlPoints[(std::min)(index + 2, controlPoints.size() - 1)];
+//
+//    for (size_t i = 0; i <= segmentCount; ++i) {
+//        float t = static_cast<float>(i) / static_cast<float>(segmentCount);
+//        Vector3 point = CatmullRomSpline({ p0, p1, p2, p3 }, t);
+//        splinePoints.push_back(point);
+//    }
+//
+//    return splinePoints;
+//}
+
+
 /// <summary>
-/// Catmull-Rom スプラインでスムーズなポイントを生成
+/// Catmull-Rom スプラインでスムーズなポイントを生成（ループ対応）
 /// </summary>
 std::vector<Vector3> Spline::GenerateCatmullRomSplinePoints(const std::vector<Vector3>& controlPoints, size_t index, size_t segmentCount)
 {
     std::vector<Vector3> splinePoints;
 
-    const Vector3& p0 = controlPoints[(std::max)(static_cast<int>(index) - 1, 0)];
+    // ループ用のインデックスを計算
+    const Vector3& p0 = controlPoints[(index - 1 + controlPoints.size()) % controlPoints.size()];
     const Vector3& p1 = controlPoints[index];
-    const Vector3& p2 = controlPoints[index + 1];
-    const Vector3& p3 = controlPoints[(std::min)(index + 2, controlPoints.size() - 1)];
+    const Vector3& p2 = controlPoints[(index + 1) % controlPoints.size()];
+    const Vector3& p3 = controlPoints[(index + 2) % controlPoints.size()];
 
     for (size_t i = 0; i <= segmentCount; ++i) {
         float t = static_cast<float>(i) / static_cast<float>(segmentCount);
@@ -175,6 +203,8 @@ std::vector<Vector3> Spline::GenerateCatmullRomSplinePoints(const std::vector<Ve
 
     return splinePoints;
 }
+
+
 
 /// <summary>
 /// 等間隔でサンプルされたスプラインポイントの生成

@@ -103,5 +103,31 @@ void Camera::DebugCamera(const Vector3& position, float moveSpeed, float rotatio
 #endif
 }
 
+/// <summary>
+/// スプラインに沿ってカメラを移動する
+/// </summary>
+/// <param name="spline">移動するスプライン</param>
+/// <param name="index">スプライン上のインデックス</param>
+void Camera::SplineFollowCamera(const std::vector<Vector3>& splinePoints, size_t index) {
+    if (index >= splinePoints.size() - 1) {
+        index = 0; // スプラインのループ
+    }
+
+    // 現在の位置
+    transform_.translate = splinePoints[index];
+
+    // 次のポイントへの方向ベクトルを計算
+    Vector3 nextPosition = splinePoints[index + 1];
+    Vector3 direction = Normalize(nextPosition - transform_.translate);
+
+    // 回転を計算
+    Quaternion rotationQuat = SetFromToQuaternion(Vector3(0.0f, 0.0f, 1.0f), direction);
+    transform_.rotate = QuaternionToEuler(rotationQuat);
+
+    // 変換行列を更新
+    worldMatrix_ = MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.translate);
+    viewMatrix_ = Inverse(worldMatrix_);
+    viewProjectionMatrix_ = Multiply(viewMatrix_, projectionMatrix_);
+}
 
 

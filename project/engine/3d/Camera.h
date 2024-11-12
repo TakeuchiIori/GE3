@@ -45,6 +45,8 @@ public: // カメラ
 	/// </summary>
 	void DebugCamera(const Vector3& position,float moveSpeed, float rotationSpeed);
 
+	void SplineFollowCamera(const std::vector<Vector3>& splinePoints, size_t index);
+
 
 public: // アクセッサ
     // Setter
