@@ -93,7 +93,7 @@ private: // メンバ変数
     WorldTransform testWorldTransform_;
 
     std::unique_ptr<Player> player_;
-    std::unique_ptr< Spline> spline_;
+    std::unique_ptr<Spline> spline_;
 
     // まだ複数化していない
     std::list<Enemy*> enemies_;

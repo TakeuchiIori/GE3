@@ -1,9 +1,15 @@
 #include "Billboard.h"
 #include "DirectXCommon.h"
-#include "Object3dCommon.h"
+#include "SrvManager.h"
 
-void Billboard::Initialize(DirectXCommon* dxCommon)
+
+void Billboard::Initialize()
 {
+	dxCommon_ = DirectXCommon::GetInstance();
+	srvManager_ = SrvManager::GetInstance();
+
+	// パイプライン生成
+	CreateGraphicsPipeline();
 }
 
 void Billboard::Update(Camera* camera)
@@ -12,6 +18,25 @@ void Billboard::Update(Camera* camera)
 
 void Billboard::Draw()
 {
+	 // コマンドリストの取得
+    auto commandList = dxCommon_->GetCommandList();
+
+    // パイプラインステートとルートシグネチャの設定
+    commandList->SetPipelineState(graphicsPipelineState_.Get());
+    commandList->SetGraphicsRootSignature(rootSignature_.Get());
+
+    // プリミティブトポロジの設定（今回は三角形リスト）
+    commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+    // 頂点バッファの設定
+    commandList->IASetVertexBuffers(0, 1, &vertexBufferView_);
+
+    // インスタンシングリソースの設定 (例えばルートパラメータ1としてバインドする場合)
+    commandList->SetGraphicsRootConstantBufferView(1, instancingResource_->GetGPUVirtualAddress());
+
+    // インスタンス描画コマンドの発行
+    commandList->DrawInstanced(6, kNumMaxInstance, 0, 0); // 6頂点を使って kNumMaxInstance の数分描画
+
 }
 
 void Billboard::CreateRootSignature()
@@ -172,12 +197,55 @@ void Billboard::SetGraphicsPipeline()
 	assert(SUCCEEDED(hr));
 }
 
-void Billboard::CreateVertexBuffer()
+void Billboard::CreateVertexResource()
 {
+
+	// インスタンス用のTransformationMatrixリソースを作る
+	instancingResource_ = dxCommon_->CreateBufferResource(sizeof(BillBoadForGPU) * kNumMaxInstance);
+	// 書き込むためのアドレスを取得
+	instancingResource_->Map(0, nullptr, reinterpret_cast<void**>(&billboadForGPU_));
+	// 単位行列を書き込んでおく
+	for (uint32_t index = 0; index < kNumMaxInstance; ++index) {
+		billboadForGPU_[index].WVP = MakeIdentity4x4();
+		billboadForGPU_[index].World = MakeIdentity4x4();
+		billboadForGPU_[index].color = { 1.0f, 1.0f, 1.0f, 1.0f };
+	}
+
+	// 頂点データの定義 (3つの頂点で三角形を構成)
+	modelData_.vertices = {
+		{{-0.5f,  0.5f, 0.0f, 1.0f}, {0.0f, 0.0f}, {0.0f, 0.0f, -1.0f}}, // 頂点0: 左上
+		{{0.5f,  0.5f, 0.0f, 1.0f}, {1.0f, 0.0f}, {0.0f, 0.0f, -1.0f}},  // 頂点1: 右上
+		{{-0.5f, -0.5f, 0.0f, 1.0f}, {0.0f, 1.0f}, {0.0f, 0.0f, -1.0f}}, // 頂点2: 左下
+
+		{{-0.5f, -0.5f, 0.0f, 1.0f}, {0.0f, 1.0f}, {0.0f, 0.0f, -1.0f}}, // 頂点3: 左下
+		{{0.5f,  0.5f, 0.0f, 1.0f}, {1.0f, 0.0f}, {0.0f, 0.0f, -1.0f}},  // 頂点4: 右上
+		{{0.5f, -0.5f, 0.0f, 1.0f}, {1.0f, 1.0f}, {0.0f, 0.0f, -1.0f}}  // 頂点5: 右下
+	};
+
+	//頂点リソース
+	vertexResource_ = dxCommon_->CreateBufferResource(sizeof(VertexData) * modelData_.vertices.size());
+	// 頂点バッファービュー
+	vertexBufferView_.BufferLocation = vertexResource_->GetGPUVirtualAddress();// リソースデータの先頭アドレスから使う
+	vertexBufferView_.SizeInBytes = UINT(sizeof(VertexData) * modelData_.vertices.size());// 使用するリソースのサイズは1頂点のサイズ
+	vertexBufferView_.StrideInBytes = sizeof(VertexData);// 1頂点のサイズ
+	//　データ書き込み
+	vertexResource_->Map(0, nullptr, reinterpret_cast<void**>(&vertexData_));
+	memcpy(vertexData_, modelData_.vertices.data(), sizeof(VertexData) * modelData_.vertices.size());
+	vertexResource_->Unmap(0, nullptr); // データ書き込み後にUnmap
+
 
 }
 
 void Billboard::CreateMaterialResource()
 {
+	// リソース作成
+	materialResource_ = dxCommon_->CreateBufferResource(sizeof(Material));
+	// データを書き込むためのアドレスを取得して割り当て
+	materialResource_->Map(0, nullptr, reinterpret_cast<void**>(&materialData_));
+	// マテリアルデータの初期化
+	materialData_->color = { 1.0f,1.0f,1.0f,1.0f };
+	materialData_->enableLighting = true;
+	materialData_->uvTransform = MakeIdentity4x4();
 
+	materialResource_->Unmap(0, nullptr);
 }

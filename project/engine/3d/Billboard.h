@@ -21,6 +21,7 @@
 #include "Camera.h"
 #include "Mathfunc.h"
 
+class SrvManager;
 class DirectXCommon;
 class Billboard{
 public:
@@ -30,10 +31,30 @@ public:
         Vector2 texcoord;
         Vector3 normal;
     };
+    struct MaterialData {
+        std::string textureFilePath;
+        uint32_t textureIndexSRV = 0;
+    };
+    struct ModelData {
+        std::vector<VertexData> vertices;
+        MaterialData material;
+    };
+    struct BillBoadForGPU {
+        Matrix4x4 WVP;
+        Matrix4x4 World;
+        Vector4 color;
+    };
+    struct Material {
+        Vector4 color;
+        int32_t enableLighting;
+        float padding[3];
+        Matrix4x4 uvTransform;
+    };
+
     /// <summary>
     /// 初期化
     /// </summary>
-    void Initialize(DirectXCommon* dxCommon);
+    void Initialize();
 
     /// <summary>
     /// 更新
@@ -65,17 +86,23 @@ private:
     /// <summary>
     /// 頂点バッファの生成
     /// </summary>
-    void CreateVertexBuffer();
+    void CreateVertexResource();
 
     /// <summary>
     /// マテリアルリソース
     /// </summary>
     void CreateMaterialResource();
-   
 
+    void GenerateInstancesAlongSpline(const std::vector<ControlPoint>& controlPoints);
+
+    void ApplyRotationWithQuaternion(const std::vector<ControlPoint>& controlPoints);
+   
+    XMFLOAT3 CatmullRomSpline(const XMFLOAT3& p0, const XMFLOAT3& p1, const XMFLOAT3& p2, const XMFLOAT3& p3, float t);
 private:
 
+    // 他クラスのポインタ
     DirectXCommon* dxCommon_ = nullptr;
+    SrvManager* srvManager_ = nullptr;
 
 	// ルートシグネチャ
 	D3D12_ROOT_SIGNATURE_DESC descriptionRootSignature_{};
@@ -114,7 +141,16 @@ private:
 	bool particleUpdate = false;
 	bool useBillboard = false;
 
+    const uint32_t kNumMaxInstance = 16; // インスタンス数
+    BillBoadForGPU* billboadForGPU_;
+
+
+    ModelData modelData_;
+    VertexData* vertexData_ = nullptr;
+    Material* materialData_ = nullptr;
 
 	Matrix4x4 scaleMatrix;
 	Matrix4x4 translateMatrix;
 };
+
+

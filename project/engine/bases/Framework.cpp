@@ -11,7 +11,7 @@ void Framework::Initialize()
 	input_->Initialize(winApp_);
 
 	// DirectX生成
-	dxCommon_ = std::make_unique<DirectXCommon>();
+	dxCommon_ = DirectXCommon::GetInstance();
 	dxCommon_->Initialize(winApp_);
 
 	// サウンド生成
@@ -20,28 +20,28 @@ void Framework::Initialize()
 
 	// ImGui生成
 	imguiManager_ = ImGuiManager::GetInstance();
-	imguiManager_->Initialize(winApp_, dxCommon_.get());
+	imguiManager_->Initialize(winApp_, dxCommon_);
 
 	// SRVマネージャの生成
 	srvManager_ = SrvManager::GetInstance();
-	srvManager_->Initialize(dxCommon_.get());
+	srvManager_->Initialize(dxCommon_);
 
 
 	// テクスチャマネージャの生成
 	textureManager_ = TextureManager::GetInstance();
-	textureManager_->Initialize(dxCommon_.get(), srvManager_);
+	textureManager_->Initialize(dxCommon_, srvManager_);
 
 	// スプライト共通部の生成
 	spriteCommon_ = SpriteCommon::GetInstance();
-	spriteCommon_->Initialize(dxCommon_.get());
+	spriteCommon_->Initialize(dxCommon_);
 
 	// 3Dオブジェクト共通部の生成
 	object3dCommon_ = Object3dCommon::GetInstance();
-	object3dCommon_->Initialize(dxCommon_.get());
+	object3dCommon_->Initialize(dxCommon_);
 
 	// 3Dモデルマネージャの生成
 	modelManager_ = ModelManager::GetInstance();
-	modelManager_->Initialze(dxCommon_.get());
+	modelManager_->Initialze(dxCommon_);
 
 
 }

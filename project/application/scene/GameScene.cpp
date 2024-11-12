@@ -152,6 +152,9 @@ void GameScene::CheackAllCollisions()
 void GameScene::FinalizeCamera()
 {
 	cameraManager_.RemoveCamera(currentCamera_);
+	for (Enemy* enemy : enemies_) {
+		delete enemy;
+	}
 }
 
 
