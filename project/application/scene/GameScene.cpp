@@ -12,6 +12,8 @@ void GameScene::Initialize()
 	// モデル読み込み
 	ModelManager::GetInstance()->LoadModel("float_body.obj");
 
+	ModelManager::GetInstance()->LoadModel("skydome_sphere.obj");
+	
 	// カメラの初期化
 	currentCamera_ = cameraManager_.AddCamera();
 	Object3dCommon::GetInstance()->SetDefaultCamera(currentCamera_.get());
@@ -21,10 +23,9 @@ void GameScene::Initialize()
 	player_->Initailize();
 
 
-
 	test_ = std::make_unique<Object3d>();
 	test_->Initialize();
-	test_->SetModel("float_body.obj");
+	test_->SetModel("skydome_sphere.obj");
 	testWorldTransform_.Initialize();
 
 	splineIndex_ = 0;  // スプラインインデックスの初期化
