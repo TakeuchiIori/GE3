@@ -249,6 +249,7 @@ void Player::SetParent(const WorldTransform* parent)
 	// 親子関係を結ぶ
 	worldTransform_.parent_ = parent;
 }
+
 void Player::Fire()
 {
 	if (input_->PushKey(DIK_SPACE)) {

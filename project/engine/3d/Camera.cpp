@@ -5,6 +5,7 @@
 #ifdef _DEBUG
 #include "imgui.h"
 #endif // _DEBUG
+#include <WorldTransform.h>
 
 Camera::Camera()
     : transform_({ {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f} })
@@ -129,5 +130,7 @@ void Camera::SplineFollowCamera(const std::vector<Vector3>& splinePoints, size_t
     viewMatrix_ = Inverse(worldMatrix_);
     viewProjectionMatrix_ = Multiply(viewMatrix_, projectionMatrix_);
 }
+
+
 
 

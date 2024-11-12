@@ -27,7 +27,7 @@ public:
     std::vector<Vector3> SampleSplineEquidistant(const std::vector<Vector3>& points, size_t sampleCount);
 
 
-
+    const std::vector<Vector3>& GetSplinePoints() const{ return pointsDrawing_; }
     /// <summary>
     /// 描画
     /// </summary>

@@ -31,10 +31,24 @@ void GameScene::Initialize()
 	test_->SetModel("float_body.obj");
 	testWorldTransform_.Initialize();
 
+	splineIndex_ = 0;  // スプラインインデックスの初期化
 	spline_ = std::make_unique<Spline>();
 	spline_->Initialize();
+
+
+	
+
+	// カメラを更新
+	cameraManager_.AddCamera();
+
 	// 初期カメラモード設定
 	cameraMode_ = CameraMode::FPS;
+
+	//railCamera_ = make_unique<RailCamera>();
+	//railCamera_->SetSplinePath(spline_->GetSplinePoints()); // スプラインパスを設定
+	//railCamera_->SetSpeed(10.05f); // 移動速度の設定
+	//// プレイヤーをレールカメラにペアレント
+	//player_->SetParent(&railCamera_->GetWorldTransform());
 }
 
 void GameScene::Finalize()
@@ -50,6 +64,9 @@ void GameScene::Update()
 	}
 	CheackAllCollisions();
 
+
+	//railCamera_->Update();
+
 	// 各オブジェクトの更新
 	player_->Update();
 	spline_->Update();
@@ -60,6 +77,7 @@ void GameScene::Update()
 	UpdateCameraMode();
 	UpdateCamera();
 	UpdateCameraWithRightStick();
+	//railCamera_->Update();
 
 	// ワールドトランスフォーム更新
 	testWorldTransform_.UpdateMatrix();
