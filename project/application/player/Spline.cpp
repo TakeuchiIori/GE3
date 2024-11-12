@@ -20,25 +20,25 @@ void Spline::Initialize()
 
     // 制御点の初期化
     controlPoints_ = {
-        {0, 0, 0},        // スタート地点
-        {100, 150, 100},  // 上昇
-        {200, 500, 200},  // 下り
-        {300, 200, 100},  // 再度上昇
-        {400, -100, 0},   // 急下降
-        {500, 50, -100},  // 緩やかな上昇
-        {600, 300, -200}, // 高く登る
-        {700, 0, 0},      // 下りながら進む
-        {800, -150, 150}, // 急降下
-        {900, 100, 250},  // ゆっくり上昇
-        {1000, 0, 100},   // 平坦に進む
-        {1100, -200, 50}, // さらに下降して終わる
+    {0, 0, 0},           // スタート地点
+    {50, 25, 25},        // 緩やかな上昇
+    {100, 75, 50},       // 徐々に上昇
+    {150, 100, 50},      // 少し下りながら進む
+    {200, 25, 25},       // ゆっくり下降
+    {250, 0, 0},         // 緩やかに降下
+    {300, 50, -25},      // 少し上昇
+    {350, 75, -50},      // 緩やかな下降
+    {400, 50, 0},        // 滑らかに進む
+    {450, 25, 50},       // 徐々に上昇
+    {500, 0, 25},        // 緩やかに進む
+    {550, -50, 0},       // 少し下降して終わる
     };
 
     // 各セグメント間の分割数を設定
-    segmentCounts_ = { 300, 200, 200, 200, 200, 200, 200, 200, 200, 200, 300 };
+    segmentCounts_ = { 30, 20, 20, 20, 20, 20, 20, 20, 20, 20, 30 };
 
     // 描画用スプラインポイントの生成
-    for (size_t i = 0; i < controlPoints_.size() -3; ++i) {
+    for (size_t i = 0; i < controlPoints_.size() - 3; ++i) {
         auto segmentPoints = GenerateCatmullRomSplinePoints(controlPoints_, i, segmentCounts_[i]);
         pointsDrawing_.insert(pointsDrawing_.end(), segmentPoints.begin(), segmentPoints.end());
     }
@@ -58,16 +58,29 @@ void Spline::Initialize()
         worldTransform->Initialize();
         worldTransform->translation_ = pointsDrawing_[i];
 
-        // 回転の計算
         if (i > 0) {
-            // X軸方向 (1, 0, 0) から currentDirection への回転を求める
             Vector3 currentDirection = Normalize(pointsDrawing_[i] - pointsDrawing_[i - 1]);
-            Vector3 eulerRotation = SetFromTo(Vector3(1.0f, 0.0f, 0.0f), currentDirection);
+            Quaternion rotationQuat = SetFromToQuaternion(Vector3(1.0f, 0.0f, 0.0f), currentDirection);
+            Vector3 eulerRotation = QuaternionToEuler(rotationQuat);
+            eulerRotation.y += 1.56f; // カメラと同じ調整を加える
             worldTransform->rotation_ = eulerRotation;
         }
+        else if (pointsDrawing_.size() > 1) {
+            // 最初のポイントも次のポイントに基づいて回転を適用
+            Vector3 currentDirection = Normalize(pointsDrawing_[1] - pointsDrawing_[0]);
+            Quaternion rotationQuat = SetFromToQuaternion(Vector3(1.0f, 0.0f, 0.0f), currentDirection);
+            Vector3 eulerRotation = QuaternionToEuler(rotationQuat);
+            eulerRotation.y += 1.56f; // カメラと同じ調整を加える
+            worldTransform->rotation_ = eulerRotation;
+        }
+
+        // スケールの設定（始点から終点の距離を基に計算）
+        if (i > 0) {
+            float scale = Length(pointsDrawing_[i] - pointsDrawing_[i - 1]);
+            worldTransform->scale_ = Vector3(scale, 1.0f, 1.0f);
+        }
         else {
-            // 最初のポイントは回転なし
-            worldTransform->rotation_ = Vector3(0.0f, 0.0f, 0.0f);
+            worldTransform->scale_ = Vector3(1.0f, 1.0f, 1.0f);
         }
 
         worldTransforms_.push_back(std::move(worldTransform));
@@ -79,45 +92,26 @@ void Spline::Initialize()
 /// </summary>
 void Spline::Update()
 {
-    // 初期の回転を保持するクォータニオン
-    Quaternion lastRotation = Quaternion::Identity();
-
     for (size_t i = 0; i < pointsDrawing_.size(); ++i)
     {
         // 各ポイントの位置を設定
         worldTransforms_[i]->translation_ = pointsDrawing_[i];
 
         if (i > 0) {
-            // 前のポイントと現在のポイントを始点と終点として扱う
+            // 前のポイントと現在のポイントを使用して方向と回転を計算
             Vector3 startPoint = pointsDrawing_[i - 1];
             Vector3 endPoint = pointsDrawing_[i];
-
-            // 方向ベクトルを正規化して求める
             Vector3 direction = Normalize(endPoint - startPoint);
 
-            // クォータニオンで方向に合わせた回転を計算
-            Quaternion targetRotation = SetFromToQuaternion(Vector3(1.0f, 0.0f, 0.0f), direction);
-
-            // 連続性を保つために符号を調整
-            if (Dot(lastRotation, targetRotation) < 0.0f) {
-                targetRotation = Quaternion(-targetRotation.x, -targetRotation.y, -targetRotation.z, -targetRotation.w);
-            }
-
-            // スケールを計算し適用
-            float scale = Magnitude(endPoint - startPoint);
-            worldTransforms_[i]->scale_ = Vector3(1.0f, 1.0f,1.0f);
-
-            // クォータニオンをオイラー角に変換して回転を設定
-            Vector3 eulerRotation = QuaternionToEuler(targetRotation);
+            // クォータニオンで回転を計算
+            Quaternion rotationQuat = SetFromToQuaternion(Vector3(1.0f, 0.0f, 0.0f), direction);
+            Vector3 eulerRotation = QuaternionToEuler(rotationQuat);
+            eulerRotation.y += 1.56f; // 回転の微調整
             worldTransforms_[i]->rotation_ = eulerRotation;
 
-            // 次のポイントのために現在の回転を保持
-            lastRotation = targetRotation;
-        }
-        else {
-            // 最初のポイントは回転なしで、スケールも1.0に設定
-            worldTransforms_[i]->rotation_ = Vector3(0.0f, 0.0f, 0.0f);
-            worldTransforms_[i]->scale_ = Vector3(1.0f, 1.0f, 1.0f);
+            // スケールの設定
+            float scale = Length(endPoint - startPoint);
+            worldTransforms_[i]->scale_ = Vector3(scale , 1.0f, 1.0f);
         }
 
         // ワールド行列を更新

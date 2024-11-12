@@ -42,7 +42,7 @@ private:
     std::vector<std::unique_ptr<WorldTransform>> worldTransforms_; // 各ポイントのワールド変換
 
     Quaternion lastRotation_; // 最後の回転を保持するメンバ変数
-    const size_t sampleCount = 200; // サンプル数を設定（任意の数に設定）
+    const size_t sampleCount = 50; // サンプル数を設定（任意の数に設定）
 
    
 };
