@@ -20,14 +20,7 @@ void GameScene::Initialize()
 	player_ = std::make_unique<Player>();
 	player_->Initailize();
 
-	for (int i = 0; i < 1; ++i) {
-		Vector3 playerPos = player_->GetWorldPosition(); // プレイヤーの位置を取得
-		Vector3 enemyPos = playerPos + Vector3{ static_cast<float>(rand() % 10 - 5), 0.0f, static_cast<float>(rand() % 10 - 5) }; // ランダムな位置にスポーンさせる
 
-		Enemy* enemy = new Enemy();
-		enemy->Initialize(enemyPos); // プレイヤーの近くに敵を生成
-		enemies_.push_back(enemy);
-	}
 
 	test_ = std::make_unique<Object3d>();
 	test_->Initialize();
@@ -38,7 +31,10 @@ void GameScene::Initialize()
 	spline_ = std::make_unique<Spline>();
 	spline_->Initialize();
 
-
+	// スプライン近くに敵をスポーン
+	for (int i = 0; i < 10; ++i) { // 例えば5体の敵を生成
+		SpawnEnemyNearSpline();
+	}
 	
 
 	// カメラを更新
@@ -321,4 +317,21 @@ void GameScene::PrepareDraw()
 {
 	Object3dCommon::GetInstance()->DrawPreference();
 	SpriteCommon::GetInstance()->DrawPreference();
+}
+
+void GameScene::SpawnEnemyNearSpline()
+{
+	if (spline_->GetSplinePoints().empty()) return;  // スプラインポイントが空なら処理しない
+
+	// スプライン上のランダムなポイントを選択
+	size_t randomIndex = rand() % spline_->GetSplinePoints().size();
+	Vector3 splinePoint = spline_->GetSplinePoints()[randomIndex];
+
+	// ランダムなオフセットを追加してスプライン付近に敵をスポーン
+	Vector3 offset = Vector3{ static_cast<float>(rand() % 20 - 5), 0.0f, static_cast<float>(rand() % 20 - 5) };
+	Vector3 enemyPos = splinePoint + offset;
+
+	Enemy* enemy = new Enemy();
+	enemy->Initialize(enemyPos);  // 敵の位置を設定
+	enemies_.push_back(enemy);
 }

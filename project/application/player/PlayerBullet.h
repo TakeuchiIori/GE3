@@ -46,6 +46,8 @@ public:
 	float GetRadius() { return rad_; }
 	float Setradius() { return rad_; }
 
+	void  SetRotation(Vector3& rotation) { worldTransform_.rotation_ = rotation; }
+
 private:
 
 	// ワールドトランスフォーム
