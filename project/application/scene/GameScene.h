@@ -103,4 +103,5 @@ private: // メンバ変数
     std::list<EnemyBullet*> enemyBullets_;
 
     size_t splineIndex_;  // スプライン上の位置を管理するインデックス
+    float speedFactor;
 };

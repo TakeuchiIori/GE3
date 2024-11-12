@@ -37,8 +37,8 @@ void Spline::Initialize()
 
     // 円を描くための設定
     Vector3 center = { 0, 0, 0 };  // 円の中心
-    float radius = 100.0f;        // 円の半径
-    int numControlPoints = 12;    // 制御点の数（大きくすると滑らかになります）
+    float radius = 120.0f;        // 円の半径
+    int numControlPoints = 16;    // 制御点の数（大きくすると滑らかになります）
 
     // 制御点の初期化（円形に配置し、最初のポイントを再追加してループを閉じる）
     controlPoints_.clear();
@@ -53,7 +53,7 @@ void Spline::Initialize()
 
     // 分割数設定（各セグメントで均等な分割数）
     segmentCounts_.clear();
-    int segmentsPerControlPoint = 70;  // 各セグメントの分割数
+    int segmentsPerControlPoint = 50;  // 各セグメントの分割数
     segmentCounts_.resize(numControlPoints, segmentsPerControlPoint);
 
     // 制御点間でCatmull-Romスプラインを使用して滑らかなスプラインポイントを生成
@@ -73,7 +73,6 @@ void Spline::Initialize()
         auto worldTransform = std::make_unique<WorldTransform>();
         worldTransform->Initialize();
         worldTransform->translation_ = pointsDrawing_[i];
-
         // 回転の設定：スプラインの方向に沿わせる
         if (i > 0) {
             Vector3 currentDirection = Normalize(pointsDrawing_[i] - pointsDrawing_[i - 1]);
@@ -159,27 +158,6 @@ void Spline::Draw() {
         }
     }
 }
-
-///// <summary>
-///// Catmull-Rom スプラインでスムーズなポイントを生成
-///// </summary>
-//std::vector<Vector3> Spline::GenerateCatmullRomSplinePoints(const std::vector<Vector3>& controlPoints, size_t index, size_t segmentCount)
-//{
-//    std::vector<Vector3> splinePoints;
-//
-//    const Vector3& p0 = controlPoints[(std::max)(static_cast<int>(index) - 1, 0)];
-//    const Vector3& p1 = controlPoints[index];
-//    const Vector3& p2 = controlPoints[index + 1];
-//    const Vector3& p3 = controlPoints[(std::min)(index + 2, controlPoints.size() - 1)];
-//
-//    for (size_t i = 0; i <= segmentCount; ++i) {
-//        float t = static_cast<float>(i) / static_cast<float>(segmentCount);
-//        Vector3 point = CatmullRomSpline({ p0, p1, p2, p3 }, t);
-//        splinePoints.push_back(point);
-//    }
-//
-//    return splinePoints;
-//}
 
 
 /// <summary>

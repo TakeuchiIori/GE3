@@ -41,6 +41,7 @@ void Camera::FollowCamera(Vector3& target)
 #endif
     transform_.rotate = followCameraOffsetRotare_;
     transform_.translate = target + followCameraOffsetPosition_; 
+    transform_.translate.y += 1.2f;
     worldMatrix_ = MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.translate);
     viewMatrix_ = Inverse(worldMatrix_);
 }
@@ -79,8 +80,8 @@ void Camera::SetFPSCamera(const Vector3& position, const Vector3& rotation)
 {
     // カメラ位置をプレイヤー位置に設定
     transform_.translate = position;
-    transform_.translate.y += 2.0f;
-    transform_.translate.z += 12.0f;
+    transform_.translate.y += 1.8f;
+    transform_.translate.z += 0.2f;
     // カメラの回転をプレイヤーの回転と同じに設定
     transform_.rotate = rotation;
 
@@ -131,6 +132,64 @@ void Camera::SplineFollowCamera(const std::vector<Vector3>& splinePoints, size_t
     viewProjectionMatrix_ = Multiply(viewMatrix_, projectionMatrix_);
 }
 
+void Camera::SetSplineSmoothCamera(const Vector3& currentPosition, const Vector3& nextPosition, float interpolationFactor)
+{
+    // 位置の補間
+    transform_.translate = Lerp(transform_.translate, currentPosition, interpolationFactor);
+    transform_.translate.y += 1.8f;  // プレイヤーの頭部に合わせたオフセット
 
+    // 次のポイントへの方向ベクトルを計算
+    Vector3 direction = Normalize(nextPosition - currentPosition);
 
+    // カメラの回転を補間してスムーズに設定
+    Quaternion targetRotation = SetFromToQuaternion(Vector3(0.0f, 0.0f, 1.0f), direction);
+    Quaternion currentRotation = EulerToQuaternion(transform_.rotate);
+    Quaternion smoothedRotation = Slerp(currentRotation, targetRotation, interpolationFactor);
+
+    transform_.rotate = QuaternionToEuler(smoothedRotation);
+
+    // 変換行列を更新
+    worldMatrix_ = MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.translate);
+    viewMatrix_ = Inverse(worldMatrix_);
+    viewProjectionMatrix_ = Multiply(viewMatrix_, projectionMatrix_);
+
+#ifdef _DEBUG
+    // ImGuiでFPSカメラのパラメータを調整できるようにする
+    ImGui::Begin("Smooth Spline Camera Controls");
+    ImGui::DragFloat3("Position", &transform_.translate.x, 0.1f);
+    ImGui::DragFloat3("Rotation", &transform_.rotate.x, 0.01f);
+    ImGui::End();
+#endif
+}
+void Camera::SetFPSCameraSmooth(const Vector3& playerPosition, const Vector3& playerRotation, const Vector3& targetPosition, float interpolationFactor)
+{
+    // カメラ位置をプレイヤーの位置に補間で移動させる
+    transform_.translate = Lerp(transform_.translate, playerPosition, interpolationFactor);
+    transform_.translate.y += 1.8f;  // プレイヤーの頭部付近に合わせた高さのオフセット
+
+    // プレイヤーの現在の回転を基準にクォータニオンを作成
+    Quaternion currentRotation = EulerToQuaternion(transform_.rotate);
+    Quaternion playerRotationQuat = EulerToQuaternion(playerRotation);
+
+    // 次の目標方向を求める
+    Vector3 direction = Normalize(targetPosition - playerPosition);
+    Quaternion targetRotationQuat = SetFromToQuaternion(Vector3(0.0f, 0.0f, 1.0f), direction);
+
+    // プレイヤーの回転と目標方向の回転を組み合わせて、スムーズに補間
+    Quaternion finalRotation = Slerp(currentRotation, targetRotationQuat * playerRotationQuat, interpolationFactor);
+    transform_.rotate = QuaternionToEuler(finalRotation);
+
+    // 変換行列の更新
+    worldMatrix_ = MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.translate);
+    viewMatrix_ = Inverse(worldMatrix_);
+    viewProjectionMatrix_ = Multiply(viewMatrix_, projectionMatrix_);
+
+#ifdef _DEBUG
+    // ImGuiでFPSカメラのパラメータを調整できるようにする
+    ImGui::Begin("Smooth FPS Camera Controls");
+    ImGui::DragFloat3("Position", &transform_.translate.x, 0.1f);
+    ImGui::DragFloat3("Rotation", &transform_.rotate.x, 0.01f);
+    ImGui::End();
+#endif
+}
 
