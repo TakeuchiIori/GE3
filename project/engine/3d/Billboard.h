@@ -93,11 +93,7 @@ private:
     /// </summary>
     void CreateMaterialResource();
 
-    void GenerateInstancesAlongSpline(const std::vector<ControlPoint>& controlPoints);
-
-    void ApplyRotationWithQuaternion(const std::vector<ControlPoint>& controlPoints);
    
-    XMFLOAT3 CatmullRomSpline(const XMFLOAT3& p0, const XMFLOAT3& p1, const XMFLOAT3& p2, const XMFLOAT3& p3, float t);
 private:
 
     // 他クラスのポインタ
