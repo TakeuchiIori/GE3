@@ -86,6 +86,7 @@ private:
 
     void SpawnEnemyNearSpline();
 
+
 private: // メンバ変数
     CameraMode cameraMode_;
     std::shared_ptr<Camera> currentCamera_;
