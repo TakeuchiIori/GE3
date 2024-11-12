@@ -26,6 +26,8 @@ public:
 
     std::vector<Vector3> SampleSplineEquidistant(const std::vector<Vector3>& points, size_t sampleCount);
 
+
+
     /// <summary>
     /// 描画
     /// </summary>
@@ -39,7 +41,10 @@ private:
     std::vector<std::unique_ptr<Object3d>> obj_; // 各ポイントに対応するObject3d
     std::vector<std::unique_ptr<WorldTransform>> worldTransforms_; // 各ポイントのワールド変換
 
+    Quaternion lastRotation_; // 最後の回転を保持するメンバ変数
     const size_t sampleCount = 200; // サンプル数を設定（任意の数に設定）
 
    
 };
+
+

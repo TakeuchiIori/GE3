@@ -179,6 +179,68 @@ bool IsCollision(const AABB& aabb, const Sphere& sphere) {
     return distanceSquared < (sphere.radius * sphere.radius);
 }
 
+Vector3 CatmullRomInterpolation(const Vector3& p0, const Vector3& p1, const Vector3& p2, const Vector3& p3, float t) {
+    const float s = 0.5f;
+
+    float t2 = t * t;
+    float t3 = t2 * t;
+
+    Vector3 e3 = -1 * p0 + 3 * p1 - 3 * p2 + p3;
+    Vector3 e2 = 2 * p0 - 5 * p1 + 4 * p2 - p3;
+    Vector3 e1 = -1 * p0 + p2;
+    Vector3 e0 = 2 * p1;
+
+
+    return s * (e3 * t3 + e2 * t2 + e1 * t + e0);
+};
+
+
+Vector3 CatmullRomPosition(const std::vector<Vector3>& points, float t) {
+    assert(points.size() >= 4 && "制御点は4点以上必要です");
+
+    // 区間数は制御点の数-1
+    size_t division = points.size() - 1;
+    // 1区間の長さ
+    float areaWidth = 1.0f / division;
+
+    // 区間内の始点を0.0f, 終点を1.0fとした時の現在位置
+    float t_2 = std::fmod(t, areaWidth) * division;
+    // 加減(0.0f)と上限(1.0f)の範囲に収める
+    t_2 = std::clamp(t_2, 0.0f, 1.0f);
+
+    // 区間番号を計算し、範囲内に収める
+    size_t index = static_cast<size_t>(t / areaWidth);
+    // 上限を超えないように抑える
+    index = std::min(index, points.size() - 2);
+
+    // 4点分のインデックス
+    size_t index0 = index - 1;
+    size_t index1 = index;
+    size_t index2 = index + 1;
+    size_t index3 = index + 2;
+
+    // 最初の区間のp0はp1を重複使用する
+    if (index == 0) {
+        index0 = index1;
+    }
+    // 最後の区間のp3はp2を重複使用する
+    if (index3 >= points.size()) {
+        index3 = index2;
+    }
+
+    // 4点の座標
+    const Vector3& p0 = points[index0];
+    const Vector3& p1 = points[index1];
+    const Vector3& p2 = points[index2];
+    const Vector3& p3 = points[index3];
+
+    return CatmullRomInterpolation(p0, p1, p2, p3, t_2);
+}
+
+
+
+
+
 
 Quaternion IdentityQuaternion()
 {
@@ -406,40 +468,26 @@ Vector3 SetFromTo(const Vector3& from, const Vector3& to) {
 /// 2つのベクトル間の回転を表すクォータニオンを生成する関数
 /// </summary>
 Quaternion SetFromToQuaternion(const Vector3& from, const Vector3& to) {
+
     Vector3 f = Normalize(from);
     Vector3 t = Normalize(to);
 
-    // 内積を計算して、ベクトルの関係性を判断
+    Vector3 cross = Cross(f, t);
+
     float dot = Dot(f, t);
+    float w = sqrt((1 + dot) * 0.5f);
+    float s = 0.5f / w;
 
-    // ベクトルが同じ方向の場合、回転は不要
-    if (dot > 0.9999f) {
-        return Quaternion(0.0f, 0.0f, 0.0f, 1.0f); // 単位クォータニオン（回転なし）
-    }
-    // ベクトルが逆方向の場合、任意の垂直軸を使用して180度回転
-    else if (dot < -0.9999f) {
-        Vector3 rotationAxis = Cross(Vector3(1.0f, 0.0f, 0.0f), f);
-        if (Length(rotationAxis) < 0.0001f) {
-            rotationAxis = Cross(Vector3(0.0f, 1.0f, 0.0f), f);
-        }
-        rotationAxis = Normalize(rotationAxis);
-        return Quaternion(rotationAxis.x, rotationAxis.y, rotationAxis.z, 0.0f); // 180度回転のクォータニオン
-    }
 
-    // 回転軸を計算
-    Vector3 rotationAxis = Cross(f, t);
-    rotationAxis = Normalize(rotationAxis);
+    float x = cross.x * s;
+    float y = cross.y * s;
+    float z = cross.z * s;
 
-    // 回転角を計算
-    float rotationAngle = acos(dot);
+    return Quaternion{ x, y, z, w };
+}
 
-    // 回転角と回転軸からクォータニオンを生成
-    float sinHalfAngle = sin(rotationAngle / 2.0f);
-    float cosHalfAngle = cos(rotationAngle / 2.0f);
-    return Quaternion(
-        rotationAxis.x * sinHalfAngle,
-        rotationAxis.y * sinHalfAngle,
-        rotationAxis.z * sinHalfAngle,
-        cosHalfAngle
-    );
+Vector3 RotateVectorByQuaternion(const Vector3& vec, const Quaternion& quat) {
+    Quaternion qVec(0, vec.x, vec.y, vec.z);
+    Quaternion result = quat * qVec * Conjugate(quat);
+    return Vector3(result.x, result.y, result.z);
 }

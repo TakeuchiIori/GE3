@@ -7,6 +7,7 @@
 #include <cmath>
 #include <numbers>
 #include <stdexcept>
+#include <algorithm>
 
 struct Sphere {
 	Vector3 center; // !< 中心点
@@ -40,6 +41,16 @@ struct Quaternion
 	// 単位クォータニオンを簡単に返すための静的メンバ
 	static Quaternion Identity() {
 		return { 0.0f, 0.0f, 0.0f, 1.0f };
+	}
+
+	// クォータニオンの掛け算演算子オーバーロード
+	Quaternion operator*(const Quaternion& q) const {
+		return Quaternion(
+			w * q.w - x * q.x - y * q.y - z * q.z,
+			w * q.x + x * q.w + y * q.z - z * q.y,
+			w * q.y - x * q.z + y * q.w + z * q.x,
+			w * q.z + x * q.y - y * q.x + z * q.w
+		);
 	}
 };
 
@@ -106,6 +117,12 @@ bool IsCollision(const AABB& aabb, const Vector3& point);
 // AABBと球の衝突判定を行う関数
 bool IsCollision(const AABB& aabb, const Sphere& sphere);
 
+// ぐちずえんじんご提供
+Vector3 CatmullRomInterpolation(const Vector3& p0, const Vector3& p1, const Vector3& p2, const Vector3& p3, float t);
+
+// ぐちずえんじんご提供
+Vector3 CatmullRomPosition(const std::vector<Vector3>& points, float t);
+
 // 単位クォータニオンを返す関数
 Quaternion IdentityQuaternion();
 
@@ -148,3 +165,5 @@ Quaternion MakeAlignQuaternion(const Vector3& from, const Vector3& to);
 Vector3 SetFromTo(const Vector3& from, const Vector3& to);
 
 Quaternion SetFromToQuaternion(const Vector3& from, const Vector3& to);
+
+Vector3 RotateVectorByQuaternion(const Vector3& vec, const Quaternion& quat);
