@@ -496,3 +496,108 @@ Vector3 RotateVectorByQuaternion(const Vector3& vec, const Quaternion& quat) {
     Quaternion result = quat * qVec * Conjugate(quat);
     return Vector3(result.x, result.y, result.z);
 }
+
+// オイラー角をクォータニオンに変換する関数
+Quaternion EulerToQuaternion(const Vector3& euler)
+{
+    // オイラー角をラジアンに変換
+    float pitch = euler.x;
+    float yaw = euler.y;
+    float roll = euler.z;
+
+    // 半角を計算
+    float cy = cos(yaw * 0.5f);
+    float sy = sin(yaw * 0.5f);
+    float cp = cos(pitch * 0.5f);
+    float sp = sin(pitch * 0.5f);
+    float cr = cos(roll * 0.5f);
+    float sr = sin(roll * 0.5f);
+
+    Quaternion q;
+    q.w = cr * cp * cy + sr * sp * sy;
+    q.x = sr * cp * cy - cr * sp * sy;
+    q.y = cr * sp * cy + sr * cp * sy;
+    q.z = cr * cp * sy - sr * sp * cy;
+    return q;
+}
+Quaternion MatrixToQuaternion(const Matrix4x4& mat) {
+    Quaternion q;
+    float trace = mat.m[0][0] + mat.m[1][1] + mat.m[2][2];
+
+    if (trace > 0.0f) {
+        float s = 0.5f / sqrtf(trace + 1.0f);
+        q.w = 0.25f / s;
+        q.x = (mat.m[2][1] - mat.m[1][2]) * s;
+        q.y = (mat.m[0][2] - mat.m[2][0]) * s;
+        q.z = (mat.m[1][0] - mat.m[0][1]) * s;
+    }
+    else {
+        if (mat.m[0][0] > mat.m[1][1] && mat.m[0][0] > mat.m[2][2]) {
+            float s = 2.0f * sqrtf(1.0f + mat.m[0][0] - mat.m[1][1] - mat.m[2][2]);
+            q.w = (mat.m[2][1] - mat.m[1][2]) / s;
+            q.x = 0.25f * s;
+            q.y = (mat.m[0][1] + mat.m[1][0]) / s;
+            q.z = (mat.m[0][2] + mat.m[2][0]) / s;
+        }
+        else if (mat.m[1][1] > mat.m[2][2]) {
+            float s = 2.0f * sqrtf(1.0f + mat.m[1][1] - mat.m[0][0] - mat.m[2][2]);
+            q.w = (mat.m[0][2] - mat.m[2][0]) / s;
+            q.x = (mat.m[0][1] + mat.m[1][0]) / s;
+            q.y = 0.25f * s;
+            q.z = (mat.m[1][2] + mat.m[2][1]) / s;
+        }
+        else {
+            float s = 2.0f * sqrtf(1.0f + mat.m[2][2] - mat.m[0][0] - mat.m[1][1]);
+            q.w = (mat.m[1][0] - mat.m[0][1]) / s;
+            q.x = (mat.m[0][2] + mat.m[2][0]) / s;
+            q.y = (mat.m[1][2] + mat.m[2][1]) / s;
+            q.z = 0.25f * s;
+        }
+    }
+    return q;
+}
+
+Quaternion LookAtQuaternion(const Vector3& from, const Vector3& to, const Vector3& up) {
+    // from から to への方向ベクトルを計算
+    Vector3 forward = Normalize(to - from);
+
+    // right ベクトルを計算（up と forward の外積）
+    Vector3 right = Normalize(Cross(up, forward));
+
+    // 新しい up ベクトルを計算
+    Vector3 newUp = Cross(forward, right);
+
+    // LookAt 行列を設定
+    Matrix4x4 lookAtMatrix;
+    lookAtMatrix.m[0][0] = right.x;
+    lookAtMatrix.m[0][1] = right.y;
+    lookAtMatrix.m[0][2] = right.z;
+    lookAtMatrix.m[0][3] = 0.0f;
+
+    lookAtMatrix.m[1][0] = newUp.x;
+    lookAtMatrix.m[1][1] = newUp.y;
+    lookAtMatrix.m[1][2] = newUp.z;
+    lookAtMatrix.m[1][3] = 0.0f;
+
+    lookAtMatrix.m[2][0] = forward.x;
+    lookAtMatrix.m[2][1] = forward.y;
+    lookAtMatrix.m[2][2] = forward.z;
+    lookAtMatrix.m[2][3] = 0.0f;
+
+    lookAtMatrix.m[3][0] = 0.0f;
+    lookAtMatrix.m[3][1] = 0.0f;
+    lookAtMatrix.m[3][2] = 0.0f;
+    lookAtMatrix.m[3][3] = 1.0f;
+
+    // 行列をクォータニオンに変換
+    return MatrixToQuaternion(lookAtMatrix);
+}
+
+Vector3 QuaternionToForward(const Quaternion& quat) {
+    // クォータニオンから前方向ベクトルを計算
+    // 通常、前方向はz軸を指すため、基準ベクトル(0, 0, 1)に回転を適用します
+    float x = 2 * (quat.x * quat.z + quat.w * quat.y);
+    float y = 2 * (quat.y * quat.z - quat.w * quat.x);
+    float z = 1 - 2 * (quat.x * quat.x + quat.y * quat.y);
+    return Vector3(x, y, z);
+}

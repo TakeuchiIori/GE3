@@ -98,7 +98,7 @@ public:
 	
 	void SetRotation(const Vector3& rotation) { worldTransform_.rotation_ = rotation; }
 	void SetParent(const WorldTransform* parent);
-	
+	void SetPosition(const Vector3& pos) { worldTransform_.translation_ = pos; }
 
 
 private: 

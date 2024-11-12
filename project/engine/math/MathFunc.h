@@ -169,3 +169,12 @@ Vector3 SetFromTo(const Vector3& from, const Vector3& to);
 Quaternion SetFromToQuaternion(const Vector3& from, const Vector3& to);
 
 Vector3 RotateVectorByQuaternion(const Vector3& vec, const Quaternion& quat);
+
+Quaternion EulerToQuaternion(const Vector3& euler);
+
+Quaternion MatrixToQuaternion(const Matrix4x4& mat);
+
+Quaternion LookAtQuaternion(const Vector3& from, const Vector3& to, const Vector3& up);
+
+// Quaternionから前方向ベクトルを取得する関数
+Vector3 QuaternionToForward(const Quaternion& quat);

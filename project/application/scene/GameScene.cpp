@@ -21,8 +21,11 @@ void GameScene::Initialize()
 	player_->Initailize();
 
 	for (int i = 0; i < 1; ++i) {
+		Vector3 playerPos = player_->GetWorldPosition(); // プレイヤーの位置を取得
+		Vector3 enemyPos = playerPos + Vector3{ static_cast<float>(rand() % 10 - 5), 0.0f, static_cast<float>(rand() % 10 - 5) }; // ランダムな位置にスポーンさせる
+
 		Enemy* enemy = new Enemy();
-		enemy->Initialize(Vector3{ 0,0,-12 });
+		enemy->Initialize(enemyPos); // プレイヤーの近くに敵を生成
 		enemies_.push_back(enemy);
 	}
 
@@ -78,6 +81,60 @@ void GameScene::Update()
 	UpdateCamera();
 	UpdateCameraWithRightStick();
 	//railCamera_->Update();
+	float speedFactor = 0.3f;
+	// プレイヤーをスプラインに沿って移動させる
+	if (splineIndex_ < spline_->GetSplinePoints().size()) {
+		// 現在のスプライン位置と次のスプライン位置を取得
+		Vector3 currentPoint = spline_->GetSplinePoints()[splineIndex_];
+		Vector3 nextPoint;
+
+		if (splineIndex_ < spline_->GetSplinePoints().size() - 1) {
+			nextPoint = spline_->GetSplinePoints()[splineIndex_ + 1];
+		}
+		else {
+			nextPoint = spline_->GetSplinePoints()[0]; // スプラインのループ対応
+		}
+
+		// プレイヤーの位置をスプラインの現在のポイントに配置
+		player_->SetPosition(currentPoint);
+
+		// 次のポイントに向かう方向を計算
+		Vector3 direction = nextPoint - currentPoint;
+
+		// 方向ベクトルを正規化
+		direction = Normalize(direction);
+
+		// 水平方向のY軸回転角度を計算する
+		float yRotation = atan2(direction.x, direction.z); // XとZの成分からY軸の角度を取得
+
+		// プレイヤーの回転を設定する（Y軸のみを使用）
+		Vector3 newRotation;
+		newRotation.x = 0.0f;  // ピッチは固定して水平を維持
+		newRotation.y = yRotation;;  // ラジアンを度に変換
+		newRotation.z = 0.0f;  // ロールも固定
+
+		// Y軸の回転を反転させる
+		//newRotation.y *= -1.0f;
+
+		// プレイヤーの回転を設定
+		player_->SetRotation(newRotation);
+
+		// インデックスを次に進める（スムーズに進行）
+		splineIndex_++;
+		if (splineIndex_ >= spline_->GetSplinePoints().size()) {
+			splineIndex_ = 0; // スプラインのループ
+		}
+	}
+	else {
+		splineIndex_ = 0; // スプラインのループ
+	}
+
+
+
+
+
+
+
 
 	// ワールドトランスフォーム更新
 	testWorldTransform_.UpdateMatrix();
@@ -198,12 +255,13 @@ void GameScene::UpdateCameraMode()
 
 void GameScene::UpdateCamera()
 {
+	const float interpolationFactor = 0.05f;
 	switch (cameraMode_)
 	{
 	case CameraMode::FOLLOW:
 	{
-		Vector3 playerPos = player_->GetPosition();
-		currentCamera_->FollowCamera(playerPos);
+		currentCamera_->SplineFollowCamera(spline_->GetSplinePoints(), splineIndex_);
+
 	}
 	break;
 	case CameraMode::TOP_DOWN:
@@ -213,10 +271,13 @@ void GameScene::UpdateCamera()
 	}
 	break;
 	case CameraMode::FPS:
+	{
 		// プレイヤーの位置と回転を取得してFPS視点にセット
 		// 調整中。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。
 		currentCamera_->SetFPSCamera(player_->GetPosition(), player_->GetRotation());
 
+
+	}
 		break;
 
 	case CameraMode::DEBUG:
@@ -229,6 +290,10 @@ void GameScene::UpdateCamera()
 	}
 
 }
+
+
+
+
 
 /// <summary>
 /// 右スティックの入力に基づきカメラを操作し、プレイヤーの向きも同期させる

@@ -47,6 +47,10 @@ public: // カメラ
 
 	void SplineFollowCamera(const std::vector<Vector3>& splinePoints, size_t index);
 
+	void SetSplineSmoothCamera(const Vector3& currentPosition, const Vector3& nextPosition, float interpolationFactor);
+
+	void SetFPSCameraSmooth(const Vector3& playerPosition, const Vector3& playerRotation, const Vector3& targetPosition, float interpolationFactor);
+
 	
 
 
@@ -58,6 +62,15 @@ public: // アクセッサ
     void SetAspectRatio(float aspectRatio) { aspectRatio_ = aspectRatio;}
 	void SetNearClip(float nearClip) { nearClip_ = nearClip; }
     void SetFarClip(float farClip) {farClip_ = farClip;     }
+	void SetPosition(const Vector3& position) {
+		transform_.translate= position; // カメラの位置メンバ変数を更新
+	}
+
+	void SetRotation(const Vector3& rotation) {
+		transform_.rotate = rotation; // カメラの回転メンバ変数を更新
+	}
+
+
 
 	// getter
 	const Matrix4x4& GetWorldMatrix() const { return worldMatrix_; }
