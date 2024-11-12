@@ -36,6 +36,11 @@ Vector3 Cross(const Vector3& v1, const Vector3& v2) {
     return result;
 }
 
+Vector3 Lerp(const Vector3& a, const Vector3& b, float t)
+{
+    return a * (1.0f - t) + b * t;
+}
+
 Vector3 Multiply(const Vector3& v, float scalar) {
     return { v.x * scalar, v.y * scalar, v.z * scalar };
 }

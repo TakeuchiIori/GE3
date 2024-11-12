@@ -99,6 +99,8 @@ Vector3 Subtract(const Vector3& v1, const Vector3& v2);
 // ベクトルのクロス積を計算する関数
 Vector3 Cross(const Vector3& v1, const Vector3& v2);
 
+Vector3 Lerp(const Vector3& a, const Vector3& b, float t);
+
 // Vector3の長さの二乗を計算する関数
 float LengthSquared(const Vector3& v);
 
