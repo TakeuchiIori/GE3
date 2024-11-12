@@ -16,13 +16,16 @@
 #include "Spline.h"
 #include "Enemy.h"
 #include "EnemyBullet.h"
+#include "RailCamera.h"
+
 // C++
 #include <memory>
 enum class CameraMode
 {
     FOLLOW,
     TOP_DOWN,
-    FPS
+    FPS,
+    DEBUG
 };
 
 class GameScene : public BaseScene
@@ -92,9 +95,12 @@ private: // メンバ変数
     WorldTransform testWorldTransform_;
 
     std::unique_ptr<Player> player_;
-    std::unique_ptr< Spline> spline_;
+    std::unique_ptr<Spline> spline_;
+    std::unique_ptr<RailCamera> railCamera_;
 
     // まだ複数化していない
     std::list<Enemy*> enemies_;
     std::list<EnemyBullet*> enemyBullets_;
+
+    size_t splineIndex_;  // スプライン上の位置を管理するインデックス
 };

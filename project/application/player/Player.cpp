@@ -122,6 +122,8 @@ void Player::Draw()
 		bullet->Draw();
 	}
 	base_->Draw(worldTransform_);
+	// 使えない
+	//base_->DrawLine(Vector3(0, 0, 0), Vector3(10, 10, 10), Vector4(1, 0, 0, 1));
 	ReticleDraw();
 }
 
@@ -157,13 +159,29 @@ void Player::Move()
 	}
 
 	// マウスの押下をチェック
-	if (input_->IsPressMouse(0)) {
+	if (input_->IsPressMouse(4)) {
 	    worldTransform_.translation_.y += moveSpeed_.z;
 	}
 
 	// マウスの押下をチェック
-	if (input_->IsPressMouse(1)) {
+	if (input_->IsPressMouse(3)) {
 	    worldTransform_.translation_.y -= moveSpeed_.z;
+	}
+
+
+	// プレイヤーの回転
+	if (input_->PushKey(DIK_UP)) {
+		worldTransform_.rotation_.x -= 0.05f; // 左方向に回転
+	}
+	if (input_->PushKey(DIK_DOWN)) {
+		worldTransform_.rotation_.x += 0.05f; // 右方向に回転
+	}
+
+	if (input_->PushKey(DIK_LEFT)) {
+		worldTransform_.rotation_.y -= 0.05f; // 左方向に回転
+	}
+	if (input_->PushKey(DIK_RIGHT)) {
+		worldTransform_.rotation_.y += 0.05f; // 右方向に回転
 	}
 
 	// コントローラーの入力による移動処理
@@ -226,6 +244,12 @@ Vector3 Player::GetReticleWorldPosition()
 
 	return worldPos;
 }
+void Player::SetParent(const WorldTransform* parent)
+{
+	// 親子関係を結ぶ
+	worldTransform_.parent_ = parent;
+}
+
 void Player::Fire()
 {
 	if (input_->PushKey(DIK_SPACE)) {

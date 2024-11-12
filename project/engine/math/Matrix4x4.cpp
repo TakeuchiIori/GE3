@@ -387,6 +387,23 @@ Vector3 TransformNormal(const Vector3& v, const Matrix4x4& m) {
 
 }
 
+Matrix4x4 MakeTranslationMatrix(const Vector3& translation) {
+	Matrix4x4 matrix = {}; // 4x4のゼロ行列を初期化
+
+	// 対角成分を 1 に設定して単位行列にする
+	matrix.m[0][0] = 1.0f;
+	matrix.m[1][1] = 1.0f;
+	matrix.m[2][2] = 1.0f;
+	matrix.m[3][3] = 1.0f;
+
+	// 平行移動の成分を設定
+	matrix.m[3][0] = translation.x; // tx
+	matrix.m[3][1] = translation.y; // ty
+	matrix.m[3][2] = translation.z; // tz
+
+	return matrix;
+}
+
 //=============================12. レンタリングパイプラインVer2=============================//
 // 1. 透視投影行列
 Matrix4x4 MakePerspectiveFovMatrix(float FovY, float aspectRatio, float nearClip, float farClip) {

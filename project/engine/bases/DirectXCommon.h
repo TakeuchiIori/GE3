@@ -19,6 +19,17 @@ class DirectXCommon
 public: // 各種初期化
 
 	/// <summary>
+	/// インスタンスの取得（ユニークポインタを使ったシングルトン）
+	/// </summary>
+	static DirectXCommon* GetInstance();
+
+	// シングルトンのコピー・ムーブ操作を削除
+	DirectXCommon(const DirectXCommon&) = delete;
+	DirectXCommon& operator=(const DirectXCommon&) = delete;
+	DirectXCommon(DirectXCommon&&) = delete;
+	DirectXCommon& operator=(DirectXCommon&&) = delete;
+
+	/// <summary>
 	/// DirectXの初期化
 	/// </summary>
 	void Initialize(WinApp* winApp);
@@ -195,6 +206,16 @@ public: // アクセッサ
 
 
 private: 
+
+	/// <summary>
+	/// デフォルトコンストラクタ（シングルトンパターンのためプライベートに設定）
+	/// </summary>
+	DirectXCommon() = default;
+
+	/// <summary>
+	/// デストラクタ（リソースの自動解放のために使用）
+	/// </summary>
+	~DirectXCommon() = default;
 
 
 	// WindowsAPI

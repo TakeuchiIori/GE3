@@ -69,6 +69,10 @@ public: // メンバ関数
 	/// </summary>
 	void ChangeTexture(std::string textureFilePath);
 
+	/// <summary>
+	/// 指定された2点間に線を描画
+	/// </summary>
+	void DrawLine(const Vector3& start, const Vector3& end, const Vector4& color);
 	
 private:
 

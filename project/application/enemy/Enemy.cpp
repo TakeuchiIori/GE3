@@ -53,11 +53,14 @@ void Enemy::Update()
 	}
 	// 行列を定数バッファに転送
 	worldTransform_.UpdateMatrix();
+#ifdef _DEBUG
+
+
 
 	ImGui::Begin("Enemy");
 	ImGui::Text("isAlive_: %s", isAlive_ ? "true" : "false");
 	ImGui::End();
-
+#endif // _DEBUG
 }
 
 void Enemy::Draw()

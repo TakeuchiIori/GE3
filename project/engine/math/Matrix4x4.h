@@ -117,6 +117,7 @@ Matrix4x4 MakeRotateMatrixZ(float radian);
 Matrix4x4 MakeAffineMatrix(const Vector3& scale, const Vector3& rotate, const Vector3& translate);
 
 Vector3 TransformNormal(const Vector3& v, const Matrix4x4& m);
+Matrix4x4 MakeTranslationMatrix(const Vector3& translation);
 // 12. レンタリングパイプラインVer2
 //  透視投影行列
 Matrix4x4 MakePerspectiveFovMatrix(float FovY, float aspectRatio, float nearClip, float farClip);

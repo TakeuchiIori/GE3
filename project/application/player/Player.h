@@ -91,13 +91,16 @@ public:
 	Vector3 GetReticleWorldPosition();
 	const Vector3& GetPosition() const { return worldTransform_.translation_; }
 	const Vector3& GetRotation() const { return worldTransform_.rotation_; }
-	
+	const WorldTransform& GetWorldTransform() const { return worldTransform_; }
 	float Setradius() { return rad_; }
 	float GetRadius() { return rad_; }
 
 	
 	void SetRotation(const Vector3& rotation) { worldTransform_.rotation_ = rotation; }
+	void SetParent(const WorldTransform* parent);
 	
+
+
 private: 
 
 	// 自機のワールドトランスフォーム

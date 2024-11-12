@@ -56,6 +56,11 @@ void Object3d::ChangeTexture(std::string textureFilePath)
 
 }
 
+void Object3d::DrawLine(const Vector3& start, const Vector3& end, const Vector4& color)
+{
+
+}
+
 void Object3d::DirectionalLightResource()
 {
 	directionalLightResource_ = object3dCommon_->GetDxCommon()->CreateBufferResource(sizeof(DirectionalLight));
