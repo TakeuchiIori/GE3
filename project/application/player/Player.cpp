@@ -144,45 +144,45 @@ void Player::LastUpdate()
 
 void Player::Move()
 {
-	// キーボード
-	if (input_->PushKey(DIK_W)) {
-		worldTransform_.translation_.z += moveSpeed_.z;
-	}
-	if (input_->PushKey(DIK_A)) {
-		worldTransform_.translation_.x -= moveSpeed_.y;
-	}
-	if (input_->PushKey(DIK_S)) {
-		worldTransform_.translation_.z -= moveSpeed_.z;
-	}
-	if (input_->PushKey(DIK_D)) {
-		worldTransform_.translation_.x += moveSpeed_.y;
-	}
+	//// キーボード
+	//if (input_->PushKey(DIK_W)) {
+	//	worldTransform_.translation_.z += moveSpeed_.z;
+	//}
+	//if (input_->PushKey(DIK_A)) {
+	//	worldTransform_.translation_.x -= moveSpeed_.y;
+	//}
+	//if (input_->PushKey(DIK_S)) {
+	//	worldTransform_.translation_.z -= moveSpeed_.z;
+	//}
+	//if (input_->PushKey(DIK_D)) {
+	//	worldTransform_.translation_.x += moveSpeed_.y;
+	//}
 
-	// マウスの押下をチェック
-	if (input_->IsPressMouse(4)) {
-	    worldTransform_.translation_.y += moveSpeed_.z;
-	}
+	//// マウスの押下をチェック
+	//if (input_->IsPressMouse(4)) {
+	//    worldTransform_.translation_.y += moveSpeed_.z;
+	//}
 
-	// マウスの押下をチェック
-	if (input_->IsPressMouse(3)) {
-	    worldTransform_.translation_.y -= moveSpeed_.z;
-	}
+	//// マウスの押下をチェック
+	//if (input_->IsPressMouse(3)) {
+	//    worldTransform_.translation_.y -= moveSpeed_.z;
+	//}
 
 
-	// プレイヤーの回転
-	if (input_->PushKey(DIK_UP)) {
-		worldTransform_.rotation_.x -= 0.05f; // 左方向に回転
-	}
-	if (input_->PushKey(DIK_DOWN)) {
-		worldTransform_.rotation_.x += 0.05f; // 右方向に回転
-	}
+	//// プレイヤーの回転
+	//if (input_->PushKey(DIK_UP)) {
+	//	worldTransform_.rotation_.x -= 0.05f; // 左方向に回転
+	//}
+	//if (input_->PushKey(DIK_DOWN)) {
+	//	worldTransform_.rotation_.x += 0.05f; // 右方向に回転
+	//}
 
-	if (input_->PushKey(DIK_LEFT)) {
-		worldTransform_.rotation_.y -= 0.05f; // 左方向に回転
-	}
-	if (input_->PushKey(DIK_RIGHT)) {
-		worldTransform_.rotation_.y += 0.05f; // 右方向に回転
-	}
+	//if (input_->PushKey(DIK_LEFT)) {
+	//	worldTransform_.rotation_.y -= 0.05f; // 左方向に回転
+	//}
+	//if (input_->PushKey(DIK_RIGHT)) {
+	//	worldTransform_.rotation_.y += 0.05f; // 右方向に回転
+	//}
 
 	// コントローラーの入力による移動処理
 	XINPUT_STATE state;
