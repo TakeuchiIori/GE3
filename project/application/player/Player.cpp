@@ -21,13 +21,14 @@ void Player::Initailize()
     input_ = Input::GetInstance();
     moveSpeed_ = { 0.5f, 0.5f , 0.5f };
     worldTransform_.Initialize();
+    worldTransform_.translation_.z = -100.0f;
 }
 
 void Player::Update()
 {
     Move();
     ShowCoordinatesImGui(); 
-    LastUpdate();
+    UpdateWorldTransform();
 }
 
 void Player::Draw()
@@ -35,16 +36,28 @@ void Player::Draw()
     base_->Draw(worldTransform_);
 }
 
-void Player::LastUpdate()
+void Player::UpdateWorldTransform()
 {
-    // 最後に必ずセット
-    worldTransform_.TransferMatrix();
+    // ワールドトランスフォームの更新
+    worldTransform_.UpdateMatrix();
 }
 
 void Player::Move()
 {
+    // キーボードで移動
+    MoveKey();
+}
+
+void Player::MoveKey()
+{
     // 回転のスピード設定（回転速度を適宜設定）
     const float rotationSpeed = 0.05f;
+
+    /*==============================================================
+    
+           矢印キーでカメラの回転（FPS視点の時にしか使わないほうが良い）
+
+    ===============================================================*/
 
     // 上下の回転（ピッチ）の処理
     if (input_->PushKey(DIK_UP)) {

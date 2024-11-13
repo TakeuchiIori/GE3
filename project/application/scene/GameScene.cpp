@@ -62,7 +62,7 @@ void GameScene::Update()
    
 
     // ワールドトランスフォーム更新
-    testWorldTransform_.TransferMatrix();
+    testWorldTransform_.UpdateMatrix();
     cameraManager_.UpdateAllCameras();
 }
 
