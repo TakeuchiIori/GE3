@@ -36,18 +36,24 @@ private: // メンバ関数（非公開）
 	/// <summary>
 	/// 更新の末端でやる処理
 	/// </summary>
-	void LastUpdate();
+	void UpdateWorldTransform();
 
 	/// <summary>
-	/// 移動処理
+	/// 移動処理をまとめた関数
 	/// </summary>
 	void Move();
+
+	/// <summary>
+	/// キーボードで移動処理
+	/// </summary>
+	void MoveKey();
 
 
 public: // アクセッサ
 	// プレイヤーの位置を取得する関数
 	const Vector3& GetPosition() const { return worldTransform_.translation_; }
 
+	const Vector3& GetRotation() const { return worldTransform_.rotation_; }
 
 private: // メンバ変数
 

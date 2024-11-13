@@ -7,8 +7,8 @@
 void TitleScene::Initialize()
 {
 	///============ モデル読み込み ============///
-	ModelManager::GetInstance()->LoadModel("plane.obj");
-	ModelManager::GetInstance()->LoadModel("axis.obj");
+	ModelManager::GetInstance()->LoadModel("Resources","lane.obj");
+	ModelManager::GetInstance()->LoadModel("Resources","xis.obj");
 	
 	
 
