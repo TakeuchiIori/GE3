@@ -66,3 +66,18 @@ void Camera::SetTopDownCamera(const Vector3& position)
 }
 
 
+void Camera::SetFPSCamera(const Vector3& position, const Vector3& rotation)
+{
+    // カメラ位置をプレイヤーの位置に合わせ、目の高さに調整
+    transform_.translate = position;
+    transform_.translate.y += 1.6f; // 目の高さを設定
+
+    // 回転はプレイヤーの回転のみを反映し、位置の移動とは独立させる
+    transform_.rotate = rotation;
+
+    // アフィン変換行列を再計算
+    worldMatrix_ = MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.translate);
+    viewMatrix_ = Inverse(worldMatrix_);
+    //viewProjectionMatrix_ = Multiply(viewMatrix_, projectionMatrix_);
+  
+}

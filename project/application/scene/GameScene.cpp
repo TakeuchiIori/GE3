@@ -29,7 +29,7 @@ void GameScene::Initialize()
     test_->SetModel("float_body.obj");
     testWorldTransform_.Initialize();
     // 初期カメラモード設定
-    cameraMode_ = CameraMode::FOLLOW;
+    cameraMode_ = CameraMode::FPS;
 
     // パーティクル
     std::string particleName = "Circle";
@@ -37,8 +37,7 @@ void GameScene::Initialize()
     ParticleManager::GetInstance()->CreateParticleGroup(particleName, "Resources/images/circle.png");
     emitterPosition_ = Vector3{ 0.0f, 0.0f, 0.0f }; // エミッタの初期位置
     particleEmitter_ = std::make_unique<ParticleEmitter>(particleName, emitterPosition_,1);
-   
-    
+
 }
 
 /// <summary>
@@ -109,6 +108,9 @@ void GameScene::UpdateCameraMode()
     if (ImGui::Button("Top-Down Camera")) {
         cameraMode_ = CameraMode::TOP_DOWN;
     }
+    if (ImGui::Button("FPS Camera")) {
+        cameraMode_ = CameraMode::FPS;
+    }
     ImGui::End();
 #endif
 }
@@ -134,6 +136,13 @@ void GameScene::UpdateCamera()
         currentCamera_->SetTopDownCamera(topDownPosition + player_->GetPosition());
     }
     break;
+    case CameraMode::FPS:
+    {
+        Vector3 playerPos = player_->GetPosition();
+        currentCamera_->SetFPSCamera(playerPos, player_->GetRotation());
+    }
+    break;
+
     default:
         break;
     }
