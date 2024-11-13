@@ -9,7 +9,6 @@ float MagnitudeSquared(const Vector3& v) {
     return v.x * v.x + v.y * v.y + v.z * v.z;
 }
 
-
 // Vector3 : 加算
 Vector3 Add(const Vector3& v1, const Vector3& v2) {
     Vector3 result;
