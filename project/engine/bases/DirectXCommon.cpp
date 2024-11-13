@@ -15,6 +15,12 @@ using namespace Microsoft::WRL;
 
 
 
+DirectXCommon* DirectXCommon::GetInstance()
+{
+	static DirectXCommon instance;
+	return &instance;
+}
+
 void DirectXCommon::Initialize(WinApp* winApp)
 {
 	// NULL検出
@@ -46,7 +52,7 @@ void DirectXCommon::Initialize(WinApp* winApp)
 	InitializeScissorRevtangle();
 	// DXCコンパイラの生成
 	CreateDXCompiler();
-}	 
+}
 
 void DirectXCommon::InitializeDXGIDevice()
 {
@@ -61,7 +67,7 @@ void DirectXCommon::InitializeDXGIDevice()
 	}
 #endif
 	//--------------- DXGIファクトリーの生成 ---------------//
-	
+
 	// HRESULTはWindowa\s系のエラーコードであり、
 	// 関数が成功したかどうかをSUCCEEDEDマクロで判定できる
 	HRESULT hr = CreateDXGIFactory(IID_PPV_ARGS(&dxgiFactory_));
@@ -205,21 +211,21 @@ void DirectXCommon::InitializeRenderTarget()
 	//=============================================*/
 	for (uint32_t i = 0; i < 2; ++i) {
 		rtvHandles_[i] = rtvStartHandle;
-		
+
 		device_->CreateRenderTargetView(swapChainResources_[i].Get(), &rtvDesc_, rtvHandles_[i]);
 		rtvStartHandle.ptr += device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
 	}
-	
+
 }
 
-void DirectXCommon::InitializeDepthStencilView(){  
+void DirectXCommon::InitializeDepthStencilView() {
 	/*=============================================//
 				  DSVの設定
 	//=============================================*/
 	D3D12_DEPTH_STENCIL_VIEW_DESC dsvDesc{};
 	dsvDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT; // Format. BAHaResourceleDt3
 	dsvDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D; // 2dTexture
-	
+
 	/*=============================================//
 				  DSVheapの先頭にDSVをつくる
 	//=============================================*/
@@ -232,7 +238,7 @@ void DirectXCommon::InitializeFence()
 				FenceとEventを生成する
 	//=============================================*/
 	HRESULT hr;
-	
+
 	hr = device_->CreateFence(fenceValue_, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&fence_));
 	assert(SUCCEEDED(hr));
 	// FenceのSignalを持つためのイベントを生成する
@@ -241,7 +247,7 @@ void DirectXCommon::InitializeFence()
 }
 
 void DirectXCommon::CreateDepthBuffer()
-{ 
+{
 	//DepthStencilTextureをウィンドウサイズで作成
 	depthStencilResource_ = CreateDepthStencilTextureResource(device_.Get(), WinApp::kClientWidth, WinApp::kClientHeight);
 }
@@ -251,7 +257,7 @@ void DirectXCommon::CreateDescriptorHeap()
 	//　Descriptorのサイズ設定
 	descriptotSizeRTV_ = device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
 	descriptotSizeDSV_ = device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
-					 
+
 	// ディスクリプタヒープの生成 
 	rtvDescriptorHeap_ = CreateDescriptorHeap(device_.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_RTV, 2, false);
 	dsvDescriptorHeap_ = CreateDescriptorHeap(device_.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_DSV, 1, false);
@@ -275,7 +281,7 @@ void DirectXCommon::PreDraw()
 	// これから書き込むバックバッファのインデックスを取得
 	backBufferIndex = swapChain_->GetCurrentBackBufferIndex();
 
-	
+
 	barrier_.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
 	// Noneにしておく
 	barrier_.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
@@ -288,7 +294,7 @@ void DirectXCommon::PreDraw()
 	barrier_.Transition.StateAfter = D3D12_RESOURCE_STATE_RENDER_TARGET;
 	// TransitionBarrierを張る
 	commandList_->ResourceBarrier(1, &barrier_);
-	
+
 
 	// 描画先のRTVとDSVを設定する
 	D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle = GetDSVCPUDescriptorHandle(0); // 適切か確認要
@@ -305,7 +311,7 @@ void DirectXCommon::PreDraw()
 
 	commandList_->RSSetViewports(1, &viewport_);
 	commandList_->RSSetScissorRects(1, &scissorRect_);
-	
+
 }
 
 void DirectXCommon::PostDraw()
@@ -342,10 +348,11 @@ void DirectXCommon::PostDraw()
 	UpdateFixFPS();
 
 	// 次のフレーム用のコマンドリストを準備
-	hr =commandAllocator_->Reset();
+	hr = commandAllocator_->Reset();
 	assert(SUCCEEDED(hr));
 	hr = commandList_->Reset(commandAllocator_.Get(), nullptr);
 	assert(SUCCEEDED(hr));
+
 }
 
 void DirectXCommon::InitializeViewPortRevtangle()
@@ -418,7 +425,7 @@ Microsoft::WRL::ComPtr<ID3D12Resource> DirectXCommon::CreateDepthStencilTextureR
 	return resource;
 }
 
-D3D12_CPU_DESCRIPTOR_HANDLE DirectXCommon:: GetCPUDescriptorHandle(Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> descriptorHeap, uint32_t descriptorSize, uint32_t index)
+D3D12_CPU_DESCRIPTOR_HANDLE DirectXCommon::GetCPUDescriptorHandle(Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> descriptorHeap, uint32_t descriptorSize, uint32_t index)
 {
 	D3D12_CPU_DESCRIPTOR_HANDLE handleCPU = descriptorHeap->GetCPUDescriptorHandleForHeapStart();
 	handleCPU.ptr += (descriptorSize * index);
@@ -447,7 +454,7 @@ void DirectXCommon::InitializeFixFPS()
 	// 現在時間を記録
 	reference_ = chrono::steady_clock::now();
 	// 1/60ぴったりの時間
-	
+
 }
 
 void DirectXCommon::UpdateFixFPS()

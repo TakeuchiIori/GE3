@@ -37,10 +37,10 @@ void ParticleManager::Finalize()
 	instance.reset();
 }
 
-void ParticleManager::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager)
+void ParticleManager::Initialize( SrvManager* srvManager)
 {
 	// ポインタを渡す
-	this->dxCommon_ = dxCommon;
+	this->dxCommon_ = DirectXCommon::GetInstance();
 	this->srvManager_ = srvManager;
 
 	accelerationField.acceleration = { 15.0f,0.0f,0.0f };

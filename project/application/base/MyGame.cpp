@@ -11,7 +11,7 @@ void MyGame::Initialize()
 	SceneManager::GetInstance()->SetSceneFactory(sceneFactory_.get());
 	SceneManager::GetInstance()->ChangeScene("GAME");
 	// パーティクルマネージャ生成
-	ParticleManager::GetInstance()->Initialize(dxCommon_.get(), srvManager_);
+	ParticleManager::GetInstance()->Initialize(srvManager_);
 	
 }
 
