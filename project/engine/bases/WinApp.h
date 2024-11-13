@@ -32,7 +32,7 @@ public:
 
 public: // アクセッサ
 	HINSTANCE Gethinstance() { return wc.hInstance; }
-	HWND Gethwnd() { return hwnd; }
+	HWND GetHwnd() { return hwnd; }
 
 public: // 定数
 	// クライアント領域のサイズ
