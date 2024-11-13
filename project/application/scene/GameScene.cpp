@@ -14,7 +14,7 @@
 void GameScene::Initialize()
 {
     // モデル読み込み
-    ModelManager::GetInstance()->LoadModel("float_body.obj");
+    ModelManager::GetInstance()->LoadModel("Resources/obj","float_body.obj");
 
     // カメラの生成
     currentCamera_ = cameraManager_.AddCamera();
