@@ -18,7 +18,9 @@ enum class CameraMode
 {
     DEFAULT,
     FOLLOW,
-    TOP_DOWN
+    TOP_DOWN,
+    FPS
+
 };
 
 class GameScene : public BaseScene

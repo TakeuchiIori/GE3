@@ -19,6 +19,17 @@ class DirectXCommon
 public: // 各種初期化
 
 	/// <summary>
+	/// インスタンスの取得（ユニークポインタを使ったシングルトン）
+	/// </summary>
+	static DirectXCommon* GetInstance();
+
+	// シングルトンのコピー・ムーブ操作を削除
+	DirectXCommon(const DirectXCommon&) = delete;
+	DirectXCommon& operator=(const DirectXCommon&) = delete;
+	DirectXCommon(DirectXCommon&&) = delete;
+	DirectXCommon& operator=(DirectXCommon&&) = delete;
+
+	/// <summary>
 	/// DirectXの初期化
 	/// </summary>
 	void Initialize(WinApp* winApp);
@@ -27,7 +38,7 @@ public: // 各種初期化
 	/// DXGIデバイス初期化
 	/// </summary>
 	void InitializeDXGIDevice();//bool enableDebugLayer = true
-	
+
 	/// <summary>
 	/// コマンド関連の初期化
 	/// </summary>
@@ -57,7 +68,7 @@ public: // 各種初期化
 	/// ビューポート矩形の初期化
 	/// </summary>
 	void InitializeViewPortRevtangle();
-	
+
 	/// <summary>
 	/// シザリング矩形の初期化
 	/// </summary>
@@ -97,22 +108,22 @@ public: // メンバ関数
 	/// ディスクリプターヒープ
 	/// </summary>
 	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> CreateDescriptorHeap(Microsoft::WRL::ComPtr<ID3D12Device> device, D3D12_DESCRIPTOR_HEAP_TYPE heapType, UINT numDescriptors, bool shaderVisible);
-	
+
 	/// <summary>
 	/// 深度バッファのリソース
 	/// </summary>
 	Microsoft::WRL::ComPtr<ID3D12Resource> CreateDepthStencilTextureResource(Microsoft::WRL::ComPtr<ID3D12Device> device, int32_t width, int32_t height);
-	
+
 	/// <summary>
 	/// 指定番号のCPUの取得
 	/// </summary>
 	static D3D12_CPU_DESCRIPTOR_HANDLE GetCPUDescriptorHandle(Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> descriptorHeap, uint32_t descriptorSize, uint32_t index);
-	
+
 	/// <summary>
 	/// 指定番号のGPUの取得
 	/// </summary>
 	static D3D12_GPU_DESCRIPTOR_HANDLE GetGPUDescriptorHandle(Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> descriptorHeap, uint32_t descriptorSize, uint32_t index);
-	
+
 	/// <summary>
 	/// DSVの指定番号のCPUディスクリプタハンドルを取得
 	/// </summary>
@@ -152,12 +163,12 @@ public:
 	/// テクスチャリソースの生成
 	/// </summary>
 	Microsoft::WRL::ComPtr<ID3D12Resource> CreateTextureResource(const DirectX::TexMetadata& metadata);
-	
+
 	/// <summary>
 	/// テクスチャデータの転送
 	/// </summary>
 	Microsoft::WRL::ComPtr<ID3D12Resource> UploadTextureData(Microsoft::WRL::ComPtr<ID3D12Resource> texture, const DirectX::ScratchImage& mipImages);
-	
+
 	/// <summary>
 	/// テクスチャファイルの読み込み
 	/// </summary>
@@ -166,7 +177,7 @@ public:
 	static DirectX::ScratchImage LoadTexture(const std::string& filePath);
 
 public: // アクセッサ
-	
+
 	Microsoft::WRL::ComPtr<ID3D12Device> GetDevice() { return device_; }
 	Microsoft::WRL::ComPtr<IDxcUtils> GetDxcUtils() { return dxcUtils_; }
 	Microsoft::WRL::ComPtr<IDxcCompiler3> GetDxcCompiler() { return dxcCompiler_; }
@@ -189,12 +200,22 @@ public: // アクセッサ
 	D3D12_CPU_DESCRIPTOR_HANDLE* GetrtvHandles() { return rtvHandles_; }
 	HANDLE GetFenceEvent() { return fenceEvent_; }
 	// バックバッファの数を取得
-	UINT GetBackBufferCount()const { return  backBufferIndex;}
+	UINT GetBackBufferCount()const { return  backBufferIndex; }
 
 
 
 
-private: 
+private:
+
+	/// <summary>
+	/// デフォルトコンストラクタ（シングルトンパターンのためプライベートに設定）
+	/// </summary>
+	DirectXCommon() = default;
+
+	/// <summary>
+	/// デストラクタ（リソースの自動解放のために使用）
+	/// </summary>
+	~DirectXCommon() = default;
 
 
 	// WindowsAPI
@@ -219,13 +240,13 @@ private:
 
 	// スワップチェーン
 	Microsoft::WRL::ComPtr<IDXGISwapChain4> swapChain_;
-	std::array<Microsoft::WRL::ComPtr<ID3D12Resource>,2> swapChainResources_;
+	std::array<Microsoft::WRL::ComPtr<ID3D12Resource>, 2> swapChainResources_;
 	// スワップチェーン
 	DXGI_SWAP_CHAIN_DESC1 swapChainDesc{};
 
 	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> rtvDescriptorHeap_;
 	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> dsvDescriptorHeap_;
-																  
+
 	// 現時点ではincludeはしないが、includeに対応するための設定を行っておく
 	IDxcIncludeHandler* includeHandler_ = nullptr;
 
@@ -238,7 +259,7 @@ private:
 	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandles_[2];
 	// RTV
 	D3D12_RENDER_TARGET_VIEW_DESC rtvDesc_{};
-	
+
 	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> descriptorHeap;
 	uint64_t fenceValue_ = 0;
 	HANDLE fenceEvent_;
@@ -246,7 +267,7 @@ private:
 	D3D12_VIEWPORT viewport_{};
 	// シザー矩形
 	D3D12_RECT scissorRect_{};
-	
+
 
 	// TransitionBarrierの設定
 	D3D12_RESOURCE_BARRIER barrier_{};

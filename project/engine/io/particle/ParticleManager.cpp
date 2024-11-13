@@ -6,7 +6,7 @@
 #include "Vector3.h"
 #include <numbers>
 #include <cassert>
-#include "Mathfunc.h"
+
 #ifdef _DEBUG
 #include "imgui.h"
 #endif
@@ -37,11 +37,15 @@ void ParticleManager::Finalize()
 	instance.reset();
 }
 
-void ParticleManager::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager)
+void ParticleManager::Initialize( SrvManager* srvManager)
 {
 	// ポインタを渡す
-	this->dxCommon_ = dxCommon;
+	this->dxCommon_ = DirectXCommon::GetInstance();
 	this->srvManager_ = srvManager;
+
+	accelerationField.acceleration = { 15.0f,0.0f,0.0f };
+	accelerationField.area.min = { -1.0f,-1.0f,-1.0f };
+	accelerationField.area.max = { 1.0f,1.0f,1.0f };
 
 	// パイプライン生成
 	CreateGraphicsPipeline();
@@ -92,7 +96,9 @@ void ParticleManager::Update()
 			if (numInstance >= kNumMaxInstance) {
 				break;
 			}
-
+			if (IsCollision(accelerationField.area, (*particleIterator).transform.translate)) {
+				(*particleIterator).velocity += accelerationField.acceleration * kDeltaTime;
+			}
 			// パーティクルの更新処理
 			(*particleIterator).transform.translate += (*particleIterator).velocity * kDeltaTime;
 			(*particleIterator).currentTime += kDeltaTime;
