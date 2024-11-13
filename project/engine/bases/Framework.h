@@ -53,7 +53,7 @@ public: // メンバ関数
 	void Run();
 protected:
 	// 基本的なゲームのコンポーネント
-	std::unique_ptr<DirectXCommon> dxCommon_;
+	DirectXCommon* dxCommon_;
 	std::unique_ptr<AbstractSceneFactory> sceneFactory_;
 
 	//  ポインタ

@@ -33,6 +33,14 @@ public: // カメラ
 	void SetTopDownCamera(const Vector3& position);
 
 
+	/// <summary>
+	/// FPS視点
+	/// </summary>
+	/// <param name="position"></param>
+	/// <param name="rotation"></param>
+	void SetFPSCamera(const Vector3& position, const Vector3& rotation);
+
+
 public: // アクセッサ
     // Setter
     void SetRotate(const Vector3& rotate) {transform_.rotate = rotate;}

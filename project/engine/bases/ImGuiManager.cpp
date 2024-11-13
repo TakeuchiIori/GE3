@@ -29,7 +29,7 @@ void ImGuiManager::Initialize(WinApp* winApp, DirectXCommon* dxCommon)
 	ImGui::StyleColorsDark();
 
 	// Win32用初期化
-	ImGui_ImplWin32_Init(winApp->Gethwnd());
+	ImGui_ImplWin32_Init(winApp->GetHwnd());
 
 	// デスクリプタヒープ生成
 	CreateDescriptorHeap();
