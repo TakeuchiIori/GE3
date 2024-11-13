@@ -70,7 +70,7 @@ void Camera::SetFPSCamera(const Vector3& position, const Vector3& rotation)
 {
     // カメラ位置をプレイヤーの位置に合わせ、目の高さに調整
     transform_.translate = position;
-    transform_.translate.y += 1.6f; // 目の高さを設定
+    transform_.translate.z += 1.2f; // 目の高さを設定
 
     // 回転はプレイヤーの回転のみを反映し、位置の移動とは独立させる
     transform_.rotate = rotation;
