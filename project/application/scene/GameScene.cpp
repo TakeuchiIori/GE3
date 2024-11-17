@@ -22,8 +22,12 @@ void GameScene::Initialize()
    
     // 各オブジェクトの初期化
     player_ = std::make_unique<Player>();
-    player_->Initailize();
+    player_->Initialize();
 
+    enemy_ = std::make_unique<Enemy>();
+    enemy_->Initialize();
+
+    // test
     test_ = std::make_unique<Object3d>();
     test_->Initialize();
     test_->SetModel("float_body.obj");
@@ -45,12 +49,13 @@ void GameScene::Initialize()
 /// </summary>
 void GameScene::Update()
 {
+    
     if (Input::GetInstance()->TriggerKey(DIK_RETURN)) {
         SceneManager::GetInstance()->ChangeScene("TITLE");
     }
     // プレイヤーの更新
     player_->Update();
-
+    enemy_->Update();
     // カメラ更新
     UpdateCameraMode();
     UpdateCamera();
@@ -83,6 +88,7 @@ void GameScene::Draw()
 
    
     player_->Draw();
+    enemy_->Draw();
     test_->Draw(testWorldTransform_);
   
 }

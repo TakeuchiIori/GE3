@@ -43,6 +43,8 @@ void Framework::Initialize()
 	modelManager_ = ModelManager::GetInstance();
 	modelManager_->Initialze(dxCommon_);
 
+	collisionManager_ = CollisionManager::GetInstance();
+	collisionManager_->Initialize();
 
 }
 
@@ -65,8 +67,20 @@ void Framework::Update()
 	imguiManager_->Begin();
 	// 入力は初めに更新
 	input_->Update(winApp_);
+
+	collisionManager_->Reset();
+	collisionManager_->CheckAllCollisions();
+
+	// コライダーの更新
+#ifdef _DEBUG
+	collisionManager_->UpdateWorldTransform();
+#endif
+
 	// シーン全体の更新
 	SceneManager::GetInstance()->Update();
+
+
+
 	// ImGui受付終了
 	imguiManager_->End();
 }

@@ -4,10 +4,10 @@
 #ifdef _DEBUG
 #include "imgui.h" 
 #endif // _DEBUG
+#include "collider/GlobalVariables.h"
 
 
-
-void Player::Initailize()
+void Player::Initialize()
 {
     // .obj読み込み
     ModelManager::GetInstance()->LoadModel("Resources./player","player.obj");
@@ -22,6 +22,17 @@ void Player::Initailize()
     moveSpeed_ = { 0.5f, 0.5f , 0.5f };
     worldTransform_.Initialize();
     worldTransform_.translation_.z = -100.0f;
+
+    //GlobalVariables* globalvariables = GlobalVariables::GetInstance();
+    const char* groupName = "Player";
+    // グループを追加
+    GlobalVariables::GetInstance()->CreateGroup(groupName);
+
+
+
+   
+    // TypeIDの設定
+    Collider::SetTypeID(static_cast<uint32_t>(CollisionTypeIdDef::kPlayer));
 }
 
 void Player::Update()
@@ -114,6 +125,28 @@ void Player::ShowCoordinatesImGui()
     ImGui::Text("Position X: %.2f", worldTransform_.translation_.x);
     ImGui::Text("Position Y: %.2f", worldTransform_.translation_.y);
     ImGui::Text("Position Z: %.2f", worldTransform_.translation_.z);
+    ImGui::Text("Collision: %s", isColliding_ ? "Yes" : "No");  // 衝突状態を表示
     ImGui::End();
 #endif
+}
+
+void Player::OnCollision(Collider* other)
+{
+    // 衝突相手の種別IDを取得
+    uint32_t typeID = other->GetTypeID();
+    // 衝突相手が敵なら
+    if (typeID == static_cast<uint32_t>(CollisionTypeIdDef::kEnemy)) {
+
+        isColliding_ = true;
+    }
+}
+
+Vector3 Player::GetCenterPosition() const
+{
+    // ローカル座標でのオフセット
+    const Vector3 offset = { 0.0f, 0.0f, 0.0f };
+    // ワールド座標に変換
+    Vector3 worldPos = TransformCoordinates(offset, worldTransform_.matWorld_);
+
+    return worldPos;
 }

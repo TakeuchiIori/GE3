@@ -22,9 +22,9 @@ void MyGame::Finalize()
 
 void MyGame::Update()
 {
+	
 	// 基盤の更新
 	Framework::Update();
-
 
 }
 
@@ -38,7 +38,9 @@ void MyGame::Draw()
 
 	// ゲームの描画
 	SceneManager::GetInstance()->Draw();
-	
+#ifdef _DEBUG
+	collisionManager_->Draw();
+#endif
 
 	// ImGui描画
 	imguiManager_->Draw();

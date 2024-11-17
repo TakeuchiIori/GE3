@@ -5,8 +5,9 @@
 #include "Input.h"
 #include <memory>
 #include "WorldTransform.h"
+#include "collider/Collider.h"
 
-class Player
+class Player : public Collider
 {
 
 public: // メンバ関数（公開）
@@ -14,7 +15,7 @@ public: // メンバ関数（公開）
 	/// <summary>
 	/// 初期化
 	/// </summary>
-	void Initailize();
+	void Initialize();
 
 	/// <summary>
 	/// 更新
@@ -30,6 +31,21 @@ public: // メンバ関数（公開）
 	/// ImGui
 	/// </summary>
 	void ShowCoordinatesImGui();
+
+public: // ポリモーフィズム
+
+	/// <summary>
+	/// 衝突を検出したら呼び出されるコールバック関数
+	/// </summary>
+	void OnCollision([[maybe_unused]] Collider* other) override;
+
+	/// <summary>
+	/// 中心座標を取得
+	/// </summary>
+	/// <returns></returns>
+	Vector3 GetCenterPosition() const override;
+
+
 
 private: // メンバ関数（非公開）
 
@@ -61,6 +77,7 @@ private: // メンバ変数
 	std::unique_ptr<Object3d> base_ = nullptr;
 	Input* input_ = nullptr;
 
+	bool isColliding_ = false;
 	Vector3 moveSpeed_;
 
 };

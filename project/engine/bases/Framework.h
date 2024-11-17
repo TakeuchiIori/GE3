@@ -12,6 +12,7 @@
 #include "ModelManager.h"
 #include "SceneManager.h"
 #include "AbstractSceneFactory.h"
+#include "collider/CollisionManager.h"
 #include <LeakChecker.h>
 // ゲーム全体
 class Framework
@@ -66,7 +67,8 @@ protected:
 	Object3dCommon* object3dCommon_ = nullptr;
 	TextureManager* textureManager_ = nullptr;
 	ModelManager* modelManager_ = nullptr;
-	
+	CollisionManager* collisionManager_;
+
 private:
 	std::unique_ptr<D3DResourceLeakChecker> leakCheck;
 	// ゲーム終了フラグ
