@@ -53,6 +53,9 @@ public: // 構造体
 		Matrix4x4 WorldInverse;
 	};
 
+	struct CameraForGPU {
+		Vector3 worldPosition;
+	};
 public: // メンバ関数
 	/// <summary>
 	/// 初期化
