@@ -1,6 +1,6 @@
 #include "ImGuiManager.h"
 #include "WinApp.h"
-
+#include "imgui.h"
 
 #ifdef _DEBUG
 #include "DirectXCommon.h"
@@ -36,6 +36,10 @@ void ImGuiManager::Initialize(WinApp* winApp, DirectXCommon* dxCommon)
 
 	// DirectX12の初期化
 	InitialzeDX12();
+
+	ImGuiIO& io = ImGui::GetIO();
+	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+
 #endif
 }
 
@@ -47,6 +51,7 @@ void ImGuiManager::Begin()
 	ImGui_ImplWin32_NewFrame();
 	ImGui::NewFrame();
 #endif
+
 }
 
 void ImGuiManager::End()
@@ -67,6 +72,7 @@ void ImGuiManager::Draw()
 	commandList->SetDescriptorHeaps(_countof(ppHeaps), ppHeaps);
 	// 描画コマンドを発行
 	ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), commandList);
+	
 #endif
 }
 
