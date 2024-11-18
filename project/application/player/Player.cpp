@@ -28,9 +28,6 @@ void Player::Initialize()
     // グループを追加
     GlobalVariables::GetInstance()->CreateGroup(groupName);
 
-
-
-   
     // TypeIDの設定
     Collider::SetTypeID(static_cast<uint32_t>(CollisionTypeIdDef::kPlayer));
 }

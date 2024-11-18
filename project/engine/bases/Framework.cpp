@@ -46,6 +46,8 @@ void Framework::Initialize()
 	collisionManager_ = CollisionManager::GetInstance();
 	collisionManager_->Initialize();
 
+	
+	
 }
 
 void Framework::Finalize()
