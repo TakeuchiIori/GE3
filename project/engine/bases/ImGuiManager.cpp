@@ -37,8 +37,9 @@ void ImGuiManager::Initialize(WinApp* winApp, DirectXCommon* dxCommon)
 	// DirectX12の初期化
 	InitialzeDX12();
 
-	ImGuiIO& io = ImGui::GetIO();
-	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+	// 変更したエディター呼び出し
+	CustomizeEditor();
+	
 
 #endif
 }
@@ -103,6 +104,76 @@ void ImGuiManager::InitialzeDX12()
 		srvHeap_->GetGPUDescriptorHandleForHeapStart()
 	); 
 #endif // DEBUG
+}
+
+void ImGuiManager::CustomizeEditor()
+{
+#ifdef _DEBUG
+	// エディター同士をドッキング
+	ImGuiIO& io = ImGui::GetIO();
+	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+
+	// メインDockSpaceの設定
+	ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse |
+		ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove |
+		ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
+
+	// ウィンドウ全体をカバーするDockSpaceの作成
+	ImGui::SetNextWindowPos(ImVec2(0.0f, 0.0f)); // ウィンドウ位置を(0,0)に設定
+	ImGui::SetNextWindowSize(io.DisplaySize);    // ウィンドウサイズを全画面に設定
+
+
+	// フォントファイルのパスとサイズを指定してフォントをロードする
+	io.Fonts->AddFontFromFileTTF(
+		"C:\\Windows\\Fonts\\Arial.ttf", 16.0f // フォントファイルのパスとフォントサイズ
+	);
+	// 標準フォントを追加する
+	io.Fonts->AddFontDefault();
+
+
+	ImGuiStyle& style = ImGui::GetStyle();
+
+	// カラースキームのカスタマイズ
+	ImVec4* colors = style.Colors;
+	colors[ImGuiCol_WindowBg] = ImVec4(0.05f, 0.05f, 0.05f, 1.0f);    // 背景色 (ダークグレー)
+	colors[ImGuiCol_TitleBg] = ImVec4(0.15f, 0.15f, 0.18f, 1.0f);  // タイトルバー (暗い灰色)
+	colors[ImGuiCol_TitleBgActive] = ImVec4(0.2f, 0.2f, 0.25f, 1.0f);    // アクティブなタイトルバー (少し明るい灰色)
+	colors[ImGuiCol_TitleBgCollapsed] = ImVec4(0.1f, 0.1f, 0.12f, 1.0f);    // 折りたたまれたタイトルバー
+	colors[ImGuiCol_Button] = ImVec4(0.2f, 0.22f, 0.3f, 1.0f);    // ボタン (青灰色)
+	colors[ImGuiCol_ButtonHovered] = ImVec4(0.3f, 0.35f, 0.45f, 1.0f);   // ホバーしたボタン (明るい青灰色)
+	colors[ImGuiCol_ButtonActive] = ImVec4(0.25f, 0.28f, 0.35f, 1.0f);  // 押されたボタン (少し暗めの青灰色)
+	colors[ImGuiCol_FrameBg] = ImVec4(0.15f, 0.15f, 0.18f, 1.0f);  // 入力欄やフレーム背景
+	colors[ImGuiCol_FrameBgHovered] = ImVec4(0.2f, 0.2f, 0.25f, 1.0f);    // ホバーしたフレーム背景
+	colors[ImGuiCol_FrameBgActive] = ImVec4(0.25f, 0.25f, 0.3f, 1.0f);   // アクティブなフレーム背景
+	colors[ImGuiCol_CheckMark] = ImVec4(0.26f, 0.6f, 0.85f, 1.0f);   // チェックマーク (青アクセント)
+	colors[ImGuiCol_SliderGrab] = ImVec4(0.26f, 0.6f, 0.85f, 1.0f);   // スライダーつまみ (青アクセント)
+	colors[ImGuiCol_SliderGrabActive] = ImVec4(0.37f, 0.7f, 0.95f, 1.0f);   // アクティブなスライダーつまみ
+	colors[ImGuiCol_Header] = ImVec4(0.2f, 0.25f, 0.3f, 1.0f);    // ヘッダー背景
+	colors[ImGuiCol_HeaderHovered] = ImVec4(0.3f, 0.35f, 0.4f, 1.0f);    // ホバーしたヘッダー
+	colors[ImGuiCol_HeaderActive] = ImVec4(0.25f, 0.3f, 0.35f, 1.0f);   // アクティブなヘッダー
+	colors[ImGuiCol_Tab] = ImVec4(0.15f, 0.18f, 0.22f, 1.0f);  // タブ背景
+	colors[ImGuiCol_TabHovered] = ImVec4(0.25f, 0.3f, 0.4f, 1.0f);    // ホバーしたタブ
+	colors[ImGuiCol_TabActive] = ImVec4(0.2f, 0.25f, 0.35f, 1.0f);   // アクティブなタブ
+	colors[ImGuiCol_Separator] = ImVec4(0.25f, 0.25f, 0.3f, 1.0f);   // セパレーター
+	colors[ImGuiCol_SeparatorHovered] = ImVec4(0.35f, 0.4f, 0.45f, 1.0f);   // ホバーしたセパレーター
+	colors[ImGuiCol_SeparatorActive] = ImVec4(0.45f, 0.5f, 0.55f, 1.0f);   // アクティブなセパレーター
+	colors[ImGuiCol_Text] = ImVec4(0.9f, 0.9f, 0.9f, 1.0f);     // テキスト (白)
+	colors[ImGuiCol_TextDisabled] = ImVec4(0.5f, 0.5f, 0.5f, 1.0f);     // 無効化されたテキスト (灰色)
+	colors[ImGuiCol_Border] = ImVec4(0.2f, 0.2f, 0.25f, 1.0f);    // 境界線
+	colors[ImGuiCol_BorderShadow] = ImVec4(0.0f, 0.0f, 0.0f, 0.0f);     // 境界線の影
+
+
+
+	// スタイルの変更
+	style.WindowRounding = 15.0f;      // ウィンドウの角丸
+	style.FrameRounding = 4.0f;        // フレームの角丸
+	style.ScrollbarSize = 15.0f;       // スクロールバーのサイズ
+	//style.FramePadding = ImVec2(10, 10); // フレーム内のパディング
+
+	// ImGuiのスタイルを設定
+	//ImGui::StyleColorsClassic();
+
+#endif;
 }
 
 

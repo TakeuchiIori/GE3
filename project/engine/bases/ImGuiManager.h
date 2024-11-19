@@ -47,6 +47,11 @@ public: // メンバ関数
 	void InitialzeDX12();
 
 	/// <summary>
+	/// エディターを変更
+	/// </summary>
+	void CustomizeEditor();
+
+	/// <summary>
 	/// 終了
 	/// </summary>
 	void Finalize();
