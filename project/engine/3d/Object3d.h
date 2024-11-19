@@ -39,6 +39,7 @@ public: // 構造体
 		int32_t enableLighting;
 		float padding[3];
 		Matrix4x4 uvTransform;
+		float shininess;
 	};
 	// 平行光源
 	struct DirectionalLight {
@@ -53,6 +54,7 @@ public: // 構造体
 		Matrix4x4 WorldInverse;
 	};
 
+	// カメラのワールド座標を設定
 	struct CameraForGPU {
 		Vector3 worldPosition;
 	};
@@ -76,14 +78,19 @@ public: // メンバ関数
 private:
 
 	/// <summary>
+	/// </summary>
+	/// マテリアルリソース
+	void MaterialResource();
+
+	/// <summary>
 	/// 平行光源リソース
 	/// </summary>
 	void DirectionalLightResource();
 
 	/// <summary>
-	/// マテリアルリソース
+	/// 鏡面反射リソース
 	/// </summary>
-	void MaterialResource();
+	void SpecularReflectionResource();
 
 public: // アクセッサ
 
@@ -124,9 +131,14 @@ private: // メンバ変数
 
 	// マテリアル
 	Microsoft::WRL::ComPtr<ID3D12Resource> materialResource_;
+	
 	// 平行光源
 	Microsoft::WRL::ComPtr<ID3D12Resource> directionalLightResource_;
 	DirectionalLight* directionalLight_ = nullptr;
+
+	// 鏡面反射ss
+	Microsoft::WRL::ComPtr<ID3D12Resource> specularReflectionResource_;
+	CameraForGPU* cameraData_ = nullptr;
 	
 
 	// テクスチャ左上座標

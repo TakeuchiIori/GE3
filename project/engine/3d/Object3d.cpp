@@ -16,11 +16,13 @@ void Object3d::Initialize()
 	this->camera_ = object3dCommon_->GetDefaultCamera();
 
 
+	// マテリアルリソース
+	MaterialResource();
+
 	// 平行光源の初期化
 	DirectionalLightResource();
 
-	// マテリアルリソース
-	MaterialResource();
+	SpecularReflectionResource();
 	
 
 }
@@ -39,12 +41,15 @@ void Object3d::Draw(WorldTransform& worldTransform)
 	}
 	worldTransform.SetMapWVP(worldViewProjectionMatrix);
 
-	// マテリアルCBufferの場所を指定
+	// マテリアルCB場所
 	object3dCommon_->GetDxCommon()->GetCommandList()->SetGraphicsRootConstantBufferView(0, materialResource_->GetGPUVirtualAddress());
-	// TransformatonMatrixCBuffferの場所を設定
+	// TransformatonMatrixCB
 	object3dCommon_->GetDxCommon()->GetCommandList()->SetGraphicsRootConstantBufferView(1, worldTransform.GetConstBuffer()->GetGPUVirtualAddress());
-	// 平行光源のCBufferの場所を設定
+	// 平行光源CB
 	object3dCommon_->GetDxCommon()->GetCommandList()->SetGraphicsRootConstantBufferView(3, directionalLightResource_->GetGPUVirtualAddress());
+	// 鏡面反射CB
+	object3dCommon_->GetDxCommon()->GetCommandList()->SetGraphicsRootConstantBufferView(4, specularReflectionResource_->GetGPUVirtualAddress());
+	
 	// 3Dモデルが割り当てられていれば描画する
 	if (model_) {
 		model_->Draw();
@@ -67,7 +72,15 @@ void Object3d::DirectionalLightResource()
 	directionalLight_->color = { 1.0f,1.0f,1.0f,1.0f };
 	directionalLight_->direction = { 0.0f,-1.0f,0.0f };
 	directionalLight_->intensity = 1.0f;
+	
+}
 
+void Object3d::SpecularReflectionResource()
+{
+	specularReflectionResource_ = object3dCommon_->GetDxCommon()->CreateBufferResource(sizeof(CameraForGPU));
+	specularReflectionResource_->Map(0, nullptr, reinterpret_cast<void**>(&cameraData_));
+
+	cameraData_->worldPosition = { 0.0f,0.0f,0.0f };
 }
 
 void Object3d::MaterialResource()
@@ -79,6 +92,7 @@ void Object3d::MaterialResource()
 	// マテリアルデータの初期化
 	materialData_->color = { 1.0f,1.0f,1.0f,1.0f};
 	materialData_->enableLighting = true;
+	materialData_->shininess = 100.0f;
 	materialData_->uvTransform = MakeIdentity4x4();
 }
 
