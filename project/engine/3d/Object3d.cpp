@@ -7,6 +7,7 @@
 #include "ModelManager.h"
 #include "Model.h"
 #include "WorldTransform.h"
+#include "imgui.h"
 
 void Object3d::Initialize()
 {
@@ -29,7 +30,6 @@ void Object3d::Initialize()
 
 void Object3d::Draw(WorldTransform& worldTransform)
 {
-	
 
 	Matrix4x4 worldViewProjectionMatrix;
 	if (camera_) {

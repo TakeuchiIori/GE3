@@ -103,24 +103,35 @@ public: // アクセッサ
 	/*===============================================//
 					　アンカーポイント
 	//===============================================*/
-	// getter
 	const Vector3& GetAnchorPoint()const { return anchorPoint_; }
-	// setter
 	void SetAnchorPoint(const Vector3& anchorPoint) { this->anchorPoint_ = anchorPoint; }
 
 	/*===============================================//
 					　    フリップ
 	//===============================================*/
-	// getter
 	const bool& GetIsFlipX()const { return isFlipX_; }
 	const bool& GetIsFlipY()const { return isFlipY_; }
-	// setter
 	void SetIsFlipX(const bool& isFlipX) { this->isFlipX_ = isFlipX; }
 	void SetIsFlipY(const bool& isFlipY) { this->isFlipY_ = isFlipY; }
-
 	
+	/*===============================================//
+				　   	  カメラ
+	//===============================================*/
 	void SetModel(const std::string& filePath);
 	void SetCamera(Camera* camera) { this->camera_ = camera; }
+
+	/*===============================================//
+			　   	    ライティング
+	//===============================================*/
+	const Vector3& GetLightDirection() const {return directionalLight_->direction;}
+	void SetLightDirection(const Vector3& direction) {directionalLight_->direction = direction;}
+
+	const Vector4& GetLightColor() const { return directionalLight_->color; }
+	void SetLightColor(const Vector4& color) { directionalLight_->color = color; }
+
+
+	float GetLightIntensity() const { return directionalLight_->intensity; }
+	void SetLightIntensity(float intensity) { directionalLight_->intensity = intensity; }
 
 private: // メンバ変数
 	// ポインタ

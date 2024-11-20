@@ -22,6 +22,8 @@ void Player::Initailize()
     moveSpeed_ = { 0.5f, 0.5f , 0.5f };
     worldTransform_.Initialize();
     worldTransform_.translation_.z = -100.0f;
+    Vector3 a = { 2.0f,2.0f,2.0f };
+    worldTransform_.scale_ *= a;
 }
 
 void Player::Update()
@@ -116,4 +118,28 @@ void Player::ShowCoordinatesImGui()
     ImGui::Text("Position Z: %.2f", worldTransform_.translation_.z);
     ImGui::End();
 #endif
+
+    if (ImGui::Begin("Light Editor")) {
+        // ライトの方向
+        ImGui::Text("Light Direction");
+        Vector3 currentDirection = base_->GetLightDirection();
+        if (ImGui::SliderFloat3("Direction", &currentDirection.x, -1.0f, 1.0f)) {
+            base_->SetLightDirection(currentDirection); // Setter を使用して更新
+        }
+
+        // ライトの色
+        ImGui::Text("Light Color");
+        Vector4 currentColor = base_->GetLightColor();
+        if (ImGui::ColorEdit4("Color", &currentColor.x)) {
+            base_->SetLightColor(currentColor);
+        }
+
+        // ライトの光度
+        ImGui::Text("Light Intensity");
+        float currentIntensity = base_->GetLightIntensity();
+        if (ImGui::SliderFloat("Intensity", &currentIntensity, 0.0f, 10.0f)) {
+            base_->SetLightIntensity(currentIntensity);
+        }
+    }
+    ImGui::End();
 }
