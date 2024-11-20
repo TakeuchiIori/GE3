@@ -60,6 +60,15 @@ public: // 構造体
 		int32_t enableSpecular;
 		int32_t isHalfVector;
 	};
+
+	// ポイントライト
+	struct PointLight {
+		Vector4 color;	   // 色
+		Vector3 position;  // 位置
+		float intensity;   // 輝度
+	};
+
+
 public: // メンバ関数
 	/// <summary>
 	/// 初期化
