@@ -16,6 +16,7 @@ struct Camera
 {
     float3 worldPosition;
     int enableSpecular;
+    int isHalfVector;
 };
 struct PixelShaderOutput
 {
@@ -51,6 +52,14 @@ PixelShaderOutput main(VertexShaderOutput input)
             float3 reflectLight = reflect(gDirectionalLight.direction, normalize(input.normal));
             float RdoE = dot(reflectLight, toEye);
             float specularPow = pow(saturate(RdoE), gMaterial.shininess);
+            
+            if (gCamera.isHalfVector != 0)
+            {
+                float3 halfVector = normalize(-gDirectionalLight.direction + toEye);
+                float NdotH = dot(normalize(input.normal), halfVector);
+                specularPow = pow(saturate(NdotH), gMaterial.shininess);
+            }
+            
             specular = gDirectionalLight.color.rgb * gDirectionalLight.intensity * specularPow * float3(1.0f, 1.0f, 1.0f);
         }
 

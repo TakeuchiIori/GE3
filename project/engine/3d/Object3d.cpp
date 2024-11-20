@@ -84,6 +84,7 @@ void Object3d::SpecularReflectionResource()
 
 	cameraData_->worldPosition = { 0.0f,0.0f,0.0f };
 	cameraData_->enableSpecular = false;
+	cameraData_->isHalfVector = true;
 }
 
 void Object3d::MaterialResource()

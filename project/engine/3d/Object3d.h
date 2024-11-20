@@ -58,6 +58,7 @@ public: // 構造体
 	struct CameraForGPU {
 		Vector3 worldPosition;
 		int32_t enableSpecular;
+		int32_t isHalfVector;
 	};
 public: // メンバ関数
 	/// <summary>
@@ -148,6 +149,8 @@ public: // アクセッサ
 	//===============================================*/
 	bool IsSpecularEnabled() const { return cameraData_->enableSpecular != 0; }
 	void SetSpecularEnabled(bool enabled) { cameraData_->enableSpecular = enabled ? 1 : 0; }
+	bool IsHalfVector() const { return cameraData_->isHalfVector != 0; }
+	void SetHalfVector(bool halfVector) { cameraData_->isHalfVector = halfVector ? 1 : 0; }
 
 private: // メンバ変数
 	// ポインタ

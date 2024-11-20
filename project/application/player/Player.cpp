@@ -23,6 +23,8 @@ void Player::Initialize()
     worldTransform_.Initialize();
     worldTransform_.translation_.z = -100.0f;
 
+    worldTransform_.scale_ = { 2.0f,2.0f,2.0f };
+
     //GlobalVariables* globalvariables = GlobalVariables::GetInstance();
     const char* groupName = "Player";
     // グループを追加
@@ -168,6 +170,12 @@ void Player::ShowCoordinatesImGui()
         bool SpecularEnabled = base_->IsSpecularEnabled();
         if (ImGui::Checkbox(" Specular Enabled", &SpecularEnabled)) {
             base_->SetSpecularEnabled(SpecularEnabled);
+        }
+
+        ImGui::Text("Enable HalfVector");
+        bool isHalfVector = base_->IsHalfVector();
+        if (ImGui::Checkbox(" HalfVector Enabled", &isHalfVector)) {
+            base_->SetHalfVector(isHalfVector);
         }
 
         // 鏡面反射強度 (Shininess)
