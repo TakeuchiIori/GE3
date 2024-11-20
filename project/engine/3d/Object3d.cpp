@@ -83,6 +83,7 @@ void Object3d::SpecularReflectionResource()
 	specularReflectionResource_->Map(0, nullptr, reinterpret_cast<void**>(&cameraData_));
 
 	cameraData_->worldPosition = { 0.0f,0.0f,0.0f };
+	cameraData_->enableSpecular = false;
 }
 
 void Object3d::MaterialResource()
@@ -94,7 +95,7 @@ void Object3d::MaterialResource()
 	// マテリアルデータの初期化
 	materialData_->color = { 1.0f,1.0f,1.0f,1.0f};
 	materialData_->enableLighting = true;
-	materialData_->shininess = 100.0f;
+	materialData_->shininess = 1.0f;
 	materialData_->uvTransform = MakeIdentity4x4();
 }
 

@@ -158,18 +158,54 @@ void Player::ShowCoordinatesImGui()
             base_->SetLightingEnabled(lightingEnabled);
         }
 
-        // 鏡面反射強度
+        ImGui::Text("Enable Specular");
+        bool SpecularEnabled = base_->IsSpecularEnabled();
+        if (ImGui::Checkbox(" Specular Enabled", &SpecularEnabled)) {
+            base_->SetSpecularEnabled(SpecularEnabled);
+        }
+
+        // 鏡面反射強度 (Shininess)
         ImGui::Text("Shininess");
         float shininess = base_->GetMaterialShininess();
-        if (ImGui::SliderFloat("Shininess", &shininess, 0.0f, 200.0f)) {
+
+        // スライダーで調整
+        if (ImGui::SliderFloat("Shininess (Slider)", &shininess, 0.1f, 200.0f, "%.1f"))
+        {
             base_->SetMaterialShininess(shininess);
         }
+
+        // 直接入力で調整
+        if (ImGui::InputFloat("Shininess (Input)", &shininess, 0.1f, 1.0f, "%.1f"))
+        {
+            shininess = std::clamp(shininess, 0.1f, 200.0f); // 範囲を制限
+            base_->SetMaterialShininess(shininess);
+        }
+
+        // 微調整ボタン
+        if (ImGui::Button("-"))
+        {
+            shininess = (std::max)(0.1f, shininess - 1.0f); // 下限を0.1fに制限
+            base_->SetMaterialShininess(shininess);
+        }
+        ImGui::SameLine(); // ボタンを横並びに配置
+        if (ImGui::Button("+"))
+        {
+            shininess = (std::min)(200.0f, shininess + 1.0f); // 上限を200.0fに制限
+            base_->SetMaterialShininess(shininess);
+        }
+    
 
         // UVトランスフォーム
         ImGui::Text("UV Transform");
         Matrix4x4 currentUVTransform = base_->GetMaterialUVTransform();
-        if (ImGui::SliderFloat("Scale X", &currentUVTransform.m[0][0], 0.1f, 10.0f) ||
-            ImGui::SliderFloat("Scale Y", &currentUVTransform.m[1][1], 0.1f, 10.0f)) {
+        if (ImGui::InputFloat("Scale X", &currentUVTransform.m[0][0], 0.1f, 1.0f, "%.2f"))
+        {
+            currentUVTransform.m[0][0] = std::clamp(currentUVTransform.m[0][0], 0.1f, 10.0f); // 値を制限
+            base_->SetMaterialUVTransform(currentUVTransform);
+        }
+        if (ImGui::InputFloat("Scale Y", &currentUVTransform.m[1][1], 0.1f, 1.0f, "%.2f"))
+        {
+            currentUVTransform.m[1][1] = std::clamp(currentUVTransform.m[1][1], 0.1f, 10.0f); // 値を制限
             base_->SetMaterialUVTransform(currentUVTransform);
         }
     }

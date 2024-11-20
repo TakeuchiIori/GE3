@@ -57,6 +57,7 @@ public: // 構造体
 	// カメラのワールド座標を設定
 	struct CameraForGPU {
 		Vector3 worldPosition;
+		int32_t enableSpecular;
 	};
 public: // メンバ関数
 	/// <summary>
@@ -121,6 +122,18 @@ public: // アクセッサ
 	void SetCamera(Camera* camera) { this->camera_ = camera; }
 
 	/*===============================================//
+		　   			 マテリアル
+	//===============================================*/
+	const Vector4& GetMaterialColor() const { return materialData_->color; }
+	void SetMaterialColor(const Vector4& color) { materialData_->color = color; }
+	bool IsLightingEnabled() const { return materialData_->enableLighting != 0; }
+	void SetLightingEnabled(bool enabled) { materialData_->enableLighting = enabled ? 1 : 0; }
+	float GetMaterialShininess() const { return materialData_->shininess; }
+	void SetMaterialShininess(float shininess) { materialData_->shininess = shininess; }
+	const Matrix4x4& GetMaterialUVTransform() const { return materialData_->uvTransform; }
+	void SetMaterialUVTransform(const Matrix4x4& uvTransform) { materialData_->uvTransform = uvTransform; }
+
+	/*===============================================//
 			　   	    平行光源
 	//===============================================*/
 	const Vector3& GetLightDirection() const {return directionalLight_->direction;}
@@ -131,16 +144,10 @@ public: // アクセッサ
 	void SetLightIntensity(float intensity) { directionalLight_->intensity = intensity; }
 	
 	/*===============================================//
-			　   	    マテリアル
+					鏡面反射の有効/無効
 	//===============================================*/
-	const Vector4& GetMaterialColor() const { return materialData_->color; }
-	void SetMaterialColor(const Vector4& color) { materialData_->color = color; }
-	bool IsLightingEnabled() const { return materialData_->enableLighting != 0; }
-	void SetLightingEnabled(bool enabled) { materialData_->enableLighting = enabled ? 1 : 0; }
-	float GetMaterialShininess() const { return materialData_->shininess; }
-	void SetMaterialShininess(float shininess) { materialData_->shininess = shininess; }
-	const Matrix4x4& GetMaterialUVTransform() const { return materialData_->uvTransform; }
-	void SetMaterialUVTransform(const Matrix4x4& uvTransform) { materialData_->uvTransform = uvTransform; }
+	bool IsSpecularEnabled() const { return cameraData_->enableSpecular != 0; }
+	void SetSpecularEnabled(bool enabled) { cameraData_->enableSpecular = enabled ? 1 : 0; }
 
 private: // メンバ変数
 	// ポインタ

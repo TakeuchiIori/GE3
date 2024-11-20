@@ -1,19 +1,21 @@
 #include "Object3d.hlsli"
-struct Material{
-    float4 color:SV_TARGET0;
+struct Material
+{
+    float4 color : SV_TARGET0;
     int enableLighting;
     float4x4 uvTransform;
     float shininess;
 };
 struct DirectionalLight
 {
-    float4 color;       // ライトの色
-    float3 direction;   // ライトの向き
-    float intensity;    // 輝度
+    float4 color; // ライトの色
+    float3 direction; // ライトの向き
+    float intensity; // 輝度
 };
 struct Camera
 {
     float3 worldPosition;
+    int enableSpecular;
 };
 struct PixelShaderOutput
 {
@@ -36,29 +38,31 @@ PixelShaderOutput main(VertexShaderOutput input)
 
     if (gMaterial.enableLighting != 0)
     {
+        // 拡散反射の計算
         float NdotL = dot(normalize(input.normal), -gDirectionalLight.direction);
         float cos = pow(NdotL * 0.5f + 0.5f, 2.0f);
-
-        // 鏡面反射
-        float3 toEye = normalize(gCamera.worldPosition - input.worldPosition);
-        float3 reflectLight = reflect(gDirectionalLight.direction, normalize(input.normal));
-        float RdoE = dot(reflectLight, toEye);
-        float specularPow = pow(saturate(RdoE), gMaterial.shininess); // 反射強度
-
-        // 拡散反射
         float3 diffuse = gMaterial.color.rgb * textureColor.rgb * gDirectionalLight.color.rgb * cos * gDirectionalLight.intensity;
+        // 鏡面反射の計算
+        float3 specular = float3(0.0f, 0.0f, 0.0f); 
+        // 鏡面反射のON : OFF
+        if (gCamera.enableSpecular != 0)
+        {
+            float3 toEye = normalize(gCamera.worldPosition - input.worldPosition);
+            float3 reflectLight = reflect(gDirectionalLight.direction, normalize(input.normal));
+            float RdoE = dot(reflectLight, toEye);
+            float specularPow = pow(saturate(RdoE), gMaterial.shininess);
+            specular = gDirectionalLight.color.rgb * gDirectionalLight.intensity * specularPow * float3(1.0f, 1.0f, 1.0f);
+        }
 
-        // 鏡面反射
-        float3 specular = gDirectionalLight.color.rgb * gDirectionalLight.intensity * specularPow * float3(1.0f, 1.0f, 1.0f);
-
-        // 最終的な色の合成
+        // 拡散反射 + 鏡面反射
         output.color.rgb = diffuse + specular;
 
-        // アルファ値の確認用
+        // アルファ値
         output.color.a = gMaterial.color.a * textureColor.a; // アルファ値の掛け合わせ
     }
     else
     {
+        // ライティングなしの場合
         output.color = gMaterial.color * textureColor;
         output.color.a = gMaterial.color.a * textureColor.a; // アルファ値の掛け合わせ
     }
