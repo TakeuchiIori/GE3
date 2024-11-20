@@ -51,6 +51,24 @@ void ImGuiManager::Begin()
 	ImGui_ImplDX12_NewFrame();
 	ImGui_ImplWin32_NewFrame();
 	ImGui::NewFrame();
+
+	// DockSpaceの設定
+
+	ImGuiIO& io = ImGui::GetIO();
+	ImGui::SetNextWindowPos(ImVec2(0.0f, 0.0f)); // ウィンドウ全体をカバーする
+
+	ImGui::SetNextWindowSize(io.DisplaySize);
+	ImGui::SetNextWindowBgAlpha(0.0f); // 背景を透明にする
+	ImGuiWindowFlags dockspace_flags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse |
+		ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove |
+		ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus |
+		ImGuiWindowFlags_NoBackground;
+
+	ImGui::Begin("MainDockSpace", nullptr, dockspace_flags);
+
+	// DockSpaceの作成
+	ImGui::DockSpace(ImGui::GetID("MainDockSpace"), ImVec2(0.0f, 0.0f), ImGuiDockNodeFlags_None);
+	ImGui::End();
 #endif
 
 }
@@ -135,6 +153,31 @@ void ImGuiManager::CustomizeEditor()
 
 	// カラースキームのカスタマイズ
 	ImVec4* colors = style.Colors;
+	/*========================================================
+							ドックスペース
+	========================================================*/
+
+	// DockSpace背景色を透明に設定
+	colors[ImGuiCol_DockingEmptyBg] = ImVec4(0.0f, 0.0f, 0.0f, 0.0f); // 完全に透明
+	// パディングとスペーシングの調整
+	style.WindowPadding = ImVec2(0.0f, 0.0f); // ウィンドウ内の余白をゼロに
+
+	//style.FramePadding = ImVec2(0.0f, 0.0f);  // フレーム内の余白をゼロに
+	//style.ItemSpacing = ImVec2(0.0f, 0.0f);   // アイテム間のスペースをゼロに
+	//style.CellPadding = ImVec2(0.0f, 0.0f);   // テーブルセル内の余白をゼロに
+	//style.WindowBorderSize = 0.0f;            // ウィンドウの境界線幅をゼロに
+	//style.ChildBorderSize = 0.0f;             // 子ウィンドウの境界線幅をゼロに
+	//style.PopupBorderSize = 0.0f;             // ポップアップの境界線幅をゼロに
+	//style.FrameBorderSize = 0.0f;             // フレームの境界線幅をゼロに
+	//// DockNodeのスペーシングを調整
+	//style.TabBorderSize = 0.0f;               // タブの境界線幅をゼロに
+	////style.TabRounding = 0.0f;                 // タブの角丸をゼロに
+
+
+	/*========================================================
+							ImGui
+	========================================================*/
+
 	colors[ImGuiCol_WindowBg] = ImVec4(0.05f, 0.05f, 0.05f, 1.0f);    // 背景色 (ダークグレー)
 	colors[ImGuiCol_TitleBg] = ImVec4(0.15f, 0.15f, 0.18f, 1.0f);  // タイトルバー (暗い灰色)
 	colors[ImGuiCol_TitleBgActive] = ImVec4(0.2f, 0.2f, 0.25f, 1.0f);    // アクティブなタイトルバー (少し明るい灰色)
