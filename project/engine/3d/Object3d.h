@@ -39,6 +39,7 @@ public: // 構造体
 		int32_t enableLighting;
 		float padding[3];
 		Matrix4x4 uvTransform;
+		float shininess;
 	};
 	// 平行光源
 	struct DirectionalLight {
@@ -53,6 +54,11 @@ public: // 構造体
 		Matrix4x4 WorldInverse;
 	};
 
+	// カメラのワールド座標を設定
+	struct CameraForGPU {
+		Vector3 worldPosition;
+		int32_t enableSpecular;
+	};
 public: // メンバ関数
 	/// <summary>
 	/// 初期化
@@ -73,14 +79,19 @@ public: // メンバ関数
 private:
 
 	/// <summary>
+	/// </summary>
+	/// マテリアルリソース
+	void MaterialResource();
+
+	/// <summary>
 	/// 平行光源リソース
 	/// </summary>
 	void DirectionalLightResource();
 
 	/// <summary>
-	/// マテリアルリソース
+	/// 鏡面反射リソース
 	/// </summary>
-	void MaterialResource();
+	void SpecularReflectionResource();
 
 public: // アクセッサ
 
@@ -93,24 +104,50 @@ public: // アクセッサ
 	/*===============================================//
 					　アンカーポイント
 	//===============================================*/
-	// getter
 	const Vector3& GetAnchorPoint()const { return anchorPoint_; }
-	// setter
 	void SetAnchorPoint(const Vector3& anchorPoint) { this->anchorPoint_ = anchorPoint; }
 
 	/*===============================================//
 					　    フリップ
 	//===============================================*/
-	// getter
 	const bool& GetIsFlipX()const { return isFlipX_; }
 	const bool& GetIsFlipY()const { return isFlipY_; }
-	// setter
 	void SetIsFlipX(const bool& isFlipX) { this->isFlipX_ = isFlipX; }
 	void SetIsFlipY(const bool& isFlipY) { this->isFlipY_ = isFlipY; }
-
 	
+	/*===============================================//
+				　   	  カメラ
+	//===============================================*/
 	void SetModel(const std::string& filePath);
 	void SetCamera(Camera* camera) { this->camera_ = camera; }
+
+	/*===============================================//
+		　   			 マテリアル
+	//===============================================*/
+	const Vector4& GetMaterialColor() const { return materialData_->color; }
+	void SetMaterialColor(const Vector4& color) { materialData_->color = color; }
+	bool IsLightingEnabled() const { return materialData_->enableLighting != 0; }
+	void SetLightingEnabled(bool enabled) { materialData_->enableLighting = enabled ? 1 : 0; }
+	float GetMaterialShininess() const { return materialData_->shininess; }
+	void SetMaterialShininess(float shininess) { materialData_->shininess = shininess; }
+	const Matrix4x4& GetMaterialUVTransform() const { return materialData_->uvTransform; }
+	void SetMaterialUVTransform(const Matrix4x4& uvTransform) { materialData_->uvTransform = uvTransform; }
+
+	/*===============================================//
+			　   	    平行光源
+	//===============================================*/
+	const Vector3& GetLightDirection() const {return directionalLight_->direction;}
+	void SetLightDirection(const Vector3& direction) {directionalLight_->direction = direction;}
+	const Vector4& GetLightColor() const { return directionalLight_->color; }
+	void SetLightColor(const Vector4& color) { directionalLight_->color = color; }
+	float GetLightIntensity() const { return directionalLight_->intensity; }
+	void SetLightIntensity(float intensity) { directionalLight_->intensity = intensity; }
+	
+	/*===============================================//
+					鏡面反射の有効/無効
+	//===============================================*/
+	bool IsSpecularEnabled() const { return cameraData_->enableSpecular != 0; }
+	void SetSpecularEnabled(bool enabled) { cameraData_->enableSpecular = enabled ? 1 : 0; }
 
 private: // メンバ変数
 	// ポインタ
@@ -121,9 +158,14 @@ private: // メンバ変数
 
 	// マテリアル
 	Microsoft::WRL::ComPtr<ID3D12Resource> materialResource_;
+	
 	// 平行光源
 	Microsoft::WRL::ComPtr<ID3D12Resource> directionalLightResource_;
 	DirectionalLight* directionalLight_ = nullptr;
+
+	// 鏡面反射ss
+	Microsoft::WRL::ComPtr<ID3D12Resource> specularReflectionResource_;
+	CameraForGPU* cameraData_ = nullptr;
 	
 
 	// テクスチャ左上座標

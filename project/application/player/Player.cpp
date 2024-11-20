@@ -22,6 +22,8 @@ void Player::Initailize()
     moveSpeed_ = { 0.5f, 0.5f , 0.5f };
     worldTransform_.Initialize();
     worldTransform_.translation_.z = -100.0f;
+    Vector3 a = { 2.0f,2.0f,2.0f };
+    worldTransform_.scale_ *= a;
 }
 
 void Player::Update()
@@ -116,4 +118,96 @@ void Player::ShowCoordinatesImGui()
     ImGui::Text("Position Z: %.2f", worldTransform_.translation_.z);
     ImGui::End();
 #endif
+
+    if (ImGui::Begin("Light Editor")) {
+        // ライトの方向
+        ImGui::Text("Light Direction");
+        Vector3 currentDirection = base_->GetLightDirection();
+        if (ImGui::SliderFloat3("Direction", &currentDirection.x, -1.0f, 1.0f)) {
+            base_->SetLightDirection(currentDirection); // Setter を使用して更新
+        }
+
+        // ライトの色
+        ImGui::Text("Light Color");
+        Vector4 currentColor = base_->GetLightColor();
+        if (ImGui::ColorEdit4("Color", &currentColor.x)) {
+            base_->SetLightColor(currentColor);
+        }
+
+        // ライトの光度
+        ImGui::Text("Light Intensity");
+        float currentIntensity = base_->GetLightIntensity();
+        if (ImGui::SliderFloat("Intensity", &currentIntensity, 0.0f, 10.0f)) {
+            base_->SetLightIntensity(currentIntensity);
+        }
+    }
+    ImGui::End();
+
+    if (ImGui::Begin("Material Editor")) {
+        // マテリアルの色
+        ImGui::Text("Material Color");
+        Vector4 currentColor = base_->GetMaterialColor();
+        if (ImGui::ColorEdit4("Color", &currentColor.x)) {
+            base_->SetMaterialColor(currentColor);
+        }
+
+        // ライティングの有効化/無効化
+        ImGui::Text("Enable Lighting");
+        bool lightingEnabled = base_->IsLightingEnabled();
+        if (ImGui::Checkbox("Lighting Enabled", &lightingEnabled)) {
+            base_->SetLightingEnabled(lightingEnabled);
+        }
+
+        ImGui::Text("Enable Specular");
+        bool SpecularEnabled = base_->IsSpecularEnabled();
+        if (ImGui::Checkbox(" Specular Enabled", &SpecularEnabled)) {
+            base_->SetSpecularEnabled(SpecularEnabled);
+        }
+
+        // 鏡面反射強度 (Shininess)
+        ImGui::Text("Shininess");
+        float shininess = base_->GetMaterialShininess();
+
+        // スライダーで調整
+        if (ImGui::SliderFloat("Shininess (Slider)", &shininess, 0.1f, 200.0f, "%.1f"))
+        {
+            base_->SetMaterialShininess(shininess);
+        }
+
+        // 直接入力で調整
+        if (ImGui::InputFloat("Shininess (Input)", &shininess, 0.1f, 1.0f, "%.1f"))
+        {
+            shininess = std::clamp(shininess, 0.1f, 200.0f); // 範囲を制限
+            base_->SetMaterialShininess(shininess);
+        }
+
+        // 微調整ボタン
+        if (ImGui::Button("-"))
+        {
+            shininess = (std::max)(0.1f, shininess - 1.0f); // 下限を0.1fに制限
+            base_->SetMaterialShininess(shininess);
+        }
+        ImGui::SameLine(); // ボタンを横並びに配置
+        if (ImGui::Button("+"))
+        {
+            shininess = (std::min)(200.0f, shininess + 1.0f); // 上限を200.0fに制限
+            base_->SetMaterialShininess(shininess);
+        }
+    
+
+        // UVトランスフォーム
+        ImGui::Text("UV Transform");
+        Matrix4x4 currentUVTransform = base_->GetMaterialUVTransform();
+        if (ImGui::InputFloat("Scale X", &currentUVTransform.m[0][0], 0.1f, 1.0f, "%.2f"))
+        {
+            currentUVTransform.m[0][0] = std::clamp(currentUVTransform.m[0][0], 0.1f, 10.0f); // 値を制限
+            base_->SetMaterialUVTransform(currentUVTransform);
+        }
+        if (ImGui::InputFloat("Scale Y", &currentUVTransform.m[1][1], 0.1f, 1.0f, "%.2f"))
+        {
+            currentUVTransform.m[1][1] = std::clamp(currentUVTransform.m[1][1], 0.1f, 10.0f); // 値を制限
+            base_->SetMaterialUVTransform(currentUVTransform);
+        }
+    }
+    ImGui::End();
 }

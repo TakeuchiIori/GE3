@@ -59,9 +59,53 @@ struct Vector3 final {
         return { x / scalar, y / scalar, z / scalar };
     }
 
-    // スカラーを減算する演算子の反転（float - Vector3 の場合も対応）
-    friend Vector3 operator-(float scalar, const Vector3& vec) {
-        return { scalar - vec.x, scalar - vec.y, scalar - vec.z };
+    // スカラー除算代入演算子 /=
+    Vector3& operator/=(float scalar) {
+        x /= scalar;
+        y /= scalar;
+        z /= scalar;
+        return *this;
+    }
+
+    // ベクトル同士の乗算（要素ごとの積）演算子 *
+    Vector3 operator*(const Vector3& other) const {
+        return { x * other.x, y * other.y, z * other.z };
+    }
+
+    // ベクトル乗算代入演算子 *=
+    Vector3& operator*=(const Vector3& other) {
+        x *= other.x;
+        y *= other.y;
+        z *= other.z;
+        return *this;
+    }
+
+    // ベクトル同士の除算（要素ごとの割り算）演算子 /
+    Vector3 operator/(const Vector3& other) const {
+        return { x / other.x, y / other.y, z / other.z };
+    }
+
+    // ベクトル除算代入演算子 /=
+    Vector3& operator/=(const Vector3& other) {
+        x /= other.x;
+        y /= other.y;
+        z /= other.z;
+        return *this;
+    }
+
+    // 等価演算子 ==
+    bool operator==(const Vector3& other) const {
+        return x == other.x && y == other.y && z == other.z;
+    }
+
+    // 不等価演算子 !=
+    bool operator!=(const Vector3& other) const {
+        return !(*this == other);
+    }
+
+    // 単項マイナス演算子（負のベクトルを返す）
+    Vector3 operator-() const {
+        return { -x, -y, -z };
     }
 
     // ベクトルの外積を計算する関数
@@ -76,6 +120,12 @@ struct Vector3 final {
     // ベクトルの長さを計算する関数
     static float Length(const Vector3& v) {
         return std::sqrt(v.x * v.x + v.y * v.y + v.z * v.z);
+    }
+
+    // ベクトルの正規化を返す関数
+    static Vector3 Normalize(const Vector3& v) {
+        float length = Length(v);
+        return (length > 0) ? v / length : Vector3(0, 0, 0);
     }
 };
 
