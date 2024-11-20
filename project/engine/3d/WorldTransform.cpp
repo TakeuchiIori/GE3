@@ -24,7 +24,7 @@ void WorldTransform::CreateConstBuffer()
     // 単位行列を書き込んでおく
     constMap_->WVP = MakeIdentity4x4();
     constMap_->World = MakeIdentity4x4();
-    constMap_->WorldInverse = MakeIdentity4x4();
+    constMap_->WorldInverse = Inverse(constMap_->World);
 }
 
 void WorldTransform::UpdateMatrix()

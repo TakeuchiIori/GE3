@@ -33,7 +33,7 @@ void GameScene::Initialize()
     test_->SetModel("float_body.obj");
     testWorldTransform_.Initialize();
     // 初期カメラモード設定
-    cameraMode_ = CameraMode::FPS;
+    cameraMode_ = CameraMode::FOLLOW;
 
     // パーティクル
     std::string particleName = "Circle";

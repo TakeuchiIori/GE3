@@ -120,10 +120,38 @@ void Player::ShowCoordinatesImGui()
 {
 #ifdef _DEBUG
     // ImGuiウィンドウを利用してプレイヤーの座標を表示
-    ImGui::Begin("Player Coordinates");
-    ImGui::Text("Position X: %.2f", worldTransform_.translation_.x);
-    ImGui::Text("Position Y: %.2f", worldTransform_.translation_.y);
-    ImGui::Text("Position Z: %.2f", worldTransform_.translation_.z);
+    ImGui::Begin("Player SRT Editor");
+
+    // スケール
+    ImGui::Text("Scale");
+    float scale[3] = { worldTransform_.scale_.x, worldTransform_.scale_.y, worldTransform_.scale_.z };
+    if (ImGui::SliderFloat3("Scale", scale, 0.1f, 10.0f, "%.2f"))
+    {
+        worldTransform_.scale_.x = (std::max)(0.1f, scale[0]); // スケールの下限を0.1に制限
+        worldTransform_.scale_.y = (std::max)(0.1f, scale[1]);
+        worldTransform_.scale_.z = (std::max)(0.1f, scale[2]);
+    }
+
+    // 回転
+    ImGui::Text("Rotation");
+    float rotation[3] = { worldTransform_.rotation_.x, worldTransform_.rotation_.y, worldTransform_.rotation_.z };
+    if (ImGui::SliderFloat3("Rotation", rotation, -360.0f, 360.0f, "%.2f"))
+    {
+        worldTransform_.rotation_.x = rotation[0];
+        worldTransform_.rotation_.y = rotation[1];
+        worldTransform_.rotation_.z = rotation[2];
+    }
+
+    // 平行移動
+    ImGui::Text("Translation");
+    float translation[3] = { worldTransform_.translation_.x, worldTransform_.translation_.y, worldTransform_.translation_.z };
+    if (ImGui::SliderFloat3("Translation", translation, -100.0f, 100.0f, "%.2f"))
+    {
+        worldTransform_.translation_.x = translation[0];
+        worldTransform_.translation_.y = translation[1];
+        worldTransform_.translation_.z = translation[2];
+    }
+
     ImGui::End();
 #endif
 
