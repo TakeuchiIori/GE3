@@ -125,7 +125,7 @@ void ImGuiManager::CustomizeEditor()
 
 	// フォントファイルのパスとサイズを指定してフォントをロードする
 	io.Fonts->AddFontFromFileTTF(
-		"C:\\Windows\\Fonts\\Arial.ttf", 16.0f // フォントファイルのパスとフォントサイズ
+		"Resources/Fonts/FiraMono-Regular.ttf", 16.0f // フォントファイルのパスとフォントサイズ
 	);
 	// 標準フォントを追加する
 	io.Fonts->AddFontDefault();
