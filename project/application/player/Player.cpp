@@ -142,4 +142,36 @@ void Player::ShowCoordinatesImGui()
         }
     }
     ImGui::End();
+
+    if (ImGui::Begin("Material Editor")) {
+        // マテリアルの色
+        ImGui::Text("Material Color");
+        Vector4 currentColor = base_->GetMaterialColor();
+        if (ImGui::ColorEdit4("Color", &currentColor.x)) {
+            base_->SetMaterialColor(currentColor);
+        }
+
+        // ライティングの有効化/無効化
+        ImGui::Text("Enable Lighting");
+        bool lightingEnabled = base_->IsLightingEnabled();
+        if (ImGui::Checkbox("Lighting Enabled", &lightingEnabled)) {
+            base_->SetLightingEnabled(lightingEnabled);
+        }
+
+        // 鏡面反射強度
+        ImGui::Text("Shininess");
+        float shininess = base_->GetMaterialShininess();
+        if (ImGui::SliderFloat("Shininess", &shininess, 0.0f, 200.0f)) {
+            base_->SetMaterialShininess(shininess);
+        }
+
+        // UVトランスフォーム
+        ImGui::Text("UV Transform");
+        Matrix4x4 currentUVTransform = base_->GetMaterialUVTransform();
+        if (ImGui::SliderFloat("Scale X", &currentUVTransform.m[0][0], 0.1f, 10.0f) ||
+            ImGui::SliderFloat("Scale Y", &currentUVTransform.m[1][1], 0.1f, 10.0f)) {
+            base_->SetMaterialUVTransform(currentUVTransform);
+        }
+    }
+    ImGui::End();
 }

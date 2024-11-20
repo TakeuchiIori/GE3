@@ -17,12 +17,13 @@ void Object3d::Initialize()
 	this->camera_ = object3dCommon_->GetDefaultCamera();
 
 
-	// マテリアルリソース
+	// マテリアル
 	MaterialResource();
 
-	// 平行光源の初期化
+	// 平行光源
 	DirectionalLightResource();
 
+	//　鏡面反射
 	SpecularReflectionResource();
 	
 
@@ -33,6 +34,7 @@ void Object3d::Draw(WorldTransform& worldTransform)
 
 	Matrix4x4 worldViewProjectionMatrix;
 	if (camera_) {
+		cameraData_->worldPosition = camera_->GetTranslate();
 		const Matrix4x4& viewProjectionMatrix = camera_->GetViewProjectionMatrix();
 		worldViewProjectionMatrix = worldTransform.GetMatWorld() * viewProjectionMatrix;
 	}
@@ -72,7 +74,7 @@ void Object3d::DirectionalLightResource()
 	directionalLight_->color = { 1.0f,1.0f,1.0f,1.0f };
 	directionalLight_->direction = { 0.0f,-1.0f,0.0f };
 	directionalLight_->intensity = 1.0f;
-	
+
 }
 
 void Object3d::SpecularReflectionResource()

@@ -121,17 +121,26 @@ public: // アクセッサ
 	void SetCamera(Camera* camera) { this->camera_ = camera; }
 
 	/*===============================================//
-			　   	    ライティング
+			　   	    平行光源
 	//===============================================*/
 	const Vector3& GetLightDirection() const {return directionalLight_->direction;}
 	void SetLightDirection(const Vector3& direction) {directionalLight_->direction = direction;}
-
 	const Vector4& GetLightColor() const { return directionalLight_->color; }
 	void SetLightColor(const Vector4& color) { directionalLight_->color = color; }
-
-
 	float GetLightIntensity() const { return directionalLight_->intensity; }
 	void SetLightIntensity(float intensity) { directionalLight_->intensity = intensity; }
+	
+	/*===============================================//
+			　   	    マテリアル
+	//===============================================*/
+	const Vector4& GetMaterialColor() const { return materialData_->color; }
+	void SetMaterialColor(const Vector4& color) { materialData_->color = color; }
+	bool IsLightingEnabled() const { return materialData_->enableLighting != 0; }
+	void SetLightingEnabled(bool enabled) { materialData_->enableLighting = enabled ? 1 : 0; }
+	float GetMaterialShininess() const { return materialData_->shininess; }
+	void SetMaterialShininess(float shininess) { materialData_->shininess = shininess; }
+	const Matrix4x4& GetMaterialUVTransform() const { return materialData_->uvTransform; }
+	void SetMaterialUVTransform(const Matrix4x4& uvTransform) { materialData_->uvTransform = uvTransform; }
 
 private: // メンバ変数
 	// ポインタ
