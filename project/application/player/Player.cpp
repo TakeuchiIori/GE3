@@ -21,7 +21,6 @@ void Player::Initialize()
     input_ = Input::GetInstance();
     moveSpeed_ = { 0.5f, 0.5f , 0.5f };
     worldTransform_.Initialize();
-    worldTransform_.translation_.z = -100.0f;
 
     worldTransform_.scale_ = { 2.0f,2.0f,2.0f };
 

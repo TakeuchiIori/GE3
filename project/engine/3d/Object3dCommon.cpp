@@ -67,6 +67,14 @@ void Object3dCommon::CreateRootSignature()
 	descriptionRootSignature.pParameters = rootParameters;								// ルートパラメーター配列へのポインタ
 	descriptionRootSignature.NumParameters = _countof(rootParameters);
 
+	// ポイントライト
+	rootParameters[5].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;					// CBVを使う
+	rootParameters[5].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;					// PixelShaderで使う
+	rootParameters[5].Descriptor.ShaderRegister = 3;									// レジスタ番号1を使う
+	descriptionRootSignature.pParameters = rootParameters;								// ルートパラメーター配列へのポインタ
+	descriptionRootSignature.NumParameters = _countof(rootParameters);					// 配列の長さ
+
+
 	//=================== Samplerの設定 ===================//
 	staticSamplers[0].Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR;							// バイリニアフィルタ
 	staticSamplers[0].AddressU = D3D12_TEXTURE_ADDRESS_MODE_WRAP;						// 0~1の範囲外をリピート

@@ -14,7 +14,7 @@
 void GameScene::Initialize()
 {
     // モデル読み込み
-    ModelManager::GetInstance()->LoadModel("Resources/obj","float_body.obj");
+    ModelManager::GetInstance()->LoadModel("Resources/terrain","terrain.obj");
 
     // カメラの生成
     currentCamera_ = cameraManager_.AddCamera();
@@ -30,7 +30,7 @@ void GameScene::Initialize()
     // test
     test_ = std::make_unique<Object3d>();
     test_->Initialize();
-    test_->SetModel("float_body.obj");
+    test_->SetModel("terrain.obj");
     testWorldTransform_.Initialize();
     // 初期カメラモード設定
     cameraMode_ = CameraMode::FOLLOW;
