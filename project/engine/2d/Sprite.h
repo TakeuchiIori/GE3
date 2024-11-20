@@ -140,13 +140,13 @@ public: // アクセッサ
 					　テクスチャ範囲指定
 	//===============================================*/
 	// getter
-	const Vector2& GetTextureLeftTop() const {return textureLeftTop_;}
-	const Vector2& GetTextureSize() const {return textureSize_;}
+	const Vector2& GetTextureLeftTop() const { return textureLeftTop_; }
+	const Vector2& GetTextureSize() const { return textureSize_; }
 	// setter
-	void SetTextureLeftTop(const Vector2& textureLeftTop) {this->textureLeftTop_ = textureLeftTop;}
-	void SetTextureSize(const Vector2& textureSize) {this->textureSize_ = textureSize;}
+	void SetTextureLeftTop(const Vector2& textureLeftTop) { this->textureLeftTop_ = textureLeftTop; }
+	void SetTextureSize(const Vector2& textureSize) { this->textureSize_ = textureSize; }
 	// SrvManagerのセッター
-	void SetSrvManager(SrvManager* srvManager) {this->srvManagaer_ = srvManager;}
+	void SetSrvManager(SrvManager* srvManager) { this->srvManagaer_ = srvManager; }
 
 private: // メンバ変数
 
@@ -199,10 +199,10 @@ private: // メンバ変数
 	Vector2 position_ = { 0.0f,0.0f };
 	float rotation_ = 0.0f;
 	Vector2 size_ = { 100.0f,100.0f };
-	
+
 	// アンカーポイント
 	Vector2 anchorPoint_ = { 0.0f,0.0f };
-	
+
 	// 左右フリップ
 	bool isFlipX_ = false;
 	// 上下フリップ

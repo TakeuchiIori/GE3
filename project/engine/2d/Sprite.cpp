@@ -6,7 +6,7 @@ Sprite::Sprite()
 {
 }
 
-void Sprite::Initialize( std::string& textureFilePath)
+void Sprite::Initialize(std::string& textureFilePath)
 {
 	this->spriteCommon_ = SpriteCommon::GetInstance();
 
@@ -21,20 +21,20 @@ void Sprite::Initialize( std::string& textureFilePath)
 	MaterialResource();
 
 	TextureManager::GetInstance()->LoadTexture(textureFilePath);
-	
+
 	textureIndex_ = TextureManager::GetInstance()->GetTextureIndexByFilePath(textureFilePath);
 
 	AdjustTaxtureSize();
 
 	transform_ = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
-	
+
 }
 
 void Sprite::Update()
 {
 	CreateVertex();
 	// スプライトのSRT
-	
+
 	transform_.translate = { position_.x,position_.y,0.0f };
 	transform_.rotate = { 0.0f,0.0f,rotation_ };
 	transform_.scale = { size_.x,size_.y,1.0f };
@@ -44,7 +44,7 @@ void Sprite::Update()
 	Matrix4x4 worldProjectionMatrix = Multiply(worldMatrix, Multiply(viewMatrix, projectionMatrix));
 
 	transformationMatrixData_->WVP = worldProjectionMatrix;
-	transformationMatrixData_->World =worldMatrix;
+	transformationMatrixData_->World = worldMatrix;
 }
 
 void Sprite::Draw()
@@ -77,7 +77,7 @@ void Sprite::VertexResource()
 	// 1頂点あたりのサイズ
 	vertexBufferView_.StrideInBytes = sizeof(VertexData);
 
-	
+
 }
 
 void Sprite::CreateVertex()
