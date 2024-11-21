@@ -7,8 +7,8 @@
 void TitleScene::Initialize()
 {
 	///============ モデル読み込み ============///
-	ModelManager::GetInstance()->LoadModel("Resources","lane.obj");
-	ModelManager::GetInstance()->LoadModel("Resources","xis.obj");
+	ModelManager::GetInstance()->LoadModel("Resources./Objects./Defualt","lane.obj");
+	ModelManager::GetInstance()->LoadModel("Resources./Objects./Defualt","xis.obj");
 	
 	
 
@@ -19,7 +19,7 @@ void TitleScene::Initialize()
 	Object3dCommon::GetInstance()->SetDefaultCamera(camera_.get());
 
 	///============ スプライト初期化 ============///
-	std::string textureFilePath[2] = { "Resources/monsterBall.png" ,"Resources/uvChecker.png" };
+	std::string textureFilePath[2] = { "Resources/textures/monsterBall.png" ,"Resources/textures/uvChecker.png" };
 	for (uint32_t i = 0; i < 1; ++i) {
 		auto sprite = std::make_unique<Sprite>();
 		sprite->Initialize(textureFilePath[1]);

@@ -4,7 +4,7 @@
 void Enemy::Initialize()
 {
     // .obj読み込み
-    ModelManager::GetInstance()->LoadModel("Resources./player", "player.obj");
+    ModelManager::GetInstance()->LoadModel("Resources./Objects./player", "player.obj");
 
     // OBject3dの初期化
     base_ = std::make_unique<Object3d>();

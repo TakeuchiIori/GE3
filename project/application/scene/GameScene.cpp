@@ -14,7 +14,7 @@
 void GameScene::Initialize()
 {
     // モデル読み込み
-    ModelManager::GetInstance()->LoadModel("Resources/obj","float_body.obj");
+    ModelManager::GetInstance()->LoadModel("Resources./Objects./Defualt","float_body.obj");
 
     // カメラの生成
     currentCamera_ = cameraManager_.AddCamera();
@@ -38,7 +38,7 @@ void GameScene::Initialize()
     // パーティクル
     std::string particleName = "Circle";
     ParticleManager::GetInstance()->SetCamera(currentCamera_.get());
-    ParticleManager::GetInstance()->CreateParticleGroup(particleName, "Resources/images/circle.png");
+    ParticleManager::GetInstance()->CreateParticleGroup(particleName, "Resources/Textures/circle.png");
     emitterPosition_ = Vector3{ 0.0f, 0.0f, 0.0f }; // エミッタの初期位置
     particleEmitter_ = std::make_unique<ParticleEmitter>(particleName, emitterPosition_,1);
 

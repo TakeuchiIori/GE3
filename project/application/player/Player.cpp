@@ -10,7 +10,7 @@
 void Player::Initialize()
 {
     // .obj読み込み
-    ModelManager::GetInstance()->LoadModel("Resources./ball","ball.obj");
+    ModelManager::GetInstance()->LoadModel("Resources./Objects./ball","ball.obj");
 
     // OBject3dの初期化
     base_ = std::make_unique<Object3d>();

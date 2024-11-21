@@ -123,10 +123,10 @@ void Object3dCommon::CreateRootSignature()
 
 	//=================== Shaderをコンパイルする ===================//
 
-	vertexShaderBlob = dxCommon_->CompileShader(L"Resources/shaders/Object3d.VS.hlsl",
+	vertexShaderBlob = dxCommon_->CompileShader(L"Resources/Shaders/Object3d.VS.hlsl",
 		L"vs_6_0");
 	assert(vertexShaderBlob != nullptr);
-	pixelShaderBlob = dxCommon_->CompileShader(L"Resources/shaders/Object3d.PS.hlsl",
+	pixelShaderBlob = dxCommon_->CompileShader(L"Resources/Shaders/Object3d.PS.hlsl",
 		L"ps_6_0");
 	assert(pixelShaderBlob != nullptr);
 
