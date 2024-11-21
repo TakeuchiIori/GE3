@@ -23,6 +23,7 @@ struct PointLight
     float4 color;
     float3 position;
     float intensity;
+    int enablePointLight;
 };
 struct PixelShaderOutput
 {
@@ -70,6 +71,11 @@ PixelShaderOutput main(VertexShaderOutput input)
             specular = gDirectionalLight.color.rgb * gDirectionalLight.intensity * specularPow * float3(1.0f, 1.0f, 1.0f);
         }
 
+        //if (gPointLight.enablePointLight != 0)
+        //{
+        //    float3 pointLightDirection = normalize(input.worldPosition - gPointLight.position);
+        //    gPointLight.color.rgb *= gPointLight.intensity;
+        //}
         // 拡散反射 + 鏡面反射
         output.color.rgb = diffuse + specular;
 

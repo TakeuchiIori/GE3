@@ -46,6 +46,7 @@ public: // 構造体
 		Vector4 color;		// ライトの色
 		Vector3 direction;	// ライトの向き
 		float intensity;	// 輝度
+		int32_t enablePointLight; // フラグ
 	};
 	// 座標変換データ
 	struct TransformationMatrix {
