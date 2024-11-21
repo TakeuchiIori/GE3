@@ -174,7 +174,7 @@
     <ClCompile Include="engine\bases\Framework.cpp">
       <Filter>ソース ファイル\application\base</Filter>
     </ClCompile>
-    <ClCompile Include="application\base\MyGame.cpp">
+    <ClCompile Include="Application\scene\MyGame.cpp">
       <Filter>ソース ファイル\application\base</Filter>
     </ClCompile>
     <ClCompile Include="engine\io\particle\ParticleManager.cpp">
@@ -326,7 +326,7 @@
     <ClInclude Include="engine\bases\Framework.h">
       <Filter>ヘッダー ファイル\application\base</Filter>
     </ClInclude>
-    <ClInclude Include="application\base\MyGame.h">
+    <ClInclude Include="Application\scene\MyGame.h">
       <Filter>ヘッダー ファイル\application\base</Filter>
     </ClInclude>
     <ClInclude Include="engine\io\particle\ParticleManager.h">

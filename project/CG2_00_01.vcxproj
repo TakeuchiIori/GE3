@@ -68,7 +68,7 @@
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(ProjectDir)Engine\2d;$(ProjectDir)Externals\nlohmann;$(ProjectDir)Engine\3d;$(ProjectDir)Externals\DirectXTex;$(ProjectDir)Engine\math;$(ProjectDir)Engine\bases;$(ProjectDir)Externals\imgui;$(ProjectDir)Engine\io\input;$(ProjectDir)Engine\io\audio;$(ProjectDir)Engine\io\particle;$(ProjectDir)Application\base;$(ProjectDir)Application\scene;$(ProjectDir)Engine\model;$(ProjectDir)Engine\utility;$(ProjectDir)Externals\FFmpeg\include;$(ProjectDir)Application\player;$(ProjectDir)Application\enemy;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)Engine\2d;$(ProjectDir)Externals\nlohmann;$(ProjectDir)Engine\3d;$(ProjectDir)Externals\DirectXTex;$(ProjectDir)Engine\math;$(ProjectDir)Engine\bases;$(ProjectDir)Externals\imgui;$(ProjectDir)Engine\io\input;$(ProjectDir)Engine\io\audio;$(ProjectDir)Engine\io\particle;$(ProjectDir)Application\scene;$(ProjectDir)Engine\model;$(ProjectDir)Engine\utility;$(ProjectDir)Externals\FFmpeg\include;$(ProjectDir)Application\player;$(ProjectDir)Application\enemy;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -93,7 +93,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <TreatWarningAsError>false</TreatWarningAsError>
-      <AdditionalIncludeDirectories>$(ProjectDir)Engine\2d;$(ProjectDir)Externals\nlohmann;$(ProjectDir)Engine\3d;$(ProjectDir)Externals\DirectXTex;$(ProjectDir)Engine\math;$(ProjectDir)Engine\bases;$(ProjectDir)Engine\io\input;$(ProjectDir)Engine\io\audio;$(ProjectDir)Engine\io\particle;$(ProjectDir)Application\base;$(ProjectDir)Application\scene;$(ProjectDir)Engine\model;$(ProjectDir)Engine\utility;$(ProjectDir)Externals\FFmpeg\include;$(ProjectDir)Application\player;$(ProjectDir)Application\enemy;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)Engine\2d;$(ProjectDir)Externals\nlohmann;$(ProjectDir)Engine\3d;$(ProjectDir)Externals\DirectXTex;$(ProjectDir)Engine\math;$(ProjectDir)Engine\bases;$(ProjectDir)Engine\io\input;$(ProjectDir)Engine\io\audio;$(ProjectDir)Engine\io\particle;$(ProjectDir)Application\scene;$(ProjectDir)Engine\model;$(ProjectDir)Engine\utility;$(ProjectDir)Externals\FFmpeg\include;$(ProjectDir)Application\player;$(ProjectDir)Application\enemy;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -146,7 +146,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="engine\bases\TextureManager.cpp" />
     <ClCompile Include="engine\bases\WinApp.cpp" />
     <ClCompile Include="engine\bases\SrvManager.cpp" />
-    <ClCompile Include="application\base\MyGame.cpp" />
+    <ClCompile Include="Application\scene\MyGame.cpp" />
     <ClCompile Include="engine\io\particle\ParticleManager.cpp" />
     <ClCompile Include="engine\utility\SceneFactory.cpp" />
     <ClCompile Include="application\player\Player.cpp" />
@@ -200,7 +200,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="engine\bases\SrvManager.h" />
     <ClInclude Include="engine\bases\Framework.h" />
     <ClInclude Include="engine\bases\ImGuiManager.h" />
-    <ClInclude Include="application\base\MyGame.h" />
+    <ClInclude Include="Application\scene\MyGame.h" />
     <ClInclude Include="engine\io\particle\ParticleManager.h" />
     <ClInclude Include="engine\utility\SceneFactory.h" />
     <ClInclude Include="application\player\Player.h" />
