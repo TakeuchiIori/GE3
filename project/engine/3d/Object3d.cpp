@@ -7,7 +7,11 @@
 #include "ModelManager.h"
 #include "Model.h"
 #include "WorldTransform.h"
+#ifdef _DEBUG
 #include "imgui.h"
+#endif // _DEBUG
+
+
 
 void Object3d::Initialize()
 {

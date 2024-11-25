@@ -153,7 +153,7 @@ void Player::ShowCoordinatesImGui()
     }
 
     ImGui::End();
-#endif
+
 
     if (ImGui::Begin("Light Editor")) {
         // ライトの方向
@@ -252,6 +252,7 @@ void Player::ShowCoordinatesImGui()
         }
     }
     ImGui::End();
+#endif
 }
 
 void Player::OnCollision(Collider* other)
