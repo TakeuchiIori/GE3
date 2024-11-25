@@ -1,0 +1,59 @@
+{
+  "version": "2.1.0",
+  "$schema": "https://schemastore.azurewebsites.net/schemas/json/sarif-2.1.0-rtm.5.json",
+  "runs": [
+    {
+      "results": [],
+      "tool": {
+        "driver": {
+          "name": "PREfast",
+          "fullName": "PREfast Code Analysis",
+          "version": "14.41.34120.0",
+          "informationUri": "https://aka.ms/cpp/ca"
+        }
+      },
+      "invocations": [
+        {
+          "executionSuccessful": true
+        }
+      ],
+      "artifacts": [
+        {
+          "location": {
+            "uri": "file:///c:/users/iori0/lessons/2024a/ge3/project/externals/imgui/imgui_tables.cpp"
+          },
+          "roles": [
+            "analysisTarget"
+          ],
+          "hashes": {
+            "sha-256": "7657f43a4b8a4c6e356f5d5cf427d058ca8818f95d66802f6e7ec1dd55cfe828"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/users/iori0/lessons/2024a/ge3/project/externals/imgui/imgui.h"
+          },
+          "hashes": {
+            "sha-256": "9515326a21176f916833e964ef0dcd301d2c2a75251aded6ea51743909911008"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/users/iori0/lessons/2024a/ge3/project/externals/imgui/imconfig.h"
+          },
+          "hashes": {
+            "sha-256": "ab7cab963a542ac9dda100e7189e1f18b28f45aa696b8ba6bd931ac932863d30"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/users/iori0/lessons/2024a/ge3/project/externals/imgui/imgui_internal.h"
+          },
+          "hashes": {
+            "sha-256": "34ec121e9df80952f0d25e0cb0b7f72d365fe10b54c9e458dd8079b2c9b08109"
+          }
+        }
+      ]
+    }
+  ]
+}
