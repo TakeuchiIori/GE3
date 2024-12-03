@@ -101,6 +101,8 @@ void Object3d::PointLightResource()
 	pointLight_->position = { 0.0f,2.0f,0.0f };
 	pointLight_->color = { 1.0f,1.0f,1.0f,1.0f };
 	pointLight_->intensity = 1.0f;
+    pointLight_->radius = 10.0f;
+    pointLight_->decay = 1.0f;
 	pointLight_->enableDirectionalLight = true;
 }
 
@@ -169,6 +171,16 @@ void Object3d::ShowLightingEditor()
         float pointLightIntensity = GetPointLightIntensity();
         if (ImGui::SliderFloat("Point Intensity", &pointLightIntensity, 0.0f, 10.0f, "%.2f")) {
             SetPointLightIntensity(pointLightIntensity);
+        }
+
+        float radius = GetRadius();
+        if (ImGui::SliderFloat("Point Radius", &radius, 0.0f, 10.0f, "%.2f")) {
+            SetRadius(radius);
+        }
+
+        float decay = GetDecay();
+        if (ImGui::SliderFloat("Point Decay", &decay, 0.0f, 10.0f, "%.2f")) {
+            SetDecay(decay);
         }
 
         // 鏡面反射

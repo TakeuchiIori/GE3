@@ -25,6 +25,8 @@ struct PointLight
     float3 position;
     float intensity;
     int enablePointLight;
+    float radius; // ライトの届く最大距離
+    float decay; // 減衰率
 };
 struct PixelShaderOutput
 {
@@ -87,8 +89,8 @@ PixelShaderOutput main(VertexShaderOutput input)
             // ライト方向ベクトル
             float3 pointLightDirection = normalize(gPointLight.position - input.worldPosition);
             
-            float distance = length(gPointLight.position - input.worldPosition);
-            float factor = 1.0f / (distance * distance);
+            float distance = length(gPointLight.position - input.worldPosition); // ポイントライトへの距離
+            float factor = pow(saturate(-distance / gPointLight.radius + 1.0f), gPointLight.decay); //指数によるコントロール
             
             // 拡散反射
             float NdotLPoint = max(dot(normalize(input.normal), pointLightDirection), 0.0f);

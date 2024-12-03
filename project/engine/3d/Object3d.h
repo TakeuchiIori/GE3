@@ -68,6 +68,10 @@ public: // 構造体
 		Vector3 position;  // 位置
 		float intensity;   // 輝度
 		int32_t enableDirectionalLight; // フラグ
+
+		float radius; // ライトの届く最大距離
+		float decay;  // 減衰率
+		float padding[2];
 	};
 
 
@@ -181,7 +185,10 @@ public: // アクセッサ
 	void SetPointLightIntensity(float intensity) { pointLight_->intensity = intensity; }
 	bool IsPointLightEnabled() const { return pointLight_->enableDirectionalLight != 0; }
 	void SetPointLightEnabled(bool enabled) { pointLight_->enableDirectionalLight = enabled ? 1 : 0; }
-
+	float GetRadius()const { return pointLight_->radius; }
+	void SetRadius(const float radius) { pointLight_->radius = radius; }
+	float GetDecay()const { return pointLight_->decay; }
+	void SetDecay(const float decay) { pointLight_->decay = decay; }
 
 private: // メンバ変数
 	// ポインタ
