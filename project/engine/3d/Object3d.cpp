@@ -113,7 +113,7 @@ void Object3d::MaterialResource()
 	// マテリアルデータの初期化
 	materialData_->color = { 1.0f,1.0f,1.0f,1.0f };
 	materialData_->enableLighting = true;
-	materialData_->shininess = 1.0f;
+	materialData_->shininess = 30.0f;
 	materialData_->uvTransform = MakeIdentity4x4();
 }
 
@@ -128,6 +128,11 @@ void Object3d::ShowLightingEditor()
     if (ImGui::Begin("Lighting Editor")) {
         // 平行光源
         ImGui::Text("Directional Light");
+        bool directionalLightEnabled = IsDirectionalLight();
+        if (ImGui::Checkbox("Directional Enabled", &directionalLightEnabled)) {
+            SetDirectionalLightEnabled(directionalLightEnabled);
+        }
+
         Vector3 lightDirection = GetLightDirection();
         if (ImGui::SliderFloat3("Direction", &lightDirection.x, -1.0f, 1.0f, "%.2f")) {
             SetLightDirection(lightDirection);

@@ -160,7 +160,8 @@ public: // アクセッサ
 	void SetLightColor(const Vector4& color) { directionalLight_->color = color; }
 	float GetLightIntensity() const { return directionalLight_->intensity; }
 	void SetLightIntensity(float intensity) { directionalLight_->intensity = intensity; }
-
+	bool IsDirectionalLight() const { return directionalLight_->enableDirectionalLight != 0; }
+	void SetDirectionalLightEnabled(bool enabled) { directionalLight_->enableDirectionalLight = enabled ? 1 : 0; }
 	/*===============================================//
 					鏡面反射の有効/無効
 	//===============================================*/

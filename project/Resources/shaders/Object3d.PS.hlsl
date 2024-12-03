@@ -11,6 +11,7 @@ struct DirectionalLight
     float4 color; // ライトの色
     float3 direction; // ライトの向き
     float intensity; // 輝度
+    int isEnableDirectionalLighting;
 };
 struct Camera
 {
@@ -55,19 +56,19 @@ PixelShaderOutput main(VertexShaderOutput input)
         // カメラ視線ベクトル
         float3 toEye = normalize(gCamera.worldPosition - input.worldPosition);
 
-        // ディレクショナルライトの計算
-        if (gDirectionalLight.intensity > 0.0f)
+        //===========================================================//
+        //                   ディレクショナルライトの計算               
+        //===========================================================//
+        
+        if (gDirectionalLight.isEnableDirectionalLighting)
         {
             // 拡散反射
             float NdotL = max(dot(normalize(input.normal), -gDirectionalLight.direction), 0.0f);
             float3 diffuseDirectional = gMaterial.color.rgb * textureColor.rgb * gDirectionalLight.color.rgb * NdotL * gDirectionalLight.intensity;
-
             // 鏡面反射 (Blinn-Phong)
-            float3 lightDirection = normalize(-gDirectionalLight.direction);
-            float3 halfVector = normalize(lightDirection + toEye);
+            float3 halfVector = normalize(-gDirectionalLight.direction + toEye);
             float NdotH = max(dot(normalize(input.normal), halfVector), 0.0f);
-            float3 specularDirectional = gDirectionalLight.color.rgb * gDirectionalLight.intensity *
-                                  pow(saturate(NdotH), gMaterial.shininess);
+            float3 specularDirectional = gDirectionalLight.color.rgb * gDirectionalLight.intensity * pow(saturate(NdotH), gMaterial.shininess);
 
             // フラグで有効化
             if (gCamera.enableSpecular != 0)
@@ -77,22 +78,26 @@ PixelShaderOutput main(VertexShaderOutput input)
             finalDiffuse += diffuseDirectional;
         }
 
-        // ポイントライトの計算
+        //===========================================================//
+        //                      ポイントライトの計算               
+        //===========================================================//
+        
         if (gPointLight.enablePointLight != 0 && gPointLight.intensity > 0.0f)
         {
             // ライト方向ベクトル
             float3 pointLightDirection = normalize(gPointLight.position - input.worldPosition);
-
+            
+            float distance = length(gPointLight.position - input.worldPosition);
+            float factor = 1.0f / (distance * distance);
+            
             // 拡散反射
             float NdotLPoint = max(dot(normalize(input.normal), pointLightDirection), 0.0f);
-            float3 diffusePoint = gMaterial.color.rgb * textureColor.rgb * gPointLight.color.rgb * NdotLPoint * gPointLight.intensity;
-
+            float3 diffusePoint = gMaterial.color.rgb * textureColor.rgb * gPointLight.color.rgb * NdotLPoint * gPointLight.intensity * factor;
             // 鏡面反射 (Blinn-Phong)
             float3 halfVectorPoint = normalize(pointLightDirection + toEye);
             float NdotHPoint = max(dot(normalize(input.normal), halfVectorPoint), 0.0f);
-            float3 specularPoint = gPointLight.color.rgb * gPointLight.intensity *
-                           pow(saturate(NdotHPoint), gMaterial.shininess);
-
+            float3 specularPoint = gPointLight.color.rgb * gPointLight.intensity * pow(saturate(NdotHPoint), gMaterial.shininess) * factor;
+        
             // フラグで有効化
             if (gCamera.enableSpecular != 0)
             {
