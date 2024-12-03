@@ -78,7 +78,7 @@ void Object3d::DirectionalLightResource()
 	// デフォルト値を設定
 	directionalLight_->color = { 1.0f,1.0f,1.0f,1.0f };
 	directionalLight_->direction = { 0.0f,-1.0f,0.0f };
-	directionalLight_->intensity = 1.0f;
+	directionalLight_->intensity = 0.0f;
 	directionalLight_->enableDirectionalLight = true;
 
 }
@@ -90,7 +90,7 @@ void Object3d::SpecularReflectionResource()
 
 	cameraData_->worldPosition = { 0.0f,0.0f,0.0f };
 	cameraData_->enableSpecular = false;
-	cameraData_->isHalfVector = true;
+	cameraData_->isHalfVector = false;
 }
 
 void Object3d::PointLightResource()
@@ -98,9 +98,9 @@ void Object3d::PointLightResource()
 	pointLightResource_ = object3dCommon_->GetDxCommon()->CreateBufferResource(sizeof(PointLight));
 	pointLightResource_->Map(0, nullptr, reinterpret_cast<void**>(&pointLight_));
 
-	pointLight_->position = { 0.0f,0.0f,0.0f };
+	pointLight_->position = { 0.0f,2.0f,0.0f };
 	pointLight_->color = { 1.0f,1.0f,1.0f,1.0f };
-	pointLight_->intensity = 0.0f;
+	pointLight_->intensity = 1.0f;
 	pointLight_->enableDirectionalLight = true;
 }
 
@@ -157,7 +157,7 @@ void Object3d::ShowLightingEditor()
         }
 
         Vector3 pointLightPosition = GetPointLightPosition();
-        if (ImGui::SliderFloat3("Position", &pointLightPosition.x, -100.0f, 100.0f, "%.2f")) {
+        if (ImGui::SliderFloat3("Position", &pointLightPosition.x, -10.0f, 10.0f, "%.2f")) {
             SetPointLightPosition(pointLightPosition);
         }
 

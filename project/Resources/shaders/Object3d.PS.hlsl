@@ -63,10 +63,11 @@ PixelShaderOutput main(VertexShaderOutput input)
             float3 diffuseDirectional = gMaterial.color.rgb * textureColor.rgb * gDirectionalLight.color.rgb * NdotL * gDirectionalLight.intensity;
 
             // 鏡面反射 (Blinn-Phong)
-            float3 halfVector = normalize(-gDirectionalLight.direction + toEye);
+            float3 lightDirection = normalize(-gDirectionalLight.direction);
+            float3 halfVector = normalize(lightDirection + toEye);
             float NdotH = max(dot(normalize(input.normal), halfVector), 0.0f);
             float3 specularDirectional = gDirectionalLight.color.rgb * gDirectionalLight.intensity *
-                                          pow(NdotH, gMaterial.shininess);
+                                  pow(saturate(NdotH), gMaterial.shininess);
 
             // フラグで有効化
             if (gCamera.enableSpecular != 0)
@@ -90,7 +91,7 @@ PixelShaderOutput main(VertexShaderOutput input)
             float3 halfVectorPoint = normalize(pointLightDirection + toEye);
             float NdotHPoint = max(dot(normalize(input.normal), halfVectorPoint), 0.0f);
             float3 specularPoint = gPointLight.color.rgb * gPointLight.intensity *
-                                   pow(NdotHPoint, gMaterial.shininess);
+                           pow(saturate(NdotHPoint), gMaterial.shininess);
 
             // フラグで有効化
             if (gCamera.enableSpecular != 0)
