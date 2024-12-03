@@ -46,7 +46,7 @@ public: // 構造体
 		Vector4 color;		// ライトの色
 		Vector3 direction;	// ライトの向き
 		float intensity;	// 輝度
-		int32_t enablePointLight; // フラグ
+		int32_t enableDirectionalLight; // フラグ
 	};
 	// 座標変換データ
 	struct TransformationMatrix {
@@ -67,6 +67,7 @@ public: // 構造体
 		Vector4 color;	   // 色
 		Vector3 position;  // 位置
 		float intensity;   // 輝度
+		int32_t enableDirectionalLight; // フラグ
 	};
 
 
@@ -104,6 +105,11 @@ private:
 	/// </summary>
 	void SpecularReflectionResource();
 
+	/// <summary>
+	/// ポイントライトリソース
+	/// </summary>
+	void PointLightResource();
+
 public: // アクセッサ
 
 	/*===============================================//
@@ -130,6 +136,7 @@ public: // アクセッサ
 				　   	  カメラ
 	//===============================================*/
 	void SetModel(const std::string& filePath);
+	void ShowLightingEditor();
 	void SetCamera(Camera* camera) { this->camera_ = camera; }
 
 	/*===============================================//
@@ -162,6 +169,19 @@ public: // アクセッサ
 	bool IsHalfVector() const { return cameraData_->isHalfVector != 0; }
 	void SetHalfVector(bool halfVector) { cameraData_->isHalfVector = halfVector ? 1 : 0; }
 
+	/*===============================================//
+	//                 ポイントライト
+	//===============================================*/
+	const Vector4& GetPointLightColor() const { return pointLight_->color; }
+	void SetPointLightColor(const Vector4& color) { pointLight_->color = color; }
+	const Vector3& GetPointLightPosition() const { return pointLight_->position; }
+	void SetPointLightPosition(const Vector3& position) { pointLight_->position = position; }
+	float GetPointLightIntensity() const { return pointLight_->intensity; }
+	void SetPointLightIntensity(float intensity) { pointLight_->intensity = intensity; }
+	bool IsPointLightEnabled() const { return pointLight_->enableDirectionalLight != 0; }
+	void SetPointLightEnabled(bool enabled) { pointLight_->enableDirectionalLight = enabled ? 1 : 0; }
+
+
 private: // メンバ変数
 	// ポインタ
 	Object3dCommon* object3dCommon_ = nullptr;
@@ -180,6 +200,9 @@ private: // メンバ変数
 	Microsoft::WRL::ComPtr<ID3D12Resource> specularReflectionResource_;
 	CameraForGPU* cameraData_ = nullptr;
 
+	// ポイントライト
+	Microsoft::WRL::ComPtr<ID3D12Resource> pointLightResource_;
+	PointLight* pointLight_= nullptr;
 
 	// テクスチャ左上座標
 	Vector2 textureLeftTop_ = { 0.0f,0.0f };

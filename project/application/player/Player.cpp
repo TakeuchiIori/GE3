@@ -36,7 +36,7 @@ void Player::Initialize()
 void Player::Update()
 {
     Move();
-    ShowCoordinatesImGui(); 
+
     UpdateWorldTransform();
 }
 
@@ -236,6 +236,7 @@ void Player::ShowCoordinatesImGui()
         }
 
 
+
         // UVトランスフォーム
         ImGui::Text("UV Transform");
         Matrix4x4 currentUVTransform = base_->GetMaterialUVTransform();
@@ -251,6 +252,39 @@ void Player::ShowCoordinatesImGui()
         }
     }
     ImGui::End();
+
+    if (ImGui::Begin("Point Light Editor")) {
+        // ポイントライトの有効化/無効化
+        ImGui::Text("Enable Point Light");
+        bool pointLightEnabled = base_->IsPointLightEnabled();
+        if (ImGui::Checkbox("Enabled", &pointLightEnabled)) {
+            base_->SetPointLightEnabled(pointLightEnabled); // Setter を使用
+        }
+
+        // ポイントライトの色
+        ImGui::Text("Point Light Color");
+        Vector4 pointLightColor = base_->GetPointLightColor();
+        if (ImGui::ColorEdit4("Color", &pointLightColor.x)) {
+            base_->SetPointLightColor(pointLightColor); // Setter を使用
+        }
+
+        // ポイントライトの位置
+        ImGui::Text("Point Light Position");
+        Vector3 pointLightPosition = base_->GetPointLightPosition();
+        if (ImGui::SliderFloat3("Position", &pointLightPosition.x, -100.0f, 100.0f, "%.2f")) {
+            base_->SetPointLightPosition(pointLightPosition); // Setter を使用
+        }
+
+        // ポイントライトの光度
+        ImGui::Text("Point Light Intensity");
+        float pointLightIntensity = base_->GetPointLightIntensity();
+        if (ImGui::SliderFloat("Intensity", &pointLightIntensity, 0.0f, 10.0f)) {
+            base_->SetPointLightIntensity(pointLightIntensity); // Setter を使用
+        }
+    }
+    ImGui::End();
+
+   
 }
 
 void Player::OnCollision(Collider* other)

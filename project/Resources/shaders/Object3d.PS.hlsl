@@ -42,52 +42,75 @@ PixelShaderOutput main(VertexShaderOutput input)
 {
     PixelShaderOutput output;
 
+    // UV座標変換とテクスチャサンプリング
     float4 transformedUV = mul(float4(input.texcoord, 0.0f, 1.0f), gMaterial.uvTransform);
     float4 textureColor = gTexture.Sample(gSampler, transformedUV.xy);
 
+    // 初期化
+    float3 finalDiffuse = float3(0.0f, 0.0f, 0.0f);
+    float3 finalSpecular = float3(0.0f, 0.0f, 0.0f);
+
     if (gMaterial.enableLighting != 0)
     {
-        // 拡散反射の計算
-        float NdotL = dot(normalize(input.normal), -gDirectionalLight.direction);
-        float cos = pow(NdotL * 0.5f + 0.5f, 2.0f);
-        float3 diffuse = gMaterial.color.rgb * textureColor.rgb * gDirectionalLight.color.rgb * cos * gDirectionalLight.intensity;
-        // 鏡面反射の計算
-        float3 specular = float3(0.0f, 0.0f, 0.0f);
-        // 鏡面反射のON : OFF
-        if (gCamera.enableSpecular != 0)
+        // カメラ視線ベクトル
+        float3 toEye = normalize(gCamera.worldPosition - input.worldPosition);
+
+        // ディレクショナルライトの計算
+        if (gDirectionalLight.intensity > 0.0f)
         {
-            float3 toEye = normalize(gCamera.worldPosition - input.worldPosition);
-            float3 reflectLight = reflect(gDirectionalLight.direction, normalize(input.normal));
-            float RdoE = dot(reflectLight, toEye);
-            float specularPow = pow(saturate(RdoE), gMaterial.shininess);
-            
-            if (gCamera.isHalfVector != 0)
+            // 拡散反射
+            float NdotL = max(dot(normalize(input.normal), -gDirectionalLight.direction), 0.0f);
+            float3 diffuseDirectional = gMaterial.color.rgb * textureColor.rgb * gDirectionalLight.color.rgb * NdotL * gDirectionalLight.intensity;
+
+            // 鏡面反射 (Blinn-Phong)
+            float3 halfVector = normalize(-gDirectionalLight.direction + toEye);
+            float NdotH = max(dot(normalize(input.normal), halfVector), 0.0f);
+            float3 specularDirectional = gDirectionalLight.color.rgb * gDirectionalLight.intensity *
+                                          pow(NdotH, gMaterial.shininess);
+
+            // フラグで有効化
+            if (gCamera.enableSpecular != 0)
             {
-                float3 halfVector = normalize(-gDirectionalLight.direction + toEye);
-                float NdotH = dot(normalize(input.normal), halfVector);
-                specularPow = pow(saturate(NdotH), gMaterial.shininess);
+                finalSpecular += specularDirectional;
             }
-            
-            specular = gDirectionalLight.color.rgb * gDirectionalLight.intensity * specularPow * float3(1.0f, 1.0f, 1.0f);
+            finalDiffuse += diffuseDirectional;
         }
 
-        //if (gPointLight.enablePointLight != 0)
-        //{
-        //    float3 pointLightDirection = normalize(input.worldPosition - gPointLight.position);
-        //    gPointLight.color.rgb *= gPointLight.intensity;
-        //}
-        // 拡散反射 + 鏡面反射
-        output.color.rgb = diffuse + specular;
+        // ポイントライトの計算
+        if (gPointLight.enablePointLight != 0 && gPointLight.intensity > 0.0f)
+        {
+            // ライト方向ベクトル
+            float3 pointLightDirection = normalize(gPointLight.position - input.worldPosition);
 
-        // アルファ値
-        output.color.a = gMaterial.color.a * textureColor.a; // アルファ値の掛け合わせ
+            // 拡散反射
+            float NdotLPoint = max(dot(normalize(input.normal), pointLightDirection), 0.0f);
+            float3 diffusePoint = gMaterial.color.rgb * textureColor.rgb * gPointLight.color.rgb * NdotLPoint * gPointLight.intensity;
+
+            // 鏡面反射 (Blinn-Phong)
+            float3 halfVectorPoint = normalize(pointLightDirection + toEye);
+            float NdotHPoint = max(dot(normalize(input.normal), halfVectorPoint), 0.0f);
+            float3 specularPoint = gPointLight.color.rgb * gPointLight.intensity *
+                                   pow(NdotHPoint, gMaterial.shininess);
+
+            // フラグで有効化
+            if (gCamera.enableSpecular != 0)
+            {
+                finalSpecular += specularPoint;
+            }
+            finalDiffuse += diffusePoint;
+        }
+
+        // 最終的な色を合成
+        output.color.rgb = finalDiffuse + finalSpecular;
     }
     else
     {
         // ライティングなしの場合
-        output.color = gMaterial.color * textureColor;
-        output.color.a = gMaterial.color.a * textureColor.a; // アルファ値の掛け合わせ
+        output.color.rgb = gMaterial.color.rgb * textureColor.rgb;
     }
+
+    // アルファ値の設定
+    output.color.a = gMaterial.color.a * textureColor.a;
 
     return output;
 }
