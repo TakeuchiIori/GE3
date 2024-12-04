@@ -134,6 +134,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="engine\io\input\Input.cpp" />
     <ClCompile Include="engine\bases\Framework.cpp" />
     <ClCompile Include="engine\bases\ImGuiManager.cpp" />
+    <ClCompile Include="engine\3d\LightManager.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="engine\math\Matrix4x4.cpp" />
     <ClCompile Include="engine\model\Model.cpp" />
@@ -207,6 +208,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\player\PlayerBullet.h" />
     <ClInclude Include="engine\3d\WorldTransform.h" />
     <ClInclude Include="engine\io\particle\ParticleEmitter.h" />
+    <ClInclude Include="engine\3d\LightManager.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="externals\imgui\LICENSE.txt" />
