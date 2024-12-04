@@ -1,5 +1,11 @@
 #include "LightManager.h"
 #include "DirectXCommon.h"
+
+LightManager* LightManager::GetInstance()
+{
+    static LightManager instance;
+    return &instance;
+}
 LightManager::LightManager()
 {
 }

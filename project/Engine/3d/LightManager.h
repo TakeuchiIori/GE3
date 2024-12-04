@@ -12,6 +12,17 @@ class DirectXCommon;
 class LightManager
 {
 public:
+    /// <summary>
+    /// シングルトンインスタンスの取得
+    /// </summary>
+    static LightManager* GetInstance();
+
+    // シングルトンのコピー・ムーブ操作を削除
+    LightManager(const LightManager&) = delete;
+    LightManager& operator=(const LightManager&) = delete;
+    LightManager(LightManager&&) = delete;
+    LightManager& operator=(LightManager&&) = delete;
+    
     // コンストラクタとデストラクタ
     LightManager();
     ~LightManager();
