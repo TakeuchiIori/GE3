@@ -68,12 +68,13 @@
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(ProjectDir)engine\2d;$(ProjectDir)externals\nlohmann;$(ProjectDir)engine\3d;$(ProjectDir)externals\DirectXTex;$(ProjectDir)engine\math;$(ProjectDir)engine\bases;$(ProjectDir)externals\imgui;$(ProjectDir)engine\io\input;$(ProjectDir)engine\io\audio;$(ProjectDir)engine\io\particle;$(ProjectDir)application\base;$(ProjectDir)application\scene;$(ProjectDir)engine\model;$(ProjectDir)engine\utility;$(ProjectDir)externals\FFmpeg\include;$(ProjectDir)application\player;$(ProjectDir)application\enemy;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)engine\2d;$(ProjectDir)externals\nlohmann;$(ProjectDir)externaIs\assimp\include;$(ProjectDir)engine\3d;$(ProjectDir)externals\DirectXTex;$(ProjectDir)engine\math;$(ProjectDir)engine\bases;$(ProjectDir)externals\imgui;$(ProjectDir)engine\io\input;$(ProjectDir)engine\io\audio;$(ProjectDir)engine\io\particle;$(ProjectDir)application\base;$(ProjectDir)application\scene;$(ProjectDir)engine\model;$(ProjectDir)engine\utility;$(ProjectDir)externals\FFmpeg\include;$(ProjectDir)application\player;$(ProjectDir)application\enemy;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(ProjectDir)externals\assimp\Iib\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
       <Command>copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxcompiler.dll" "$(TargetDir)dxcompiler.dll"
@@ -93,7 +94,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <TreatWarningAsError>false</TreatWarningAsError>
-      <AdditionalIncludeDirectories>$(ProjectDir)engine\2d;$(ProjectDir)externals\nlohmann;$(ProjectDir)engine\math;$(ProjectDir)externals\DirectXTex;$(ProjectDir)engine\3d;$(ProjectDir)engine\io\input;$(ProjectDir)engine\bases;$(ProjectDir)engine\io\audio;$(ProjectDir)engine\io\particle;$(ProjectDir)application\base;$(ProjectDir)application\scene;$(ProjectDir)engine\model;$(ProjectDir)engine\utility;$(ProjectDir)externals\FFmpeg\include;$(ProjectDir)application\player;$(ProjectDir)application\enemy;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)engine\2d;$(ProjectDir)externals\nlohmann;$(ProjectDir)externaIs\assimp\include;$(ProjectDir)engine\math;$(ProjectDir)externals\DirectXTex;$(ProjectDir)engine\3d;$(ProjectDir)engine\io\input;$(ProjectDir)engine\bases;$(ProjectDir)engine\io\audio;$(ProjectDir)engine\io\particle;$(ProjectDir)application\base;$(ProjectDir)application\scene;$(ProjectDir)engine\model;$(ProjectDir)engine\utility;$(ProjectDir)externals\FFmpeg\include;$(ProjectDir)application\player;$(ProjectDir)application\enemy;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -102,6 +103,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
       <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(ProjectDir)externals\assimp\Iib\Release</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
       <Command>copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxcompiler.dll" "$(TargetDir)dxcompiler.dll"
