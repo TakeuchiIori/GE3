@@ -18,12 +18,12 @@ void Object3d::Initialize()
 	// デフォルトカメラのセット
 	this->camera_ = object3dCommon_->GetDefaultCamera();
 
-
+	CreateMaterialResource();
 }
 
 void Object3d::Draw(WorldTransform& worldTransform)
 {
-    
+
 	Matrix4x4 worldViewProjectionMatrix;
 	if (camera_) {
 		const Matrix4x4& viewProjectionMatrix = camera_->GetViewProjectionMatrix();
@@ -34,7 +34,9 @@ void Object3d::Draw(WorldTransform& worldTransform)
 	}
 	worldTransform.SetMapWVP(worldViewProjectionMatrix);
 
-    // TransformatonMatrixCB
+	// マテリアル
+	object3dCommon_->GetDxCommon()->GetCommandList()->SetGraphicsRootConstantBufferView(0, materialResource_->GetGPUVirtualAddress());
+	// TransformatonMatrixCB
 	object3dCommon_->GetDxCommon()->GetCommandList()->SetGraphicsRootConstantBufferView(1, worldTransform.GetConstBuffer()->GetGPUVirtualAddress());
 
 	// 3Dモデルが割り当てられていれば描画する
@@ -43,14 +45,54 @@ void Object3d::Draw(WorldTransform& worldTransform)
 	}
 }
 
-void Object3d::ChangeTexture(std::string textureFilePath)
+void Object3d::CreateMaterialResource()
 {
-
+	materialResource_ = object3dCommon_->GetDxCommon()->CreateBufferResource(sizeof(Material));
+	materialResource_->Map(0, nullptr, reinterpret_cast<void**>(&materialData_));
+	materialData_->color = { 1.0f, 1.0f, 1.0f, 1.0f };
+	materialData_->enableLighting = true;
+	materialData_->shininess = 30.0f;
+	materialData_->uvTransform = MakeIdentity4x4();
 }
+
 
 
 void Object3d::SetModel(const std::string& filePath)
 {
 	// モデルを検索してセットする
 	model_ = ModelManager::GetInstance()->FindModel(filePath);
+
 }
+
+void Object3d::MaterialByImGui()
+{
+#ifdef _DEBUG
+	ImGui::Begin("Material");
+	Vector4 materialColor = GetMaterialColor();
+	if (ImGui::ColorEdit4("Material Color", &materialColor.x)) {
+		SetMaterialColor(materialColor);
+	}
+
+	float shininess = GetMaterialShininess();
+	if (ImGui::SliderFloat("Shininess", &shininess, 0.1f, 200.0f, "%.2f")) {
+		SetMaterialShininess(shininess);
+	}
+
+	Matrix4x4 uvTransform = GetMaterialUVTransform();
+	if (ImGui::InputFloat("UV Scale X", &uvTransform.m[0][0], 0.1f, 1.0f, "%.2f")) {
+		uvTransform.m[0][0] = std::clamp(uvTransform.m[0][0], 0.1f, 10.0f);
+		SetMaterialUVTransform(uvTransform);
+	}
+	if (ImGui::InputFloat("UV Scale Y", &uvTransform.m[1][1], 0.1f, 1.0f, "%.2f")) {
+		uvTransform.m[1][1] = std::clamp(uvTransform.m[1][1], 0.1f, 10.0f);
+		SetMaterialUVTransform(uvTransform);
+	}
+
+	bool isMaterialLight = IsMaterialEnabled();
+	if (ImGui::Checkbox("Use Lighting", &isMaterialLight)) {
+		SetMaterialEnabled(isMaterialLight);
+	}
+	ImGui::End();
+#endif // _DEBUG
+}
+

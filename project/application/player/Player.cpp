@@ -37,6 +37,8 @@ void Player::Update()
 {
     Move();
 
+   // base_->MaterialByImGui();
+
     UpdateWorldTransform();
 }
 

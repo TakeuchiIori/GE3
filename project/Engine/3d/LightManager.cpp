@@ -20,7 +20,6 @@ void LightManager::Initialize()
     // デフォルトカメラのセット
     this->camera_ = object3dCommon_->GetDefaultCamera();
     // リソース作成関数の呼び出し
-    CreateMaterialResource();
     CreateDirectionalLightResource();
     CreatePointLightResource();
     CreateSpecularReflectionResource();
@@ -32,8 +31,6 @@ void LightManager::SetCommandList()
     if (camera_) {
         cameraData_->worldPosition = camera_->GetTranslate();
     }
-    // マテリアル
-    object3dCommon_->GetDxCommon()->GetCommandList()->SetGraphicsRootConstantBufferView(0, materialResource_->GetGPUVirtualAddress());
     // 平行光源CB
     object3dCommon_->GetDxCommon()->GetCommandList()->SetGraphicsRootConstantBufferView(3, directionalLightResource_->GetGPUVirtualAddress());
     // 鏡面反射CB
@@ -43,14 +40,7 @@ void LightManager::SetCommandList()
 
 }
 
-void LightManager::CreateMaterialResource() {
-    materialResource_ = object3dCommon_->GetDxCommon()->CreateBufferResource(sizeof(Material));
-    materialResource_->Map(0, nullptr, reinterpret_cast<void**>(&materialData_));
-    materialData_->color = { 1.0f, 1.0f, 1.0f, 1.0f };
-    materialData_->enableLighting = true;
-    materialData_->shininess = 30.0f;
-    materialData_->uvTransform = MakeIdentity4x4();
-}
+
 
 void LightManager::CreateDirectionalLightResource()
 {
@@ -176,36 +166,6 @@ void LightManager::ShowLightingEditor()
         if (ImGui::Checkbox("Use Half Vector", &isHalfVector)) {
             SetHalfVectorUsed(isHalfVector);
         }
-
-        // マテリアル
-        ImGui::Separator(); // 区切り線
-        ImGui::Text("Material");
-        Vector4 materialColor = GetMaterialColor();
-        if (ImGui::ColorEdit4("Material Color", &materialColor.x)) {
-            SetMaterialColor(materialColor);
-        }
-
-        float shininess = GetMaterialShininess();
-        if (ImGui::SliderFloat("Shininess", &shininess, 0.1f, 200.0f, "%.2f")) {
-            SetMaterialShininess(shininess);
-        }
-
-        Matrix4x4 uvTransform = GetMaterialUVTransform();
-        if (ImGui::InputFloat("UV Scale X", &uvTransform.m[0][0], 0.1f, 1.0f, "%.2f")) {
-            uvTransform.m[0][0] = std::clamp(uvTransform.m[0][0], 0.1f, 10.0f);
-            SetMaterialUVTransform(uvTransform);
-        }
-        if (ImGui::InputFloat("UV Scale Y", &uvTransform.m[1][1], 0.1f, 1.0f, "%.2f")) {
-            uvTransform.m[1][1] = std::clamp(uvTransform.m[1][1], 0.1f, 10.0f);
-            SetMaterialUVTransform(uvTransform);
-        }
-
-        bool isMaterialLight = IsMaterialEnabled();
-        if (ImGui::Checkbox("Use Lighting", &isMaterialLight)) {
-            SetMaterialEnabled(isMaterialLight);
-        }
-
-
     }
     ImGui::End();
 }

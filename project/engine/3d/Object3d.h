@@ -19,6 +19,7 @@ class Model;
 class Object3d
 {
 public: // メンバ関数
+
 	/// <summary>
 	/// 初期化
 	/// </summary>
@@ -30,10 +31,14 @@ public: // メンバ関数
 	void Draw(WorldTransform& worldTransform);
 
 	/// <summary>
-	/// テクスチャ変更
+	/// マテリアルリソース作成
 	/// </summary>
-	void ChangeTexture(std::string textureFilePath);
+	void CreateMaterialResource();
 
+	/// <summary>
+	/// ImGui
+	/// </summary>
+	void MaterialByImGui();
 
 private:
 
@@ -58,8 +63,35 @@ public: // アクセッサ
 				　   	  カメラ
 	//===============================================*/
 	void SetModel(const std::string& filePath);
+	
 	void SetCamera(Camera* camera) { this->camera_ = camera; }
-private: // メンバ変数
+
+
+	// マテリアル
+	const Vector4& GetMaterialColor() const { return materialData_->color; }
+	void SetMaterialColor(const Vector4& color) { materialData_->color = color; }
+	bool IsLightingEnabled() const { return materialData_->enableLighting != 0; }
+	void SetLightingEnabled(bool enabled) { materialData_->enableLighting = enabled ? 1 : 0; }
+	float GetMaterialShininess() const { return materialData_->shininess; }
+	void SetMaterialShininess(float shininess) { materialData_->shininess = shininess; }
+	const Matrix4x4& GetMaterialUVTransform() const { return materialData_->uvTransform; }
+	void SetMaterialUVTransform(const Matrix4x4& uvTransform) { materialData_->uvTransform = uvTransform; }
+	bool IsMaterialEnabled() const { return materialData_->enableLighting != 0; }
+	void SetMaterialEnabled(bool enable) { materialData_->enableLighting = enable; }
+
+private:
+	// マテリアルデータ
+	struct Material {
+		Vector4 color;
+		int32_t enableLighting;
+		float padding[3];
+		Matrix4x4 uvTransform;
+		float shininess;
+	};
+	// マテリアルのリソース
+	Microsoft::WRL::ComPtr<ID3D12Resource> materialResource_;
+	Material* materialData_ = nullptr;
+
 	// ポインタ
 	Object3dCommon* object3dCommon_ = nullptr;
 	Model* model_ = nullptr;

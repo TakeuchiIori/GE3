@@ -65,10 +65,7 @@ private:
 	void CreateDirectionalLightResource();
 	void CreatePointLightResource();
 	void CreateSpecularReflectionResource();
-	/// <summary>
-	/// マテリアルリソース作成
-	/// </summary>
-	void CreateMaterialResource();
+
 
 public:
 	//=================================================================//
@@ -76,17 +73,7 @@ public:
 	//=================================================================//
 
 
-	// マテリアル
-	const Vector4& GetMaterialColor() const { return materialData_->color; }
-	void SetMaterialColor(const Vector4& color) { materialData_->color = color; }
-	bool IsLightingEnabled() const { return materialData_->enableLighting != 0; }
-	void SetLightingEnabled(bool enabled) { materialData_->enableLighting = enabled ? 1 : 0; }
-	float GetMaterialShininess() const { return materialData_->shininess; }
-	void SetMaterialShininess(float shininess) { materialData_->shininess = shininess; }
-	const Matrix4x4& GetMaterialUVTransform() const { return materialData_->uvTransform; }
-	void SetMaterialUVTransform(const Matrix4x4& uvTransform) { materialData_->uvTransform = uvTransform; }
-	bool IsMaterialEnabled() const { return materialData_->enableLighting!= 0; }
-	void SetMaterialEnabled(bool enable) { materialData_->enableLighting= enable; }
+
 
 	// 平行光源
 	const Vector4& GetDirectionalLightColor() const { return directionalLight_->color; }
@@ -121,14 +108,7 @@ public:
 	void SetHalfVectorUsed(bool isHalfVector) { cameraData_->isHalfVector = isHalfVector; }
 
 private:
-	// マテリアルデータ
-	struct Material {
-		Vector4 color;
-		int32_t enableLighting;
-		float padding[3];
-		Matrix4x4 uvTransform;
-		float shininess;
-	};
+
 	// 平行光源
 	struct DirectionalLight {
 		Vector4 color;		// ライトの色
@@ -156,10 +136,6 @@ private:
 		float padding[2];
 	};
 
-
-	// マテリアルのリソース
-	Microsoft::WRL::ComPtr<ID3D12Resource> materialResource_;
-	Material* materialData_ = nullptr;
 
 	// 平行光源のリソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> directionalLightResource_;

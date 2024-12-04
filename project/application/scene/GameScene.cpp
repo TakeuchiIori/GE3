@@ -66,7 +66,7 @@ void GameScene::Update()
     particleEmitter_->SetPosition(emitterPosition_); // 更新した位置をエミッタに反映
     particleEmitter_->Update();
    
-   //test_->ShowLightingEditor();
+    test_->MaterialByImGui();
 
     // ワールドトランスフォーム更新
     testWorldTransform_.UpdateMatrix();
