@@ -111,8 +111,8 @@ public:
 	void SetSpotLightDecay(float decay) { spotLight_->decay = decay; }
 	float GetSpotLightCosAngle() const { return spotLight_->cosAngle; }
 	void SetSpotLightCosAngle(float cosAngle) { spotLight_->cosAngle = cosAngle; }
-	/*float GetSpotLightCosFalloffStart() const { return spotLight_->cosFalloffStart; }
-	void SetSpotLightCosFalloffStart(float cosFalloffStart) { spotLight_->cosFalloffStart = cosFalloffStart; }*/
+	float GetSpotLightCosFalloffStart() const { return spotLight_->cosFalloffStart; }
+	void SetSpotLightCosFalloffStart(float cosFalloffStart) { spotLight_->cosFalloffStart = cosFalloffStart; }
 	bool IsSpotLightEnabled() const { return spotLight_->enableSpotLight; }
 	void SetSpotLightEnabled(bool enabled) { spotLight_->enableSpotLight = enabled; }
 
@@ -162,7 +162,7 @@ private:
 		float distance;				// 最大距離
 		float decay;				// 減衰率
 		float cosAngle;				// 余弦
-		//float cosFalloffStart;      // フォールオフ開始角度（コサイン値） 追加
+		float cosFalloffStart;      // フォールオフ開始角度（コサイン値） 追加
 		int32_t enableSpotLight;	// フラグ
 		float padding[2];			
 	};

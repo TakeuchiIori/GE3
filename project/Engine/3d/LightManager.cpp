@@ -87,7 +87,7 @@ void LightManager::CreateSpotLightResource()
     spotLight_->decay = 2.0f;
     spotLight_->cosAngle =
         std::cos(std::numbers::pi_v<float> / 3.0f);
-    //spotLight_->cosFalloffStart = std::cos(std::numbers::pi_v<float> / 4.0f); // 45度 追加
+    spotLight_->cosFalloffStart = std::cos(std::numbers::pi_v<float> / 4.0f); // 45度 追加
     spotLight_->enableSpotLight = true;
 }
 
@@ -211,14 +211,14 @@ void LightManager::ShowLightingEditor()
         }
 
         float spotLightCosAngle = GetSpotLightCosAngle();
-        if (ImGui::SliderFloat("Spot Angle", &spotLightCosAngle, 0.0f, 2.0f, "%.2f")) {
+        if (ImGui::SliderFloat("Spot Angle", &spotLightCosAngle, 0.0f, 1.0f, "%.2f")) {
             SetSpotLightCosAngle(spotLightCosAngle);
         }
 
-        //float spotLightCosFalloffStart = spotLight_->cosFalloffStart;
-        //if (ImGui::SliderFloat("Spot Falloff Start", &spotLightCosFalloffStart, 0.0f, 1.0f, "%.2f")) {
-        //    spotLight_->cosFalloffStart = spotLightCosFalloffStart;
-        //}
+        float spotLightCosFalloffStart = spotLight_->cosFalloffStart;
+        if (ImGui::SliderFloat("Spot Falloff Start", &spotLightCosFalloffStart, 0.0f, 1.0f, "%.2f")) {
+            spotLight_->cosFalloffStart = spotLightCosFalloffStart;
+        }
 
 
 
