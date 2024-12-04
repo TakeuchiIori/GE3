@@ -65,15 +65,12 @@ private:
 	void CreateDirectionalLightResource();
 	void CreatePointLightResource();
 	void CreateSpecularReflectionResource();
-
+	void CreateSpotLightResource();
 
 public:
 	//=================================================================//
 	//                           アクセッサ
 	//=================================================================//
-
-
-
 
 	// 平行光源
 	const Vector4& GetDirectionalLightColor() const { return directionalLight_->color; }
@@ -98,6 +95,26 @@ public:
 	void SetPointLightDecay(float decay) { pointLight_->decay = decay; }
 	bool IsPointLightEnabled() const { return pointLight_->enablePointLight != 0; }
 	void SetPointLightEnabled(bool enable) { pointLight_->enablePointLight = enable; }
+
+	// スポットライト
+	const Vector4& GetSpotLightColor() const { return spotLight_->color; }
+	void SetSpotLightColor(const Vector4& color) { spotLight_->color = color; }
+	const Vector3& GetSpotLightPosition() const { return spotLight_->position; }
+	void SetSpotLightPosition(const Vector3& position) { spotLight_->position = position; }
+	const Vector3& GetSpotLightDirection() const { return spotLight_->direction; }
+	void SetSpotLightDirection(const Vector3& direction) { spotLight_->direction = direction; }
+	float GetSpotLightIntensity() const { return spotLight_->intensity; }
+	void SetSpotLightIntensity(float intensity) { spotLight_->intensity = intensity; }
+	float GetSpotLightDistance() const { return spotLight_->distance; }
+	void SetSpotLightDistance(float distance) { spotLight_->distance = distance; }
+	float GetSpotLightDecay() const { return spotLight_->decay; }
+	void SetSpotLightDecay(float decay) { spotLight_->decay = decay; }
+	float GetSpotLightCosAngle() const { return spotLight_->cosAngle; }
+	void SetSpotLightCosAngle(float cosAngle) { spotLight_->cosAngle = cosAngle; }
+	float GetSpotLightCosFalloffStart() const { return spotLight_->cosFalloffStart; }
+	void SetSpotLightCosFalloffStart(float cosFalloffStart) { spotLight_->cosFalloffStart = cosFalloffStart; }
+	bool IsSpotLightEnabled() const { return spotLight_->enableSpotLight; }
+	void SetSpotLightEnabled(bool enabled) { spotLight_->enableSpotLight = enabled; }
 
 	// 鏡面反射
 	const Vector3& GetCameraWorldPosition() const { return cameraData_->worldPosition; }
@@ -136,6 +153,20 @@ private:
 		float padding[2];
 	};
 
+	// スポットライト
+	struct SpotLight {
+		Vector4 color;				// 色
+		Vector3 position;			// 位置
+		float intensity;			// 輝度
+		Vector3 direction;			// 方向
+		float distance;				// 最大距離
+		float decay;				// 減衰率
+		float cosAngle;				// 余弦
+		float cosFalloffStart;      // フォールオフ開始角度（コサイン値） 追加
+		int32_t enableSpotLight;	// フラグ
+		float padding[2];			
+	};
+
 
 	// 平行光源のリソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> directionalLightResource_;
@@ -149,7 +180,11 @@ private:
 	Microsoft::WRL::ComPtr<ID3D12Resource> specularReflectionResource_;
 	CameraForGPU* cameraData_ = nullptr;
 
-	//DirectXCommon* dxCommon_ = nullptr;
+	// スポットライトのリソース
+	Microsoft::WRL::ComPtr<ID3D12Resource> spotLightResource_;
+	SpotLight* spotLight_= nullptr;
+
+
 	Object3dCommon* object3dCommon_ = nullptr;
 	Camera* camera_ = nullptr;
 };

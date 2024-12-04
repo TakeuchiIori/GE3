@@ -2,6 +2,7 @@
 #include "DirectXCommon.h"
 #include "Object3dCommon.h"
 #include <algorithm>
+#include "MathFunc.h"
 #ifdef _DEBUG
 #include "imgui.h"
 #endif // _DEBUG
@@ -23,7 +24,7 @@ void LightManager::Initialize()
     CreateDirectionalLightResource();
     CreatePointLightResource();
     CreateSpecularReflectionResource();
-
+    CreateSpotLightResource();
 }
 
 void LightManager::SetCommandList()
@@ -37,7 +38,8 @@ void LightManager::SetCommandList()
     object3dCommon_->GetDxCommon()->GetCommandList()->SetGraphicsRootConstantBufferView(4, specularReflectionResource_->GetGPUVirtualAddress());
     // ポイントライト
     object3dCommon_->GetDxCommon()->GetCommandList()->SetGraphicsRootConstantBufferView(5, pointLightResource_->GetGPUVirtualAddress());
-
+    // スポットライト
+    object3dCommon_->GetDxCommon()->GetCommandList()->SetGraphicsRootConstantBufferView(6, spotLightResource_->GetGPUVirtualAddress());
 }
 
 
@@ -71,6 +73,22 @@ void LightManager::CreateSpecularReflectionResource()
     cameraData_->worldPosition = { 0.0f, 0.0f, 0.0f };
     cameraData_->enableSpecular = false;
     cameraData_->isHalfVector = false;
+}
+
+void LightManager::CreateSpotLightResource()
+{
+    spotLightResource_ = object3dCommon_->GetDxCommon()->CreateBufferResource(sizeof(SpotLight));
+    spotLightResource_->Map(0, nullptr, reinterpret_cast<void**>(&spotLight_));
+    spotLight_->color = { 1.0f, 1.0f, 1.0f, 1.0f };
+    spotLight_->position = { 2.0f, 1.25f, 0.0f };
+    spotLight_->distance = 7.0f;
+    spotLight_->direction = Normalize(Vector3 { -1.0f,-1.0f,0.0f });
+    spotLight_->intensity = 4.0f;
+    spotLight_->decay = 2.0f;
+    spotLight_->cosAngle =
+        std::cos(std::numbers::pi_v<float> / 3.0f);
+    spotLight_->cosFalloffStart = std::cos(std::numbers::pi_v<float> / 4.0f); // 45度 追加
+    spotLight_->enableSpotLight = true;
 }
 
 void LightManager::SetDirectionalLight(const Vector4& color, const Vector3& direction, float intensity, bool enable)
@@ -153,6 +171,57 @@ void LightManager::ShowLightingEditor()
         if (ImGui::SliderFloat("Point Decay", &decay, 0.0f, 10.0f, "%.2f")) {
             SetPointLightDecay(decay);
         }
+
+        // スポットライト
+        ImGui::Separator(); // 区切り線
+        ImGui::Text("Spot Light");
+        bool spotLightEnabled = IsSpotLightEnabled();
+        if (ImGui::Checkbox("Spot Enabled", &spotLightEnabled)) {
+            SetSpotLightEnabled(spotLightEnabled);
+        }
+
+        Vector4 spotLightColor = GetSpotLightColor();
+        if (ImGui::ColorEdit4("Spot Color", &spotLightColor.x)) {
+            SetSpotLightColor(spotLightColor);
+        }
+
+        Vector3 spotLightPosition = GetSpotLightPosition();
+        if (ImGui::SliderFloat3("Spot Position", &spotLightPosition.x, -10.0f, 10.0f, "%.2f")) {
+            SetSpotLightPosition(spotLightPosition);
+        }
+
+        Vector3 spotLightDirection = GetSpotLightDirection();
+        if (ImGui::SliderFloat3("Spot Direction", &spotLightDirection.x, -10.0f, 10.0f, "%.2f")) {
+            SetSpotLightDirection(spotLightDirection);
+        }
+
+        float spotLightIntensity = GetSpotLightIntensity();
+        if (ImGui::SliderFloat("Spot Intensity", &spotLightIntensity, 0.0f, 100.0f, "%.2f")) {
+            SetSpotLightIntensity(spotLightIntensity);
+        }
+
+        float spotLightDistance = GetSpotLightDistance();
+        if (ImGui::SliderFloat("Spot Distance", &spotLightDistance, 0.0f, 100.0f, "%.2f")) {
+            SetSpotLightDistance(spotLightDistance);
+        }
+
+        float spotLightDecay = GetSpotLightDecay();
+        if (ImGui::SliderFloat("Spot Decay", &spotLightDecay, 0.0f, 100.0f, "%.2f")) {
+            SetSpotLightDecay(spotLightDecay);
+        }
+
+        float spotLightCosAngle = GetSpotLightCosAngle();
+        if (ImGui::SliderFloat("Spot Angle", &spotLightCosAngle, 0.0f, 1.0f, "%.2f")) {
+            SetSpotLightCosAngle(spotLightCosAngle);
+        }
+
+        float spotLightCosFalloffStart = spotLight_->cosFalloffStart;
+        if (ImGui::SliderFloat("Spot Falloff Start", &spotLightCosFalloffStart, 0.0f, 1.0f, "%.2f")) {
+            spotLight_->cosFalloffStart = spotLightCosFalloffStart;
+        }
+
+
+
 
         // 鏡面反射
         ImGui::Separator(); // 区切り線

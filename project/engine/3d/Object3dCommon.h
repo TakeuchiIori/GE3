@@ -82,7 +82,7 @@ private:
     // ルートシグネチャの説明構造体
     D3D12_ROOT_SIGNATURE_DESC descriptionRootSignature{};
     // RootParameter配列
-    D3D12_ROOT_PARAMETER rootParameters[6] = {};
+    D3D12_ROOT_PARAMETER rootParameters[7] = {};
     // 静的サンプラーの設定
     D3D12_STATIC_SAMPLER_DESC staticSamplers[1] = {};
     // 入力レイアウトの説明

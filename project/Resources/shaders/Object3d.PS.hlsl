@@ -24,9 +24,21 @@ struct PointLight
     float4 color;
     float3 position;
     float intensity;
-    int enablePointLight;
+    int isEnablePointLight;
     float radius; // ライトの届く最大距離
     float decay; // 減衰率
+};
+struct SpotLight
+{
+    float4 color;
+    float3 position;
+    float intensity;
+    float3 direction;
+    float distance;
+    float decay;
+    float cosAngle;
+    float cosFalloffStart;
+    int isEnableSpotLight;
 };
 struct PixelShaderOutput
 {
@@ -38,6 +50,7 @@ ConstantBuffer<Material> gMaterial : register(b0);
 ConstantBuffer<DirectionalLight> gDirectionalLight : register(b1);
 ConstantBuffer<Camera> gCamera : register(b2);
 ConstantBuffer<PointLight> gPointLight : register(b3);
+ConstantBuffer<SpotLight> gSpotLight : register(b4);
 
 Texture2D<float4> gTexture : register(t0);
 SamplerState gSampler : register(s0);
@@ -53,7 +66,7 @@ PixelShaderOutput main(VertexShaderOutput input)
     float3 finalDiffuse = float3(0.0f, 0.0f, 0.0f);
     float3 finalSpecular = float3(0.0f, 0.0f, 0.0f);
 
-    if (gMaterial.enableLighting != 0)
+    if (gMaterial.enableLighting)
     {
         // カメラ視線ベクトル
         float3 toEye = normalize(gCamera.worldPosition - input.worldPosition);
@@ -84,7 +97,7 @@ PixelShaderOutput main(VertexShaderOutput input)
         //                      ポイントライトの計算               
         //===========================================================//
         
-        if (gPointLight.enablePointLight != 0 && gPointLight.intensity > 0.0f)
+        if (gPointLight.isEnablePointLight)
         {
             // ライト方向ベクトル
             float3 pointLightDirection = normalize(gPointLight.position - input.worldPosition);
@@ -107,7 +120,48 @@ PixelShaderOutput main(VertexShaderOutput input)
             }
             finalDiffuse += diffusePoint;
         }
+        
+        //===========================================================//
+        //                      スポットライトの計算               
+        //===========================================================//
+        
+        if (gSpotLight.isEnableSpotLight)
+        {
+    // スポットライトの方向ベクトル
+            float3 spotLightDirectionOnSurface = normalize(input.worldPosition - gSpotLight.position);
 
+    // ライトとの距離
+            float distanceToSurface = length(gSpotLight.position - input.worldPosition);
+
+    // 距離による減衰率 (逆距離の減衰計算)
+            float distanceDecay = pow(saturate(-distanceToSurface / gSpotLight.distance + 1.0f), gSpotLight.decay);
+
+    // スポットライトの角度による減衰 (Falloff開始角度を考慮)
+            float cosAngle = dot(spotLightDirectionOnSurface, gSpotLight.direction);
+            float angleFalloff = saturate((cosAngle - gSpotLight.cosFalloffStart) / (gSpotLight.cosAngle - gSpotLight.cosFalloffStart));
+
+    // 総減衰係数
+            float falloffFactor = angleFalloff * distanceDecay;
+
+    // 拡散反射 (NdotL)
+            float NdotLPoint = max(dot(normalize(input.normal), -spotLightDirectionOnSurface), 0.0f);
+            float3 diffusePoint = gMaterial.color.rgb * textureColor.rgb * gSpotLight.color.rgb * NdotLPoint * gSpotLight.intensity * falloffFactor;
+
+    // 鏡面反射 (Blinn-Phong)
+            float3 halfVectorPoint = normalize(-spotLightDirectionOnSurface + toEye);
+            float NdotHPoint = max(dot(normalize(input.normal), halfVectorPoint), 0.0f);
+            float3 specularPoint = gSpotLight.color.rgb * gSpotLight.intensity * pow(saturate(NdotHPoint), gMaterial.shininess) * falloffFactor;
+
+    // スペキュラー反射の有効化
+            if (gCamera.enableSpecular != 0)
+            {
+                finalSpecular += specularPoint;
+            }
+            finalDiffuse += diffusePoint;
+        }
+
+
+        
         // 最終的な色を合成
         output.color.rgb = finalDiffuse + finalSpecular;
     }

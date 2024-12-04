@@ -57,21 +57,22 @@ void Object3dCommon::CreateRootSignature()
 	rootParameters[3].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;					// CBVを使う
 	rootParameters[3].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;					// PixelShaderで使う
 	rootParameters[3].Descriptor.ShaderRegister = 1;									// レジスタ番号1を使う
-	//descriptionRootSignature.pParameters = rootParameters;								// ルートパラメーター配列へのポインタ
-	//descriptionRootSignature.NumParameters = _countof(rootParameters);					// 配列の長さ
 
 	// 鏡面反射
 	rootParameters[4].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;					// CBVを使う
 	rootParameters[4].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;					// PixelShaderで使う
-	rootParameters[4].Descriptor.ShaderRegister = 2;
-	//descriptionRootSignature.pParameters = rootParameters;								// ルートパラメーター配列へのポインタ
-	//descriptionRootSignature.NumParameters = _countof(rootParameters);
+	rootParameters[4].Descriptor.ShaderRegister = 2;									// レジスタ番号2を使う
+
 
 	// ポイントライト
 	rootParameters[5].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;					// CBVを使う
 	rootParameters[5].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;					// PixelShaderで使う
-	rootParameters[5].Descriptor.ShaderRegister = 3;									// レジスタ番号1を使う
+	rootParameters[5].Descriptor.ShaderRegister = 3;									// レジスタ番号3を使う
 	
+	// スポットライト
+	rootParameters[6].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;					// CBVを使う
+	rootParameters[6].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;					// PixelShaderで使う
+	rootParameters[6].Descriptor.ShaderRegister = 4;									// レジスタ番号4を使う
 	
 	
 	descriptionRootSignature.pParameters = rootParameters;								// ルートパラメーター配列へのポインタ
