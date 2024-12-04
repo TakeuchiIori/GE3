@@ -26,7 +26,6 @@ void Framework::Initialize()
 	srvManager_ = SrvManager::GetInstance();
 	srvManager_->Initialize(dxCommon_);
 
-
 	// テクスチャマネージャの生成
 	textureManager_ = TextureManager::GetInstance();
 	textureManager_->Initialize(dxCommon_, srvManager_);
@@ -39,13 +38,17 @@ void Framework::Initialize()
 	object3dCommon_ = Object3dCommon::GetInstance();
 	object3dCommon_->Initialize(dxCommon_);
 
+	// ライトマネージャの生成
+	lightManager_ = LightManager::GetInstance();
+	lightManager_->Initialize();
+
 	// 3Dモデルマネージャの生成
 	modelManager_ = ModelManager::GetInstance();
 	modelManager_->Initialze(dxCommon_);
 
+	// 子ライターの生成
 	collisionManager_ = CollisionManager::GetInstance();
 	collisionManager_->Initialize();
-
 	
 	
 }

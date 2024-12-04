@@ -13,9 +13,9 @@
 /// </summary>
 void GameScene::Initialize()
 {
+    
     // モデル読み込み
     ModelManager::GetInstance()->LoadModel("Resources/terrain","terrain.obj");
-
     // カメラの生成
     currentCamera_ = cameraManager_.AddCamera();
     Object3dCommon::GetInstance()->SetDefaultCamera(currentCamera_.get());
@@ -66,13 +66,13 @@ void GameScene::Update()
     particleEmitter_->SetPosition(emitterPosition_); // 更新した位置をエミッタに反映
     particleEmitter_->Update();
    
-   test_->ShowLightingEditor();
+   //test_->ShowLightingEditor();
 
     // ワールドトランスフォーム更新
     testWorldTransform_.UpdateMatrix();
     cameraManager_.UpdateAllCameras();
 
-
+    LightManager::GetInstance()->ShowLightingEditor();
 }
 
 
@@ -84,12 +84,12 @@ void GameScene::Draw()
     //================== 2D ==================//
     SpriteCommon::GetInstance()->DrawPreference();
     ParticleManager::GetInstance()->Draw();
-    
-
+ 
     //================== 3D ==================//
     Object3dCommon::GetInstance()->DrawPreference();
 
-
+    //================== ライティング ==================//
+    LightManager::GetInstance()->SetCommandList();
    
     player_->Draw();
     enemy_->Draw();

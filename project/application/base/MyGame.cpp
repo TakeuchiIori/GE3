@@ -34,7 +34,6 @@ void MyGame::Draw()
 	dxCommon_->PreDraw();
 	// Srvの描画準備
 	srvManager_->PreDraw();
-	
 
 	// ゲームの描画
 	SceneManager::GetInstance()->Draw();

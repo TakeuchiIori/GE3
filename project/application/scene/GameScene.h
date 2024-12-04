@@ -6,6 +6,7 @@
 #include "Object3d.h"
 #include "Object3dCommon.h"
 #include "Audio.h"
+#include "LightManager.h"
 #include "ModelManager.h"
 #include "Camera.h"
 #include <memory>
