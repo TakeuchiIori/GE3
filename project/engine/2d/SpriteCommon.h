@@ -70,7 +70,7 @@ private:
     // ルートシグネチャ
     D3D12_ROOT_SIGNATURE_DESC descriptionRootSignature{};
     // RootParameter作成。複数設定できるので配列。
-    D3D12_ROOT_PARAMETER rootParameters[6] = {};
+    D3D12_ROOT_PARAMETER rootParameters[7] = {};
     // Samplerの設定
     D3D12_STATIC_SAMPLER_DESC staticSamplers[1] = {};
     // InputLayout

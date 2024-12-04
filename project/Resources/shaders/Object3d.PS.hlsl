@@ -24,9 +24,20 @@ struct PointLight
     float4 color;
     float3 position;
     float intensity;
-    int enablePointLight;
+    int isEnablePointLight;
     float radius; // ライトの届く最大距離
     float decay; // 減衰率
+};
+struct SpotLight
+{
+    float4 color;
+    float3 position;
+    float intensity;
+    float3 direction;
+    float distance;
+    float decay;
+    float cosAngle;
+    int isEnableSpotLight;
 };
 struct PixelShaderOutput
 {
@@ -38,6 +49,7 @@ ConstantBuffer<Material> gMaterial : register(b0);
 ConstantBuffer<DirectionalLight> gDirectionalLight : register(b1);
 ConstantBuffer<Camera> gCamera : register(b2);
 ConstantBuffer<PointLight> gPointLight : register(b3);
+ConstantBuffer<SpotLight> gSpotLight : register(b4);
 
 Texture2D<float4> gTexture : register(t0);
 SamplerState gSampler : register(s0);
@@ -53,7 +65,7 @@ PixelShaderOutput main(VertexShaderOutput input)
     float3 finalDiffuse = float3(0.0f, 0.0f, 0.0f);
     float3 finalSpecular = float3(0.0f, 0.0f, 0.0f);
 
-    if (gMaterial.enableLighting != 0)
+    if (gMaterial.enableLighting)
     {
         // カメラ視線ベクトル
         float3 toEye = normalize(gCamera.worldPosition - input.worldPosition);
@@ -84,7 +96,7 @@ PixelShaderOutput main(VertexShaderOutput input)
         //                      ポイントライトの計算               
         //===========================================================//
         
-        if (gPointLight.enablePointLight != 0 && gPointLight.intensity > 0.0f)
+        if (gPointLight.isEnablePointLight)
         {
             // ライト方向ベクトル
             float3 pointLightDirection = normalize(gPointLight.position - input.worldPosition);
@@ -106,6 +118,17 @@ PixelShaderOutput main(VertexShaderOutput input)
                 finalSpecular += specularPoint;
             }
             finalDiffuse += diffusePoint;
+        }
+        
+        //===========================================================//
+        //                      スポットライトの計算               
+        //===========================================================//
+        
+        if (gSpotLight.isEnableSpotLight)
+        {
+            
+            
+            
         }
 
         // 最終的な色を合成
