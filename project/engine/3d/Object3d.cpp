@@ -59,8 +59,14 @@ void Object3d::CreateMaterialResource()
 
 void Object3d::SetModel(const std::string& filePath)
 {
+	// ファイル名に .obj を付加
+	std::string fileName = filePath + ".obj";
+
+	// .obj 読み込み (第一引数には拡張子なしのパス)
+	ModelManager::GetInstance()->LoadModel("Resources./" + filePath, fileName);
+
 	// モデルを検索してセットする
-	model_ = ModelManager::GetInstance()->FindModel(filePath);
+	model_ = ModelManager::GetInstance()->FindModel(fileName);
 
 }
 

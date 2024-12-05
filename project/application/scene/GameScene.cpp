@@ -13,9 +13,6 @@
 /// </summary>
 void GameScene::Initialize()
 {
-    
-    // モデル読み込み
-    ModelManager::GetInstance()->LoadModel("Resources/terrain","terrain.obj");
     // カメラの生成
     currentCamera_ = cameraManager_.AddCamera();
     Object3dCommon::GetInstance()->SetDefaultCamera(currentCamera_.get());
@@ -30,7 +27,7 @@ void GameScene::Initialize()
     // test
     test_ = std::make_unique<Object3d>();
     test_->Initialize();
-    test_->SetModel("terrain.obj");
+    test_->SetModel("terrain");
     testWorldTransform_.Initialize();
 
     // 初期カメラモード設定

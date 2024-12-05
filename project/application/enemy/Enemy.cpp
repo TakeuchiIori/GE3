@@ -3,13 +3,12 @@
 #include "collider/GlobalVariables.h"
 void Enemy::Initialize()
 {
-    // .obj読み込み
-    ModelManager::GetInstance()->LoadModel("Resources./player", "player.obj");
+
 
     // OBject3dの初期化
     base_ = std::make_unique<Object3d>();
     base_->Initialize();
-    base_->SetModel("player.obj");
+    base_->SetModel("player");
 
     // その他初期化
     worldTransform_.Initialize();

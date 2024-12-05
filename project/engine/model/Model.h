@@ -79,6 +79,8 @@ private:
 	static MaterialData LoadMaterialTemplateFile(const std::string& directoryPath, const std::string& filename);
 	//.objファイルの読み取り
 	static ModelData LoadObjFile(const std::string& directoryPath, const std::string& filename);
+	//.objファイルの読み取り　（assimp）
+	static ModelData LoadModelFile(const std::string& directoryPath, const std::string& filename);
 
 public: // アクセッサ
 
