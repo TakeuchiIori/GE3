@@ -8,11 +8,16 @@
 #include "Vector2.h"
 #include "Vector3.h"
 #include "DirectXCommon.h"
+#include "WorldTransform.h"
+
+// assimp
+#include <assimp/scene.h>
 class ModelCommon;
 
 class Model
 {
-public: // 構造体
+private: // 構造体
+
 	// 頂点データ
 	struct VertexData {
 		Vector4 position;
@@ -35,17 +40,21 @@ public: // 構造体
 		std::string textureFilePath;
 		uint32_t textureIndex = 0;
 	};
+
+	struct Node {
+		Transform transform;
+		Matrix4x4 localMatrix;
+		std::string name;
+		std::vector<Node> children;
+	};
+
 	struct ModelData {
 		std::vector<VertexData> vertices;
 		MaterialData material;
+		Node rootNode;
 	};
 
-	// 平行光源
-	struct DirectionalLight {
-		Vector4 color;		// ライトの色
-		Vector3 direction;	// ライトの向き
-		float intensity;	// 輝度
-	};
+
 public: // メンバ関数
 	/// <summary>
 	/// 初期化
@@ -74,6 +83,13 @@ private:
 	/// </summary>
 	void MaterialResource();
 
+	/// <summary>
+	/// 
+	/// </summary>
+	/// <param name="node"></param>
+	/// <returns></returns>
+	static Node ReadNode(aiNode* node);
+
 
 	// .mtlファイルの読み取り
 	static MaterialData LoadMaterialTemplateFile(const std::string& directoryPath, const std::string& filename);
@@ -83,8 +99,7 @@ private:
 	static ModelData LoadModelFile(const std::string& directoryPath, const std::string& filename);
 
 public: // アクセッサ
-
-
+	ModelData GetModelData() { return modelData_; }
 
 private: // メンバ変数
 	// ModelCommonのポインタ

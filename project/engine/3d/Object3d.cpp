@@ -24,14 +24,22 @@ void Object3d::Initialize()
 void Object3d::Draw(WorldTransform& worldTransform)
 {
 
+	Matrix4x4 worldMatrix;
+
+
 	Matrix4x4 worldViewProjectionMatrix;
 	if (camera_) {
 		const Matrix4x4& viewProjectionMatrix = camera_->GetViewProjectionMatrix();
-		worldViewProjectionMatrix = worldTransform.GetMatWorld() * viewProjectionMatrix;
+		worldMatrix = worldTransform.GetMatWorld() * model_->GetModelData().rootNode.localMatrix;
+		worldViewProjectionMatrix = worldTransform.GetMatWorld() * model_->GetModelData().rootNode.localMatrix * viewProjectionMatrix;
 	}
 	else {
+		worldMatrix = worldTransform.GetMatWorld();
 		worldViewProjectionMatrix = worldTransform.GetMatWorld();
 	}
+
+	
+	worldTransform.SetMapWorld(worldMatrix);
 	worldTransform.SetMapWVP(worldViewProjectionMatrix);
 
 	// マテリアル
@@ -59,11 +67,23 @@ void Object3d::CreateMaterialResource()
 
 void Object3d::SetModel(const std::string& filePath)
 {
+	// 拡張子を取り除く処理
+	std::string basePath = filePath;
+	if (basePath.size() > 4) {
+		// .obj または .gltf の場合に削除
+		if (basePath.substr(basePath.size() - 4) == ".obj") {
+			basePath = basePath.substr(0, basePath.size() - 4);
+		}
+		else if (basePath.size() > 5 && basePath.substr(basePath.size() - 5) == ".gltf") {
+			basePath = basePath.substr(0, basePath.size() - 5);
+		}
+	}
+
 	// ファイル名に .obj を付加
-	std::string fileName = filePath + ".obj";
+	std::string fileName = basePath + ".obj";
 
 	// .obj 読み込み (第一引数には拡張子なしのパス)
-	ModelManager::GetInstance()->LoadModel("Resources./" + filePath, fileName);
+	ModelManager::GetInstance()->LoadModel("Resources./" + basePath, fileName);
 
 	// モデルを検索してセットする
 	model_ = ModelManager::GetInstance()->FindModel(fileName);

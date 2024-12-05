@@ -5,6 +5,7 @@
 #include <d3d12.h>
 #include <type_traits>
 #include <wrl.h>
+#include <MathFunc.h>
 
 struct TransformationMatrix {
 	Matrix4x4 WVP;
@@ -12,8 +13,15 @@ struct TransformationMatrix {
 	Matrix4x4 WorldInverse;
 };
 
+
 class WorldTransform {
 public:
+	struct QuaternionTransform {
+		Vector3 scale;
+		Quaternion rotate;
+		Vector3 translate;
+	};
+
 	// ローカルスケール
 	Vector3 scale_ = { 1, 1, 1 };
 	// X,Y,Z軸回りのローカル回転角
@@ -53,14 +61,17 @@ public:
 	/// マップのセット
 	/// </summary>
 	/// <param name="wvp">WVP行列</param>
-	void SetMapWVP(const Matrix4x4& wvp) { constMap_->WVP = wvp; }
+	TransformationMatrix* GetTransformData() { return transformData_; }
+	void SetMapWVP(const Matrix4x4& wvp) { transformData_->WVP = wvp; }
+
+	void SetMapWorld(const Matrix4x4& world) { transformData_->World = world; }
 	const Matrix4x4& GetMatWorld() { return matWorld_; }
 
 private:
 	// 定数バッファ
 	Microsoft::WRL::ComPtr<ID3D12Resource> constBuffer_;
 	// マッピング済みアドレス
-	TransformationMatrix* constMap_ = nullptr;
+	TransformationMatrix* transformData_ = nullptr;
 	// コピー禁止
 	WorldTransform(const WorldTransform&) = delete;
 	WorldTransform& operator=(const WorldTransform&) = delete;

@@ -12,7 +12,7 @@ void Player::Initialize()
     // OBject3dの初期化
     base_ = std::make_unique<Object3d>();
     base_->Initialize();
-    base_->SetModel("ball");
+    base_->SetModel("plane.obj");
 
     // その他初期化
     input_ = Input::GetInstance();
