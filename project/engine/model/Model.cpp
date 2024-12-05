@@ -4,6 +4,12 @@
 #include <fstream>
 #include <sstream>
 #include "TextureManager.h"
+
+// assimp
+#include <assimp/Importer.hpp>
+#include <assimp/scene.h>
+#include <assimp/postprocess.h>
+
 void Model::Initialize(ModelCommon* modelCommon, const std::string& directorypath, const std::string& filename)
 {
 	// 引数から受け取ってメンバ変数に記録する

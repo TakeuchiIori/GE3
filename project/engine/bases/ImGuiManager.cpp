@@ -1,9 +1,8 @@
 #include "ImGuiManager.h"
 #include "WinApp.h"
-#include "imgui.h"
-
-#ifdef _DEBUG
 #include "DirectXCommon.h"
+#ifdef _DEBUG
+#include "imgui.h"
 #include <imgui_impl_win32.h>
 #include <imgui_impl_dx12.h>
 #endif

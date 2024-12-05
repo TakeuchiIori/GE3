@@ -1,1 +1,8 @@
-﻿  ImGui.vcxproj -> C:\Users\iori0\Lessons\2024A\GE3\project\x64\Release\ImGui.lib
+﻿  imgui.cpp
+  imgui_demo.cpp
+  imgui_draw.cpp
+  imgui_impl_dx12.cpp
+  imgui_impl_win32.cpp
+  imgui_tables.cpp
+  imgui_widgets.cpp
+  ImGui.vcxproj -> C:\Users\iori0\Lessons\2024A\GE3\project\x64\Release\ImGui.lib

@@ -116,6 +116,7 @@ void LightManager::SetSpecularReflection(bool enabled, bool isHalfVector)
 }
 void LightManager::ShowLightingEditor()
 {
+#ifdef _DEBUG
     if (ImGui::Begin("Lighting Editor")) {
         // 平行光源
         ImGui::Text("Directional Light");
@@ -237,4 +238,5 @@ void LightManager::ShowLightingEditor()
         }
     }
     ImGui::End();
+#endif // _DEBUG
 }
