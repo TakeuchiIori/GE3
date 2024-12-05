@@ -12,7 +12,7 @@ void Player::Initialize()
     // OBject3dの初期化
     base_ = std::make_unique<Object3d>();
     base_->Initialize();
-    base_->SetModel("plane.obj");
+    base_->SetModel("player.obj");
 
     // その他初期化
     input_ = Input::GetInstance();
@@ -34,7 +34,7 @@ void Player::Update()
 {
     Move();
 
-   // base_->MaterialByImGui();
+    ShowCoordinatesImGui();
 
     UpdateWorldTransform();
 }

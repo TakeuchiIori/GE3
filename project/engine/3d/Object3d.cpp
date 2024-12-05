@@ -24,22 +24,17 @@ void Object3d::Initialize()
 void Object3d::Draw(WorldTransform& worldTransform)
 {
 
-	Matrix4x4 worldMatrix;
-
-
 	Matrix4x4 worldViewProjectionMatrix;
 	if (camera_) {
 		const Matrix4x4& viewProjectionMatrix = camera_->GetViewProjectionMatrix();
-		worldMatrix = worldTransform.GetMatWorld() * model_->GetModelData().rootNode.localMatrix;
-		worldViewProjectionMatrix = worldTransform.GetMatWorld() * model_->GetModelData().rootNode.localMatrix * viewProjectionMatrix;
+		worldViewProjectionMatrix = worldTransform.GetMatWorld() * viewProjectionMatrix;
 	}
 	else {
-		worldMatrix = worldTransform.GetMatWorld();
+		
 		worldViewProjectionMatrix = worldTransform.GetMatWorld();
 	}
 
-	
-	worldTransform.SetMapWorld(worldMatrix);
+
 	worldTransform.SetMapWVP(worldViewProjectionMatrix);
 
 	// マテリアル

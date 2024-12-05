@@ -27,7 +27,7 @@ void GameScene::Initialize()
     // test
     test_ = std::make_unique<Object3d>();
     test_->Initialize();
-    test_->SetModel("terrain");
+    test_->SetModel("terrain.obj");
     testWorldTransform_.Initialize();
 
     // 初期カメラモード設定

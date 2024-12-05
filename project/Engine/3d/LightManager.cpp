@@ -187,7 +187,7 @@ void LightManager::ShowLightingEditor()
         }
 
         Vector3 spotLightPosition = GetSpotLightPosition();
-        if (ImGui::SliderFloat3("Spot Position", &spotLightPosition.x, -10.0f, 10.0f, "%.2f")) {
+        if (ImGui::SliderFloat3("Spot Position", &spotLightPosition.x, -100.0f, 100.0f, "%.2f")) {
             SetSpotLightPosition(spotLightPosition);
         }
 
@@ -202,7 +202,7 @@ void LightManager::ShowLightingEditor()
         }
 
         float spotLightDistance = GetSpotLightDistance();
-        if (ImGui::SliderFloat("Spot Distance", &spotLightDistance, 0.0f, 100.0f, "%.2f")) {
+        if (ImGui::SliderFloat("Spot Distance", &spotLightDistance, 0.0f, 200.0f, "%.2f")) {
             SetSpotLightDistance(spotLightDistance);
         }
 

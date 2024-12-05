@@ -127,32 +127,32 @@ PixelShaderOutput main(VertexShaderOutput input)
         
         if (gSpotLight.isEnableSpotLight)
         {
-    // スポットライトの方向ベクトル
+            // スポットライトの方向ベクトル
             float3 spotLightDirectionOnSurface = normalize(input.worldPosition - gSpotLight.position);
 
-    // ライトとの距離
+            // ライトとの距離
             float distanceToSurface = length(gSpotLight.position - input.worldPosition);
 
-    // 距離による減衰率 (逆距離の減衰計算)
+            // 距離による減衰率 (逆距離の減衰計算)
             float distanceDecay = pow(saturate(-distanceToSurface / gSpotLight.distance + 1.0f), gSpotLight.decay);
 
-    // スポットライトの角度による減衰 (Falloff開始角度を考慮)
+            // スポットライトの角度による減衰 (Falloff開始角度を考慮)
             float cosAngle = dot(spotLightDirectionOnSurface, gSpotLight.direction);
             float angleFalloff = saturate((cosAngle - gSpotLight.cosFalloffStart) / (gSpotLight.cosAngle - gSpotLight.cosFalloffStart));
 
-    // 総減衰係数
+            // 総減衰係数
             float falloffFactor = angleFalloff * distanceDecay;
 
-    // 拡散反射 (NdotL)
+            // 拡散反射 (NdotL)
             float NdotLPoint = max(dot(normalize(input.normal), -spotLightDirectionOnSurface), 0.0f);
             float3 diffusePoint = gMaterial.color.rgb * textureColor.rgb * gSpotLight.color.rgb * NdotLPoint * gSpotLight.intensity * falloffFactor;
 
-    // 鏡面反射 (Blinn-Phong)
+            // 鏡面反射 (Blinn-Phong)
             float3 halfVectorPoint = normalize(-spotLightDirectionOnSurface + toEye);
             float NdotHPoint = max(dot(normalize(input.normal), halfVectorPoint), 0.0f);
             float3 specularPoint = gSpotLight.color.rgb * gSpotLight.intensity * pow(saturate(NdotHPoint), gMaterial.shininess) * falloffFactor;
 
-    // スペキュラー反射の有効化
+            // スペキュラー反射の有効化
             if (gCamera.enableSpecular != 0)
             {
                 finalSpecular += specularPoint;
@@ -160,8 +160,6 @@ PixelShaderOutput main(VertexShaderOutput input)
             finalDiffuse += diffusePoint;
         }
 
-
-        
         // 最終的な色を合成
         output.color.rgb = finalDiffuse + finalSpecular;
     }
