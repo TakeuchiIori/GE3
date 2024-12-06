@@ -389,20 +389,20 @@ Vector3 QuaternionToEuler(const Quaternion& q)
     Vector3 euler;
 
     // Roll (X軸回転)
-    double sinr_cosp = 2 * (q.w * q.x + q.y * q.z);
-    double cosr_cosp = 1 - 2 * (q.x * q.x + q.y * q.y);
+    float sinr_cosp = 2 * (q.w * q.x + q.y * q.z);
+    float cosr_cosp = 1 - 2 * (q.x * q.x + q.y * q.y);
     euler.x = std::atan2(sinr_cosp, cosr_cosp);
 
     // Pitch (Y軸回転)
-    double sinp = 2 * (q.w * q.y - q.z * q.x);
+    float sinp = 2 * (q.w * q.y - q.z * q.x);
     if (std::abs(sinp) >= 1)
-        euler.y = std::copysign(std::numbers::pi / 2, sinp); // Gimbal lock
+        euler.y = static_cast<float>(std::copysign(std::numbers::pi / 2, sinp)); // Gimbal lock
     else
         euler.y = std::asin(sinp);
 
     // Yaw (Z軸回転)
-    double siny_cosp = 2 * (q.w * q.z + q.x * q.y);
-    double cosy_cosp = 1 - 2 * (q.y * q.y + q.z * q.z);
+    float siny_cosp = 2 * (q.w * q.z + q.x * q.y);
+    float cosy_cosp = 1 - 2 * (q.y * q.y + q.z * q.z);
     euler.z = std::atan2(siny_cosp, cosy_cosp);
 
     return euler;
@@ -452,7 +452,7 @@ Vector3 SetFromTo(const Vector3& from, const Vector3& to) {
             rotationAxis = Cross(Vector3(0.0f, 1.0f, 0.0f), normalizedFrom);
         }
         rotationAxis = Normalize(rotationAxis);
-        rotationAngle = std::numbers::pi;
+        rotationAngle = static_cast<float>(std::numbers::pi);
     }
     // それ以外の場合、通常の回転を計算
     else {

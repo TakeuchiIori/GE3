@@ -56,7 +56,7 @@ void Input::Initialize(WinApp* winApp)
 	}
 }
 
-void Input::Update(WinApp* winApp)
+void Input::Update()
 {
 	HRESULT result;
 	memcpy(keyPre, key, sizeof(key));

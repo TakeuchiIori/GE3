@@ -65,7 +65,6 @@ void ParticleManager::Initialize( SrvManager* srvManager)
 /// </summary>
 void ParticleManager::Update()
 {
-	uint32_t numInstance = 0;
 
 	// カメラの行列を取得
 	Matrix4x4 cameraMatrix = MakeAffineMatrix(camera_->GetScale(), camera_->GetRotate(), camera_->GetTranslate());
@@ -272,7 +271,7 @@ void ParticleManager::CreateRootSignature()
 	blendDesc_.RenderTarget[0].RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
 	blendDesc_.RenderTarget[0].BlendEnable = true;
 
-	SetBlendMode(blendDesc_, blendMode);
+	SetBlendMode(blendDesc_, blendMode_);
 	currentBlendMode_ = kBlendModeAdd;  // 現在のブレンドモード
 	// α値のブレンド
 	blendDesc_.RenderTarget[0].SrcBlendAlpha = D3D12_BLEND_ONE;

@@ -130,10 +130,11 @@ void ImGuiManager::CustomizeEditor()
 	ImGuiIO& io = ImGui::GetIO();
 	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 
+
 	// メインDockSpaceの設定
-	ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse |
-		ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove |
-		ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
+	//ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse |
+	//	ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove |
+	//	ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
 
 	// ウィンドウ全体をカバーするDockSpaceの作成
 	ImGui::SetNextWindowPos(ImVec2(0.0f, 0.0f)); // ウィンドウ位置を(0,0)に設定

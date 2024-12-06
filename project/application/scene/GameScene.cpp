@@ -90,8 +90,9 @@ void GameScene::Draw()
    
     player_->Draw();
     //enemy_->Draw();
-    test_->Draw(testWorldTransform_);
+    //test_->Draw(testWorldTransform_);
   
+
 }
 
 /// <summary>

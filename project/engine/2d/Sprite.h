@@ -177,7 +177,7 @@ private: // メンバ変数
 	//===============================================*/
 
 	DirectX::ScratchImage mipImages[2] = {};
-	const DirectX::TexMetadata& metadata = mipImages[0].GetMetadata();
+	//const DirectX::TexMetadata& metadata = mipImages[0].GetMetadata();
 	const DirectX::TexMetadata& metadata2 = mipImages[1].GetMetadata();
 
 	Microsoft::WRL::ComPtr<ID3D12Resource> textureResource[2];
@@ -195,7 +195,6 @@ private: // メンバ変数
 	Vector2 textureSize_ = { 100.0f,100.0f };
 
 	// スプライト
-	VertexData* vertexData = nullptr;
 	Vector2 position_ = { 0.0f,0.0f };
 	float rotation_ = 0.0f;
 	Vector2 size_ = { 100.0f,100.0f };

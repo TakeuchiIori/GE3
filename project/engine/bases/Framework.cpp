@@ -71,7 +71,7 @@ void Framework::Update()
 	// ImGui受付開始
 	imguiManager_->Begin();
 	// 入力は初めに更新
-	input_->Update(winApp_);
+	input_->Update();
 
 	collisionManager_->Reset();
 	collisionManager_->CheckAllCollisions();

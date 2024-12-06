@@ -19,9 +19,9 @@ void Audio::Finalize()
 void Audio::Initialize()
 {
 	// xAudioエンジンのインスタンスを生成
-	hr = XAudio2Create(&xAudio2_, 0, XAUDIO2_DEFAULT_PROCESSOR);
+	hr_ = XAudio2Create(&xAudio2_, 0, XAUDIO2_DEFAULT_PROCESSOR);
 	// マスターボイスを生成
-	hr = xAudio2_->CreateMasteringVoice(&masterVoice_);
+	hr_ = xAudio2_->CreateMasteringVoice(&masterVoice_);
 
 
 }

@@ -218,7 +218,7 @@ private: // メンバ変数
 	D3D12_INPUT_ELEMENT_DESC inputElementDescs_[3] = {};
 
 	// ブレンド
-	BlendMode blendMode{};
+	BlendMode blendMode_{};
 	D3D12_BLEND_DESC blendDesc_{};
 	D3D12_RASTERIZER_DESC rasterrizerDesc_{};
 	D3D12_DEPTH_STENCIL_DESC depthStencilDesc_{};
