@@ -31,17 +31,16 @@ public: // メンバ関数
 	void Draw(WorldTransform& worldTransform);
 
 	/// <summary>
-	/// マテリアルリソース作成
-	/// </summary>
-	void CreateMaterialResource();
-
-	/// <summary>
 	/// ImGui
 	/// </summary>
 	void MaterialByImGui();
 
 private:
 
+	/// <summary>
+	/// マテリアルリソース作成
+	/// </summary>
+	void CreateMaterialResource();
 
 public: // アクセッサ
 

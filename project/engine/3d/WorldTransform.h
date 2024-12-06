@@ -7,15 +7,17 @@
 #include <wrl.h>
 #include <MathFunc.h>
 
-struct TransformationMatrix {
-	Matrix4x4 WVP;
-	Matrix4x4 World;
-	Matrix4x4 WorldInverse;
-};
+
 
 
 class WorldTransform {
 public:
+	struct TransformationMatrix {
+		Matrix4x4 WVP;
+		Matrix4x4 World;
+		Matrix4x4 WorldInverse;
+	};
+
 	struct QuaternionTransform {
 		Vector3 scale;
 		Quaternion rotate;

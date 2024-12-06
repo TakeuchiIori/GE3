@@ -71,20 +71,11 @@ void Model::CreateVertex()
 Model::Node Model::ReadNode(aiNode* node) {
 	Node result;
 	aiMatrix4x4 aiLocalMatrix = node->mTransformation;
-
-	// スケール、回転、平行移動を分解
-	aiVector3D scaling;
-	aiQuaternion rotation;
-	aiVector3D position;
-	aiLocalMatrix.Decompose(scaling, rotation, position);
-
-	// 回転を適用
-	aiMatrix4x4 rotationMatrix = aiMatrix4x4(rotation.GetMatrix());
-	rotationMatrix.Transpose(); // 行列形式変換
+	aiLocalMatrix.Transpose();
 
 	for (int row = 0; row < 4; ++row) {
 		for (int col = 0; col < 4; ++col) {
-			result.localMatrix.m[row][col] = rotationMatrix[row][col];
+			result.localMatrix.m[row][col] = aiLocalMatrix[row][col];
 		}
 	}
 
@@ -252,7 +243,6 @@ Model::ModelData Model::LoadModelFile(const std::string& directoryPath, const st
 				aiVector3D& position = mesh->mVertices[vertexIndex];
 				aiVector3D& normal = mesh->mNormals[vertexIndex];
 				aiVector3D& texcoord = mesh->mTextureCoords[0][vertexIndex];
-				texcoord.y = 1.0f - texcoord.y;
 				VertexData vertex;
 				vertex.position = { position.x,position.y,position.z ,1.0f };
 				vertex.normal = { normal.x,normal.y,normal.z };

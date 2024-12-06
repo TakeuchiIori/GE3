@@ -24,7 +24,7 @@ void WorldTransform::CreateConstBuffer()
     // 単位行列を書き込んでおく
     transformData_->WVP = MakeIdentity4x4()/* * model_->GetModelData().rootNode.localMatrix*/;
     transformData_->World = MakeIdentity4x4() /** model_->GetModelData().rootNode.localMatrix*/;
-    transformData_->WorldInverse = Inverse(transformData_->World);
+    transformData_->WorldInverse = TransPose(Inverse(transformData_->World));
 }
 
 void WorldTransform::UpdateMatrix()

@@ -27,7 +27,7 @@ void GameScene::Initialize()
     // test
     test_ = std::make_unique<Object3d>();
     test_->Initialize();
-    test_->SetModel("terrain.obj");
+    test_->SetModel("float_body.obj");
     testWorldTransform_.Initialize();
 
     // 初期カメラモード設定
@@ -63,7 +63,7 @@ void GameScene::Update()
     particleEmitter_->SetPosition(emitterPosition_); // 更新した位置をエミッタに反映
     particleEmitter_->Update();
    
-    test_->MaterialByImGui();
+    //test_->MaterialByImGui();
 
     // ワールドトランスフォーム更新
     testWorldTransform_.UpdateMatrix();
@@ -89,7 +89,7 @@ void GameScene::Draw()
     LightManager::GetInstance()->SetCommandList();
    
     player_->Draw();
-    enemy_->Draw();
+    //enemy_->Draw();
     test_->Draw(testWorldTransform_);
   
 }

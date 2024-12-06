@@ -79,7 +79,8 @@ PixelShaderOutput main(VertexShaderOutput input)
         {
             // 拡散反射
             float NdotL = max(dot(normalize(input.normal), -gDirectionalLight.direction), 0.0f);
-            float3 diffuseDirectional = gMaterial.color.rgb * textureColor.rgb * gDirectionalLight.color.rgb * NdotL * gDirectionalLight.intensity;
+            float cos = pow(NdotL * 0.5f + 0.5f, 2.0f);
+            float3 diffuseDirectional = gMaterial.color.rgb * textureColor.rgb * gDirectionalLight.color.rgb * cos * gDirectionalLight.intensity;
             // 鏡面反射 (Blinn-Phong)
             float3 halfVector = normalize(-gDirectionalLight.direction + toEye);
             float NdotH = max(dot(normalize(input.normal), halfVector), 0.0f);

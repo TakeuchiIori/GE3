@@ -12,14 +12,14 @@ void Player::Initialize()
     // OBject3dの初期化
     base_ = std::make_unique<Object3d>();
     base_->Initialize();
-    base_->SetModel("player.obj");
+    base_->SetModel("needle_Body.obj");
 
     // その他初期化
     input_ = Input::GetInstance();
     moveSpeed_ = { 0.5f, 0.5f , 0.5f };
     worldTransform_.Initialize();
 
-    worldTransform_.scale_ = { 2.0f,2.0f,2.0f };
+    //worldTransform_.scale_ = { 2.0f,2.0f,2.0f };
 
     //GlobalVariables* globalvariables = GlobalVariables::GetInstance();
     const char* groupName = "Player";

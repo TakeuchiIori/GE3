@@ -142,7 +142,7 @@ void ImGuiManager::CustomizeEditor()
 
 	// フォントファイルのパスとサイズを指定してフォントをロードする
 	io.Fonts->AddFontFromFileTTF(
-		"Resources/Fonts/FiraMono-Regular.ttf", 16.0f // フォントファイルのパスとフォントサイズ
+		"Resources/Fonts/FiraMono-Regular.ttf", 14.0f // フォントファイルのパスとフォントサイズ
 	);
 	// 標準フォントを追加する
 	io.Fonts->AddFontDefault();
