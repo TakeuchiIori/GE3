@@ -60,6 +60,14 @@ Vector3 Normalize(const Vector3& v) {
     float mag = Magnitude(v);
     return { v.x / mag, v.y / mag, v.z / mag };
 }
+Vector3 Normalize(Vector3& vec) {
+    // 実装例：ベクトルを正規化する関数
+    float length = sqrt(vec.x * vec.x + vec.y * vec.y + vec.z * vec.z);
+    if (length > 0) {
+        return Vector3{ vec.x / length, vec.y / length, vec.z / length };
+    }
+    return Vector3{ 0, 0, 0 };
+}
 
 Vector4 Normalize(const Vector4& v) {
     float mag = Magnitude(v);

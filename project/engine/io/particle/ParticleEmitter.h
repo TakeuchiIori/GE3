@@ -25,15 +25,21 @@ public: // メンバ関数
 	/// </summary>
 	void Update();
 
+private:
 
 	/// <summary>
 	/// パーティクルを発生
 	/// </summary>
 	void Emit();
 
-
+	/// <summary>
+	/// ImGui
+	/// </summary>
+	void ShowImGui();
+public:
 
 	void SetPosition(Vector3& position) { emitter_.transform = position; };
+	void SetCount(uint32_t& setcount) { emitter_.count= setcount; };
 
 private:
 
@@ -44,8 +50,8 @@ private:
 		std::string name; 
 		Vector3 transform; 
 		uint32_t count; 
-		float frequency; 
-		float frequencyTime; 
+		float frequency;
+		float frequencyTime ;
 	};
 
 	// エミッター

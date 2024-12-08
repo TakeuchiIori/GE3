@@ -38,7 +38,8 @@ void GameScene::Initialize()
     ParticleManager::GetInstance()->SetCamera(currentCamera_.get());
     ParticleManager::GetInstance()->CreateParticleGroup(particleName, "Resources/images/circle.png");
     emitterPosition_ = Vector3{ 0.0f, 0.0f, 0.0f }; // エミッタの初期位置
-    particleEmitter_ = std::make_unique<ParticleEmitter>(particleName, emitterPosition_,1);
+    particleCount_ = 1;
+    particleEmitter_ = std::make_unique<ParticleEmitter>(particleName, emitterPosition_, particleCount_);
 
 }
 
@@ -48,9 +49,9 @@ void GameScene::Initialize()
 void GameScene::Update()
 {
     
-    if (Input::GetInstance()->TriggerKey(DIK_RETURN)) {
-        SceneManager::GetInstance()->ChangeScene("TITLE");
-    }
+    //if (Input::GetInstance()->TriggerKey(DIK_RETURN)) {
+    //    SceneManager::GetInstance()->ChangeScene("TITLE");
+    //}
     // プレイヤーの更新
     player_->Update();
     enemy_->Update();
@@ -60,7 +61,8 @@ void GameScene::Update()
 
     // パーティクル更新
     ParticleManager::GetInstance()->Update();
-    particleEmitter_->SetPosition(emitterPosition_); // 更新した位置をエミッタに反映
+    //particleEmitter_->SetPosition(emitterPosition_); // 更新した位置をエミッタに反映
+    ShowImGui();
     particleEmitter_->Update();
    
     //test_->MaterialByImGui();
@@ -70,6 +72,8 @@ void GameScene::Update()
     cameraManager_.UpdateAllCameras();
 
     LightManager::GetInstance()->ShowLightingEditor();
+
+   
 }
 
 
@@ -154,4 +158,26 @@ void GameScene::UpdateCamera()
     default:
         break;
     }
+}
+
+void GameScene::ShowImGui()
+{
+    ImGui::Begin("Emitter");
+    ImGui::DragFloat3("Emitter Position", &emitterPosition_.x, 0.1f);
+    particleEmitter_->SetPosition(emitterPosition_);
+
+    // パーティクル数の表示と調整
+    ImGui::Text("Particle Count: %.0d", particleCount_); // 現在のパーティクル数を表示
+    if (ImGui::Button("Increase Count")) {
+        particleCount_ += 1; // パーティクル数を増加
+    }
+    if (ImGui::Button("Decrease Count")) {
+        if (particleCount_ > 1) { // パーティクル数が1未満にならないように制限
+            particleCount_ -= 1;
+        }
+    }
+    particleEmitter_->SetCount(particleCount_);
+
+
+    ImGui::End();
 }

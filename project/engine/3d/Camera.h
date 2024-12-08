@@ -15,6 +15,11 @@ public: // メンバ関数
 	/// </summary>
 	void Update();
 
+	/// <summary>
+	/// ImGui
+	/// </summary>
+	void ShowImGui();
+
 public: // カメラ
 
 	/// <summary>

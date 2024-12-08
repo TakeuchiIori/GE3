@@ -77,7 +77,7 @@ float Normalize(const float& v);
 
 // Vector3を正規化する関数
 Vector3 Normalize(const Vector3& v);
-
+Vector3 Normalize(Vector3& vec);
 // Vector4を正規化する関数
 Vector4 Normalize(const Vector4& v);
 
