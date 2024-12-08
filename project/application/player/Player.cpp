@@ -41,7 +41,9 @@ void Player::Update()
 
 void Player::Draw()
 {
-    base_->Draw(worldTransform_);
+    if (isDrawEnabled_) {
+        base_->Draw(worldTransform_);
+    }
 }
 
 void Player::UpdateWorldTransform()
@@ -118,8 +120,9 @@ void Player::ShowCoordinatesImGui()
 {
 #ifdef _DEBUG
     // ImGuiウィンドウを利用してプレイヤーの座標を表示
-    ImGui::Begin("Player SRT Editor");
-
+    ImGui::Begin("Player Editor");
+    ImGui::Text("DrawCall");
+    ImGui::Checkbox("Enable Draw", &isDrawEnabled_);
     // スケール
     ImGui::Text("Scale");
     float scale[3] = { worldTransform_.scale_.x, worldTransform_.scale_.y, worldTransform_.scale_.z };

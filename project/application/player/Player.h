@@ -79,6 +79,7 @@ private: // メンバ変数
 
 	bool isColliding_ = false;
 	Vector3 moveSpeed_;
+	bool isDrawEnabled_ = true;
 
 };
 

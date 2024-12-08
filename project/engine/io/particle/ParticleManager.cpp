@@ -930,6 +930,18 @@ void ParticleManager::ShowUpdateModeDropdown()
 		currentUpdateMode_ = static_cast<ParticleUpdateMode>(currentMode);
 	}
 
+
+	// 加速度の調整
+	ImGui::Text("Acceleration");
+	ImGui::DragFloat3("Acceleration", &accelerationField.acceleration.x, 0.1f, -100.0f, 100.0f);
+
+	// 範囲 (AABB) の調整
+	ImGui::Text("Area Min");
+	ImGui::DragFloat3("Area Min", &accelerationField.area.min.x, 0.1f, -100.0f, 100.0f);
+
+	ImGui::Text("Area Max");
+	ImGui::DragFloat3("Area Max", &accelerationField.area.max.x, 0.1f, -100.0f, 100.0f);
+
 	ImGui::End();
 #endif
 }
