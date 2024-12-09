@@ -9,7 +9,7 @@
 
 
 
-
+class Model;
 class WorldTransform {
 public:
 	struct TransformationMatrix {
@@ -70,6 +70,7 @@ public:
 	const Matrix4x4& GetMatWorld() { return matWorld_; }
 
 private:
+	Model* model_ = nullptr;
 	// 定数バッファ
 	Microsoft::WRL::ComPtr<ID3D12Resource> constBuffer_;
 	// マッピング済みアドレス

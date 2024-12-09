@@ -20,6 +20,9 @@ void Object3d::Initialize()
 
 	CreateMaterialResource();
 }
+void Object3d::Update(){
+	model_->PlayAnimation();
+}
 
 void Object3d::Draw(WorldTransform& worldTransform)
 {

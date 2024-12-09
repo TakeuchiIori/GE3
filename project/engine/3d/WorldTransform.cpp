@@ -3,6 +3,7 @@
 #include <DirectXCommon.h>
 #include <Object3dCommon.h>
 #include "Model.h"
+
 void WorldTransform::Initialize()
 {
     // ワールド行列の初期化
@@ -12,7 +13,7 @@ void WorldTransform::Initialize()
     CreateConstBuffer();
 
     // 定数バッファへ初期行列を転送
-    UpdateMatrix();
+   // UpdateMatrix();
 }
 
 void WorldTransform::CreateConstBuffer()
@@ -22,8 +23,8 @@ void WorldTransform::CreateConstBuffer()
     // 書き込むためのアドレスを取得
     constBuffer_->Map(0, nullptr, reinterpret_cast<void**>(&transformData_));
     // 単位行列を書き込んでおく
-    transformData_->WVP = MakeIdentity4x4()/* * model_->GetModelData().rootNode.localMatrix*/;
-    transformData_->World = MakeIdentity4x4() /** model_->GetModelData().rootNode.localMatrix*/;
+    transformData_->WVP = MakeIdentity4x4();
+    transformData_->World = MakeIdentity4x4();
     transformData_->WorldInverse = TransPose(Inverse(transformData_->World));
 }
 

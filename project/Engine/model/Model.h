@@ -71,20 +71,18 @@ private: // 構造体
 		tValue value;
 	};
 
-	using KeyframeVector3 = Keyframe<Vector3>;
-	using KeyframeQuaternion = Keyframe<Quaternion>;
+	//using KeyframeVector3 = Keyframe<Vector3>;
+	//using KeyframeQuaternion = Keyframe<Quaternion>;
 
+	template<typename tValue>
+	struct AnimationCurve {
+		std::vector<Keyframe<tValue>> keyframes;
+	};
 	struct NodeAnimation {
 		std::vector<KeyframeVector3> translate;
 		std::vector<KeyframeQuaternion> rotate;
 		std::vector<KeyframeVector3> scale;
 	};
-
-	template<typename tvalue>
-	struct AnimationCurve {
-		std::vector<Keyframe<tValue>> keyframes;
-	};
-
 	struct Animation {
 		float duration; // アニメーション全体の尺（秒）
 		// NodeAnimationの集合。Node名で開けるように
@@ -102,6 +100,10 @@ public: // メンバ関数
 	/// </summary>
 	void Draw();
 
+	/// <summary>
+	/// アニメーション再生
+	/// </summary>
+	void PlayAnimation();
 
 private:
 	/// <summary>
@@ -114,6 +116,15 @@ private:
 	/// </summary>
 	void CreateVertex();
 
+	/// <summary>
+	/// 任意の時刻を取得
+	/// </summary>
+	Vector3 CalculateValue(const std::vector<KeyframeVector3>& keyframes, float time);
+
+	/// <summary>
+	/// 任意の時刻を取得
+	/// </summary>
+	Quaternion CalculateValue(const std::vector<KeyframeQuaternion>& keyframes, float time);
 private:
 
 	/// <summary>
@@ -147,7 +158,7 @@ private:
 
 public: // アクセッサ
 	ModelData GetModelData() { return modelData_; }
-
+	Matrix4x4 GetLocalMatrix() { return localMatrix_; }
 private: // メンバ変数
 	// ModelCommonのポインタ
 	ModelCommon* modelCommon_;
@@ -163,8 +174,9 @@ private: // メンバ変数
 
 
 	// アニメーションの試運転用
-	ModelData modelDataAnimation_;
 	Animation animation_;
+
+	Matrix4x4 localMatrix_;
 
 };
 

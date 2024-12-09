@@ -17,7 +17,7 @@ void Model::Initialize(ModelCommon* modelCommon, const std::string& directorypat
 	// モデル読み込み
 	//modelData_ = LoadObjFile(directorypath, filename);
 
-	modelData_ = LoadModelFile(directorypath, filename);
+	//modelData_ = LoadModelFile(directorypath, filename);
 
 	modelData_ = LoadModelFile("Resources./AnimatedCube", "AnimatedCube.gltf");
 	animation_ = LoadAnimationFile("Resources./AnimatedCube", "AnimatedCube.gltf");
@@ -33,7 +33,6 @@ void Model::Initialize(ModelCommon* modelCommon, const std::string& directorypat
 		TextureManager::GetInstance()->GetTextureIndexByFilePath(modelData_.material.textureFilePath);
 
 
-
 	// マテリアルの初期化
 	//MaterialResource();
 
@@ -47,6 +46,26 @@ void Model::Draw()
 	modelCommon_->GetDxCommon()->GetCommandList()->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetsrvHandleGPU(modelData_.material.textureFilePath)); // SRVのパラメータインデックスを変更
 	// 描画！！！DrawCall/ドローコール）
 	modelCommon_->GetDxCommon()->GetCommandList()->DrawInstanced(UINT(modelData_.vertices.size()), 1, 0, 0);
+
+}
+
+void Model::PlayAnimation()
+{
+	float animationTime = 0.0f;
+
+	animationTime += 1.0f / 60.0f;
+	animationTime = std::fmod(animationTime, animation_.duration); // 最後まで再生したら最初からリピート再生
+	NodeAnimation& rootNodeAnimation = animation_.nodeAnimations[modelData_.rootNode.name]; // rootNodeのAnimationを取得
+	Vector3 translate = CalculateValue(rootNodeAnimation.translate, animationTime); // 指定時刻の値を取得
+	Quaternion rotate= CalculateValue(rootNodeAnimation.rotate, animationTime);
+	Vector3 scale = CalculateValue(rootNodeAnimation.scale, animationTime);
+
+	// アフィン変換行列を生成
+	Matrix4x4 scalingMatrix = MakeScaleMatrix(scale);
+	Matrix4x4 rotationMatrix = MakeRotateMatrix(rotate);
+	Matrix4x4 translationMatrix = MakeTranslateMatrix(translate);
+
+	modelData_.rootNode.localMatrix = scalingMatrix * rotationMatrix * translationMatrix;
 
 }
 
@@ -70,6 +89,47 @@ void Model::CreateVertex()
 	// 頂点を作成
 	memcpy(vertexData_, modelData_.vertices.data(), sizeof(VertexData) * modelData_.vertices.size());
 }
+
+Vector3 Model::CalculateValue(const std::vector<KeyframeVector3>& keyframes, float time)
+{
+	assert(!keyframes.empty());
+	if (keyframes.size() == 1 || time <= keyframes[0].time) {
+		return keyframes[0].value;
+	}
+
+	for (size_t index = 0; index < keyframes.size() - 1; ++index) {
+		size_t nextIndex = index + 1;
+		// indexとnextIndexの2つのkeyframeを取得して範囲内に時刻があるか判定
+		if (keyframes[index].time <= time && time <= keyframes[nextIndex].time) {
+			// 範囲内を補間する
+			float t = (time - keyframes[index].time) / (keyframes[nextIndex].time - keyframes[index].time);
+			return Lerp(keyframes[index].value, keyframes[nextIndex].value, t);
+		}
+	}
+	// ここまできた場合は一番後の時刻よりも後ろなので最後の値を返すことになる
+	return (*keyframes.rbegin()).value;
+}
+
+Quaternion Model::CalculateValue(const std::vector<KeyframeQuaternion>& keyframes, float time)
+{
+	assert(!keyframes.empty());
+	if (keyframes.size() == 1 || time <= keyframes[0].time) {
+		return keyframes[0].value;
+	}
+
+	for (size_t index = 0; index < keyframes.size() - 1; ++index) {
+		size_t nextIndex = index + 1;
+		// indexとnextIndexの2つのkeyframeを取得して範囲内に時刻があるか判定
+		if (keyframes[index].time <= time && time <= keyframes[nextIndex].time) {
+			// 範囲内を補間する
+			float t = (time - keyframes[index].time) / (keyframes[nextIndex].time - keyframes[index].time);
+			return Lerp(keyframes[index].value, keyframes[nextIndex].value, t);
+		}
+	}
+	// ここまできた場合は一番後の時刻よりも後ろなので最後の値を返すことになる
+	return (*keyframes.rbegin()).value;
+}
+
 
 
 Model::Node Model::ReadNode(aiNode* node) {
@@ -288,7 +348,7 @@ Model::Animation Model::LoadAnimationFile(const std::string& directoryPath, cons
 	animation.duration = float(animationAssimp->mDuration / animationAssimp->mTicksPerSecond); // 時間の単位を秒に変換
 
 	// assimpでは個々のNodeのAnimationをchannelと呼んでいるのでchannelを回してNodeAnimationの情報を取ってくる
-	for (uint32_t channelIndex = 0; channelIndex < animationAssimp->mNumMeshChannels; ++channelIndex) {
+	for (uint32_t channelIndex = 0; channelIndex < animationAssimp->mNumChannels; ++channelIndex) {
 		aiNodeAnim* nodeAnimationAssimp = animationAssimp->mChannels[channelIndex];
 		NodeAnimation& nodeAnimation = animation.nodeAnimations[nodeAnimationAssimp->mNodeName.C_Str()];
 

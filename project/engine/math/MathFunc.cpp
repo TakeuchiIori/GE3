@@ -349,6 +349,32 @@ float Dot(const Quaternion& q0, const Quaternion& q1) {
     return q0.x * q1.x + q0.y * q1.y + q0.z * q1.z + q0.w * q1.w;
 }
 
+Quaternion Lerp(const Quaternion& q1, const Quaternion& q2, float t)
+{
+    // t が範囲外の場合はクランプする
+    float tt = (t < 0.0f) ? 0.0f : (t > 1.0f ? 1.0f : t);
+
+    // 線形補間 (1 - t)*q1 + t*q2
+    Quaternion result;
+    result.x = (1.0f - tt) * q1.x + tt * q2.x;
+    result.y = (1.0f - tt) * q1.y + tt * q2.y;
+    result.z = (1.0f - tt) * q1.z + tt * q2.z;
+    result.w = (1.0f - tt) * q1.w + tt * q2.w;
+
+    // 結果を正規化
+    float len = std::sqrt(result.x * result.x + result.y * result.y + result.z * result.z + result.w * result.w);
+    if (len > 0.0f)
+    {
+        float invLen = 1.0f / len;
+        result.x *= invLen;
+        result.y *= invLen;
+        result.z *= invLen;
+        result.w *= invLen;
+    }
+
+    return result;
+}
+
 Quaternion Slerp(const Quaternion& q0, const Quaternion& q1, float t) {
     // クォータニオンの内積を計算
     float dot = Dot(q0, q1);

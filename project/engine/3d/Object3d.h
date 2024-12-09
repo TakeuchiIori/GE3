@@ -25,6 +25,8 @@ public: // メンバ関数
 	/// </summary>
 	void Initialize();
 
+	void Update();
+
 	/// <summary>
 	/// 描画
 	/// </summary>

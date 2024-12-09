@@ -55,6 +55,7 @@ void GameScene::Update()
     // プレイヤーの更新
     player_->Update();
     enemy_->Update();
+    test_->Update();
     // カメラ更新
     UpdateCameraMode();
     UpdateCamera();
