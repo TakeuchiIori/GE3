@@ -12,8 +12,8 @@
 
 // assimp
 #include <assimp/scene.h>
-class ModelCommon;
 
+class ModelCommon;
 class Model
 {
 private: // 構造体
@@ -54,12 +54,47 @@ private: // 構造体
 		Node rootNode;
 	};
 
+	struct KeyframeVector3 {
+		Vector3 value;			 // キーフレームの値
+		float time;				 // キーフレームの時刻（秒）
+	};
+
+	struct KeyframeQuaternion {
+		Quaternion value;		 // キーフレームの値
+		float time;				 // キーフレームの時刻（秒）
+	};
+
+	template <typename tValue>
+	struct Keyframe {
+		float time;
+		tValue value;
+	};
+
+	using KeyframeVector3 = Keyframe<Vector3>;
+	using KeyframeQuaternion = Keyframe<Quaternion>;
+
+	struct NodeAnimation {
+		std::vector<KeyframeVector3> translate;
+		std::vector<KeyframeQuaternion> rotate;
+		std::vector<KeyframeVector3> scale;
+	};
+
+	template<typename tvalue>
+	struct AnimationCurve {
+		std::vector<Keyframe<tValue>> keyframes;
+	};
+
+	struct Animation {
+		float duration; // アニメーション全体の尺（秒）
+		// NodeAnimationの集合。Node名で開けるように
+		std::map<std::string, NodeAnimation> nodeAnimations;
+	};
 
 public: // メンバ関数
 	/// <summary>
 	/// 初期化
 	/// </summary>
-	void Initialize(ModelCommon* modelCommon, const std::string& directorypath,const std::string& filename);
+	void Initialize(ModelCommon* modelCommon, const std::string& directorypath, const std::string& filename);
 
 	/// <summary>
 	/// 描画
@@ -113,10 +148,10 @@ private: // メンバ変数
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferView_{};
 	// バッファリソース内のデータを指すポインタ
 	VertexData* vertexData_ = nullptr;
-	
-	
-	
-	
-	
+
+
+
+
+
 };
 
