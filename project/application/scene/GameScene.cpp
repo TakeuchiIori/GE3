@@ -27,7 +27,7 @@ void GameScene::Initialize()
     // test
     test_ = std::make_unique<Object3d>();
     test_->Initialize();
-    test_->SetModel("float_body.obj");
+    test_->SetModel("AnimatedCube.gltf",true);
     testWorldTransform_.Initialize();
 
     // 初期カメラモード設定
@@ -95,7 +95,7 @@ void GameScene::Draw()
    
     player_->Draw();
     //enemy_->Draw();
-    //test_->Draw(testWorldTransform_);
+    test_->Draw(testWorldTransform_);
   
 
 }

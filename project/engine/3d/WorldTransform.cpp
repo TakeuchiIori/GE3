@@ -2,7 +2,6 @@
 #include <MathFunc.h>
 #include <DirectXCommon.h>
 #include <Object3dCommon.h>
-#include "Model.h"
 
 void WorldTransform::Initialize()
 {
@@ -11,9 +10,6 @@ void WorldTransform::Initialize()
 
     // 定数バッファ生成
     CreateConstBuffer();
-
-    // 定数バッファへ初期行列を転送
-   // UpdateMatrix();
 }
 
 void WorldTransform::CreateConstBuffer()

@@ -9,7 +9,7 @@
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
 
-void Model::Initialize(ModelCommon* modelCommon, const std::string& directorypath, const std::string& filename)
+void Model::Initialize(ModelCommon* modelCommon, const std::string& directorypath, const std::string& filename, bool isAnimation)
 {
 	// 引数から受け取ってメンバ変数に記録する
 	modelCommon_ = modelCommon;
@@ -19,9 +19,12 @@ void Model::Initialize(ModelCommon* modelCommon, const std::string& directorypat
 
 	//modelData_ = LoadModelFile(directorypath, filename);
 
-	modelData_ = LoadModelFile("Resources./AnimatedCube", "AnimatedCube.gltf");
-	animation_ = LoadAnimationFile("Resources./AnimatedCube", "AnimatedCube.gltf");
+	modelData_ = LoadModelFile(directorypath, filename);
 
+	// アニメーションをするならtrue
+	if (isAnimation) {
+		animation_ = LoadAnimationFile(directorypath, filename);
+	}
 	// 頂点データの初期化
 	VertexResource();
 
@@ -51,8 +54,6 @@ void Model::Draw()
 
 void Model::PlayAnimation()
 {
-	float animationTime = 0.0f;
-
 	animationTime += 1.0f / 60.0f;
 	animationTime = std::fmod(animationTime, animation_.duration); // 最後まで再生したら最初からリピート再生
 	NodeAnimation& rootNodeAnimation = animation_.nodeAnimations[modelData_.rootNode.name]; // rootNodeのAnimationを取得
@@ -60,13 +61,7 @@ void Model::PlayAnimation()
 	Quaternion rotate= CalculateValue(rootNodeAnimation.rotate, animationTime);
 	Vector3 scale = CalculateValue(rootNodeAnimation.scale, animationTime);
 
-	// アフィン変換行列を生成
-	Matrix4x4 scalingMatrix = MakeScaleMatrix(scale);
-	Matrix4x4 rotationMatrix = MakeRotateMatrix(rotate);
-	Matrix4x4 translationMatrix = MakeTranslateMatrix(translate);
-
-	modelData_.rootNode.localMatrix = scalingMatrix * rotationMatrix * translationMatrix;
-
+	modelData_.rootNode.localMatrix = MakeAffineMatrix(translate, rotate, scale);
 }
 
 void Model::VertexResource()

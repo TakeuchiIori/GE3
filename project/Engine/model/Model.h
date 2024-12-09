@@ -93,7 +93,7 @@ public: // メンバ関数
 	/// <summary>
 	/// 初期化
 	/// </summary>
-	void Initialize(ModelCommon* modelCommon, const std::string& directorypath, const std::string& filename);
+	void Initialize(ModelCommon* modelCommon, const std::string& directorypath, const std::string& filename ,bool isAnimation = false);
 
 	/// <summary>
 	/// 描画
@@ -177,6 +177,8 @@ private: // メンバ変数
 	Animation animation_;
 
 	Matrix4x4 localMatrix_;
+
+	float animationTime = 0.0f;
 
 };
 

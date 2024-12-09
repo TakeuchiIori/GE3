@@ -33,6 +33,11 @@ public: // メンバ関数
 	void Draw(WorldTransform& worldTransform);
 
 	/// <summary>
+	/// モデルのセット
+	/// </summary>
+	void SetModel(const std::string& filePath, bool isAnimation = false);
+
+	/// <summary>
 	/// ImGui
 	/// </summary>
 	void MaterialByImGui();
@@ -63,7 +68,7 @@ public: // アクセッサ
 	/*===============================================//
 				　   	  カメラ
 	//===============================================*/
-	void SetModel(const std::string& filePath);
+
 	
 	void SetCamera(Camera* camera) { this->camera_ = camera; }
 

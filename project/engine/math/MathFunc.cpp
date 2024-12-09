@@ -247,6 +247,20 @@ Vector3 CatmullRomPosition(const std::vector<Vector3>& points, float t) {
 
 
 
+Matrix4x4 MakeAffineMatrix(const Vector3& translate, const Quaternion& rotate, const Vector3& scale)
+{
+    // スケーリング行列を生成
+    Matrix4x4 scalingMatrix = MakeScaleMatrix(scale);
+
+    // 回転行列を生成
+    Matrix4x4 rotationMatrix = MakeRotateMatrix(rotate);
+
+    // 平行移動行列を生成
+    Matrix4x4 translationMatrix = MakeTranslateMatrix(translate);
+
+    // 行列を結合してアフィン変換行列を生成
+    return translationMatrix * rotationMatrix * scalingMatrix;
+}
 
 
 

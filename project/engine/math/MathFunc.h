@@ -127,6 +127,8 @@ Vector3 CatmullRomInterpolation(const Vector3& p0, const Vector3& p1, const Vect
 // ぐちずえんじんご提供
 Vector3 CatmullRomPosition(const std::vector<Vector3>& points, float t);
 
+Matrix4x4 MakeAffineMatrix(const Vector3& translate, const Quaternion& rotate, const Vector3& scale);
+
 // 単位クォータニオンを返す関数
 Quaternion IdentityQuaternion();
 

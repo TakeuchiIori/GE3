@@ -34,7 +34,7 @@ public: // 公開メンバ関数
     /// モデルファイルの読み込み
     /// </summary>
     /// <param name="filePath"></param>
-    void LoadModel(const std::string& directoryPath,const std::string& filePath);
+    void LoadModel(const std::string& directoryPath,const std::string& filePath,bool isAnimation = false);
 
     /// <summary>
     /// モデルの検索
