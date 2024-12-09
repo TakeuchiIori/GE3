@@ -163,6 +163,7 @@ void GameScene::UpdateCamera()
 
 void GameScene::ShowImGui()
 {
+#ifdef _DEBUG
     ImGui::Begin("Emitter");
     ImGui::DragFloat3("Emitter Position", &emitterPosition_.x, 0.1f);
     particleEmitter_->SetPosition(emitterPosition_);
@@ -181,4 +182,5 @@ void GameScene::ShowImGui()
 
 
     ImGui::End();
+#endif // _DEBUG
 }
