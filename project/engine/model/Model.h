@@ -43,7 +43,7 @@ private: // 構造体
 	};
 
 	struct Node {
-		EulerTransform transform;
+		QuaternionTransform transform;
 		Matrix4x4 localMatrix;
 		std::string name;
 		std::vector<Node> children;

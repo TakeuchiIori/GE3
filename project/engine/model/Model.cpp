@@ -132,11 +132,13 @@ Model::Node Model::ReadNode(aiNode* node) {
 	aiMatrix4x4 aiLocalMatrix = node->mTransformation;
 	aiLocalMatrix.Transpose();
 
-	for (int row = 0; row < 4; ++row) {
-		for (int col = 0; col < 4; ++col) {
-			result.localMatrix.m[row][col] = aiLocalMatrix[row][col];
-		}
-	}
+	aiVector3D scale, translate;
+	aiQuaternion rotate;
+	node->mTransformation.Decompose(scale, rotate, translate); // assimpの行列からSRTを抽出する関数を利用
+	result.transform.scale = { scale.x,scale.y,scale.z }; // scaleはそのまま
+	result.transform.rotate = { rotate.x,-rotate.y,-rotate.z,rotate.w }; // x軸を反転。さらに回転方向が逆なので軸を反転させる
+	result.transform.translate = { -translate.x,translate.y,translate.z }; // x軸を反転
+	result.localMatrix = MakeAffineMatrix(result.transform.scale, result.transform.rotate, result.transform.translate);
 
 	result.name = node->mName.C_Str();
 	result.children.resize(node->mNumChildren);
