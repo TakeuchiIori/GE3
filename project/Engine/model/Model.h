@@ -133,6 +133,33 @@ private:
 	void CreateVertex();
 
 	/// <summary>
+	/// ジョイント作成
+	/// </summary>
+	/// <param name="node"></param>
+	/// <param name="parent"></param>
+	/// <param name="joints"></param>
+	int32_t CreateJoint(const Node& node, const std::optional<int32_t>& parent, std::vector<Joint>& joints);
+
+	/// <summary>
+	/// スケルトン作成
+	/// </summary>
+	/// <param name="rootNode"></param>
+	Skeleton CreateSkeleton(const Node& rootNode);
+
+	/// <summary>
+	/// スケルトンの更新
+	/// </summary>
+	void UpdateSkeleton(Skeleton& skeleton);
+
+	/// <summary>
+	/// アニメーション適用
+	/// </summary>
+	/// <param name="skeleton"></param>
+	/// <param name="animation"></param>
+	/// <param name="animationTime"></param>
+	void ApplyAnimation(Skeleton& skeleton, const Animation& animation, float animationTime);
+
+	/// <summary>
 	/// 任意の時刻を取得
 	/// </summary>
 	Vector3 CalculateValue(const std::vector<KeyframeVector3>& keyframes, float time);

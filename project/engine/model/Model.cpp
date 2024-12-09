@@ -61,7 +61,7 @@ void Model::PlayAnimation()
 	Quaternion rotate= CalculateValue(rootNodeAnimation.rotate, animationTime);
 	Vector3 scale = CalculateValue(rootNodeAnimation.scale, animationTime);
 
-	modelData_.rootNode.localMatrix = MakeAffineMatrix(translate, rotate, scale);
+	modelData_.rootNode.localMatrix = MakeAffineMatrix(scale, rotate, translate);
 }
 
 void Model::VertexResource()
@@ -83,6 +83,69 @@ void Model::CreateVertex()
 	vertexResource_->Map(0, nullptr, reinterpret_cast<void**>(&vertexData_));
 	// 頂点を作成
 	memcpy(vertexData_, modelData_.vertices.data(), sizeof(VertexData) * modelData_.vertices.size());
+}
+
+int32_t Model::CreateJoint(const Node& node, const std::optional<int32_t>& parent, std::vector<Joint>& joints)
+{
+	Joint joint;
+	joint.name = node.name;
+	joint.localMatrix = node.localMatrix;
+	joint.skeletonSpaceMatrix = MakeIdentity4x4();
+	joint.transform = node.transform;
+	joint.index = int32_t(joints.size()); // 現在登録されているIndexに
+	joint.parent = parent;
+	joints.push_back(joint); // SkeletonのJoint列に追加
+
+	for (const Node& child : node.children) {
+		// 子Jointを作成し、そのIndex
+		int32_t childIndex = CreateJoint(child, joint.index, joints);
+		joints[joint.index].children.push_back(childIndex);
+	}
+	// 自身のIndexを返す
+	return joint.index;
+}
+
+
+
+Model::Skeleton Model::CreateSkeleton(const Node& rootNode)
+{
+	Skeleton skeleton;
+	skeleton.root = CreateJoint(rootNode, {}, skeleton.joints);
+
+	// 名前とindexのマッピングを行いアクセスしやすくなる
+	for (const Joint& joint : skeleton.joints) {
+		skeleton.jointMap.emplace(joint.name, joint.index);
+	}
+
+	return skeleton;
+}
+
+void Model::UpdateSkeleton(Skeleton& skeleton)
+{
+	// すべてのJointを更新。親が若いので通常ループで処理が可能になっている
+	for (Joint& joint : skeleton.joints) {
+		joint.localMatrix = MakeAffineMatrix(joint.transform.scale, joint.transform.rotate, joint.transform.translate);
+		if (joint.parent) { // 親がいれば親の行列を掛ける
+			joint.skeletonSpaceMatrix = joint.localMatrix * skeleton.joints[*joint.parent].skeletonSpaceMatrix;
+		}
+		else { // 親がいないのでlocalMatrixとskeletonSpaceMatrixは一致する
+			joint.skeletonSpaceMatrix = joint.localMatrix;
+
+		}
+	}
+}
+
+void Model::ApplyAnimation(Skeleton& skeleton, const Animation& animation, float animationTime) {
+	for (Joint& joint : skeleton.joints) {
+		// 対象のJointのAnimationがあれば、値の適用を行う。
+		// 下記のif文はC++17から可能になったinit-statement付きのif文。
+		if (auto it = animation.nodeAnimations.find(joint.name); it != animation.nodeAnimations.end()) {
+			const NodeAnimation& rootNodeAnimation = (*it).second;
+			joint.transform.translate = CalculateValue(rootNodeAnimation.translate, animationTime);
+			joint.transform.rotate = CalculateValue(rootNodeAnimation.rotate, animationTime);
+			joint.transform.scale = CalculateValue(rootNodeAnimation.scale, animationTime);
+		}
+	}
 }
 
 Vector3 Model::CalculateValue(const std::vector<KeyframeVector3>& keyframes, float time)
