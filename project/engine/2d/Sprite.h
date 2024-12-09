@@ -207,6 +207,6 @@ private: // メンバ変数
 	// 上下フリップ
 	bool isFlipY_ = false;
 
-	Transform transform_;
+	EulerTransform transform_;
 };
 

@@ -101,7 +101,7 @@ struct Vector3 final {
 };
 
 // 位置・回転・スケールを保持する Transform 構造体
-struct Transform {
+struct EulerTransform {
     Vector3 scale;
     Vector3 rotate;
     Vector3 translate;

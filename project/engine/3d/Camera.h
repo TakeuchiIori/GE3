@@ -65,7 +65,7 @@ public: // アクセッサ
 	Vector3 GetScale() const { return transform_.scale; }
 
 private: // メンバ変数
-	Transform transform_;	   
+	EulerTransform transform_;	   
 	Matrix4x4 worldMatrix_;	   
 	Matrix4x4 viewMatrix_;	   
 	Matrix4x4 projectionMatrix_;  // 投影行列
