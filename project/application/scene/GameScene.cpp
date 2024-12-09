@@ -21,9 +21,6 @@ void GameScene::Initialize()
     player_ = std::make_unique<Player>();
     player_->Initialize();
 
-    enemy_ = std::make_unique<Enemy>();
-    enemy_->Initialize();
-
     // test
     test_ = std::make_unique<Object3d>();
     test_->Initialize();
@@ -54,7 +51,6 @@ void GameScene::Update()
     //}
     // プレイヤーの更新
     player_->Update();
-    enemy_->Update();
     test_->Update();
     // カメラ更新
     UpdateCameraMode();
@@ -94,7 +90,6 @@ void GameScene::Draw()
     LightManager::GetInstance()->SetCommandList();
    
     player_->Draw();
-    //enemy_->Draw();
     test_->Draw(testWorldTransform_);
   
 
