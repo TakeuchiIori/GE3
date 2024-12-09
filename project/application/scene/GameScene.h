@@ -14,7 +14,6 @@
 #include "WorldTransform.h"
 #include "CameraManager.h"
 #include "ParticleEmitter.h"
-#include "Enemy.h"
 
 enum class CameraMode
 {
@@ -84,5 +83,5 @@ private:
     // プレイヤー
     std::unique_ptr<Player> player_;
 
-    std::unique_ptr<Enemy> enemy_;
+ 
 };
