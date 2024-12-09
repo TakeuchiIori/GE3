@@ -7,8 +7,6 @@
 #include <imgui_impl_dx12.h>
 #endif
 
-
-
 ImGuiManager* ImGuiManager::instance = nullptr;
 ImGuiManager* ImGuiManager::GetInstance()
 {
