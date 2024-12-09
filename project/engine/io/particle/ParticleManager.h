@@ -159,11 +159,6 @@ private:
 
 	void UpdateParticleSpiral();
 
-	void UpdateParticleExplosion();
-
-	void UpdateParticleRipple();
-
-	void UpdateParticleFireworks();
 
 	/// <summary>
 	/// 行列の更新
@@ -300,7 +295,6 @@ private: // メンバ変数
 		kUpdateModeMove,
 		kUpdateModeRadial,
 		kUpdateModeSpiral,
-		kUpdateModeExplosion
 	};
 
 	// パーティクル更新モードの選択
