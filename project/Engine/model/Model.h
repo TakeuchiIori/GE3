@@ -114,10 +114,7 @@ private:
 	/// </summary>
 	void CreateVertex();
 
-	/// <summary>
-	/// マテリアルリソース
-	/// </summary>
-	void MaterialResource();
+private:
 
 	/// <summary>
 	/// 
@@ -126,13 +123,27 @@ private:
 	/// <returns></returns>
 	static Node ReadNode(aiNode* node);
 
-
-	// .mtlファイルの読み取り
+	/// <summary>
+	/// .mtlファイルの読み取り
+	/// </summary>
 	static MaterialData LoadMaterialTemplateFile(const std::string& directoryPath, const std::string& filename);
-	//.objファイルの読み取り
+	
+	/// <summary>
+	/// .objファイルの読み取り
+	/// </summary>
 	static ModelData LoadObjFile(const std::string& directoryPath, const std::string& filename);
-	//.objファイルの読み取り　（assimp）
+	
+	/// <summary>
+	/// .objファイルの読み取り　（assimp）
+	/// </summary>
 	static ModelData LoadModelFile(const std::string& directoryPath, const std::string& filename);
+
+	/// <summary>
+	/// アニメーション解析
+	/// </summary>
+	static Animation LoadAnimationFile(const std::string& directoryPath, const std::string& filename);
+
+	
 
 public: // アクセッサ
 	ModelData GetModelData() { return modelData_; }
@@ -151,8 +162,9 @@ private: // メンバ変数
 	VertexData* vertexData_ = nullptr;
 
 
-
-
+	// アニメーションの試運転用
+	ModelData modelDataAnimation_;
+	Animation animation_;
 
 };
 
