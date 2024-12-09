@@ -30,7 +30,7 @@ void ModelManager::Initialze(DirectXCommon* dxCommon)
 /// モデルファイルの読み込み
 /// </summary>
 /// <param name="filePath">読み込むモデルのファイルパス</param>
-void ModelManager::LoadModel(const std::string& directoryPath,const std::string& filePath)
+void ModelManager::LoadModel(const std::string& directoryPath,const std::string& filePath ,bool isAnimation)
 {
     // 読み込まれているモデルを検索
     if (models.contains(filePath)) {
@@ -40,7 +40,7 @@ void ModelManager::LoadModel(const std::string& directoryPath,const std::string&
 
     // 新しいモデルの生成、ファイル読み込み、初期化
     std::unique_ptr<Model> model = std::make_unique<Model>();
-    model->Initialize(modelCommon_.get(), directoryPath, filePath);
+    model->Initialize(modelCommon_.get(), directoryPath, filePath, isAnimation);
 
     // モデルをマップに格納（所有権を譲渡）
     models.insert(std::make_pair(filePath, std::move(model)));

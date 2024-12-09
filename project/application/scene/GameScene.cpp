@@ -13,9 +13,6 @@
 /// </summary>
 void GameScene::Initialize()
 {
-    
-    // モデル読み込み
-    ModelManager::GetInstance()->LoadModel("Resources/terrain","terrain.obj");
     // カメラの生成
     currentCamera_ = cameraManager_.AddCamera();
     Object3dCommon::GetInstance()->SetDefaultCamera(currentCamera_.get());
@@ -30,7 +27,7 @@ void GameScene::Initialize()
     // test
     test_ = std::make_unique<Object3d>();
     test_->Initialize();
-    test_->SetModel("terrain.obj");
+    test_->SetModel("AnimatedCube.gltf",true);
     testWorldTransform_.Initialize();
 
     // 初期カメラモード設定
@@ -41,7 +38,8 @@ void GameScene::Initialize()
     ParticleManager::GetInstance()->SetCamera(currentCamera_.get());
     ParticleManager::GetInstance()->CreateParticleGroup(particleName, "Resources/images/circle.png");
     emitterPosition_ = Vector3{ 0.0f, 0.0f, 0.0f }; // エミッタの初期位置
-    particleEmitter_ = std::make_unique<ParticleEmitter>(particleName, emitterPosition_,1);
+    particleCount_ = 1;
+    particleEmitter_ = std::make_unique<ParticleEmitter>(particleName, emitterPosition_, particleCount_);
 
 }
 
@@ -51,28 +49,32 @@ void GameScene::Initialize()
 void GameScene::Update()
 {
     
-    if (Input::GetInstance()->TriggerKey(DIK_RETURN)) {
-        SceneManager::GetInstance()->ChangeScene("TITLE");
-    }
+    //if (Input::GetInstance()->TriggerKey(DIK_RETURN)) {
+    //    SceneManager::GetInstance()->ChangeScene("TITLE");
+    //}
     // プレイヤーの更新
     player_->Update();
     enemy_->Update();
+    test_->Update();
     // カメラ更新
     UpdateCameraMode();
     UpdateCamera();
 
     // パーティクル更新
     ParticleManager::GetInstance()->Update();
-    particleEmitter_->SetPosition(emitterPosition_); // 更新した位置をエミッタに反映
+    //particleEmitter_->SetPosition(emitterPosition_); // 更新した位置をエミッタに反映
+    ShowImGui();
     particleEmitter_->Update();
    
-    test_->MaterialByImGui();
+    //test_->MaterialByImGui();
 
     // ワールドトランスフォーム更新
     testWorldTransform_.UpdateMatrix();
     cameraManager_.UpdateAllCameras();
 
     LightManager::GetInstance()->ShowLightingEditor();
+
+   
 }
 
 
@@ -92,9 +94,10 @@ void GameScene::Draw()
     LightManager::GetInstance()->SetCommandList();
    
     player_->Draw();
-    enemy_->Draw();
+    //enemy_->Draw();
     test_->Draw(testWorldTransform_);
   
+
 }
 
 /// <summary>
@@ -156,4 +159,26 @@ void GameScene::UpdateCamera()
     default:
         break;
     }
+}
+
+void GameScene::ShowImGui()
+{
+    ImGui::Begin("Emitter");
+    ImGui::DragFloat3("Emitter Position", &emitterPosition_.x, 0.1f);
+    particleEmitter_->SetPosition(emitterPosition_);
+
+    // パーティクル数の表示と調整
+    ImGui::Text("Particle Count: %.0d", particleCount_); // 現在のパーティクル数を表示
+    if (ImGui::Button("Increase Count")) {
+        particleCount_ += 1; // パーティクル数を増加
+    }
+    if (ImGui::Button("Decrease Count")) {
+        if (particleCount_ > 1) { // パーティクル数が1未満にならないように制限
+            particleCount_ -= 1;
+        }
+    }
+    particleEmitter_->SetCount(particleCount_);
+
+
+    ImGui::End();
 }

@@ -25,15 +25,17 @@ public: // メンバ関数
 	/// </summary>
 	void Initialize();
 
+	void Update();
+
 	/// <summary>
 	/// 描画
 	/// </summary>
 	void Draw(WorldTransform& worldTransform);
 
 	/// <summary>
-	/// マテリアルリソース作成
+	/// モデルのセット
 	/// </summary>
-	void CreateMaterialResource();
+	void SetModel(const std::string& filePath, bool isAnimation = false);
 
 	/// <summary>
 	/// ImGui
@@ -42,6 +44,10 @@ public: // メンバ関数
 
 private:
 
+	/// <summary>
+	/// マテリアルリソース作成
+	/// </summary>
+	void CreateMaterialResource();
 
 public: // アクセッサ
 
@@ -62,7 +68,7 @@ public: // アクセッサ
 	/*===============================================//
 				　   	  カメラ
 	//===============================================*/
-	void SetModel(const std::string& filePath);
+
 	
 	void SetCamera(Camera* camera) { this->camera_ = camera; }
 

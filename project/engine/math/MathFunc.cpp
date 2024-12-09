@@ -60,6 +60,14 @@ Vector3 Normalize(const Vector3& v) {
     float mag = Magnitude(v);
     return { v.x / mag, v.y / mag, v.z / mag };
 }
+Vector3 Normalize(Vector3& vec) {
+    // 実装例：ベクトルを正規化する関数
+    float length = sqrt(vec.x * vec.x + vec.y * vec.y + vec.z * vec.z);
+    if (length > 0) {
+        return Vector3{ vec.x / length, vec.y / length, vec.z / length };
+    }
+    return Vector3{ 0, 0, 0 };
+}
 
 Vector4 Normalize(const Vector4& v) {
     float mag = Magnitude(v);
@@ -239,6 +247,20 @@ Vector3 CatmullRomPosition(const std::vector<Vector3>& points, float t) {
 
 
 
+Matrix4x4 MakeAffineMatrix(const Vector3& translate, const Quaternion& rotate, const Vector3& scale)
+{
+    // スケーリング行列を生成
+    Matrix4x4 scalingMatrix = MakeScaleMatrix(scale);
+
+    // 回転行列を生成
+    Matrix4x4 rotationMatrix = MakeRotateMatrix(rotate);
+
+    // 平行移動行列を生成
+    Matrix4x4 translationMatrix = MakeTranslateMatrix(translate);
+
+    // 行列を結合してアフィン変換行列を生成
+    return translationMatrix * rotationMatrix * scalingMatrix;
+}
 
 
 
@@ -341,6 +363,32 @@ float Dot(const Quaternion& q0, const Quaternion& q1) {
     return q0.x * q1.x + q0.y * q1.y + q0.z * q1.z + q0.w * q1.w;
 }
 
+Quaternion Lerp(const Quaternion& q1, const Quaternion& q2, float t)
+{
+    // t が範囲外の場合はクランプする
+    float tt = (t < 0.0f) ? 0.0f : (t > 1.0f ? 1.0f : t);
+
+    // 線形補間 (1 - t)*q1 + t*q2
+    Quaternion result;
+    result.x = (1.0f - tt) * q1.x + tt * q2.x;
+    result.y = (1.0f - tt) * q1.y + tt * q2.y;
+    result.z = (1.0f - tt) * q1.z + tt * q2.z;
+    result.w = (1.0f - tt) * q1.w + tt * q2.w;
+
+    // 結果を正規化
+    float len = std::sqrt(result.x * result.x + result.y * result.y + result.z * result.z + result.w * result.w);
+    if (len > 0.0f)
+    {
+        float invLen = 1.0f / len;
+        result.x *= invLen;
+        result.y *= invLen;
+        result.z *= invLen;
+        result.w *= invLen;
+    }
+
+    return result;
+}
+
 Quaternion Slerp(const Quaternion& q0, const Quaternion& q1, float t) {
     // クォータニオンの内積を計算
     float dot = Dot(q0, q1);
@@ -389,20 +437,20 @@ Vector3 QuaternionToEuler(const Quaternion& q)
     Vector3 euler;
 
     // Roll (X軸回転)
-    double sinr_cosp = 2 * (q.w * q.x + q.y * q.z);
-    double cosr_cosp = 1 - 2 * (q.x * q.x + q.y * q.y);
+    float sinr_cosp = 2 * (q.w * q.x + q.y * q.z);
+    float cosr_cosp = 1 - 2 * (q.x * q.x + q.y * q.y);
     euler.x = std::atan2(sinr_cosp, cosr_cosp);
 
     // Pitch (Y軸回転)
-    double sinp = 2 * (q.w * q.y - q.z * q.x);
+    float sinp = 2 * (q.w * q.y - q.z * q.x);
     if (std::abs(sinp) >= 1)
-        euler.y = std::copysign(std::numbers::pi / 2, sinp); // Gimbal lock
+        euler.y = static_cast<float>(std::copysign(std::numbers::pi / 2, sinp)); // Gimbal lock
     else
         euler.y = std::asin(sinp);
 
     // Yaw (Z軸回転)
-    double siny_cosp = 2 * (q.w * q.z + q.x * q.y);
-    double cosy_cosp = 1 - 2 * (q.y * q.y + q.z * q.z);
+    float siny_cosp = 2 * (q.w * q.z + q.x * q.y);
+    float cosy_cosp = 1 - 2 * (q.y * q.y + q.z * q.z);
     euler.z = std::atan2(siny_cosp, cosy_cosp);
 
     return euler;
@@ -452,7 +500,7 @@ Vector3 SetFromTo(const Vector3& from, const Vector3& to) {
             rotationAxis = Cross(Vector3(0.0f, 1.0f, 0.0f), normalizedFrom);
         }
         rotationAxis = Normalize(rotationAxis);
-        rotationAngle = std::numbers::pi;
+        rotationAngle = static_cast<float>(std::numbers::pi);
     }
     // それ以外の場合、通常の回転を計算
     else {

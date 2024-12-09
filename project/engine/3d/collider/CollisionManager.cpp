@@ -1,10 +1,12 @@
 #include "CollisionManager.h"
 #include "assert.h"
-#include "imgui.h"
 #include "GlobalVariables.h"
 #include "ModelManager.h"
 #include "MathFunc.h"
 #include <iostream>
+#ifdef _DEBUG
+#include "imgui.h"
+#endif // _DEBUG
 
 
 

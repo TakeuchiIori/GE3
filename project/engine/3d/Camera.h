@@ -15,6 +15,11 @@ public: // メンバ関数
 	/// </summary>
 	void Update();
 
+	/// <summary>
+	/// ImGui
+	/// </summary>
+	void ShowImGui();
+
 public: // カメラ
 
 	/// <summary>
@@ -70,7 +75,7 @@ private: // メンバ変数
 	float nearClip_;			 // ニアクリップ距離
 	float farClip_;				 // ファークリップ距離
 
-	Vector3 followCameraOffsetPosition_ = Vector3(0.0f, 30.0f, -50.0f);
+	Vector3 followCameraOffsetPosition_ = Vector3(0.0f, 25.0f, -50.0f);
 
 	Vector3 followCameraOffsetRotare_ = Vector3(0.51f, 0.0f, 0.0f);
 

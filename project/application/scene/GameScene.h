@@ -60,6 +60,10 @@ private:
     /// </summary>
     void UpdateCamera();
 
+    /// <summary>
+    /// ImGui
+    /// </summary>
+    void ShowImGui();
 
 private:
     // カメラ
@@ -71,7 +75,8 @@ private:
     // パーティクルエミッター
     std::unique_ptr<ParticleEmitter> particleEmitter_;
     Vector3 emitterPosition_;
-    Transform t;
+    uint32_t particleCount_;
+   
     // 3Dモデル
     std::unique_ptr<Object3d> test_;
     WorldTransform testWorldTransform_;

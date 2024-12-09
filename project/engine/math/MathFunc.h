@@ -77,7 +77,7 @@ float Normalize(const float& v);
 
 // Vector3を正規化する関数
 Vector3 Normalize(const Vector3& v);
-
+Vector3 Normalize(Vector3& vec);
 // Vector4を正規化する関数
 Vector4 Normalize(const Vector4& v);
 
@@ -127,6 +127,8 @@ Vector3 CatmullRomInterpolation(const Vector3& p0, const Vector3& p1, const Vect
 // ぐちずえんじんご提供
 Vector3 CatmullRomPosition(const std::vector<Vector3>& points, float t);
 
+Matrix4x4 MakeAffineMatrix(const Vector3& translate, const Quaternion& rotate, const Vector3& scale);
+
 // 単位クォータニオンを返す関数
 Quaternion IdentityQuaternion();
 
@@ -156,6 +158,8 @@ Matrix4x4 MakeRotateMatrix(const Quaternion& quaternion);
 
 // 2つのクォータニオンの内積を計算する関数
 float Dot(const Quaternion& q0, const Quaternion& q1);
+
+Quaternion Lerp(const Quaternion& q1, const Quaternion& q2, float t);
 
 // 2つのクォータニオン間で球面線形補間（Slerp）を行う関数
 Quaternion Slerp(const Quaternion& q0, const Quaternion& q1, float t);

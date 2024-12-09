@@ -147,7 +147,23 @@ public: // メンバ関数
 	void Emit(const std::string& name, const Vector3& position, uint32_t count);
 
 
+
 private: 
+
+	/// <summary>
+	/// 横に移動
+	/// </summary>
+	void UpdateParticleMove();
+
+	void UpdateParticleRadial();
+
+	void UpdateParticleSpiral();
+
+
+	/// <summary>
+	/// 行列の更新
+	/// </summary>
+	void UpadateMatrix();
 
 	/// <summary>
 	///  ルートシグネチャ生成
@@ -189,6 +205,11 @@ private:
 	/// </summary>
 	Particle CreateParticle(std::mt19937& randomEngine, const Vector3& position);
 
+	/// <summary>
+	/// ImGui
+	/// </summary>
+	void ShowUpdateModeDropdown();
+
 	
 public:
 	void SetCamera(Camera* camera) { camera_ = camera; }
@@ -218,7 +239,7 @@ private: // メンバ変数
 	D3D12_INPUT_ELEMENT_DESC inputElementDescs_[3] = {};
 
 	// ブレンド
-	BlendMode blendMode{};
+	BlendMode blendMode_{};
 	D3D12_BLEND_DESC blendDesc_{};
 	D3D12_RASTERIZER_DESC rasterrizerDesc_{};
 	D3D12_DEPTH_STENCIL_DESC depthStencilDesc_{};
@@ -265,4 +286,18 @@ private: // メンバ変数
 
 	Matrix4x4 scaleMatrix;
 	Matrix4x4 translateMatrix;
+
+	Matrix4x4 billboardMatrix;
+	Matrix4x4 viewProjectionMatrix;
+
+	// パーティクル更新モード
+	enum ParticleUpdateMode {
+		kUpdateModeMove,
+		kUpdateModeRadial,
+		kUpdateModeSpiral,
+	};
+
+	// パーティクル更新モードの選択
+	ParticleUpdateMode currentUpdateMode_ = kUpdateModeMove;
+
 };

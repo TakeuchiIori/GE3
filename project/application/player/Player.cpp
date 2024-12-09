@@ -9,20 +9,17 @@
 
 void Player::Initialize()
 {
-    // .obj読み込み
-    ModelManager::GetInstance()->LoadModel("Resources./ball","ball.obj");
-
     // OBject3dの初期化
     base_ = std::make_unique<Object3d>();
     base_->Initialize();
-    base_->SetModel("ball.obj");
+    base_->SetModel("cube.obj");
 
     // その他初期化
     input_ = Input::GetInstance();
     moveSpeed_ = { 0.5f, 0.5f , 0.5f };
     worldTransform_.Initialize();
 
-    worldTransform_.scale_ = { 2.0f,2.0f,2.0f };
+    //worldTransform_.scale_ = { 2.0f,2.0f,2.0f };
 
     //GlobalVariables* globalvariables = GlobalVariables::GetInstance();
     const char* groupName = "Player";
@@ -37,14 +34,16 @@ void Player::Update()
 {
     Move();
 
-   // base_->MaterialByImGui();
+    ShowCoordinatesImGui();
 
     UpdateWorldTransform();
 }
 
 void Player::Draw()
 {
-    base_->Draw(worldTransform_);
+    if (isDrawEnabled_) {
+        base_->Draw(worldTransform_);
+    }
 }
 
 void Player::UpdateWorldTransform()
@@ -121,8 +120,9 @@ void Player::ShowCoordinatesImGui()
 {
 #ifdef _DEBUG
     // ImGuiウィンドウを利用してプレイヤーの座標を表示
-    ImGui::Begin("Player SRT Editor");
-
+    ImGui::Begin("Player Editor");
+    ImGui::Text("DrawCall");
+    ImGui::Checkbox("Enable Draw", &isDrawEnabled_);
     // スケール
     ImGui::Text("Scale");
     float scale[3] = { worldTransform_.scale_.x, worldTransform_.scale_.y, worldTransform_.scale_.z };

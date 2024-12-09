@@ -54,6 +54,8 @@ struct Vector3 final {
         return { vec.x * scalar, vec.y * scalar, vec.z * scalar };
     }
 
+
+
     // スカラーとの割り算演算子 /
     Vector3 operator/(float scalar) const {
         return { x / scalar, y / scalar, z / scalar };
@@ -76,6 +78,25 @@ struct Vector3 final {
     // ベクトルの長さを計算する関数
     static float Length(const Vector3& v) {
         return std::sqrt(v.x * v.x + v.y * v.y + v.z * v.z);
+    }
+
+    // ベクトルを正規化する関数
+    static Vector3 Normalize(const Vector3& v) {
+        float length = Length(v);
+        if (length == 0.0f) {
+            return Vector3(0.0f, 0.0f, 0.0f); // ゼロベクトルはそのまま返す
+        }
+        return v / length;
+    }
+
+    // ベクトルの内積を計算する関数
+    static float Dot(const Vector3& a, const Vector3& b) {
+        return a.x * b.x + a.y * b.y + a.z * b.z;
+    }
+
+    // ゼロベクトルかを確認する関数
+    bool IsZero() const {
+        return x == 0.0f && y == 0.0f && z == 0.0f;
     }
 };
 

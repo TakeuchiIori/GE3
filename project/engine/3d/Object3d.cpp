@@ -20,19 +20,29 @@ void Object3d::Initialize()
 
 	CreateMaterialResource();
 }
+void Object3d::Update(){
+	model_->PlayAnimation();
+}
 
 void Object3d::Draw(WorldTransform& worldTransform)
 {
 
 	Matrix4x4 worldViewProjectionMatrix;
-	if (camera_) {
-		const Matrix4x4& viewProjectionMatrix = camera_->GetViewProjectionMatrix();
-		worldViewProjectionMatrix = worldTransform.GetMatWorld() * viewProjectionMatrix;
+	Matrix4x4 worldMatrix;
+	if (model_) {
+		if (camera_) {
+			const Matrix4x4& viewProjectionMatrix = camera_->GetViewProjectionMatrix();
+			worldViewProjectionMatrix = worldTransform.GetMatWorld() * model_->GetModelData().rootNode.localMatrix  * viewProjectionMatrix;
+			worldMatrix = worldTransform.GetMatWorld() * model_->GetModelData().rootNode.localMatrix;
+		}
+		else {
+
+			worldViewProjectionMatrix = worldTransform.GetMatWorld();
+		}
 	}
-	else {
-		worldViewProjectionMatrix = worldTransform.GetMatWorld();
-	}
+
 	worldTransform.SetMapWVP(worldViewProjectionMatrix);
+	worldTransform.SetMapWorld(worldMatrix);
 
 	// マテリアル
 	object3dCommon_->GetDxCommon()->GetCommandList()->SetGraphicsRootConstantBufferView(0, materialResource_->GetGPUVirtualAddress());
@@ -57,10 +67,28 @@ void Object3d::CreateMaterialResource()
 
 
 
-void Object3d::SetModel(const std::string& filePath)
+void Object3d::SetModel(const std::string& filePath, bool isAnimation)
 {
+	// 拡張子を取り除く処理
+	std::string basePath = filePath;
+	std::string fileName;
+	if (basePath.size() > 4) {
+		// .obj または .gltf の場合に削除
+		if (basePath.substr(basePath.size() - 4) == ".obj") {
+			basePath = basePath.substr(0, basePath.size() - 4);
+			fileName = basePath + ".obj";
+		}
+		else if (basePath.size() > 5 && basePath.substr(basePath.size() - 5) == ".gltf") {
+			basePath = basePath.substr(0, basePath.size() - 5);
+			fileName = basePath + ".gltf";
+		}
+	}
+
+	// .obj 読み込み (第一引数には拡張子なしのパス)
+	ModelManager::GetInstance()->LoadModel("Resources./" + basePath, fileName, isAnimation);
+
 	// モデルを検索してセットする
-	model_ = ModelManager::GetInstance()->FindModel(filePath);
+	model_ = ModelManager::GetInstance()->FindModel(fileName);
 
 }
 

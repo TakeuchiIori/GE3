@@ -96,6 +96,6 @@ private:
 
 	Microsoft::WRL::ComPtr<IXAudio2> xAudio2_;
 	IXAudio2MasteringVoice* masterVoice_;
-	HRESULT hr;;
+	HRESULT hr_;
 };
 
