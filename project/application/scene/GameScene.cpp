@@ -24,7 +24,7 @@ void GameScene::Initialize()
     // test
     test_ = std::make_unique<Object3d>();
     test_->Initialize();
-    test_->SetModel("AnimatedCube.gltf",true);
+    test_->SetModel("sneakWalk.gltf",true);
     testWorldTransform_.Initialize();
 
     // 初期カメラモード設定
@@ -51,14 +51,13 @@ void GameScene::Update()
     //}
     // プレイヤーの更新
     player_->Update();
-    test_->Update();
+    test_->UpdateAnimation();
     // カメラ更新
     UpdateCameraMode();
     UpdateCamera();
 
     // パーティクル更新
     ParticleManager::GetInstance()->Update();
-    //particleEmitter_->SetPosition(emitterPosition_); // 更新した位置をエミッタに反映
     ShowImGui();
     particleEmitter_->Update();
    

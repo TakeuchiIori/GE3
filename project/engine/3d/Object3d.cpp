@@ -20,9 +20,12 @@ void Object3d::Initialize()
 
 	CreateMaterialResource();
 }
-void Object3d::Update(){
-	model_->PlayAnimation();
+void Object3d::UpdateAnimation()
+{
+	// アニメーションの更新
+	model_->UpdateAnimation();
 }
+
 
 void Object3d::Draw(WorldTransform& worldTransform)
 {
@@ -32,8 +35,8 @@ void Object3d::Draw(WorldTransform& worldTransform)
 	if (model_) {
 		if (camera_) {
 			const Matrix4x4& viewProjectionMatrix = camera_->GetViewProjectionMatrix();
-			worldViewProjectionMatrix = worldTransform.GetMatWorld() * model_->GetModelData().rootNode.localMatrix  * viewProjectionMatrix;
-			worldMatrix = worldTransform.GetMatWorld() * model_->GetModelData().rootNode.localMatrix;
+			worldViewProjectionMatrix = worldTransform.GetMatWorld() /** model_->GetModelData().rootNode.localMatrix*/  * viewProjectionMatrix;
+			worldMatrix = worldTransform.GetMatWorld() /** model_->GetModelData().rootNode.localMatrix*/;
 		}
 		else {
 

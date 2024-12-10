@@ -7,6 +7,7 @@
 #include "Matrix4x4.h"
 #include "Vector2.h"
 #include "Vector3.h"
+#include "MathFunc.h"
 #include "DirectXCommon.h"
 #include "WorldTransform.h"
 #include <optional>
@@ -19,7 +20,6 @@ class ModelCommon;
 class Model
 {
 private: // 構造体
-
 	// 頂点データ
 	struct VertexData {
 		Vector4 position;
@@ -29,7 +29,7 @@ private: // 構造体
 	struct Color {
 		float r, g, b;
 	};
-
+	// マテリアルデータ
 	struct MaterialData {
 		std::string name;
 		float Ns;
@@ -42,14 +42,14 @@ private: // 構造体
 		std::string textureFilePath;
 		uint32_t textureIndex = 0;
 	};
-
+	// ノード
 	struct Node {
 		QuaternionTransform transform;
 		Matrix4x4 localMatrix;
 		std::string name;
 		std::vector<Node> children;
 	};
-
+	// モデルデータ
 	struct ModelData {
 		std::vector<VertexData> vertices;
 		MaterialData material;
@@ -117,6 +117,17 @@ public: // メンバ関数
 	void Draw();
 
 	/// <summary>
+	/// アニメーションの更新
+	/// </summary>
+	void UpdateAnimation();
+
+	/// <summary>
+	// 線の描画 ※調整中
+	/// </summary>
+	/// <param name="skeleton"></param>
+	void DrawLine(const Vector3& start, const Vector3& end, Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> commandList);
+
+	/// <summary>
 	/// アニメーション再生
 	/// </summary>
 	void PlayAnimation();
@@ -150,6 +161,12 @@ private:
 	/// スケルトンの更新
 	/// </summary>
 	void UpdateSkeleton(Skeleton& skeleton);
+
+	/// <summary>
+	//  スケルトンの描画　※DrawLineを調整中なので仮
+	/// </summary>
+	/// <param name="skeleton"></param>
+	void DrawSkeleton(const Skeleton& skeleton);
 
 	/// <summary>
 	/// アニメーション適用
@@ -221,7 +238,9 @@ private: // メンバ変数
 
 	Matrix4x4 localMatrix_;
 
-	float animationTime = 0.0f;
+	float animationTime_ = 0.0f;
+
+	Skeleton skeleton_;
 
 };
 

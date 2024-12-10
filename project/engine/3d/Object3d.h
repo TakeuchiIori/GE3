@@ -25,7 +25,10 @@ public: // メンバ関数
 	/// </summary>
 	void Initialize();
 
-	void Update();
+	/// <summary>
+	/// アニメーションの更新
+	/// </summary>
+	void UpdateAnimation();
 
 	/// <summary>
 	/// 描画

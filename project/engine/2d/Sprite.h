@@ -2,11 +2,14 @@
 #include <wrl.h>
 #include <d3d12.h>
 #include <string>
-#include "Vector4.h"
-#include "Matrix4x4.h"
-#include "Vector2.h"
 #include "DirectXTex.h"
 #include "SrvManager.h"
+
+// math
+#include "Vector4.h"
+#include "Matrix4x4.h"
+#include "MathFunc.h"
+#include "Vector2.h"
 class SpriteCommon;
 class Sprite
 {

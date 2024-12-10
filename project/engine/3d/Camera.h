@@ -1,5 +1,6 @@
 #pragma once
 #include "Vector3.h"
+#include "MathFunc.h"
 #include "Matrix4x4.h"
 
 class Camera

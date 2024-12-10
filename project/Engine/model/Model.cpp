@@ -15,16 +15,16 @@ void Model::Initialize(ModelCommon* modelCommon, const std::string& directorypat
 	modelCommon_ = modelCommon;
 
 	// モデル読み込み
-	//modelData_ = LoadObjFile(directorypath, filename);
-
-	//modelData_ = LoadModelFile(directorypath, filename);
-
 	modelData_ = LoadModelFile(directorypath, filename);
 
 	// アニメーションをするならtrue
 	if (isAnimation) {
 		animation_ = LoadAnimationFile(directorypath, filename);
 	}
+
+	// 骨の作成
+	skeleton_ = CreateSkeleton(modelData_.rootNode);
+
 	// 頂点データの初期化
 	VertexResource();
 
@@ -35,14 +35,11 @@ void Model::Initialize(ModelCommon* modelCommon, const std::string& directorypat
 	modelData_.material.textureIndex =
 		TextureManager::GetInstance()->GetTextureIndexByFilePath(modelData_.material.textureFilePath);
 
-
-	// マテリアルの初期化
-	//MaterialResource();
-
 }
 
 void Model::Draw()
 {
+	//DrawSkeleton(skeleton_);
 	// VertexBufferView
 	modelCommon_->GetDxCommon()->GetCommandList()->IASetVertexBuffers(0, 1, &vertexBufferView_); // VBVを設定
 	// SRVの設定
@@ -52,14 +49,51 @@ void Model::Draw()
 
 }
 
+void Model::UpdateAnimation()
+{
+	animationTime_ += 1.0f / 60.0f;
+	ApplyAnimation(skeleton_, animation_, animationTime_);
+	UpdateSkeleton(skeleton_);
+}
+
+// 線を描画するヘルパーメソッド
+void Model::DrawLine(const Vector3& start, const Vector3& end, Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> commandList) {
+	// 線の頂点データ
+	struct LineVertex {
+		Vector3 position;
+		Color color;
+	};
+
+	LineVertex vertices[] = {
+		{ start, {1.0f, 0.0f, 0.0f} }, // 赤い線
+		{ end,   {1.0f, 0.0f, 0.0f} }
+	};
+
+	// バッファを作成して描画
+	auto vertexBuffer = modelCommon_->GetDxCommon()->CreateBufferResource(sizeof(vertices));
+	void* mappedData;
+	vertexBuffer->Map(0, nullptr, &mappedData);
+	memcpy(mappedData, vertices, sizeof(vertices));
+	vertexBuffer->Unmap(0, nullptr);
+
+	D3D12_VERTEX_BUFFER_VIEW vertexBufferView{};
+	vertexBufferView.BufferLocation = vertexBuffer->GetGPUVirtualAddress();
+	vertexBufferView.SizeInBytes = sizeof(vertices);
+	vertexBufferView.StrideInBytes = sizeof(LineVertex);
+
+	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_LINELIST);
+	commandList->IASetVertexBuffers(0, 1, &vertexBufferView);
+	commandList->DrawInstanced(2, 1, 0, 0);
+}
+
 void Model::PlayAnimation()
 {
-	animationTime += 1.0f / 60.0f;
-	animationTime = std::fmod(animationTime, animation_.duration); // 最後まで再生したら最初からリピート再生
+	animationTime_ += 1.0f / 60.0f;
+	animationTime_ = std::fmod(animationTime_, animation_.duration); // 最後まで再生したら最初からリピート再生
 	NodeAnimation& rootNodeAnimation = animation_.nodeAnimations[modelData_.rootNode.name]; // rootNodeのAnimationを取得
-	Vector3 translate = CalculateValue(rootNodeAnimation.translate, animationTime); // 指定時刻の値を取得
-	Quaternion rotate= CalculateValue(rootNodeAnimation.rotate, animationTime);
-	Vector3 scale = CalculateValue(rootNodeAnimation.scale, animationTime);
+	Vector3 translate = CalculateValue(rootNodeAnimation.translate, animationTime_); // 指定時刻の値を取得
+	Quaternion rotate= CalculateValue(rootNodeAnimation.rotate, animationTime_);
+	Vector3 scale = CalculateValue(rootNodeAnimation.scale, animationTime_);
 
 	modelData_.rootNode.localMatrix = MakeAffineMatrix(scale, rotate, translate);
 }
@@ -131,6 +165,25 @@ void Model::UpdateSkeleton(Skeleton& skeleton)
 		else { // 親がいないのでlocalMatrixとskeletonSpaceMatrixは一致する
 			joint.skeletonSpaceMatrix = joint.localMatrix;
 
+		}
+	}
+}
+
+void Model::DrawSkeleton(const Skeleton& skeleton) {
+	// コマンドリストを取得
+	auto commandList = modelCommon_->GetDxCommon()->GetCommandList();
+
+	// ジョイント間を線で描画
+	for (const Joint& joint : skeleton.joints) {
+		if (joint.parent) {
+			const Joint& parentJoint = skeleton.joints[*joint.parent];
+
+			// 親ジョイントと現在のジョイントの位置を取得
+			Vector3 parentPosition = Vector3{ parentJoint.skeletonSpaceMatrix.m[3][0],parentJoint.skeletonSpaceMatrix.m[3][1],parentJoint.skeletonSpaceMatrix.m[3][2] };
+			Vector3 currentPosition = Vector3{ joint.skeletonSpaceMatrix.m[3][0],joint.skeletonSpaceMatrix.m[3][1],joint.skeletonSpaceMatrix.m[3][2] };
+
+			// 線の描画 (Line APIやカスタムシェーダーを使用)
+			DrawLine(parentPosition, currentPosition, commandList);
 		}
 	}
 }
