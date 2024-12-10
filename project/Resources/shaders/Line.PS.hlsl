@@ -1,14 +1,18 @@
 #include "Line.hlsli"
 
-struct LinePixelOutput
+struct Material
 {
-    float4 color : SV_TARGET; // 出力色
+    float4 color;
+};
+ConstantBuffer<Material> gMaterial : register(b0);
+struct PixelShaderOutput
+{
+    float4 color : SV_TARGET0;
 };
 
-LinePixelOutput main(LineVertexOutput input)
+PixelShaderOutput main()
 {
-    LinePixelOutput output;
-    // 補間された色をそのまま使用
-    output.color = input.color;
+    PixelShaderOutput output;
+    output.color = gMaterial.color;
     return output;
 }

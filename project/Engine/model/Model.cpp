@@ -139,21 +139,6 @@ void Model::UpdateSkeleton(Skeleton& skeleton)
 	}
 }
 
-void Model::DrawSkeleton(const Skeleton& skeleton) {
-	//// ジョイント間を線で描画
-	//for (const Joint& joint : skeleton.joints) {
-	//	if (joint.parent) {
-	//		const Joint& parentJoint = skeleton.joints[*joint.parent];
-
-	//		// 親ジョイントと現在のジョイントの位置を取得
-	//		Vector3 parentPosition = Vector3{ parentJoint.skeletonSpaceMatrix.m[3][0],parentJoint.skeletonSpaceMatrix.m[3][1],parentJoint.skeletonSpaceMatrix.m[3][2] };
-	//		Vector3 currentPosition = Vector3{ joint.skeletonSpaceMatrix.m[3][0],joint.skeletonSpaceMatrix.m[3][1],joint.skeletonSpaceMatrix.m[3][2] };
-
-	//		// 線の描画 (Line APIやカスタムシェーダーを使用)
-	//		DrawLine(parentPosition, currentPosition);
-	//	}
-	//}
-}
 
 void Model::ApplyAnimation(Skeleton& skeleton, const Animation& animation, float animationTime) {
 	for (Joint& joint : skeleton.joints) {

@@ -27,7 +27,7 @@ void GameScene::Initialize()
     test_->Initialize();
     test_->SetModel("sneakWalk.gltf",true);
     testWorldTransform_.Initialize();
-    InitializeSkeletonDrawing(test_->GetModel()->GetSkeleton());
+    
 
     // 初期カメラモード設定
     cameraMode_ = CameraMode::FOLLOW;
@@ -96,8 +96,6 @@ void GameScene::Draw()
     //player_->Draw();
     test_->Draw(testWorldTransform_);
   
-    DrawSkeleton(test_->GetModel()->GetSkeleton());
-   
 }
 
 /// <summary>

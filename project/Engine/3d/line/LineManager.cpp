@@ -44,28 +44,14 @@ void LineManager::CreateRootSignature()
 
 	// 1. RootSignatureの作成
 
-	descriptionRootSignature_.Flags =
-		D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
-	// RootParameter作成。複数設定できるので配列。
-	rootParameters_[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;		 			// CBVを使う
-	rootParameters_[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;					// PixelShaderで使う
-	rootParameters_[0].Descriptor.ShaderRegister = 0;									// レジスタ番号0とバインド
+	descriptionRootSignature_.Flags =D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
 
-	rootParameters_[1].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;					// CBVを使う
-	rootParameters_[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;				// VertexShaderで使う
-	rootParameters_[1].Descriptor.ShaderRegister = 0;									// レジスタ番号0とバインド
 
-	rootParameters_[2].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;		// DescriptorTableを使う
-	rootParameters_[2].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;				// PixelShaderで使う
-	rootParameters_[2].DescriptorTable.pDescriptorRanges = descriptorRange;				// Tableの中身の配列を指定
-	rootParameters_[2].DescriptorTable.NumDescriptorRanges = _countof(descriptorRange);	// Tableで利用する数
-
-	rootParameters_[3].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;					// CBVを使う
-	rootParameters_[3].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;					// VertexShaderで使う
-	rootParameters_[3].Descriptor.ShaderRegister = 1;									// レジスタ番号1を使う
-	
-	descriptionRootSignature_.pParameters = rootParameters_;								// ルートパラメーター配列へのポインタ
-	descriptionRootSignature_.NumParameters = _countof(rootParameters_);					// 配列の長さ
+	rootParameters_[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;		 		// CBVを使う
+	rootParameters_[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;				// PixelShaderで使う
+	rootParameters_[0].Descriptor.ShaderRegister = 0;								// レジスタ番号0とバインド
+	descriptionRootSignature_.pParameters = rootParameters_;						// ルートパラメーター配列へのポインタ
+	descriptionRootSignature_.NumParameters = _countof(rootParameters_);			// 配列の長さ
 
 
 	// 1. パーティクルのRootSignatureの作成
@@ -74,18 +60,13 @@ void LineManager::CreateRootSignature()
 	descriptorRangeForInstancing_[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
 	descriptorRangeForInstancing_[0].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
 
-	rootParameters_[1].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
-	rootParameters_[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;
-	rootParameters_[1].DescriptorTable.pDescriptorRanges = descriptorRangeForInstancing_;
-	rootParameters_[1].DescriptorTable.NumDescriptorRanges = _countof(descriptorRangeForInstancing_);
-
 
 	// Samplerの設定
-	staticSamplers_[0].Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR;							// バイリニアフィルタ
+	staticSamplers_[0].Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR;						// バイリニアフィルタ
 	staticSamplers_[0].AddressU = D3D12_TEXTURE_ADDRESS_MODE_WRAP;						// 0~1の範囲外をリピート
 	staticSamplers_[0].AddressV = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
 	staticSamplers_[0].AddressW = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
-	staticSamplers_[0].ComparisonFunc = D3D12_COMPARISON_FUNC_NEVER;						// 比較しない
+	staticSamplers_[0].ComparisonFunc = D3D12_COMPARISON_FUNC_LESS_EQUAL;				// 比較しない
 	staticSamplers_[0].MaxLOD = D3D12_FLOAT32_MAX;										// ありったけのMipmapｗｐ使う
 	staticSamplers_[0].ShaderRegister = 0;												// レジスタ番号0を使う
 	staticSamplers_[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;					// PixelShaderで使う
@@ -102,7 +83,6 @@ void LineManager::CreateRootSignature()
 		assert(false);
 	}
 	// バイナリを元に生成
-
 	hr = dxCommon_->GetDevice()->CreateRootSignature(0, signatureBlob->GetBufferPointer(),
 		signatureBlob->GetBufferSize(), IID_PPV_ARGS(&rootSignature_));
 	assert(SUCCEEDED(hr));
@@ -114,11 +94,6 @@ void LineManager::CreateRootSignature()
 	inputElementDescs_[0].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
 	inputElementDescs_[0].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
 
-	inputElementDescs_[1].SemanticName = "COLOR";
-	inputElementDescs_[1].SemanticIndex = 0;
-	inputElementDescs_[1].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
-	inputElementDescs_[1].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
-
 	inputLayoutDesc_.pInputElementDescs = inputElementDescs_;
 	inputLayoutDesc_.NumElements = _countof(inputElementDescs_);
 
@@ -126,10 +101,9 @@ void LineManager::CreateRootSignature()
 	blendDesc_.RenderTarget[0].RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
 
 	// RasterrizerStateの設定
-	// 裏面（時計回り）を表示しない  [カリング]
-	rasterrizerDesc_.CullMode = D3D12_CULL_MODE_NONE;/* D3D12_CULL_MODE_*/
-	// 三角形の中を塗りつぶす
+	rasterrizerDesc_.CullMode = D3D12_CULL_MODE_NONE;
 	rasterrizerDesc_.FillMode = D3D12_FILL_MODE_SOLID;
+
 	// 4. Shaderをコンパイルする
 	vertexShaderBlob_ = dxCommon_->CompileShader(L"Resources/shaders/Line.VS.hlsl",
 		L"vs_6_0");
@@ -139,12 +113,10 @@ void LineManager::CreateRootSignature()
 	assert(pixelShaderBlob_ != nullptr);
 
 	// DepthStencilStateの設定
-	// Depthの機能を有効化する
 	depthStencilDesc_.DepthEnable = true;
-	//書き込みします
-	depthStencilDesc_.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ALL;
-	//比較関数はLessEqual。つまり、近ければ描画される
-	depthStencilDesc_.DepthFunc = D3D12_COMPARISON_FUNC_LESS_EQUAL;
+	depthStencilDesc_.StencilEnable = false;
+	depthStencilDesc_.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ZERO;
+	depthStencilDesc_.DepthFunc = D3D12_COMPARISON_FUNC_ALWAYS;
 }
 
 void LineManager::CreateGraphicsPipeline()

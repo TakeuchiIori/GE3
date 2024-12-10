@@ -13,7 +13,6 @@
 #include "WorldTransform.h"
 #include "camera/CameraManager.h"
 #include "ParticleEmitter.h"
-#include "Model.h"
 
 #include <memory>
 #include <map>
@@ -66,12 +65,6 @@ private:
     /// </summary>
     void ShowImGui();
 
-    void InitializeSkeletonDrawing(const Model::Skeleton& skeleton);
-
-
-    void UpdateSkeletonObjects(const Model::Skeleton& skeleton);
-
-    void DrawSkeleton(const Model::Skeleton& skeleton);
 
 private:
     // カメラ

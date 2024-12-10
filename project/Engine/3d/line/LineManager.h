@@ -90,11 +90,11 @@ private: // メンバ変数
 	D3D12_DESCRIPTOR_RANGE descriptorRangeForInstancing_[1] = {};
 
 	// ルートパラメーター
-	D3D12_ROOT_PARAMETER rootParameters_[4] = {};
+	D3D12_ROOT_PARAMETER rootParameters_[1] = {};
 	// サンプラー
 	D3D12_STATIC_SAMPLER_DESC staticSamplers_[1] = {};
 	// インプットレイアウト
-	D3D12_INPUT_ELEMENT_DESC inputElementDescs_[3] = {};
+	D3D12_INPUT_ELEMENT_DESC inputElementDescs_[1] = {};
 
 	// ブレンド
 	D3D12_BLEND_DESC blendDesc_{};
