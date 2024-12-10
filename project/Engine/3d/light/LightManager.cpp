@@ -1,6 +1,6 @@
 #include "LightManager.h"
 #include "DirectXCommon.h"
-#include "Object3dCommon.h"
+#include "object3d/Object3dCommon.h"
 #include <algorithm>
 #include "MathFunc.h"
 #ifdef _DEBUG
