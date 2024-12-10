@@ -122,12 +122,6 @@ public: // メンバ関数
 	void UpdateAnimation();
 
 	/// <summary>
-	// 線の描画 ※調整中
-	/// </summary>
-	/// <param name="skeleton"></param>
-	void DrawLine(const Vector3& start, const Vector3& end);
-
-	/// <summary>
 	/// アニメーション再生
 	/// </summary>
 	void PlayAnimation();
