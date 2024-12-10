@@ -1,7 +1,7 @@
 #pragma once
 #include "Model.h"
 #include "WorldTransform.h"
-#include "Object3d.h"
+#include "object3d/Object3d.h"
 #include <memory>
 class Effect {
 public:

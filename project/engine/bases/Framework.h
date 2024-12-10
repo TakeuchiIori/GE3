@@ -6,14 +6,14 @@
 #include "Audio.h"
 #include "ImGuiManager.h"
 #include "SrvManager.h"
-#include "SpriteCommon.h"
-#include "Object3dCommon.h"
+#include "sprite/SpriteCommon.h"
+#include "object3d/Object3dCommon.h"
 #include "TextureManager.h"
 #include "ModelManager.h"
 #include "SceneManager.h"
 #include "AbstractSceneFactory.h"
 #include "collider/CollisionManager.h"
-#include "LightManager.h"
+#include "light/LightManager.h"
 #include <LeakChecker.h>
 // ゲーム全体
 class Framework
@@ -71,7 +71,7 @@ protected:
 	CollisionManager* collisionManager_ = nullptr;;
 	LightManager* lightManager_ = nullptr;
 private:
-	std::unique_ptr<D3DResourceLeakChecker> leakCheck;
+	D3DResourceLeakChecker* leakCheck = nullptr;
 	// ゲーム終了フラグ
 	bool endRequst_ = false;
 

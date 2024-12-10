@@ -18,7 +18,7 @@
 #include "Matrix4x4.h"
 #include "Vector2.h"
 #include "Vector3.h"
-#include "Camera.h"
+#include "camera/Camera.h"
 #include "Mathfunc.h"
 
 class DirectXCommon;
@@ -65,7 +65,7 @@ public:
 		Matrix4x4 uvTransform;
 	};
 	struct Particle {
-		Transform transform;
+		EulerTransform transform;
 		Vector3 velocity;
 		Vector4 color;
 		float lifeTime;

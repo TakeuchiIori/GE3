@@ -1,6 +1,6 @@
 #include "Player.h"
 #include "ModelManager.h"
-#include "Object3dCommon.h"
+#include "object3d/Object3dCommon.h"
 #ifdef _DEBUG
 #include "imgui.h" 
 #endif // _DEBUG

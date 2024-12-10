@@ -116,14 +116,14 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="application\scene\GameScene.cpp" />
     <ClCompile Include="application\scene\SceneManager.cpp" />
     <ClCompile Include="application\scene\TitleScene.cpp" />
-    <ClCompile Include="Engine\3d\CameraManager.cpp" />
+    <ClCompile Include="Engine\3d\camera\CameraManager.cpp" />
     <ClCompile Include="Engine\3d\collider\Collider.cpp" />
     <ClCompile Include="Engine\3d\collider\CollisionManager.cpp" />
     <ClCompile Include="Engine\3d\collider\ContactRecord.cpp" />
     <ClCompile Include="Engine\3d\collider\Effect.cpp" />
     <ClCompile Include="Engine\3d\collider\GlobalVariables.cpp" />
     <ClCompile Include="Engine\io\audio\Audio.cpp" />
-    <ClCompile Include="Engine\3d\Camera.cpp" />
+    <ClCompile Include="Engine\3d\camera\Camera.cpp" />
     <ClCompile Include="Engine\bases\DirectXCommon.cpp" />
     <ClCompile Include="Engine\utility\LeakChecker.cpp" />
     <ClCompile Include="externals\imgui\imgui.cpp" />
@@ -136,16 +136,16 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Engine\io\input\Input.cpp" />
     <ClCompile Include="Engine\bases\Framework.cpp" />
     <ClCompile Include="Engine\bases\ImGuiManager.cpp" />
-    <ClCompile Include="Engine\3d\LightManager.cpp" />
+    <ClCompile Include="Engine\3d\light\LightManager.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Engine\math\Matrix4x4.cpp" />
     <ClCompile Include="Engine\model\Model.cpp" />
     <ClCompile Include="Engine\model\ModelCommon.cpp" />
     <ClCompile Include="Engine\model\ModelManager.cpp" />
-    <ClCompile Include="Engine\3d\Object3d.cpp" />
-    <ClCompile Include="Engine\3d\Object3dCommon.cpp" />
-    <ClCompile Include="Engine\2d\Sprite.cpp" />
-    <ClCompile Include="Engine\2d\SpriteCommon.cpp" />
+    <ClCompile Include="Engine\3d\object3d\Object3d.cpp" />
+    <ClCompile Include="Engine\3d\object3d\Object3dCommon.cpp" />
+    <ClCompile Include="Engine\2d\sprite\Sprite.cpp" />
+    <ClCompile Include="Engine\2d\sprite\SpriteCommon.cpp" />
     <ClCompile Include="Engine\bases\TextureManager.cpp" />
     <ClCompile Include="Engine\bases\WinApp.cpp" />
     <ClCompile Include="Engine\bases\SrvManager.cpp" />
@@ -163,7 +163,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\scene\GameScene.h" />
     <ClInclude Include="application\scene\SceneManager.h" />
     <ClInclude Include="application\scene\TitleScene.h" />
-    <ClInclude Include="Engine\3d\CameraManager.h" />
+    <ClInclude Include="Engine\3d\camera\CameraManager.h" />
     <ClInclude Include="Engine\3d\collider\Collider.h" />
     <ClInclude Include="Engine\3d\collider\CollisionManager.h" />
     <ClInclude Include="Engine\3d\collider\CollisionTypeIdDef.h" />
@@ -172,7 +172,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="Engine\3d\collider\GlobalVariables.h" />
     <ClInclude Include="Engine\utility\AbstractSceneFactory.h" />
     <ClInclude Include="Engine\io\audio\Audio.h" />
-    <ClInclude Include="Engine\3d\Camera.h" />
+    <ClInclude Include="Engine\3d\camera\Camera.h" />
     <ClInclude Include="Engine\bases\DirectXCommon.h" />
     <ClInclude Include="Engine\utility\LeakChecker.h" />
     <ClInclude Include="externals\imgui\imconfig.h" />
@@ -193,10 +193,10 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="Engine\model\Model.h" />
     <ClInclude Include="Engine\model\ModelCommon.h" />
     <ClInclude Include="Engine\model\ModelManager.h" />
-    <ClInclude Include="Engine\3d\Object3d.h" />
-    <ClInclude Include="Engine\3d\Object3dCommon.h" />
-    <ClInclude Include="Engine\2d\Sprite.h" />
-    <ClInclude Include="Engine\2d\SpriteCommon.h" />
+    <ClInclude Include="Engine\3d\object3d\Object3d.h" />
+    <ClInclude Include="Engine\3d\object3d\Object3dCommon.h" />
+    <ClInclude Include="Engine\2d\sprite\Sprite.h" />
+    <ClInclude Include="Engine\2d\sprite\SpriteCommon.h" />
     <ClInclude Include="Engine\bases\TextureManager.h" />
     <ClInclude Include="Engine\bases\WinApp.h" />
     <ClInclude Include="Engine\bases\SrvManager.h" />
@@ -209,7 +209,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\player\PlayerBullet.h" />
     <ClInclude Include="Engine\3d\WorldTransform.h" />
     <ClInclude Include="Engine\io\particle\ParticleEmitter.h" />
-    <ClInclude Include="Engine\3d\LightManager.h" />
+    <ClInclude Include="Engine\3d\light\LightManager.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="externals\imgui\LICENSE.txt" />
