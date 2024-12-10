@@ -52,6 +52,9 @@ void Framework::Initialize()
 	collisionManager_ = CollisionManager::GetInstance();
 	collisionManager_->Initialize();
 	
+	// LineManagerの生成
+	lineManager_ = LineManager::GetInstance();
+	lineManager_->Initialize();
 	
 }
 
