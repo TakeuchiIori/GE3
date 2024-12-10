@@ -1,7 +1,7 @@
 #include <WorldTransform.h>
 #include <MathFunc.h>
 #include <DirectXCommon.h>
-#include <Object3dCommon.h>
+#include <object3d/Object3dCommon.h>
 
 void WorldTransform::Initialize()
 {

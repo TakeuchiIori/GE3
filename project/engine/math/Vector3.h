@@ -99,10 +99,3 @@ struct Vector3 final {
         return x == 0.0f && y == 0.0f && z == 0.0f;
     }
 };
-
-// 位置・回転・スケールを保持する Transform 構造体
-struct Transform {
-    Vector3 scale;
-    Vector3 rotate;
-    Vector3 translate;
-};

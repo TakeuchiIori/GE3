@@ -15,16 +15,16 @@ void Model::Initialize(ModelCommon* modelCommon, const std::string& directorypat
 	modelCommon_ = modelCommon;
 
 	// モデル読み込み
-	//modelData_ = LoadObjFile(directorypath, filename);
-
-	//modelData_ = LoadModelFile(directorypath, filename);
-
 	modelData_ = LoadModelFile(directorypath, filename);
 
 	// アニメーションをするならtrue
 	if (isAnimation) {
 		animation_ = LoadAnimationFile(directorypath, filename);
 	}
+
+	// 骨の作成
+	skeleton_ = CreateSkeleton(modelData_.rootNode);
+
 	// 頂点データの初期化
 	VertexResource();
 
@@ -35,14 +35,11 @@ void Model::Initialize(ModelCommon* modelCommon, const std::string& directorypat
 	modelData_.material.textureIndex =
 		TextureManager::GetInstance()->GetTextureIndexByFilePath(modelData_.material.textureFilePath);
 
-
-	// マテリアルの初期化
-	//MaterialResource();
-
 }
 
 void Model::Draw()
 {
+	//DrawSkeleton(skeleton_);
 	// VertexBufferView
 	modelCommon_->GetDxCommon()->GetCommandList()->IASetVertexBuffers(0, 1, &vertexBufferView_); // VBVを設定
 	// SRVの設定
@@ -52,16 +49,23 @@ void Model::Draw()
 
 }
 
+void Model::UpdateAnimation()
+{
+	animationTime_ += 1.0f / 60.0f;
+	ApplyAnimation(skeleton_, animation_, animationTime_);
+	UpdateSkeleton(skeleton_);
+}
+
 void Model::PlayAnimation()
 {
-	animationTime += 1.0f / 60.0f;
-	animationTime = std::fmod(animationTime, animation_.duration); // 最後まで再生したら最初からリピート再生
+	animationTime_ += 1.0f / 60.0f;
+	animationTime_ = std::fmod(animationTime_, animation_.duration); // 最後まで再生したら最初からリピート再生
 	NodeAnimation& rootNodeAnimation = animation_.nodeAnimations[modelData_.rootNode.name]; // rootNodeのAnimationを取得
-	Vector3 translate = CalculateValue(rootNodeAnimation.translate, animationTime); // 指定時刻の値を取得
-	Quaternion rotate= CalculateValue(rootNodeAnimation.rotate, animationTime);
-	Vector3 scale = CalculateValue(rootNodeAnimation.scale, animationTime);
+	Vector3 translate = CalculateValue(rootNodeAnimation.translate, animationTime_); // 指定時刻の値を取得
+	Quaternion rotate= CalculateValue(rootNodeAnimation.rotate, animationTime_);
+	Vector3 scale = CalculateValue(rootNodeAnimation.scale, animationTime_);
 
-	modelData_.rootNode.localMatrix = MakeAffineMatrix(translate, rotate, scale);
+	modelData_.rootNode.localMatrix = MakeAffineMatrix(scale, rotate, translate);
 }
 
 void Model::VertexResource()
@@ -83,6 +87,85 @@ void Model::CreateVertex()
 	vertexResource_->Map(0, nullptr, reinterpret_cast<void**>(&vertexData_));
 	// 頂点を作成
 	memcpy(vertexData_, modelData_.vertices.data(), sizeof(VertexData) * modelData_.vertices.size());
+}
+
+int32_t Model::CreateJoint(const Node& node, const std::optional<int32_t>& parent, std::vector<Joint>& joints)
+{
+	Joint joint;
+	joint.name = node.name;
+	joint.localMatrix = node.localMatrix;
+	joint.skeletonSpaceMatrix = MakeIdentity4x4();
+	joint.transform = node.transform;
+	joint.index = int32_t(joints.size()); // 現在登録されているIndexに
+	joint.parent = parent;
+	joints.push_back(joint); // SkeletonのJoint列に追加
+
+	for (const Node& child : node.children) {
+		// 子Jointを作成し、そのIndex
+		int32_t childIndex = CreateJoint(child, joint.index, joints);
+		joints[joint.index].children.push_back(childIndex);
+	}
+	// 自身のIndexを返す
+	return joint.index;
+}
+
+
+
+Model::Skeleton Model::CreateSkeleton(const Node& rootNode)
+{
+	Skeleton skeleton;
+	skeleton.root = CreateJoint(rootNode, {}, skeleton.joints);
+
+	// 名前とindexのマッピングを行いアクセスしやすくなる
+	for (const Joint& joint : skeleton.joints) {
+		skeleton.jointMap.emplace(joint.name, joint.index);
+	}
+
+	return skeleton;
+}
+
+void Model::UpdateSkeleton(Skeleton& skeleton)
+{
+	// すべてのJointを更新。親が若いので通常ループで処理が可能になっている
+	for (Joint& joint : skeleton.joints) {
+		joint.localMatrix = MakeAffineMatrix(joint.transform.scale, joint.transform.rotate, joint.transform.translate);
+		if (joint.parent) { // 親がいれば親の行列を掛ける
+			joint.skeletonSpaceMatrix = joint.localMatrix * skeleton.joints[*joint.parent].skeletonSpaceMatrix;
+		}
+		else { // 親がいないのでlocalMatrixとskeletonSpaceMatrixは一致する
+			joint.skeletonSpaceMatrix = joint.localMatrix;
+
+		}
+	}
+}
+
+void Model::DrawSkeleton(const Skeleton& skeleton) {
+	//// ジョイント間を線で描画
+	//for (const Joint& joint : skeleton.joints) {
+	//	if (joint.parent) {
+	//		const Joint& parentJoint = skeleton.joints[*joint.parent];
+
+	//		// 親ジョイントと現在のジョイントの位置を取得
+	//		Vector3 parentPosition = Vector3{ parentJoint.skeletonSpaceMatrix.m[3][0],parentJoint.skeletonSpaceMatrix.m[3][1],parentJoint.skeletonSpaceMatrix.m[3][2] };
+	//		Vector3 currentPosition = Vector3{ joint.skeletonSpaceMatrix.m[3][0],joint.skeletonSpaceMatrix.m[3][1],joint.skeletonSpaceMatrix.m[3][2] };
+
+	//		// 線の描画 (Line APIやカスタムシェーダーを使用)
+	//		DrawLine(parentPosition, currentPosition);
+	//	}
+	//}
+}
+
+void Model::ApplyAnimation(Skeleton& skeleton, const Animation& animation, float animationTime) {
+	for (Joint& joint : skeleton.joints) {
+		// 対象のJointのAnimationがあれば、値の適用を行う。
+		// 下記のif文はC++17から可能になったinit-statement付きのif文。
+		if (auto it = animation.nodeAnimations.find(joint.name); it != animation.nodeAnimations.end()) {
+			const NodeAnimation& rootNodeAnimation = (*it).second;
+			joint.transform.translate = CalculateValue(rootNodeAnimation.translate, animationTime);
+			joint.transform.rotate = CalculateValue(rootNodeAnimation.rotate, animationTime);
+			joint.transform.scale = CalculateValue(rootNodeAnimation.scale, animationTime);
+		}
+	}
 }
 
 Vector3 Model::CalculateValue(const std::vector<KeyframeVector3>& keyframes, float time)
@@ -132,11 +215,13 @@ Model::Node Model::ReadNode(aiNode* node) {
 	aiMatrix4x4 aiLocalMatrix = node->mTransformation;
 	aiLocalMatrix.Transpose();
 
-	for (int row = 0; row < 4; ++row) {
-		for (int col = 0; col < 4; ++col) {
-			result.localMatrix.m[row][col] = aiLocalMatrix[row][col];
-		}
-	}
+	aiVector3D scale, translate;
+	aiQuaternion rotate;
+	node->mTransformation.Decompose(scale, rotate, translate); // assimpの行列からSRTを抽出する関数を利用
+	result.transform.scale = { scale.x,scale.y,scale.z }; // scaleはそのまま
+	result.transform.rotate = { rotate.x,-rotate.y,-rotate.z,rotate.w }; // x軸を反転。さらに回転方向が逆なので軸を反転させる
+	result.transform.translate = { -translate.x,translate.y,translate.z }; // x軸を反転
+	result.localMatrix = MakeAffineMatrix(result.transform.scale, result.transform.rotate, result.transform.translate);
 
 	result.name = node->mName.C_Str();
 	result.children.resize(node->mNumChildren);

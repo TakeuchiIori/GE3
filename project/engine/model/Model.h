@@ -7,8 +7,10 @@
 #include "Matrix4x4.h"
 #include "Vector2.h"
 #include "Vector3.h"
+#include "MathFunc.h"
 #include "DirectXCommon.h"
 #include "WorldTransform.h"
+#include <optional>
 
 // assimp
 #include <assimp/scene.h>
@@ -18,7 +20,6 @@ class ModelCommon;
 class Model
 {
 private: // 構造体
-
 	// 頂点データ
 	struct VertexData {
 		Vector4 position;
@@ -28,7 +29,7 @@ private: // 構造体
 	struct Color {
 		float r, g, b;
 	};
-
+	// マテリアルデータ
 	struct MaterialData {
 		std::string name;
 		float Ns;
@@ -41,14 +42,14 @@ private: // 構造体
 		std::string textureFilePath;
 		uint32_t textureIndex = 0;
 	};
-
+	// ノード
 	struct Node {
-		Transform transform;
+		QuaternionTransform transform;
 		Matrix4x4 localMatrix;
 		std::string name;
 		std::vector<Node> children;
 	};
-
+	// モデルデータ
 	struct ModelData {
 		std::vector<VertexData> vertices;
 		MaterialData material;
@@ -71,22 +72,37 @@ private: // 構造体
 		tValue value;
 	};
 
-	//using KeyframeVector3 = Keyframe<Vector3>;
-	//using KeyframeQuaternion = Keyframe<Quaternion>;
-
 	template<typename tValue>
 	struct AnimationCurve {
 		std::vector<Keyframe<tValue>> keyframes;
 	};
+
 	struct NodeAnimation {
 		std::vector<KeyframeVector3> translate;
 		std::vector<KeyframeQuaternion> rotate;
 		std::vector<KeyframeVector3> scale;
 	};
+
 	struct Animation {
 		float duration; // アニメーション全体の尺（秒）
 		// NodeAnimationの集合。Node名で開けるように
 		std::map<std::string, NodeAnimation> nodeAnimations;
+	};
+
+	struct Joint {
+		QuaternionTransform transform; // Transform情報
+		Matrix4x4 localMatrix; // localMatrix
+		Matrix4x4 skeletonSpaceMatrix; // skeletonSpaceでの変換行列
+		std::string name; // 名前
+		std::vector<int32_t> children; // 子JointのIndexのリスト。いなければ空
+		int32_t index; // 自身のIndex
+		std::optional<int32_t> parent; // 親JointのIndex。いなければnull
+	};
+
+	struct Skeleton {
+		int32_t root; // RootJointのIndex
+		std::map<std::string, int32_t> jointMap; // Joint名とIndexとの辞書
+		std::vector<Joint> joints; // 所属しているジョイント
 	};
 
 public: // メンバ関数
@@ -99,6 +115,17 @@ public: // メンバ関数
 	/// 描画
 	/// </summary>
 	void Draw();
+
+	/// <summary>
+	/// アニメーションの更新
+	/// </summary>
+	void UpdateAnimation();
+
+	/// <summary>
+	// 線の描画 ※調整中
+	/// </summary>
+	/// <param name="skeleton"></param>
+	void DrawLine(const Vector3& start, const Vector3& end);
 
 	/// <summary>
 	/// アニメーション再生
@@ -115,6 +142,44 @@ private:
 	/// 頂点
 	/// </summary>
 	void CreateVertex();
+
+	/// <summary>
+	/// 線の頂点
+	/// </summary>
+	void CreateLineVertex();
+
+	/// <summary>
+	/// ジョイント作成
+	/// </summary>
+	/// <param name="node"></param>
+	/// <param name="parent"></param>
+	/// <param name="joints"></param>
+	int32_t CreateJoint(const Node& node, const std::optional<int32_t>& parent, std::vector<Joint>& joints);
+
+	/// <summary>
+	/// スケルトン作成
+	/// </summary>
+	/// <param name="rootNode"></param>
+	Skeleton CreateSkeleton(const Node& rootNode);
+
+	/// <summary>
+	/// スケルトンの更新
+	/// </summary>
+	void UpdateSkeleton(Skeleton& skeleton);
+
+	/// <summary>
+	//  スケルトンの描画　※DrawLineを調整中なので仮
+	/// </summary>
+	/// <param name="skeleton"></param>
+	void DrawSkeleton(const Skeleton& skeleton);
+
+	/// <summary>
+	/// アニメーション適用
+	/// </summary>
+	/// <param name="skeleton"></param>
+	/// <param name="animation"></param>
+	/// <param name="animationTime"></param>
+	void ApplyAnimation(Skeleton& skeleton, const Animation& animation, float animationTime);
 
 	/// <summary>
 	/// 任意の時刻を取得
@@ -178,7 +243,11 @@ private: // メンバ変数
 
 	Matrix4x4 localMatrix_;
 
-	float animationTime = 0.0f;
+	float animationTime_ = 0.0f;
 
+	Skeleton skeleton_;
+
+	Vector3 startLine_;
+	Vector3 endLine_;
 };
 

@@ -1,10 +1,10 @@
 #pragma once
 #include "BaseScene.h"
-#include "Sprite.h"
-#include "SpriteCommon.h"
+#include "sprite/Sprite.h"
+#include "sprite/SpriteCommon.h"
 #include "SrvManager.h"
-#include "Object3d.h"
-#include "Object3dCommon.h"
+#include "object3d/Object3d.h"
+#include "object3d/Object3dCommon.h"
 #include "Audio.h"
 #include "ModelManager.h"
 #include <memory>

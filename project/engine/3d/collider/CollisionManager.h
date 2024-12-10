@@ -1,6 +1,6 @@
 #pragma once
 #include "Collider.h"
-#include "Object3d.h"
+#include "object3d/Object3d.h"
 #include "WorldTransform.h"
 #include <list>
 #include <memory>
