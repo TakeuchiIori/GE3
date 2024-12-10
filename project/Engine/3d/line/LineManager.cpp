@@ -1,6 +1,11 @@
 #include "LineManager.h"
 #include "DirectXCommon.h"
 #include "SrvManager.h"
+
+// シングルトンインスタンスの初期化
+std::unique_ptr<LineManager> LineManager::instance = nullptr;
+std::once_flag LineManager::initInstanceFlag;
+
 LineManager* LineManager::GetInstance()
 {
 	std::call_once(initInstanceFlag, []() {
