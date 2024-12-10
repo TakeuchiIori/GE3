@@ -40,15 +40,15 @@ void Framework::Initialize()
 	object3dCommon_ = Object3dCommon::GetInstance();
 	object3dCommon_->Initialize(dxCommon_);
 
-	// ライトマネージャの生成
+	// Lightマネージャの生成
 	lightManager_ = LightManager::GetInstance();
 	lightManager_->Initialize();
 
-	// 3Dモデルマネージャの生成
+	// 3DModelマネージャの生成
 	modelManager_ = ModelManager::GetInstance();
 	modelManager_->Initialze(dxCommon_);
 
-	// コライダーの生成 (未完成)
+	// Colliderの生成 (未完成)
 	collisionManager_ = CollisionManager::GetInstance();
 	collisionManager_->Initialize();
 	

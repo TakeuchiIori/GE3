@@ -1,6 +1,6 @@
 #include "MyGame.h"
-//#include "Framework.h"
-//#include "wrl.h"
+#include "Framework.h"
+#include "wrl.h"
 
 
 //Windowsアプリのエントリーポイント(main関数)
