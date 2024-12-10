@@ -4,6 +4,7 @@
 #include "TextureManager.h"
 #include "ParticleManager.h"
 
+
 #ifdef _DEBUG
 #include "imgui.h"
 #endif // DEBUG
@@ -26,6 +27,7 @@ void GameScene::Initialize()
     test_->Initialize();
     test_->SetModel("sneakWalk.gltf",true);
     testWorldTransform_.Initialize();
+    InitializeSkeletonDrawing(test_->GetModel()->GetSkeleton());
 
     // 初期カメラモード設定
     cameraMode_ = CameraMode::FOLLOW;
@@ -37,6 +39,9 @@ void GameScene::Initialize()
     emitterPosition_ = Vector3{ 0.0f, 0.0f, 0.0f }; // エミッタの初期位置
     particleCount_ = 1;
     particleEmitter_ = std::make_unique<ParticleEmitter>(particleName, emitterPosition_, particleCount_);
+
+
+ 
 
 }
 
@@ -91,7 +96,8 @@ void GameScene::Draw()
     //player_->Draw();
     test_->Draw(testWorldTransform_);
   
-
+    DrawSkeleton(test_->GetModel()->GetSkeleton());
+   
 }
 
 /// <summary>
@@ -178,3 +184,6 @@ void GameScene::ShowImGui()
     ImGui::End();
 #endif // _DEBUG
 }
+
+
+

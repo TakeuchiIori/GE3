@@ -19,7 +19,7 @@
 class ModelCommon;
 class Model
 {
-private: // 構造体
+public: // 構造体
 	// 頂点データ
 	struct VertexData {
 		Vector4 position;
@@ -138,11 +138,6 @@ private:
 	void CreateVertex();
 
 	/// <summary>
-	/// 線の頂点
-	/// </summary>
-	void CreateLineVertex();
-
-	/// <summary>
 	/// ジョイント作成
 	/// </summary>
 	/// <param name="node"></param>
@@ -218,6 +213,7 @@ private:
 public: // アクセッサ
 	ModelData GetModelData() { return modelData_; }
 	Matrix4x4 GetLocalMatrix() { return localMatrix_; }
+	Skeleton GetSkeleton() { return skeleton_; }
 private: // メンバ変数
 	// ModelCommonのポインタ
 	ModelCommon* modelCommon_;

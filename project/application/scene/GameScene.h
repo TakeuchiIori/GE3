@@ -9,12 +9,14 @@
 #include "light/LightManager.h"
 #include "ModelManager.h"
 #include "camera/Camera.h"
-#include <memory>
 #include "Player.h"
 #include "WorldTransform.h"
 #include "camera/CameraManager.h"
 #include "ParticleEmitter.h"
+#include "Model.h"
 
+#include <memory>
+#include <map>
 enum class CameraMode
 {
     DEFAULT,
@@ -63,6 +65,13 @@ private:
     /// ImGui
     /// </summary>
     void ShowImGui();
+
+    void InitializeSkeletonDrawing(const Model::Skeleton& skeleton);
+
+
+    void UpdateSkeletonObjects(const Model::Skeleton& skeleton);
+
+    void DrawSkeleton(const Model::Skeleton& skeleton);
 
 private:
     // カメラ

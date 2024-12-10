@@ -53,6 +53,7 @@ private:
 	void CreateMaterialResource();
 
 public: // アクセッサ
+	Model* GetModel() { return model_; }
 
 	/*===============================================//
 					　アンカーポイント
