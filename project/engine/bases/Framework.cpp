@@ -2,6 +2,8 @@
 
 void Framework::Initialize()
 {
+	// リークチェック
+	leakCheck = D3DResourceLeakChecker::GetInstance();
 	// ウィンドウ生成
 	winApp_ = WinApp::GetInstance();
 	winApp_->Initialize();
@@ -46,7 +48,7 @@ void Framework::Initialize()
 	modelManager_ = ModelManager::GetInstance();
 	modelManager_->Initialze(dxCommon_);
 
-	// 子ライターの生成
+	// コライダーの生成 (未完成)
 	collisionManager_ = CollisionManager::GetInstance();
 	collisionManager_->Initialize();
 	
@@ -64,6 +66,7 @@ void Framework::Finalize()
 	input_->Finalize();
 	winApp_->Finalize();
 	winApp_ = nullptr;
+	
 }
 
 void Framework::Update()

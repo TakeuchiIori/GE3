@@ -71,7 +71,7 @@ protected:
 	CollisionManager* collisionManager_ = nullptr;;
 	LightManager* lightManager_ = nullptr;
 private:
-	std::unique_ptr<D3DResourceLeakChecker> leakCheck;
+	D3DResourceLeakChecker* leakCheck = nullptr;
 	// ゲーム終了フラグ
 	bool endRequst_ = false;
 
