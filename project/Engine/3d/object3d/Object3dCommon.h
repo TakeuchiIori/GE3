@@ -1,6 +1,6 @@
 #pragma once
 #include "DirectXCommon.h"
-#include "Camera.h"
+#include "camera/Camera.h"
 #include <memory>
 #include <mutex>
 

@@ -1,5 +1,5 @@
 #pragma once
-#include "Object3d.h"
+#include "object3d/Object3d.h"
 #include "MathFunc.h"
 #include "Vector3.h" 
 #include "Input.h"

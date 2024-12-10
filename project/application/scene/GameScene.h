@@ -1,18 +1,18 @@
 #pragma once
 #include "BaseScene.h"
-#include "Sprite.h"
-#include "SpriteCommon.h"
+#include "sprite/Sprite.h"
+#include "sprite/SpriteCommon.h"
 #include "SrvManager.h"
-#include "Object3d.h"
-#include "Object3dCommon.h"
+#include "object3d/Object3d.h"
+#include "object3d/Object3dCommon.h"
 #include "Audio.h"
-#include "LightManager.h"
+#include "light/LightManager.h"
 #include "ModelManager.h"
-#include "Camera.h"
+#include "camera/Camera.h"
 #include <memory>
 #include "Player.h"
 #include "WorldTransform.h"
-#include "CameraManager.h"
+#include "camera/CameraManager.h"
 #include "ParticleEmitter.h"
 
 enum class CameraMode

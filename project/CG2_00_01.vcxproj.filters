@@ -109,6 +109,24 @@
     <Filter Include="ヘッダー ファイル\Engine\io\particle">
       <UniqueIdentifier>{1c94571f-e77f-4a81-be47-52ab71457d43}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\Engine\3d\camera">
+      <UniqueIdentifier>{b89086db-063c-4605-ad7b-60fb9025ef78}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Engine\3d\object3d">
+      <UniqueIdentifier>{b7ece77f-5a5a-4876-aa8c-98d5c03d7b8b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\Engine\3d\camera">
+      <UniqueIdentifier>{0315fbfc-666b-48cf-9492-6f034604c6f8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\Engine\3d\object3d">
+      <UniqueIdentifier>{27203443-2efa-417d-a70f-709151df49b1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Engine\3d\light">
+      <UniqueIdentifier>{4bf76cfd-5046-47ed-9766-659d83a50c37}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\Engine\3d\light">
+      <UniqueIdentifier>{b0bf82f4-a98a-46fb-967b-992994f3c613}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -138,10 +156,10 @@
     <ClCompile Include="Engine\math\Matrix4x4.cpp">
       <Filter>ソース ファイル\Engine\math</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\2d\Sprite.cpp">
+    <ClCompile Include="Engine\2d\sprite\Sprite.cpp">
       <Filter>ソース ファイル\Engine\2d</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\2d\SpriteCommon.cpp">
+    <ClCompile Include="Engine\2d\sprite\SpriteCommon.cpp">
       <Filter>ソース ファイル\Engine\2d</Filter>
     </ClCompile>
     <ClCompile Include="Engine\bases\DirectXCommon.cpp">
@@ -162,17 +180,8 @@
     <ClCompile Include="Engine\model\Model.cpp">
       <Filter>ソース ファイル\Engine\model</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\3d\Object3d.cpp">
-      <Filter>ソース ファイル\Engine\3d</Filter>
-    </ClCompile>
-    <ClCompile Include="Engine\3d\Object3dCommon.cpp">
-      <Filter>ソース ファイル\Engine\3d</Filter>
-    </ClCompile>
     <ClCompile Include="Engine\bases\TextureManager.cpp">
       <Filter>ソース ファイル\Engine\base</Filter>
-    </ClCompile>
-    <ClCompile Include="Engine\3d\Camera.cpp">
-      <Filter>ソース ファイル\Engine\3d</Filter>
     </ClCompile>
     <ClCompile Include="Engine\bases\SrvManager.cpp">
       <Filter>ソース ファイル\Engine\base</Filter>
@@ -204,9 +213,6 @@
     <ClCompile Include="application\scene\BaseScene.cpp">
       <Filter>ソース ファイル\Application\scene</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\3d\LightManager.cpp">
-      <Filter>ソース ファイル\Engine\base</Filter>
-    </ClCompile>
     <ClCompile Include="Engine\utility\LeakChecker.cpp">
       <Filter>ソース ファイル\Engine\utility</Filter>
     </ClCompile>
@@ -223,9 +229,6 @@
       <Filter>ソース ファイル\Application\player</Filter>
     </ClCompile>
     <ClCompile Include="Engine\3d\WorldTransform.cpp">
-      <Filter>ソース ファイル\Engine\3d</Filter>
-    </ClCompile>
-    <ClCompile Include="Engine\3d\CameraManager.cpp">
       <Filter>ソース ファイル\Engine\3d</Filter>
     </ClCompile>
     <ClCompile Include="Engine\math\MathFunc.cpp">
@@ -245,6 +248,21 @@
     </ClCompile>
     <ClCompile Include="Engine\3d\collider\GlobalVariables.cpp">
       <Filter>ソース ファイル\Engine\3d\collider</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\3d\camera\Camera.cpp">
+      <Filter>ソース ファイル\Engine\3d\camera</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\3d\camera\CameraManager.cpp">
+      <Filter>ソース ファイル\Engine\3d\camera</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\3d\object3d\Object3dCommon.cpp">
+      <Filter>ソース ファイル\Engine\3d\object3d</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\3d\object3d\Object3d.cpp">
+      <Filter>ソース ファイル\Engine\3d\object3d</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\3d\light\LightManager.cpp">
+      <Filter>ソース ファイル\Engine\3d\light</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -290,17 +308,11 @@
     <ClInclude Include="Engine\math\Vector4.h">
       <Filter>ソース ファイル\Engine\math</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\2d\Sprite.h">
+    <ClInclude Include="Engine\2d\sprite\Sprite.h">
       <Filter>ヘッダー ファイル\Engine\2d</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\2d\SpriteCommon.h">
+    <ClInclude Include="Engine\2d\sprite\SpriteCommon.h">
       <Filter>ヘッダー ファイル\Engine\2d</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\3d\Object3dCommon.h">
-      <Filter>ヘッダー ファイル\Engine\3d</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\3d\Object3d.h">
-      <Filter>ヘッダー ファイル\Engine\3d</Filter>
     </ClInclude>
     <ClInclude Include="Engine\bases\DirectXCommon.h">
       <Filter>ヘッダー ファイル\Engine\base</Filter>
@@ -322,9 +334,6 @@
     </ClInclude>
     <ClInclude Include="Engine\model\Model.h">
       <Filter>ヘッダー ファイル\Engine\model</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\3d\Camera.h">
-      <Filter>ヘッダー ファイル\Engine\3d</Filter>
     </ClInclude>
     <ClInclude Include="Engine\bases\SrvManager.h">
       <Filter>ヘッダー ファイル\Engine\base</Filter>
@@ -380,9 +389,6 @@
     <ClInclude Include="Engine\3d\collider\GlobalVariables.h">
       <Filter>ヘッダー ファイル\Engine\3d\collider</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\3d\CameraManager.h">
-      <Filter>ヘッダー ファイル\Engine\3d</Filter>
-    </ClInclude>
     <ClInclude Include="Engine\3d\collider\Effect.h">
       <Filter>ヘッダー ファイル\Engine\3d\collider</Filter>
     </ClInclude>
@@ -395,11 +401,23 @@
     <ClInclude Include="Engine\io\particle\ParticleManager.h">
       <Filter>ヘッダー ファイル\Engine\io\particle</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\3d\LightManager.h">
-      <Filter>ヘッダー ファイル\Engine\3d</Filter>
-    </ClInclude>
     <ClInclude Include="Engine\utility\LeakChecker.h">
       <Filter>ヘッダー ファイル\Engine\utility</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\3d\camera\CameraManager.h">
+      <Filter>ヘッダー ファイル\Engine\3d\camera</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\3d\camera\Camera.h">
+      <Filter>ヘッダー ファイル\Engine\3d\camera</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\3d\object3d\Object3d.h">
+      <Filter>ヘッダー ファイル\Engine\3d\object3d</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\3d\object3d\Object3dCommon.h">
+      <Filter>ヘッダー ファイル\Engine\3d\object3d</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\3d\light\LightManager.h">
+      <Filter>ヘッダー ファイル\Engine\3d\light</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
