@@ -88,7 +88,7 @@ void GameScene::Draw()
     //================== ライティング ==================//
     LightManager::GetInstance()->SetCommandList();
    
-    player_->Draw();
+    //player_->Draw();
     test_->Draw(testWorldTransform_);
   
 

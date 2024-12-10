@@ -50,8 +50,8 @@ void LightManager::CreateDirectionalLightResource()
     directionalLightResource_->Map(0, nullptr, reinterpret_cast<void**>(&directionalLight_));
     directionalLight_->color = { 1.0f, 1.0f, 1.0f, 1.0f };
     directionalLight_->direction = { 0.0f, -1.0f, 0.0f };
-    directionalLight_->intensity = 0.0f;
-    directionalLight_->enableDirectionalLight = false;
+    directionalLight_->intensity = 1.0f;
+    directionalLight_->enableDirectionalLight = true;
 }
 
 void LightManager::CreatePointLightResource()
@@ -63,7 +63,7 @@ void LightManager::CreatePointLightResource()
     pointLight_->intensity = 1.0f;
     pointLight_->radius = 10.0f;
     pointLight_->decay = 1.0f;
-    pointLight_->enablePointLight = true;
+    pointLight_->enablePointLight = false;
 }
 
 void LightManager::CreateSpecularReflectionResource()
@@ -88,7 +88,7 @@ void LightManager::CreateSpotLightResource()
     spotLight_->cosAngle =
         std::cos(std::numbers::pi_v<float> / 3.0f);
     spotLight_->cosFalloffStart = std::cos(std::numbers::pi_v<float> / 4.0f); // 45度 追加
-    spotLight_->enableSpotLight = true;
+    spotLight_->enableSpotLight = false;
 }
 
 void LightManager::SetDirectionalLight(const Vector4& color, const Vector3& direction, float intensity, bool enable)

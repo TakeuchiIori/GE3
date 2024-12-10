@@ -56,36 +56,6 @@ void Model::UpdateAnimation()
 	UpdateSkeleton(skeleton_);
 }
 
-// 線を描画するヘルパーメソッド
-void Model::DrawLine(const Vector3& start, const Vector3& end, Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> commandList) {
-	// 線の頂点データ
-	struct LineVertex {
-		Vector3 position;
-		Color color;
-	};
-
-	LineVertex vertices[] = {
-		{ start, {1.0f, 0.0f, 0.0f} }, // 赤い線
-		{ end,   {1.0f, 0.0f, 0.0f} }
-	};
-
-	// バッファを作成して描画
-	auto vertexBuffer = modelCommon_->GetDxCommon()->CreateBufferResource(sizeof(vertices));
-	void* mappedData;
-	vertexBuffer->Map(0, nullptr, &mappedData);
-	memcpy(mappedData, vertices, sizeof(vertices));
-	vertexBuffer->Unmap(0, nullptr);
-
-	D3D12_VERTEX_BUFFER_VIEW vertexBufferView{};
-	vertexBufferView.BufferLocation = vertexBuffer->GetGPUVirtualAddress();
-	vertexBufferView.SizeInBytes = sizeof(vertices);
-	vertexBufferView.StrideInBytes = sizeof(LineVertex);
-
-	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_LINELIST);
-	commandList->IASetVertexBuffers(0, 1, &vertexBufferView);
-	commandList->DrawInstanced(2, 1, 0, 0);
-}
-
 void Model::PlayAnimation()
 {
 	animationTime_ += 1.0f / 60.0f;
@@ -170,22 +140,19 @@ void Model::UpdateSkeleton(Skeleton& skeleton)
 }
 
 void Model::DrawSkeleton(const Skeleton& skeleton) {
-	// コマンドリストを取得
-	auto commandList = modelCommon_->GetDxCommon()->GetCommandList();
+	//// ジョイント間を線で描画
+	//for (const Joint& joint : skeleton.joints) {
+	//	if (joint.parent) {
+	//		const Joint& parentJoint = skeleton.joints[*joint.parent];
 
-	// ジョイント間を線で描画
-	for (const Joint& joint : skeleton.joints) {
-		if (joint.parent) {
-			const Joint& parentJoint = skeleton.joints[*joint.parent];
+	//		// 親ジョイントと現在のジョイントの位置を取得
+	//		Vector3 parentPosition = Vector3{ parentJoint.skeletonSpaceMatrix.m[3][0],parentJoint.skeletonSpaceMatrix.m[3][1],parentJoint.skeletonSpaceMatrix.m[3][2] };
+	//		Vector3 currentPosition = Vector3{ joint.skeletonSpaceMatrix.m[3][0],joint.skeletonSpaceMatrix.m[3][1],joint.skeletonSpaceMatrix.m[3][2] };
 
-			// 親ジョイントと現在のジョイントの位置を取得
-			Vector3 parentPosition = Vector3{ parentJoint.skeletonSpaceMatrix.m[3][0],parentJoint.skeletonSpaceMatrix.m[3][1],parentJoint.skeletonSpaceMatrix.m[3][2] };
-			Vector3 currentPosition = Vector3{ joint.skeletonSpaceMatrix.m[3][0],joint.skeletonSpaceMatrix.m[3][1],joint.skeletonSpaceMatrix.m[3][2] };
-
-			// 線の描画 (Line APIやカスタムシェーダーを使用)
-			DrawLine(parentPosition, currentPosition, commandList);
-		}
-	}
+	//		// 線の描画 (Line APIやカスタムシェーダーを使用)
+	//		DrawLine(parentPosition, currentPosition);
+	//	}
+	//}
 }
 
 void Model::ApplyAnimation(Skeleton& skeleton, const Animation& animation, float animationTime) {

@@ -125,7 +125,7 @@ public: // メンバ関数
 	// 線の描画 ※調整中
 	/// </summary>
 	/// <param name="skeleton"></param>
-	void DrawLine(const Vector3& start, const Vector3& end, Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> commandList);
+	void DrawLine(const Vector3& start, const Vector3& end);
 
 	/// <summary>
 	/// アニメーション再生
@@ -142,6 +142,11 @@ private:
 	/// 頂点
 	/// </summary>
 	void CreateVertex();
+
+	/// <summary>
+	/// 線の頂点
+	/// </summary>
+	void CreateLineVertex();
 
 	/// <summary>
 	/// ジョイント作成
@@ -242,5 +247,7 @@ private: // メンバ変数
 
 	Skeleton skeleton_;
 
+	Vector3 startLine_;
+	Vector3 endLine_;
 };
 
