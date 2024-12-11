@@ -1,17 +1,20 @@
 #pragma once
+
+// C++
 #include <wrl.h>
 #include <d3d12.h>
 #include <string>
 #include <vector>
+
+#include "camera/Camera.h"
+
+// Math
 #include "Vector4.h"
 #include "Matrix4x4.h"
 #include "Vector2.h"
 #include "Vector3.h"
-#include "camera/Camera.h"
 
-
-
-//前方宣言
+class Line;
 class WorldTransform;
 class Object3dCommon;
 class Model;
@@ -36,6 +39,11 @@ public: // メンバ関数
 	void Draw(WorldTransform& worldTransform);
 
 	/// <summary>
+	/// スケルトン描画
+	/// </summary>
+	void DrawSkeleton();
+
+	/// <summary>
 	/// モデルのセット
 	/// </summary>
 	void SetModel(const std::string& filePath, bool isAnimation = false);
@@ -53,6 +61,7 @@ private:
 	void CreateMaterialResource();
 
 public: // アクセッサ
+	Model* GetModel() { return model_; }
 
 	/*===============================================//
 					　アンカーポイント
@@ -74,7 +83,7 @@ public: // アクセッサ
 
 	
 	void SetCamera(Camera* camera) { this->camera_ = camera; }
-
+	void SetLine(Line* line) { this->line_ = line; }
 
 	// マテリアル
 	const Vector4& GetMaterialColor() const { return materialData_->color; }
@@ -101,10 +110,11 @@ private:
 	Microsoft::WRL::ComPtr<ID3D12Resource> materialResource_;
 	Material* materialData_ = nullptr;
 
-	// ポインタ
+	// 外部からのポインタ
 	Object3dCommon* object3dCommon_ = nullptr;
 	Model* model_ = nullptr;
 	Camera* camera_ = nullptr;
+	Line* line_ = nullptr;
 
 	// テクスチャ左上座標
 	Vector2 textureLeftTop_ = { 0.0f,0.0f };

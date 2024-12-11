@@ -127,6 +127,12 @@
     <Filter Include="ヘッダー ファイル\Engine\3d\light">
       <UniqueIdentifier>{b0bf82f4-a98a-46fb-967b-992994f3c613}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ヘッダー ファイル\Engine\3d\line">
+      <UniqueIdentifier>{4bdc5207-bc17-4b76-9f13-d2dc94a546ac}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Engine\3d\line">
+      <UniqueIdentifier>{a7ebc42a-07d7-4572-826e-086e6d55356b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -263,6 +269,12 @@
     </ClCompile>
     <ClCompile Include="Engine\3d\light\LightManager.cpp">
       <Filter>ソース ファイル\Engine\3d\light</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\3d\line\LineManager.cpp">
+      <Filter>ソース ファイル\Engine\3d\line</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\3d\line\Line.cpp">
+      <Filter>ソース ファイル\Engine\3d\line</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -419,6 +431,12 @@
     <ClInclude Include="Engine\3d\light\LightManager.h">
       <Filter>ヘッダー ファイル\Engine\3d\light</Filter>
     </ClInclude>
+    <ClInclude Include="Engine\3d\line\Line.h">
+      <Filter>ヘッダー ファイル\Engine\3d\line</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\3d\line\LineManager.h">
+      <Filter>ヘッダー ファイル\Engine\3d\line</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="externals\imgui\LICENSE.txt">
@@ -427,9 +445,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\shaders\Particle.hlsli" />
+    <None Include="Resources\shaders\Line.hlsli" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Resources\shaders\Particle.PS.hlsl" />
     <FxCompile Include="Resources\shaders\Particle.VS.hlsl" />
+    <FxCompile Include="Resources\shaders\Line.VS.hlsl" />
+    <FxCompile Include="Resources\shaders\Line.PS.hlsl" />
   </ItemGroup>
 </Project>

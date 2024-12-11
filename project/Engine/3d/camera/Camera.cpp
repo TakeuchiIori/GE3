@@ -40,10 +40,10 @@ void Camera::ShowImGui()
 #endif
 }
 
-void Camera::ResetToOrigin()
+void Camera::DefaultCamera()
 {
     // カメラの位置と回転をリセット（原点に設定）
-    transform_.translate = Vector3(0.0f, 5.0f, -500.0f);
+    transform_.translate = Vector3(0.0f, 5.0f, -100.0f);
     transform_.rotate = Vector3(0.0f, 0.0f, 0.0f);
 
     // ワールド行列、ビュー行列の更新
@@ -59,6 +59,12 @@ void Camera::FollowCamera(Vector3& target)
     transform_.translate = target + followCameraOffsetPosition_; 
     worldMatrix_ = MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.translate);
     viewMatrix_ = Inverse(worldMatrix_);
+#ifdef _DEBUG
+    ImGui::Begin("Camera ");
+    ImGui::DragFloat3("Camera Position", &followCameraOffsetPosition_.x, 0.01f);
+    ImGui::DragFloat3("Camera Rotate", &followCameraOffsetRotare_.x, 0.01f);
+    ImGui::End();
+#endif
 }
 
 void Camera::SetTopDownCamera(const Vector3& position)

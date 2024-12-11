@@ -16,7 +16,7 @@ void Player::Initialize()
 
     // その他初期化
     input_ = Input::GetInstance();
-    moveSpeed_ = { 0.5f, 0.5f , 0.5f };
+    moveSpeed_ = { 0.25f, 0.25f , 0.25f };
     worldTransform_.Initialize();
 
     //worldTransform_.scale_ = { 2.0f,2.0f,2.0f };

@@ -9,12 +9,13 @@
 #include "light/LightManager.h"
 #include "ModelManager.h"
 #include "camera/Camera.h"
-#include <memory>
 #include "Player.h"
 #include "WorldTransform.h"
 #include "camera/CameraManager.h"
 #include "ParticleEmitter.h"
-
+#include "line/Line.h"
+#include <memory>
+#include <map>
 enum class CameraMode
 {
     DEFAULT,
@@ -64,6 +65,7 @@ private:
     /// </summary>
     void ShowImGui();
 
+
 private:
     // カメラ
     CameraMode cameraMode_;
@@ -83,5 +85,11 @@ private:
     // プレイヤー
     std::unique_ptr<Player> player_;
 
+    // Line
+    std::unique_ptr<Line> line_;
+
+    Vector3 start_ = { 0.0f,0.0f,0.0f };
+
+    Vector3 end_ = { 10.0f,0.0f,10.0f };
  
 };

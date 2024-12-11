@@ -58,6 +58,11 @@ void Object3d::Draw(WorldTransform& worldTransform)
 	}
 }
 
+void Object3d::DrawSkeleton()
+{
+	model_->DrawSkeleton(model_->GetSkeleton(),*line_);
+}
+
 void Object3d::CreateMaterialResource()
 {
 	materialResource_ = object3dCommon_->GetDxCommon()->CreateBufferResource(sizeof(Material));
