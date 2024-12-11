@@ -13,7 +13,7 @@
 #include "WorldTransform.h"
 #include "camera/CameraManager.h"
 #include "ParticleEmitter.h"
-
+#include "line/Line.h"
 #include <memory>
 #include <map>
 enum class CameraMode
@@ -85,5 +85,11 @@ private:
     // プレイヤー
     std::unique_ptr<Player> player_;
 
+    // Line
+    std::unique_ptr<Line> line_;
+
+    Vector3 start_ = { 0.0f,0.0f,0.0f };
+
+    Vector3 end_ = { 10.0f,0.0f,10.0f };
  
 };

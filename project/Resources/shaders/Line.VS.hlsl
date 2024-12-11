@@ -4,7 +4,7 @@ struct Transformation
 {
     float4x4 WVP;
 };
-ConstantBuffer<Transformation> gTransformationMatrix : register(b0);
+ConstantBuffer<Transformation> gTransformationMatrix : register(b1);
 
 struct VertexShaderOutput
 {

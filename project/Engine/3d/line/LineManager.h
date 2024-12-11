@@ -74,7 +74,7 @@ private:
 	D3D12_DESCRIPTOR_RANGE descriptorRangeForInstancing_[1] = {};
 
 	// ルートパラメーター
-	D3D12_ROOT_PARAMETER rootParameters_[1] = {};
+	D3D12_ROOT_PARAMETER rootParameters_[2] = {};
 	// サンプラー
 	D3D12_STATIC_SAMPLER_DESC staticSamplers_[1] = {};
 	// インプットレイアウト

@@ -40,9 +40,9 @@ void GameScene::Initialize()
     particleCount_ = 1;
     particleEmitter_ = std::make_unique<ParticleEmitter>(particleName, emitterPosition_, particleCount_);
 
-
- 
-
+    line_ = std::make_unique<Line>();
+    line_->Initialize();
+    line_->SetCamera(currentCamera_.get());
 }
 
 /// <summary>
@@ -100,6 +100,7 @@ void GameScene::Draw()
     player_->Draw();
     test_->Draw(testWorldTransform_);
   
+    line_->DrawLine(start_, end_);
 }
 
 /// <summary>
