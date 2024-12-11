@@ -69,7 +69,7 @@ void LineManager::CreateRootSignature()
 	staticSamplers_[0].ComparisonFunc = D3D12_COMPARISON_FUNC_LESS_EQUAL;				// 比較しない
 	staticSamplers_[0].MaxLOD = D3D12_FLOAT32_MAX;										// ありったけのMipmapｗｐ使う
 	staticSamplers_[0].ShaderRegister = 0;												// レジスタ番号0を使う
-	staticSamplers_[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;					// PixelShaderで使う
+	staticSamplers_[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;				// PixelShaderで使う
 	descriptionRootSignature_.pStaticSamplers = staticSamplers_;
 	descriptionRootSignature_.NumStaticSamplers = _countof(staticSamplers_);
 
