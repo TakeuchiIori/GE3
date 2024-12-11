@@ -87,8 +87,5 @@ private:
 	D3D12_INPUT_LAYOUT_DESC inputLayoutDesc_{};
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferView_{};
 
-	// SRVハンドル
-	D3D12_CPU_DESCRIPTOR_HANDLE srvHandleCPU;
-	D3D12_GPU_DESCRIPTOR_HANDLE srvHandleGPU;
 };
 
