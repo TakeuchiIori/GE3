@@ -15,6 +15,7 @@
 #include "collider/CollisionManager.h"
 #include "light/LightManager.h"
 #include <LeakChecker.h>
+#include "line/LineManager.h"
 // ゲーム全体
 class Framework
 {
@@ -70,6 +71,7 @@ protected:
 	ModelManager* modelManager_ = nullptr;
 	CollisionManager* collisionManager_ = nullptr;;
 	LightManager* lightManager_ = nullptr;
+	LineManager* lineManager_ = nullptr;
 private:
 	D3DResourceLeakChecker* leakCheck = nullptr;
 	// ゲーム終了フラグ

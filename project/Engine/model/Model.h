@@ -16,10 +16,11 @@
 #include <assimp/scene.h>
 #include <map>
 
+class Line;
 class ModelCommon;
 class Model
 {
-private: // 構造体
+public: // 構造体
 	// 頂点データ
 	struct VertexData {
 		Vector4 position;
@@ -117,15 +118,15 @@ public: // メンバ関数
 	void Draw();
 
 	/// <summary>
+	//  スケルトンの描画　※DrawLineを調整中なので仮
+	/// </summary>
+	/// <param name="skeleton"></param>
+	void DrawSkeleton(const Skeleton& skeleton, Line& line);
+
+	/// <summary>
 	/// アニメーションの更新
 	/// </summary>
 	void UpdateAnimation();
-
-	/// <summary>
-	// 線の描画 ※調整中
-	/// </summary>
-	/// <param name="skeleton"></param>
-	void DrawLine(const Vector3& start, const Vector3& end);
 
 	/// <summary>
 	/// アニメーション再生
@@ -142,11 +143,6 @@ private:
 	/// 頂点
 	/// </summary>
 	void CreateVertex();
-
-	/// <summary>
-	/// 線の頂点
-	/// </summary>
-	void CreateLineVertex();
 
 	/// <summary>
 	/// ジョイント作成
@@ -166,12 +162,6 @@ private:
 	/// スケルトンの更新
 	/// </summary>
 	void UpdateSkeleton(Skeleton& skeleton);
-
-	/// <summary>
-	//  スケルトンの描画　※DrawLineを調整中なので仮
-	/// </summary>
-	/// <param name="skeleton"></param>
-	void DrawSkeleton(const Skeleton& skeleton);
 
 	/// <summary>
 	/// アニメーション適用
@@ -224,8 +214,9 @@ private:
 public: // アクセッサ
 	ModelData GetModelData() { return modelData_; }
 	Matrix4x4 GetLocalMatrix() { return localMatrix_; }
+	Skeleton GetSkeleton() { return skeleton_; }
 private: // メンバ変数
-	// ModelCommonのポインタ
+	// 外部からのポインタ
 	ModelCommon* modelCommon_;
 	// objファイルのデータ
 	ModelData modelData_;

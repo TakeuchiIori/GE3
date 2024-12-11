@@ -4,6 +4,7 @@
 #include "TextureManager.h"
 #include "ParticleManager.h"
 
+
 #ifdef _DEBUG
 #include "imgui.h"
 #endif // DEBUG
@@ -17,6 +18,11 @@ void GameScene::Initialize()
     currentCamera_ = cameraManager_.AddCamera();
     Object3dCommon::GetInstance()->SetDefaultCamera(currentCamera_.get());
    
+    // 線
+    line_ = std::make_unique<Line>();
+    line_->Initialize();
+    line_->SetCamera(currentCamera_.get());
+
     // 各オブジェクトの初期化
     player_ = std::make_unique<Player>();
     player_->Initialize();
@@ -26,6 +32,7 @@ void GameScene::Initialize()
     test_->Initialize();
     test_->SetModel("sneakWalk.gltf",true);
     testWorldTransform_.Initialize();
+    test_->SetLine(line_.get());
 
     // 初期カメラモード設定
     cameraMode_ = CameraMode::FOLLOW;
@@ -38,6 +45,7 @@ void GameScene::Initialize()
     particleCount_ = 1;
     particleEmitter_ = std::make_unique<ParticleEmitter>(particleName, emitterPosition_, particleCount_);
 
+   
 }
 
 /// <summary>
@@ -49,9 +57,11 @@ void GameScene::Update()
     //if (Input::GetInstance()->TriggerKey(DIK_RETURN)) {
     //    SceneManager::GetInstance()->ChangeScene("TITLE");
     //}
+    
     // プレイヤーの更新
     player_->Update();
     test_->UpdateAnimation();
+
     // カメラ更新
     UpdateCameraMode();
     UpdateCamera();
@@ -61,12 +71,14 @@ void GameScene::Update()
     ShowImGui();
     particleEmitter_->Update();
    
-    //test_->MaterialByImGui();
+  
 
     // ワールドトランスフォーム更新
     testWorldTransform_.UpdateMatrix();
     cameraManager_.UpdateAllCameras();
 
+
+    // ライティング
     LightManager::GetInstance()->ShowLightingEditor();
 
    
@@ -88,10 +100,12 @@ void GameScene::Draw()
     //================== ライティング ==================//
     LightManager::GetInstance()->SetCommandList();
    
-    //player_->Draw();
+    player_->Draw();
     test_->Draw(testWorldTransform_);
   
+    //line_->DrawLine(start_, end_);
 
+    //test_->DrawSkeleton();
 }
 
 /// <summary>
@@ -128,7 +142,7 @@ void GameScene::UpdateCamera()
     {
     case CameraMode::DEFAULT:
     {
-        currentCamera_->ResetToOrigin();
+        currentCamera_->DefaultCamera();
     }
     break;
     case CameraMode::FOLLOW:
@@ -178,3 +192,6 @@ void GameScene::ShowImGui()
     ImGui::End();
 #endif // _DEBUG
 }
+
+
+

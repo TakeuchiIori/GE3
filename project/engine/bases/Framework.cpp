@@ -32,6 +32,10 @@ void Framework::Initialize()
 	textureManager_ = TextureManager::GetInstance();
 	textureManager_->Initialize(dxCommon_, srvManager_);
 
+	// LineManagerの生成
+	lineManager_ = LineManager::GetInstance();
+	lineManager_->Initialize();
+
 	// スプライト共通部の生成
 	spriteCommon_ = SpriteCommon::GetInstance();
 	spriteCommon_->Initialize(dxCommon_);
@@ -51,6 +55,7 @@ void Framework::Initialize()
 	// コライダーの生成 (未完成)
 	collisionManager_ = CollisionManager::GetInstance();
 	collisionManager_->Initialize();
+	
 	
 	
 }
