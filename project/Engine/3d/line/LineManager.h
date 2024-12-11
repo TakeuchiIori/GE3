@@ -35,12 +35,6 @@ public: // メンバ関数
 	/// 初期化
 	/// </summary>
 	void Initialize();
-
-	/// <summary>
-	/// 描画設定
-	/// </summary>
-	void SetCommandListConfig();
-
 private:
 
 	/// <summary>
@@ -52,32 +46,22 @@ private:
 	/// パイプライン生成
 	/// </summary>
 	void CreateGraphicsPipeline();
-
-	/// <summary>
-	/// パイプラインの設定
-	/// </summary>
-	void SetGraphicsPipeline();
-
-	/// <summary>
-	/// ルートシグネチャをコマンドリストに積む
-	/// </summary>
-	void SetRootSignature();
-	
-	/// <summary>
-	/// トポロジーをコマンドリストに積む
-	/// </summary>
-	void SetPrimitiveTopology();
 	
 	
 
+public:
 
-private: // メンバ変数
+	ID3D12RootSignature* GetRootSignature_() { return rootSignature_.Get(); }
+	ID3D12PipelineState* GetGraphicsPiplineState() { return graphicsPipelineState_.Get(); }
+
+
+private: 
 
 	// シングルトンインスタンス
 	static std::unique_ptr<LineManager> instance;
 	static std::once_flag initInstanceFlag;
 
-	// ポインタ
+	// 外部からのポインタ
 	DirectXCommon* dxCommon_ = nullptr;
 	SrvManager* srvManager_ = nullptr;
 
@@ -106,8 +90,5 @@ private: // メンバ変数
 	// SRVハンドル
 	D3D12_CPU_DESCRIPTOR_HANDLE srvHandleCPU;
 	D3D12_GPU_DESCRIPTOR_HANDLE srvHandleGPU;
-
-
-
 };
 

@@ -24,15 +24,6 @@ void LineManager::Initialize()
 	CreateGraphicsPipeline();
 }
 
-void LineManager::SetCommandListConfig()
-{
-	SetRootSignature();
-
-	SetGraphicsPipeline();
-
-	SetPrimitiveTopology();
-}
-
 void LineManager::CreateRootSignature()
 {
 	D3D12_DESCRIPTOR_RANGE descriptorRange[1] = {};
@@ -149,19 +140,4 @@ void LineManager::CreateGraphicsPipeline()
 	HRESULT hr = dxCommon_->GetDevice()->CreateGraphicsPipelineState(&graphicsPipelineStateDesc,
 		IID_PPV_ARGS(&graphicsPipelineState_));
 	assert(SUCCEEDED(hr));
-}
-
-void LineManager::SetGraphicsPipeline()
-{
-	dxCommon_->GetCommandList()->SetGraphicsRootSignature(rootSignature_.Get());
-}
-
-void LineManager::SetRootSignature()
-{
-	dxCommon_->GetCommandList()->SetPipelineState(graphicsPipelineState_.Get());
-}
-
-void LineManager::SetPrimitiveTopology()
-{
-	dxCommon_->GetCommandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_LINELIST);
 }
