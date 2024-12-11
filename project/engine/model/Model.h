@@ -16,6 +16,7 @@
 #include <assimp/scene.h>
 #include <map>
 
+class Line;
 class ModelCommon;
 class Model
 {
@@ -117,6 +118,12 @@ public: // メンバ関数
 	void Draw();
 
 	/// <summary>
+	//  スケルトンの描画　※DrawLineを調整中なので仮
+	/// </summary>
+	/// <param name="skeleton"></param>
+	void DrawSkeleton(const Skeleton& skeleton, Line& line);
+
+	/// <summary>
 	/// アニメーションの更新
 	/// </summary>
 	void UpdateAnimation();
@@ -155,12 +162,6 @@ private:
 	/// スケルトンの更新
 	/// </summary>
 	void UpdateSkeleton(Skeleton& skeleton);
-
-	/// <summary>
-	//  スケルトンの描画　※DrawLineを調整中なので仮
-	/// </summary>
-	/// <param name="skeleton"></param>
-	void DrawSkeleton(const Skeleton& skeleton);
 
 	/// <summary>
 	/// アニメーション適用
@@ -215,7 +216,7 @@ public: // アクセッサ
 	Matrix4x4 GetLocalMatrix() { return localMatrix_; }
 	Skeleton GetSkeleton() { return skeleton_; }
 private: // メンバ変数
-	// ModelCommonのポインタ
+	// 外部からのポインタ
 	ModelCommon* modelCommon_;
 	// objファイルのデータ
 	ModelData modelData_;

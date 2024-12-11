@@ -59,6 +59,12 @@ void Camera::FollowCamera(Vector3& target)
     transform_.translate = target + followCameraOffsetPosition_; 
     worldMatrix_ = MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.translate);
     viewMatrix_ = Inverse(worldMatrix_);
+#ifdef _DEBUG
+    ImGui::Begin("Camera ");
+    ImGui::DragFloat3("Camera Position", &followCameraOffsetPosition_.x, 0.01f);
+    ImGui::DragFloat3("Camera Rotate", &followCameraOffsetRotare_.x, 0.01f);
+    ImGui::End();
+#endif
 }
 
 void Camera::SetTopDownCamera(const Vector3& position)

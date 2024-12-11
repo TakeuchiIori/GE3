@@ -18,6 +18,11 @@ void GameScene::Initialize()
     currentCamera_ = cameraManager_.AddCamera();
     Object3dCommon::GetInstance()->SetDefaultCamera(currentCamera_.get());
    
+    // 線
+    line_ = std::make_unique<Line>();
+    line_->Initialize();
+    line_->SetCamera(currentCamera_.get());
+
     // 各オブジェクトの初期化
     player_ = std::make_unique<Player>();
     player_->Initialize();
@@ -27,7 +32,7 @@ void GameScene::Initialize()
     test_->Initialize();
     test_->SetModel("sneakWalk.gltf",true);
     testWorldTransform_.Initialize();
-    
+    test_->SetLine(line_.get());
 
     // 初期カメラモード設定
     cameraMode_ = CameraMode::FOLLOW;
@@ -40,9 +45,7 @@ void GameScene::Initialize()
     particleCount_ = 1;
     particleEmitter_ = std::make_unique<ParticleEmitter>(particleName, emitterPosition_, particleCount_);
 
-    line_ = std::make_unique<Line>();
-    line_->Initialize();
-    line_->SetCamera(currentCamera_.get());
+   
 }
 
 /// <summary>
@@ -100,7 +103,9 @@ void GameScene::Draw()
     player_->Draw();
     test_->Draw(testWorldTransform_);
   
-    line_->DrawLine(start_, end_);
+    //line_->DrawLine(start_, end_);
+
+    //test_->DrawSkeleton();
 }
 
 /// <summary>

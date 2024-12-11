@@ -1,9 +1,15 @@
+
+
 #include "Model.h"
 #include "ModelCommon.h"
+#include "TextureManager.h"
+#include "line/Line.h"
+
+// C++
 #include <assert.h>
 #include <fstream>
 #include <sstream>
-#include "TextureManager.h"
+
 
 // assimp
 #include <assimp/Importer.hpp>
@@ -20,6 +26,7 @@ void Model::Initialize(ModelCommon* modelCommon, const std::string& directorypat
 	// アニメーションをするならtrue
 	if (isAnimation) {
 		animation_ = LoadAnimationFile(directorypath, filename);
+		
 	}
 
 	// 骨の作成
@@ -48,6 +55,45 @@ void Model::Draw()
 	modelCommon_->GetDxCommon()->GetCommandList()->DrawInstanced(UINT(modelData_.vertices.size()), 1, 0, 0);
 
 }
+
+void Model::DrawSkeleton(const Skeleton& skeleton,Line& line) {
+	// 描画する線の始点と終点を記録する配列
+	std::vector<Vector3> startPoints;
+	std::vector<Vector3> endPoints;
+
+	// 全てのジョイントを走査
+	for (const auto& joint : skeleton.joints) {
+		// 親ジョイントが存在する場合
+		if (joint.parent.has_value()) {
+			// 親ジョイントを取得
+			const auto& parent = skeleton.joints[joint.parent.value()];
+
+			// 親ジョイントの座標
+			Vector3 start = Vector3{
+				parent.skeletonSpaceMatrix.m[3][0],
+				parent.skeletonSpaceMatrix.m[3][1],
+				parent.skeletonSpaceMatrix.m[3][2]
+			};
+
+			// 現在のジョイントの座標
+			Vector3 end = Vector3{
+				joint.skeletonSpaceMatrix.m[3][0],
+				joint.skeletonSpaceMatrix.m[3][1],
+				joint.skeletonSpaceMatrix.m[3][2]
+			};
+
+			// 配列に始点と終点を格納
+			startPoints.push_back(start);
+			endPoints.push_back(end);
+		}
+	}
+
+	// 記録したすべての線を描画
+	for (size_t i = 0; i < startPoints.size(); ++i) {
+		line.DrawLine(startPoints[i], endPoints[i]);
+	}
+}
+
 
 void Model::UpdateAnimation()
 {
