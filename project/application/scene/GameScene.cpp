@@ -54,9 +54,11 @@ void GameScene::Update()
     //if (Input::GetInstance()->TriggerKey(DIK_RETURN)) {
     //    SceneManager::GetInstance()->ChangeScene("TITLE");
     //}
+    
     // プレイヤーの更新
     player_->Update();
     test_->UpdateAnimation();
+
     // カメラ更新
     UpdateCameraMode();
     UpdateCamera();
@@ -66,12 +68,14 @@ void GameScene::Update()
     ShowImGui();
     particleEmitter_->Update();
    
-    //test_->MaterialByImGui();
+  
 
     // ワールドトランスフォーム更新
     testWorldTransform_.UpdateMatrix();
     cameraManager_.UpdateAllCameras();
 
+
+    // ライティング
     LightManager::GetInstance()->ShowLightingEditor();
 
    
@@ -93,7 +97,7 @@ void GameScene::Draw()
     //================== ライティング ==================//
     LightManager::GetInstance()->SetCommandList();
    
-    //player_->Draw();
+    player_->Draw();
     test_->Draw(testWorldTransform_);
   
 }
@@ -132,7 +136,7 @@ void GameScene::UpdateCamera()
     {
     case CameraMode::DEFAULT:
     {
-        currentCamera_->ResetToOrigin();
+        currentCamera_->DefaultCamera();
     }
     break;
     case CameraMode::FOLLOW:

@@ -26,7 +26,7 @@ public: // カメラ
 	/// <summary>
     /// カメラの位置を原点にリセットする
     /// </summary>
-	void ResetToOrigin();
+	void DefaultCamera();
 
 	/// <summary>
 	/// 追従カメラ
