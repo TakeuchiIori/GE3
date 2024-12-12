@@ -1,5 +1,6 @@
 #pragma once
 #include "Windows.h"
+#include <LeakChecker.h>
 #include <cstdint>
 
 class WinApp
@@ -42,6 +43,7 @@ public: // 定数
 private:
 	static WinApp* instance;
 	static HWND hwndImgui;
+	
 	WinApp() = default; 
 	~WinApp() = default;
 	WinApp(const WinApp&) = delete;

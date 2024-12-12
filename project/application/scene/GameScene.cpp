@@ -32,7 +32,7 @@ void GameScene::Initialize()
     test_->Initialize();
     test_->SetModel("sneakWalk.gltf",true);
     testWorldTransform_.Initialize();
-    test_->SetLine(line_.get());
+    //test_->SetLine(line_.get());
 
     // 初期カメラモード設定
     cameraMode_ = CameraMode::FOLLOW;
@@ -77,11 +77,12 @@ void GameScene::Update()
     testWorldTransform_.UpdateMatrix();
     cameraManager_.UpdateAllCameras();
 
-
+    //=====================================================//
+    /*                  これより下は触るな危険　　　　　　　   　*/
+    //=====================================================//
+   
     // ライティング
     LightManager::GetInstance()->ShowLightingEditor();
-
-   
 }
 
 
@@ -90,22 +91,34 @@ void GameScene::Update()
 /// </summary>
 void GameScene::Draw()
 {
-    //================== 2D ==================//
+#pragma region 2Dスプライト描画
     SpriteCommon::GetInstance()->DrawPreference();
-    ParticleManager::GetInstance()->Draw();
- 
-    //================== 3D ==================//
-    Object3dCommon::GetInstance()->DrawPreference();
+    /// <summary>
+    /// ここから描画可能です
+    /// </summary>
 
-    //================== ライティング ==================//
+    ParticleManager::GetInstance()->Draw();
+
+
+#pragma endregion
+
+#pragma region 3Dオブジェクト描画
+    Object3dCommon::GetInstance()->DrawPreference();
     LightManager::GetInstance()->SetCommandList();
-   
+    /// <summary>
+    /// ここから描画可能です
+    /// </summary>
+    
     player_->Draw();
     test_->Draw(testWorldTransform_);
   
-    //line_->DrawLine(start_, end_);
+    line_->DrawLine(start_, end_);
 
     //test_->DrawSkeleton();
+
+#pragma endregion
+
+
 }
 
 /// <summary>

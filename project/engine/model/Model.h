@@ -53,6 +53,7 @@ public: // 構造体
 	// モデルデータ
 	struct ModelData {
 		std::vector<VertexData> vertices;
+		std::vector<uint32_t> indices;
 		MaterialData material;
 		Node rootNode;
 	};
@@ -137,12 +138,12 @@ private:
 	/// <summary>
 	/// 頂点リソース
 	/// </summary>
-	void VertexResource();
+	void CreateVertex();
 
 	/// <summary>
-	/// 頂点
+	/// INdexリソース作成
 	/// </summary>
-	void CreateVertex();
+	void CreteIndex();
 
 	/// <summary>
 	/// ジョイント作成
@@ -205,6 +206,13 @@ private:
 	static ModelData LoadModelFile(const std::string& directoryPath, const std::string& filename);
 
 	/// <summary>
+	/// .objファイルの読み取り　（Index）
+	/// </summary>
+	static ModelData LoadModelIndexFile(const std::string& directoryPath, const std::string& filename);
+
+
+
+	/// <summary>
 	/// アニメーション解析
 	/// </summary>
 	static Animation LoadAnimationFile(const std::string& directoryPath, const std::string& filename);
@@ -221,24 +229,23 @@ private: // メンバ変数
 	// objファイルのデータ
 	ModelData modelData_;
 
-	// バッファリソース
+	// 頂点リソースなど
 	Microsoft::WRL::ComPtr<ID3D12Resource> vertexResource_;
-	// バッファリソースの使い道を補足するバッファービュー
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferView_{};
-	// バッファリソース内のデータを指すポインタ
 	VertexData* vertexData_ = nullptr;
 
+	// Indexリソースなど
+	Microsoft::WRL::ComPtr<ID3D12Resource> indexResource_;
+	D3D12_INDEX_BUFFER_VIEW indexBufferView_;
+	uint32_t* mappedIndex_ = nullptr;
 
 	// アニメーションの試運転用
 	Animation animation_;
-
 	Matrix4x4 localMatrix_;
-
 	float animationTime_ = 0.0f;
 
 	Skeleton skeleton_;
 
-	Vector3 startLine_;
-	Vector3 endLine_;
+
 };
 

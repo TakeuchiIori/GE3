@@ -1,156 +1,210 @@
 #include "TitleScene.h"
 #include "SceneManager.h"
 #include "Input.h"
+#include "TextureManager.h"
+#include "ParticleManager.h"
+
+
 #ifdef _DEBUG
 #include "imgui.h"
 #endif // DEBUG
+
+/// <summary>
+/// 初期化処理
+/// </summary>
 void TitleScene::Initialize()
 {
-	///============ モデル読み込み ============///
-	ModelManager::GetInstance()->LoadModel("Resources","lane.obj");
-	ModelManager::GetInstance()->LoadModel("Resources","xis.obj");
-	
-	
+    // カメラの生成
+    currentCamera_ = cameraManager_.AddCamera();
+    Object3dCommon::GetInstance()->SetDefaultCamera(currentCamera_.get());
 
-	///============ カメラ初期化 ============///
-	camera_ = std::make_unique<Camera>();
-	camera_->SetRotate({ 0.0f,0.0f,0.0f });
-	camera_->SetTranslate({ 0.0f,4.0f,-10.0f });
-	Object3dCommon::GetInstance()->SetDefaultCamera(camera_.get());
+    // 線
+    line_ = std::make_unique<Line>();
+    line_->Initialize();
+    line_->SetCamera(currentCamera_.get());
 
-	///============ スプライト初期化 ============///
-	std::string textureFilePath[2] = { "Resources/monsterBall.png" ,"Resources/uvChecker.png" };
-	for (uint32_t i = 0; i < 1; ++i) {
-		auto sprite = std::make_unique<Sprite>();
-		sprite->Initialize(textureFilePath[1]);
-		// 移動テスト
-		Vector2 position;
-		position.x = i * 200.0f;
-		position.y = 0.0f;
-		sprite->SetPosition(position);
-		
+    // 各オブジェクトの初期化
+    player_ = std::make_unique<Player>();
+    player_->Initialize();
 
-		// 初期色の設定
-		Vector4 color = { 1.0f, 1.0f, 1.0f, 1.0f };
-		sprite->SetColor(color);
-		if (i % 2 != 0) {
-			sprite->ChangeTexture(textureFilePath[0]);
-		}
-		else {
-			sprite->ChangeTexture(textureFilePath[1]);
-		}
-		sprites.push_back(std::move(sprite));
-	}
+    // test
+    test_ = std::make_unique<Object3d>();
+    test_->Initialize();
+    test_->SetModel("sneakWalk.gltf", true);
+    testWorldTransform_.Initialize();
+    //test_->SetLine(line_.get());
 
-	///============ オブジェクト初期化 ============///
-	uint32_t numObjects = 2;
-	for (uint32_t i = 0; i < numObjects; ++i) {
-		auto object = std::make_unique<Object3d>();
-		object->Initialize();
-		Vector3 position;
-		if (i == 0) {
-			position.x = -2;
-			object->SetModel("plane.obj");
-		}
-		else if (i == 1) {
-			position.x = 3;
-			object->SetModel("axis.obj");
-		}
-		position.y = 3;
-		position.z = 0.0f;
-	//	object->SetPosition(position);
-		object3ds.push_back(std::move(object));
-	}
+    // 初期カメラモード設定
+    cameraMode_ = CameraMode::FOLLOW;
 
-	soundData = Audio::GetInstance()->LoadWave("Resources./fanfare.wav");
-	
+    // パーティクル
+    std::string particleName = "Circle";
+    ParticleManager::GetInstance()->SetCamera(currentCamera_.get());
+    ParticleManager::GetInstance()->CreateParticleGroup(particleName, "Resources/images/circle.png");
+    emitterPosition_ = Vector3{ 0.0f, 0.0f, 0.0f }; // エミッタの初期位置
+    particleCount_ = 1;
+    particleEmitter_ = std::make_unique<ParticleEmitter>(particleName, emitterPosition_, particleCount_);
+
+
 }
 
-void TitleScene::Finalize()
-{ // シーン専用のリソース解放処理
-	for (auto& sprite : sprites) {
-		sprite.reset();
-	}
-	sprites.clear();
-
-	for (auto& obj : object3ds) {
-		obj.reset();
-	}
-	object3ds.clear();
-	 //解放処理
-	Audio::GetInstance()->SoundUnload(Audio::GetInstance()->GetXAudio2(), &soundData);
-}
-
+/// <summary>
+/// 更新処理
+/// </summary>
 void TitleScene::Update()
 {
-	// ENTERキーを押したら
-	if (Input::GetInstance()->TriggerKey(DIK_RETURN)) {
-	 //シーン切り替え依頼
-		SceneManager::GetInstance()->ChangeScene("GAME");
-}
-		
-	// 2Dスプライトの更新
-	for (size_t i = 0; i < sprites.size(); ++i) {
-		auto& sprite = sprites[i];
-		sprite->Update();
-		float rotation = sprite->GetRotation();
-		rotation += 0.01f;
-		//sprite->SetRotation(rotation);
-		Vector2 size = sprite->GetSize();
-		size.x += 0.01f;
-		size.y += 0.01f;
-		//sprite->SetSize(size);
-		Vector4 color = sprite->GetColor();
-		color.x += 0.01f;
-		if (color.x > 1.0f) {
-			color.x -= 1.0f;
-		}
-		//sprite->SetColor(color);
-		Vector2 position = sprite->GetPosition();
-#ifdef _DEBUG
-		ImGui::Begin("Sprite");
-		ImGui::DragFloat2("position", &position.x, 1.0f);
-		ImGui::End();
-#endif // DEBUG
-		sprite->SetPosition(position);
-	}
 
-	//// 3Dオブジェクトの更新
-	//for (int i = 0; i < object3ds.size(); ++i) {
-	//	auto& obj = object3ds[i];
-	//	
-	//	//Vector3 rotate = obj->GetRotation();
-	//	if (i == 0) {
-	//		rotate.y += 0.01f;
-	//	}
-	//	else if (i == 1) {
-	//		rotate.z += 0.01f;
-	//	}
-	////	obj->SetRotation(rotate);
-	//}
+    //if (Input::GetInstance()->TriggerKey(DIK_RETURN)) {
+    //    SceneManager::GetInstance()->ChangeScene("TITLE");
+    //}
 
-	// デフォルトカメラの更新
-	camera_->Update();
+    // プレイヤーの更新
+    player_->Update();
+    test_->UpdateAnimation();
+
+    // カメラ更新
+    UpdateCameraMode();
+    UpdateCamera();
+
+    // パーティクル更新
+    ParticleManager::GetInstance()->Update();
+    ShowImGui();
+    particleEmitter_->Update();
+
+
+
+    // ワールドトランスフォーム更新
+    testWorldTransform_.UpdateMatrix();
+    cameraManager_.UpdateAllCameras();
+
+    //=====================================================//
+    /*                  これより下は触るな危険　　　　　　　   　*/
+    //=====================================================//
+
+    // ライティング
+    LightManager::GetInstance()->ShowLightingEditor();
 }
 
+
+/// <summary>
+/// 描画処理
+/// </summary>
 void TitleScene::Draw()
 {
-	///======================  描画準備  ========================///
-	
-	/// 3Dオブジェクトの描画準備
-	Object3dCommon::GetInstance()->DrawPreference();
-	/// 2DSpriteの描画準備
-	SpriteCommon::GetInstance()->DrawPreference();
+#pragma region 2Dスプライト描画
+    SpriteCommon::GetInstance()->DrawPreference();
+    /// <summary>
+    /// ここから描画可能です
+    /// </summary>
 
-	///======================  実際に描画  ========================///
+    ParticleManager::GetInstance()->Draw();
 
-	// 2Dスプライト
-	for (auto& sprite : sprites) {
-		sprite->Draw();
-	}
-	//// 3Dオブジェクト
-	//for (auto& obj : object3ds) {
-	//	obj->Draw();
-	//}
+
+#pragma endregion
+
+#pragma region 3Dオブジェクト描画
+    Object3dCommon::GetInstance()->DrawPreference();
+    LightManager::GetInstance()->SetCommandList();
+    /// <summary>
+    /// ここから描画可能です
+    /// </summary>
+
+    player_->Draw();
+    test_->Draw(testWorldTransform_);
+
+    line_->DrawLine(start_, end_);
+
+    //test_->DrawSkeleton();
+
+#pragma endregion
+
 
 }
+
+/// <summary>
+/// 解放処理
+/// </summary>
+void TitleScene::Finalize()
+{
+    cameraManager_.RemoveCamera(currentCamera_);
+}
+
+void TitleScene::UpdateCameraMode()
+{
+#ifdef _DEBUG
+    ImGui::Begin("Camera Mode");
+    if (ImGui::Button("DEFAULT Camera")) {
+        cameraMode_ = CameraMode::DEFAULT;
+    }
+    if (ImGui::Button("Follow Camera")) {
+        cameraMode_ = CameraMode::FOLLOW;
+    }
+    if (ImGui::Button("Top-Down Camera")) {
+        cameraMode_ = CameraMode::TOP_DOWN;
+    }
+    if (ImGui::Button("FPS Camera")) {
+        cameraMode_ = CameraMode::FPS;
+    }
+    ImGui::End();
+#endif
+}
+
+void TitleScene::UpdateCamera()
+{
+    switch (cameraMode_)
+    {
+    case CameraMode::DEFAULT:
+    {
+        currentCamera_->DefaultCamera();
+    }
+    break;
+    case CameraMode::FOLLOW:
+    {
+        Vector3 playerPos = player_->GetPosition();
+        currentCamera_->FollowCamera(playerPos);
+    }
+    break;
+    case CameraMode::TOP_DOWN:
+    {
+        Vector3 topDownPosition = Vector3(0.0f, 100.0f, 0.0f);
+        currentCamera_->SetTopDownCamera(topDownPosition + player_->GetPosition());
+    }
+    break;
+    case CameraMode::FPS:
+    {
+        Vector3 playerPos = player_->GetPosition();
+        currentCamera_->SetFPSCamera(playerPos, player_->GetRotation());
+    }
+    break;
+
+    default:
+        break;
+    }
+}
+
+void TitleScene::ShowImGui()
+{
+#ifdef _DEBUG
+    ImGui::Begin("Emitter");
+    ImGui::DragFloat3("Emitter Position", &emitterPosition_.x, 0.1f);
+    particleEmitter_->SetPosition(emitterPosition_);
+
+    // パーティクル数の表示と調整
+    ImGui::Text("Particle Count: %.0d", particleCount_); // 現在のパーティクル数を表示
+    if (ImGui::Button("Increase Count")) {
+        particleCount_ += 1; // パーティクル数を増加
+    }
+    if (ImGui::Button("Decrease Count")) {
+        if (particleCount_ > 1) { // パーティクル数が1未満にならないように制限
+            particleCount_ -= 1;
+        }
+    }
+    particleEmitter_->SetCount(particleCount_);
+
+
+    ImGui::End();
+#endif // _DEBUG
+}
+
+
+

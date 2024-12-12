@@ -156,7 +156,8 @@ void Sprite::CreateVertex()
 	//vertexData[5].texcoord = { 1.0f,1.0f };
 	//// 書き込むためのアドレスを取得
 	//vertexData[0].normal = { 0.0f,0.0f,-1.0f };
-
+	
+	vertexResource_->Unmap(0, nullptr);
 }
 
 void Sprite::IndexResource()
@@ -183,6 +184,7 @@ void Sprite::CreateIndex()
 	indexData[3] = 1;  // 2つ目の三角形
 	indexData[4] = 3;
 	indexData[5] = 2;
+	indexResource_->Unmap(0, nullptr);
 }
 
 void Sprite::MaterialResource()

@@ -21,7 +21,7 @@ void Model::Initialize(ModelCommon* modelCommon, const std::string& directorypat
 	modelCommon_ = modelCommon;
 
 	// モデル読み込み
-	modelData_ = LoadModelFile(directorypath, filename);
+	modelData_ = LoadModelIndexFile(directorypath, filename);
 
 	// アニメーションをするならtrue
 	if (isAnimation) {
@@ -33,7 +33,10 @@ void Model::Initialize(ModelCommon* modelCommon, const std::string& directorypat
 	skeleton_ = CreateSkeleton(modelData_.rootNode);
 
 	// 頂点データの初期化
-	VertexResource();
+	CreateVertex();
+
+	// 頂点データを参照してIndexデータの作成
+	CreteIndex();
 
 	// .objの参照しているテクスチャファイル読み込み
 	TextureManager::GetInstance()->LoadTexture(modelData_.material.textureFilePath);
@@ -49,10 +52,12 @@ void Model::Draw()
 	//DrawSkeleton(skeleton_);
 	// VertexBufferView
 	modelCommon_->GetDxCommon()->GetCommandList()->IASetVertexBuffers(0, 1, &vertexBufferView_); // VBVを設定
+	// indexbufferView
+	modelCommon_->GetDxCommon()->GetCommandList()->IASetIndexBuffer(&indexBufferView_); // IBVを設定
 	// SRVの設定
 	modelCommon_->GetDxCommon()->GetCommandList()->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetsrvHandleGPU(modelData_.material.textureFilePath)); // SRVのパラメータインデックスを変更
 	// 描画！！！DrawCall/ドローコール）
-	modelCommon_->GetDxCommon()->GetCommandList()->DrawInstanced(UINT(modelData_.vertices.size()), 1, 0, 0);
+	modelCommon_->GetDxCommon()->GetCommandList()->DrawIndexedInstanced(static_cast<UINT>(modelData_.indices.size()), 1, 0, 0,0);
 
 }
 
@@ -114,25 +119,32 @@ void Model::PlayAnimation()
 	modelData_.rootNode.localMatrix = MakeAffineMatrix(scale, rotate, translate);
 }
 
-void Model::VertexResource()
+void Model::CreateVertex()
 {
 	// リソース
 	vertexResource_ = modelCommon_->GetDxCommon()->CreateBufferResource(sizeof(VertexData) * modelData_.vertices.size());
-	// リソースの先頭アドレスから使う
+
 	vertexBufferView_.BufferLocation = vertexResource_->GetGPUVirtualAddress();
-	// 使用するリソースサイズは頂点3つ分のサイズ
 	vertexBufferView_.SizeInBytes = UINT(sizeof(VertexData) * modelData_.vertices.size());
-	// 1頂点あたりのサイズ
 	vertexBufferView_.StrideInBytes = sizeof(VertexData);
 
-	CreateVertex();
+	// バッファ作成とデータ書き込み
+	vertexResource_->Map(0, nullptr, reinterpret_cast<void**>(&vertexData_));
+	memcpy(vertexData_, modelData_.vertices.data(), sizeof(VertexData) * modelData_.vertices.size());
+	vertexResource_->Unmap(0, nullptr);
 }
 
-void Model::CreateVertex()
+void Model::CreteIndex()
 {
-	vertexResource_->Map(0, nullptr, reinterpret_cast<void**>(&vertexData_));
-	// 頂点を作成
-	memcpy(vertexData_, modelData_.vertices.data(), sizeof(VertexData) * modelData_.vertices.size());
+	indexResource_ = modelCommon_->GetDxCommon()->CreateBufferResource(sizeof(uint32_t) * modelData_.indices.size());
+
+	indexBufferView_.BufferLocation = indexResource_->GetGPUVirtualAddress();
+	indexBufferView_.SizeInBytes = sizeof(uint32_t) * static_cast<UINT>(modelData_.indices.size());
+	indexBufferView_.Format = DXGI_FORMAT_R32_UINT;
+
+	indexResource_->Map(0, nullptr, reinterpret_cast<void**>(&mappedIndex_));
+	std::memcpy(mappedIndex_, modelData_.indices.data(), sizeof(uint32_t) * modelData_.indices.size());
+	indexResource_->Unmap(0, nullptr);
 }
 
 int32_t Model::CreateJoint(const Node& node, const std::optional<int32_t>& parent, std::vector<Joint>& joints)
@@ -445,6 +457,72 @@ Model::ModelData Model::LoadModelFile(const std::string& directoryPath, const st
 
 	}
 	
+	return modelData;
+}
+
+
+Model::ModelData Model::LoadModelIndexFile(const std::string& directoryPath, const std::string& filename)
+{
+	//=================================================//
+	//					 .obj読み込み
+	//=================================================//
+	ModelData modelData;
+	Assimp::Importer importer;
+	std::string filePath = directoryPath + "/" + filename;
+	const aiScene* scene = importer.ReadFile(filePath.c_str(), aiProcess_FlipWindingOrder | aiProcess_FlipUVs);
+	assert(scene->HasMeshes()); // メッシュが無いと非対応
+	modelData.rootNode = ReadNode(scene->mRootNode);
+	//=================================================//
+	//					 Meshを解析
+	//=================================================//
+
+	for (uint32_t meshIndex = 0; meshIndex < scene->mNumMeshes; ++meshIndex) {
+		aiMesh* mesh = scene->mMeshes[meshIndex];
+		assert(mesh->HasNormals());			  // 法線が無い場合のMeshは 04-00 では非対応
+		assert(mesh->HasTextureCoords(0));	  // TexcoordがないMeshは今回は非対応
+		modelData.vertices.resize(mesh->mNumVertices); // 最初に頂点数分のメモリを確保しておく
+		for (uint32_t vertexIndex = 0; vertexIndex < mesh->mNumVertices; ++vertexIndex) {
+			aiVector3D& position = mesh->mVertices[vertexIndex];
+			aiVector3D& normal = mesh->mNormals[vertexIndex];
+			aiVector3D& texcoords = mesh->mTextureCoords[0][vertexIndex];
+			// 右手系->左手系への変換を忘れずに
+			modelData.vertices[vertexIndex].position = { -position.x,position.y,position.z,1.0f };
+			modelData.vertices[vertexIndex].normal = { -normal.x,normal.y,normal.z };
+			modelData.vertices[vertexIndex].texcoord = { texcoords.x,texcoords.y };
+		}
+		//=================================================//
+		//				  Meshの中身（Face）を解析
+		//=================================================//
+		for (uint32_t faceIndex = 0; faceIndex < mesh->mNumFaces; ++faceIndex) {
+			aiFace& face = mesh->mFaces[faceIndex];
+			assert(face.mNumIndices == 3);		   // 三角形のみ
+
+			//=================================================//
+			//				  Faceの中身（Vertex）を解析
+			//=================================================//
+
+			for (uint32_t element = 0; element < face.mNumIndices; ++element) {
+				uint32_t vertexIndex = face.mIndices[element];
+				modelData.indices.push_back(vertexIndex);
+			}
+
+		}
+	}
+
+	//=================================================//
+	//				  materialを解析
+	//=================================================//
+
+	for (uint32_t materialIndex = 0; materialIndex < scene->mNumMaterials; ++materialIndex) {
+		aiMaterial* material = scene->mMaterials[materialIndex];
+		if (material->GetTextureCount(aiTextureType_DIFFUSE) != 0) {
+			aiString textureFilePath;
+			material->GetTexture(aiTextureType_DIFFUSE, 0, &textureFilePath);
+			modelData.material.textureFilePath = directoryPath + "/" + textureFilePath.C_Str();
+		}
+
+	}
+
 	return modelData;
 }
 

@@ -26,10 +26,15 @@ class LineManager
 {
 
 public: // メンバ関数
-
-	static LineManager* GetInstance();
+	// コンストラクタとデストラクタ
 	LineManager() = default;
 	~LineManager() = default;
+
+	static LineManager* GetInstance();
+	LineManager(const LineManager&) = delete;
+	LineManager& operator=(const LineManager&) = delete;
+	LineManager(LineManager&&) = delete;
+	LineManager& operator=(LineManager&&) = delete;
 
 	/// <summary>
 	/// 初期化
@@ -51,26 +56,25 @@ private:
 
 public:
 
-	ID3D12RootSignature* GetRootSignature_() { return rootSignature_.Get(); }
-	ID3D12PipelineState* GetGraphicsPiplineState() { return graphicsPipelineState_.Get(); }
+	Microsoft::WRL::ComPtr<ID3D12RootSignature> GetRootSignature() { return rootSignature_.Get(); }
+	Microsoft::WRL::ComPtr<ID3D12PipelineState> GetGraphicsPiplineState() { return graphicsPipelineState_.Get(); }
 
 
 private: 
-
-	// シングルトンインスタンス
-	static std::unique_ptr<LineManager> instance;
-	static std::once_flag initInstanceFlag;
 
 	// 外部からのポインタ
 	DirectXCommon* dxCommon_ = nullptr;
 	SrvManager* srvManager_ = nullptr;
 
-
+	
 
 	Microsoft::WRL::ComPtr<ID3D12RootSignature> rootSignature_;
 	Microsoft::WRL::ComPtr<ID3D12PipelineState> graphicsPipelineState_;
 	Microsoft::WRL::ComPtr<IDxcBlob> vertexShaderBlob_;
 	Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob_;
+
+	Microsoft::WRL::ComPtr<ID3DBlob> signatureBlob_;
+	Microsoft::WRL::ComPtr<ID3DBlob> errorBlob_;
 
 	D3D12_BLEND_DESC blendDesc_{};
 	D3D12_RASTERIZER_DESC rasterrizerDesc_{};

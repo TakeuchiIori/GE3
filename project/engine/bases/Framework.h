@@ -73,7 +73,7 @@ protected:
 	LightManager* lightManager_ = nullptr;
 	LineManager* lineManager_ = nullptr;
 private:
-	D3DResourceLeakChecker* leakCheck = nullptr;
+	
 	// ゲーム終了フラグ
 	bool endRequst_ = false;
 
