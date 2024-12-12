@@ -276,6 +276,9 @@
     <ClCompile Include="Engine\3d\line\Line.cpp">
       <Filter>ソース ファイル\Engine\3d\line</Filter>
     </ClCompile>
+    <ClCompile Include="Engine\bases\GraphicsPipelineManager.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="externals\imgui\imconfig.h">
@@ -436,6 +439,9 @@
     </ClInclude>
     <ClInclude Include="Engine\3d\line\LineManager.h">
       <Filter>ヘッダー ファイル\Engine\3d\line</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\bases\GraphicsPipelineManager.h">
+      <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

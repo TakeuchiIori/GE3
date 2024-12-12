@@ -139,6 +139,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Engine\3d\light\LightManager.cpp" />
     <ClCompile Include="Engine\3d\line\LineManager.cpp" />
     <ClCompile Include="Engine\3d\line\Line.cpp" />
+    <ClCompile Include="Engine\bases\GraphicsPipelineManager.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Engine\math\Matrix4x4.cpp" />
     <ClCompile Include="Engine\model\Model.cpp" />
@@ -214,6 +215,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="Engine\3d\light\LightManager.h" />
     <ClInclude Include="Engine\3d\line\LineManager.h" />
     <ClInclude Include="Engine\3d\line\Line.h" />
+    <ClInclude Include="Engine\bases\GraphicsPipelineManager.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="externals\imgui\LICENSE.txt" />
