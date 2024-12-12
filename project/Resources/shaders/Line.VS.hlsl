@@ -1,4 +1,3 @@
-#include "Line.hlsli"
 
 struct Transformation
 {

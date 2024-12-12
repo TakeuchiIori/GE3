@@ -68,10 +68,8 @@ void Line::CrateVetexResource()
 
 void Line::CrateMaterialResource()
 {
-	// 必要なサイズを256バイト単位にアラインメント
-	const UINT materialSize = (sizeof(MaterialData) + 255) & ~255;
 
-	materialResource_ = dxCommon_->CreateBufferResource(materialSize);
+	materialResource_ = dxCommon_->CreateBufferResource(sizeof(Vector4));
 	materialResource_->Map(0, nullptr, reinterpret_cast<void**>(&materialData_));
 	materialData_->color = { 1.0f, 1.0f, 1.0f, 1.0f };
 }
@@ -79,8 +77,8 @@ void Line::CrateMaterialResource()
 void Line::CreateTransformResource()
 {
 	// WVP行列リソースを作成
-	const UINT transformationSize = (sizeof(Matrix4x4) + 255) & ~255;
-	transformationResource_ = dxCommon_->CreateBufferResource(transformationSize);
+	
+	transformationResource_ = dxCommon_->CreateBufferResource(sizeof(Matrix4x4));
 	transformationResource_->Map(0, nullptr, reinterpret_cast<void**>(&transformationMatrix_));
 	transformationMatrix_->WVP = MakeIdentity4x4();
 }
