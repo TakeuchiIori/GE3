@@ -2,16 +2,11 @@
 #include "DirectXCommon.h"
 #include "SrvManager.h"
 
-// シングルトンインスタンスの初期化
-std::unique_ptr<LineManager> LineManager::instance = nullptr;
-std::once_flag LineManager::initInstanceFlag;
 
 LineManager* LineManager::GetInstance()
 {
-	std::call_once(initInstanceFlag, []() {
-		instance.reset(new LineManager());
-		});
-	return instance.get();
+	static LineManager instance;
+	return &instance;
 }
 
 void LineManager::Initialize()
@@ -23,6 +18,7 @@ void LineManager::Initialize()
 	// パイプライン生成
 	CreateGraphicsPipeline();
 }
+
 
 void LineManager::CreateRootSignature()
 {
@@ -49,17 +45,15 @@ void LineManager::CreateRootSignature()
 	descriptionRootSignature.NumParameters = _countof(rootParameters);			// 配列の長さ
 
 	// シリアライズしてバイナリにする
-	Microsoft::WRL::ComPtr<ID3DBlob> signatureBlob = nullptr;
-	Microsoft::WRL::ComPtr<ID3DBlob> errorBlob = nullptr;
 	HRESULT hr = D3D12SerializeRootSignature(&descriptionRootSignature,
-		D3D_ROOT_SIGNATURE_VERSION_1, &signatureBlob, &errorBlob);
+		D3D_ROOT_SIGNATURE_VERSION_1, &signatureBlob_, &errorBlob_);
 	if (FAILED(hr)) {
-		DirectXCommon::Log(reinterpret_cast<char*>(errorBlob->GetBufferPointer()));
+		DirectXCommon::Log(reinterpret_cast<char*>(errorBlob_->GetBufferPointer()));
 		assert(false);
 	}
 	// バイナリを元に生成
-	hr = dxCommon_->GetDevice()->CreateRootSignature(0, signatureBlob->GetBufferPointer(),
-		signatureBlob->GetBufferSize(), IID_PPV_ARGS(&rootSignature_));
+	hr = dxCommon_->GetDevice()->CreateRootSignature(0, signatureBlob_->GetBufferPointer(),
+		signatureBlob_->GetBufferSize(), IID_PPV_ARGS(&rootSignature_));
 	assert(SUCCEEDED(hr));
 
 	// BlendDtateの設定

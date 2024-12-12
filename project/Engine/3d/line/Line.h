@@ -34,7 +34,7 @@ private:
 	/// <summary>
 	/// 頂点を作成
 	/// </summary>
-	void CreateVertices(const Vector3& start, const Vector3& end);
+	void UpdateVertices(const Vector3& start, const Vector3& end);
 
 	/// <summary>
 	/// 頂点リソース
@@ -88,5 +88,8 @@ private:
 	TransformationMatrix* transformationMatrix_ = nullptr;
 
 	VertexData vertices_[2];
+
+	Vector3 lastStart_; // 前回の始点
+	Vector3 lastEnd_;   // 前回の終点
 };
 

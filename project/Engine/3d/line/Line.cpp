@@ -17,8 +17,13 @@ void Line::Initialize()
 
 void Line::DrawLine(const Vector3& start, const Vector3& end)
 {
-	// 頂点を更新
-	CreateVertices(start, end);
+	// 前回のデータと異なる場合のみ頂点を更新
+	if (start != lastStart_ || end != lastEnd_) {
+		UpdateVertices(start, end);
+		lastStart_ = start;
+		lastEnd_ = end;
+	}
+
 
 	// WVP行列を更新
 	if (camera_) {
@@ -30,8 +35,8 @@ void Line::DrawLine(const Vector3& start, const Vector3& end)
 
 	// GPUに頂点バッファを設定して描画
 	auto commandList = dxCommon_->GetCommandList();
-	commandList->SetGraphicsRootSignature(lineManager_->GetRootSignature_());
-	commandList->SetPipelineState(lineManager_->GetGraphicsPiplineState());
+	commandList->SetGraphicsRootSignature(lineManager_->GetRootSignature_().Get());
+	commandList->SetPipelineState(lineManager_->GetGraphicsPiplineState().Get());
 	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_LINELIST);
 	commandList->SetGraphicsRootConstantBufferView(0, materialResource_->GetGPUVirtualAddress());
 	commandList->SetGraphicsRootConstantBufferView(1, transformationResource_->GetGPUVirtualAddress());
@@ -39,7 +44,7 @@ void Line::DrawLine(const Vector3& start, const Vector3& end)
 	commandList->DrawInstanced(2, 1, 0, 0); // ラインは2つの頂点で構成
 }
 
-void Line::CreateVertices(const Vector3& start, const Vector3& end)
+void Line::UpdateVertices(const Vector3& start, const Vector3& end)
 {
 	// 頂点データの設定
 	VertexData vertices[2];

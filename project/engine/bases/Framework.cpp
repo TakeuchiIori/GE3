@@ -71,7 +71,6 @@ void Framework::Finalize()
 	input_->Finalize();
 	winApp_->Finalize();
 	winApp_ = nullptr;
-	
 }
 
 void Framework::Update()

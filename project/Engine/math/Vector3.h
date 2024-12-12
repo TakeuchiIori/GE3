@@ -99,3 +99,17 @@ struct Vector3 final {
         return x == 0.0f && y == 0.0f && z == 0.0f;
     }
 };
+
+/// <summary>
+/// Vector3型同士を等値比較する演算子
+/// </summary>
+inline bool operator==(const Vector3& lhs, const Vector3& rhs) {
+    return (lhs.x == rhs.x) && (lhs.y == rhs.y) && (lhs.z == rhs.z);
+}
+
+/// <summary>
+/// Vector3型同士を非等値比較する演算子
+/// </summary>
+inline bool operator!=(const Vector3& lhs, const Vector3& rhs) {
+    return !(lhs == rhs);
+}

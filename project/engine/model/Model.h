@@ -246,7 +246,6 @@ private: // メンバ変数
 
 	Skeleton skeleton_;
 
-	Vector3 startLine_;
-	Vector3 endLine_;
+
 };
 
