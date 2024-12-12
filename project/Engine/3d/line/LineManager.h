@@ -26,6 +26,9 @@ class LineManager
 {
 
 public: // メンバ関数
+	// コンストラクタとデストラクタ
+	LineManager() = default;
+	~LineManager() = default;
 
 	static LineManager* GetInstance();
 	LineManager(const LineManager&) = delete;
@@ -58,14 +61,12 @@ public:
 
 
 private: 
-	// コンストラクタとデストラクタ
-	LineManager() = default;
-	~LineManager() = default;
+
 	// 外部からのポインタ
 	DirectXCommon* dxCommon_ = nullptr;
 	SrvManager* srvManager_ = nullptr;
 
-
+	
 
 	Microsoft::WRL::ComPtr<ID3D12RootSignature> rootSignature_;
 	Microsoft::WRL::ComPtr<ID3D12PipelineState> graphicsPipelineState_;

@@ -2,8 +2,6 @@
 
 void Framework::Initialize()
 {
-	// リークチェック
-	leakCheck = D3DResourceLeakChecker::GetInstance();
 	// ウィンドウ生成
 	winApp_ = WinApp::GetInstance();
 	winApp_->Initialize();
@@ -32,10 +30,6 @@ void Framework::Initialize()
 	textureManager_ = TextureManager::GetInstance();
 	textureManager_->Initialize(dxCommon_, srvManager_);
 
-	// LineManagerの生成
-	lineManager_ = LineManager::GetInstance();
-	lineManager_->Initialize();
-
 	// スプライト共通部の生成
 	spriteCommon_ = SpriteCommon::GetInstance();
 	spriteCommon_->Initialize(dxCommon_);
@@ -56,7 +50,9 @@ void Framework::Initialize()
 	collisionManager_ = CollisionManager::GetInstance();
 	collisionManager_->Initialize();
 	
-	
+	// LineManagerの生成
+	lineManager_ = LineManager::GetInstance();
+	lineManager_->Initialize();
 	
 }
 
@@ -71,6 +67,8 @@ void Framework::Finalize()
 	input_->Finalize();
 	winApp_->Finalize();
 	winApp_ = nullptr;
+
+
 }
 
 void Framework::Update()

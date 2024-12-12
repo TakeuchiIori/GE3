@@ -4,8 +4,8 @@
 #include <d3d12sdklayers.h>
 #include <wrl.h>
 #include <dxgi1_3.h>
-class D3DResourceLeakChecker {
-public:
+struct  D3DResourceLeakChecker {
+
 	~D3DResourceLeakChecker()
 	{
 		// リソースリークチェック
@@ -18,9 +18,5 @@ public:
 
 		}
 	}
-	/// <summary>
-	/// シングルトンインスタンスの取得
-	/// </summary>
-	/// <returns>シングルトンインスタンス</returns>
-	static D3DResourceLeakChecker* GetInstance();
+
 };

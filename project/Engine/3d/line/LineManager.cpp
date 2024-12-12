@@ -35,9 +35,9 @@ void LineManager::CreateRootSignature()
 	rootParameters[0].Descriptor.ShaderRegister = 0;								// レジスタ番号0とバインド
 	
 	// 座標変換行列
-	rootParameters[1].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;					// CBVを使う
-	rootParameters[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;				// VertexShaderで使う
-	rootParameters[1].Descriptor.ShaderRegister = 1;									// レジスタ番号0とバインド
+	rootParameters[1].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;				// CBVを使う
+	rootParameters[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;			// VertexShaderで使う
+	rootParameters[1].Descriptor.ShaderRegister = 1;								// レジスタ番号0とバインド
 	
 	D3D12_ROOT_SIGNATURE_DESC descriptionRootSignature = {};
 	descriptionRootSignature.Flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
