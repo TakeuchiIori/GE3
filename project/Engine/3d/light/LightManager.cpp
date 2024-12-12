@@ -1,8 +1,13 @@
 #include "LightManager.h"
-#include "DirectXCommon.h"
-#include "object3d/Object3dCommon.h"
+// C++
 #include <algorithm>
-#include "MathFunc.h"
+
+// Engine
+#include "bases/DirectXCommon.h"
+#include "3d/object3d/Object3dCommon.h"
+
+// Math
+#include "math/MathFunc.h"
 #ifdef _DEBUG
 #include "imgui.h"
 #endif // _DEBUG

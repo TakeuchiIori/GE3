@@ -1,6 +1,7 @@
 #include "SceneFactory.h"
-#include "TitleScene.h"
-#include "GameScene.h"
+// Engine
+#include "scene/TitleScene.h"
+#include "scene/GameScene.h"
 
 BaseScene* SceneFactory::CreateScene(const std::string& sceneName)
 {

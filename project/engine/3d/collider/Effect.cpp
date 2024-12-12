@@ -1,6 +1,9 @@
 #include "Effect.h"
-#include "MathFunc.h"
-#include "ModelManager.h"
+// Engine
+#include "model/ModelManager.h"
+
+// C++
+#include "math/MathFunc.h"
 
 void Effect::Initialize() {
 	

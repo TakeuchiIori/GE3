@@ -1,13 +1,19 @@
 #pragma once
+// C++
 #include <wrl.h>
 #include <d3d12.h>
 #include <string>
 #include <vector>
-#include "Vector4.h"
-#include "Matrix4x4.h"
-#include "Vector2.h"
-#include "Vector3.h"
-#include "camera/Camera.h"
+
+// Engine
+#include "3d/camera/Camera.h"
+
+// Math
+#include "math/Vector4.h"
+#include "math/Matrix4x4.h"
+#include "math/Vector2.h"
+#include "math/Vector3.h"
+
 
 class DirectXCommon;
 class Object3dCommon;

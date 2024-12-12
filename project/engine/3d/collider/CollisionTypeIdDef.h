@@ -1,4 +1,5 @@
 #pragma once
+// C++
 #include <cstdint>
 // コリジョン種別IDを定義
 enum class CollisionTypeIdDef : uint32_t

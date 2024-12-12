@@ -1,7 +1,7 @@
 #include "Line.h"
-#include "DirectXCommon.h"
+#include "bases/DirectXCommon.h"
 #include "LineManager.h"
-#include "camera/Camera.h"
+#include "3d/camera/Camera.h"
 void Line::Initialize()
 {
 	lineManager_ = LineManager::GetInstance();

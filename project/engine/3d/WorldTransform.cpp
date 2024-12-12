@@ -1,7 +1,10 @@
-#include <WorldTransform.h>
-#include <MathFunc.h>
-#include <DirectXCommon.h>
-#include <object3d/Object3dCommon.h>
+#include "WorldTransform.h"
+// Engine
+#include "bases/DirectXCommon.h"
+#include "3d/object3d/Object3dCommon.h"
+
+// Math
+#include "math/MathFunc.h"
 
 void WorldTransform::Initialize()
 {

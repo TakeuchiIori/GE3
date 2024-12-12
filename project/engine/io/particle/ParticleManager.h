@@ -12,14 +12,15 @@
 #include <list>
 #include <unordered_map >
 
-// 
-#include "Vector"
-#include "Vector4.h"
-#include "Matrix4x4.h"
-#include "Vector2.h"
-#include "Vector3.h"
-#include "camera/Camera.h"
-#include "Mathfunc.h"
+// Engine
+#include "3d/camera/Camera.h"
+
+// Math
+#include "math/Vector4.h"
+#include "math/Matrix4x4.h"
+#include "math/Vector2.h"
+#include "math/Vector3.h"
+#include "math/Mathfunc.h"
 
 class DirectXCommon;
 class SrvManager;

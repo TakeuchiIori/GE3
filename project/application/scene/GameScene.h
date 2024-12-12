@@ -1,21 +1,27 @@
 #pragma once
-#include "BaseScene.h"
-#include "sprite/Sprite.h"
-#include "sprite/SpriteCommon.h"
-#include "SrvManager.h"
-#include "object3d/Object3d.h"
-#include "object3d/Object3dCommon.h"
-#include "Audio.h"
-#include "light/LightManager.h"
-#include "ModelManager.h"
-#include "camera/Camera.h"
-#include "Player.h"
-#include "WorldTransform.h"
-#include "camera/CameraManager.h"
-#include "ParticleEmitter.h"
-#include "line/Line.h"
+
+// C++
 #include <memory>
 #include <map>
+
+// Engine
+#include "BaseScene.h"
+#include "2d/sprite/Sprite.h"
+#include "2d/sprite/SpriteCommon.h"
+#include "bases/SrvManager.h"
+#include "3d/object3d/Object3d.h"
+#include "3d/object3d/Object3dCommon.h"
+#include "io/audio//Audio.h"
+#include "3d/light/LightManager.h"
+#include "model/ModelManager.h"
+#include "3d/camera/Camera.h"
+#include "player/Player.h"
+#include "3d/WorldTransform.h"
+#include "3d/camera/CameraManager.h"
+#include "io/particle/ParticleEmitter.h"
+#include "3d/line/Line.h"
+
+
 enum class CameraMode
 {
     DEFAULT,

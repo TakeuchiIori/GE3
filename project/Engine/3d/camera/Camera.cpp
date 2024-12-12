@@ -1,7 +1,12 @@
 #include "Camera.h"
-#include "MathFunc.h"
-#include "WinApp.h"
+// C++
 #include <cmath>
+// Engine
+#include "bases/WinApp.h"
+
+// Math
+#include "math/MathFunc.h"
+
 #ifdef _DEBUG
 #include "imgui.h"
 #endif // _DEBUG

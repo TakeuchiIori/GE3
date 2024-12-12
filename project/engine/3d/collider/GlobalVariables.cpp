@@ -1,6 +1,8 @@
 #include "GlobalVariables.h"
+// C++
 #include <fstream>
 #include "Windows.h"
+
 #ifdef _DEBUG
 #include <imgui.h>
 #endif 

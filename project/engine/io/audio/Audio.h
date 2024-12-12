@@ -1,7 +1,8 @@
 #pragma once
-#include "xaudio2.h"
+// C++
+#include <xaudio2.h>
 #include <fstream>
-#include "wrl.h"
+#include <wrl.h>
 
 
 #pragma comment(lib,"xaudio2.lib")

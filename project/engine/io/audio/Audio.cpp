@@ -1,5 +1,6 @@
 #include "Audio.h"
-#include "assert.h"
+// C++
+#include <assert.h>
 
 Audio* Audio::instance = nullptr;
 Audio* Audio::GetInstance()

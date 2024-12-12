@@ -1,6 +1,10 @@
 #pragma once
-#include "BaseScene.h"
+// C++
 #include <string>
+
+// Engine
+#include "scene/BaseScene.h"
+
 
 /// シーン工場（概念）
 class AbstractSceneFactory {

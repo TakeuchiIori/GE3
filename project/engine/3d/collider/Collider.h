@@ -1,8 +1,11 @@
 #pragma once
-#include "Vector3.h"
-#include "WorldTransform.h"
-#include "object3d/Object3d.h"
-#include "CollisionTypeIdDef.h"
+// Engine
+#include "3d/WorldTransform.h"
+#include "3d/object3d/Object3d.h"
+#include "3d/collider/CollisionTypeIdDef.h"
+
+// Math
+#include "math/Vector3.h"
 
 class Collider {
 public:

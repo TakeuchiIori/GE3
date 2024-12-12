@@ -1,6 +1,6 @@
 #include "LineManager.h"
-#include "DirectXCommon.h"
-#include "SrvManager.h"
+#include "bases/DirectXCommon.h"
+#include "bases/SrvManager.h"
 
 
 LineManager* LineManager::GetInstance()

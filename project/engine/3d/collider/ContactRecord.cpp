@@ -1,4 +1,5 @@
 #include "ContactRecord.h"
+// C++
 #include <algorithm>
 
 void ContactRecord::record(uint32_t number) {

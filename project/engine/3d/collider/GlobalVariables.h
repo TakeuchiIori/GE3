@@ -1,9 +1,12 @@
 #pragma once
-#include "variant"
-#include "map"
-#include "string"
-#include "Vector3.h"
+// C++
+#include <variant>
+#include <map>
+#include <string>
 #include <json.hpp>
+
+// Math
+#include "math/Vector3.h"
 
 using json = nlohmann::json;
 

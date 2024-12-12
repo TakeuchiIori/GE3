@@ -1,6 +1,7 @@
 #include "TextureManager.h"
+// C++
 #include <mutex>
-#include "assert.h"
+#include <assert.h>
 
 // シングルトンインスタンスの初期化
 std::unique_ptr<TextureManager> TextureManager::instance = nullptr;

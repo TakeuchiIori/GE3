@@ -1,7 +1,11 @@
 #pragma once
 #include "Windows.h"
-#include <LeakChecker.h>
+
+// C++
 #include <cstdint>
+
+// Engine
+#include <utility/LeakChecker.h>
 
 class WinApp
 {

@@ -1,11 +1,13 @@
 #pragma once
-
-#include "Matrix4x4.h"
-#include "Vector3.h"
+// C++
 #include <d3d12.h>
 #include <type_traits>
 #include <wrl.h>
-#include <MathFunc.h>
+
+// Math
+#include "math/Matrix4x4.h"
+#include "math/Vector3.h"
+#include "math/MathFunc.h"
 
 class WorldTransform {
 public:

@@ -1,10 +1,13 @@
 #include "Player.h"
-#include "ModelManager.h"
-#include "object3d/Object3dCommon.h"
+// Engine
+#include "model/ModelManager.h"
+#include "3d/object3d/Object3dCommon.h"
+#include "3d/collider/GlobalVariables.h"
+
 #ifdef _DEBUG
 #include "imgui.h" 
 #endif // _DEBUG
-#include "collider/GlobalVariables.h"
+
 
 
 void Player::Initialize()

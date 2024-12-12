@@ -1,14 +1,16 @@
 #pragma once
-#include "Vector2.h"
-#include "Vector3.h"
-#include "Vector4.h"
-#include "Matrix4x4.h"
-#include "vector"
+// C++
+#include <vector>
 #include <cmath>
 #include <numbers>
 #include <stdexcept>
 #include <algorithm>
 
+// Math
+#include "Vector2.h"
+#include "Vector3.h"
+#include "Vector4.h"
+#include "Matrix4x4.h"
 
 struct Quaternion
 {

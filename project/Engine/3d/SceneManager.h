@@ -1,8 +1,13 @@
 #pragma once
-#include "BaseScene.h"
-#include "AbstractSceneFactory.h"
+// C++
 #include <memory>
 #include <mutex>
+
+
+// Engine
+#include "scene/BaseScene.h"
+#include "utility/AbstractSceneFactory.h"
+
 class SceneManager
 {
 public: // メンバ関数

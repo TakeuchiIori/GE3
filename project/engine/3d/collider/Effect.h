@@ -1,8 +1,12 @@
 #pragma once
-#include "Model.h"
-#include "WorldTransform.h"
-#include "object3d/Object3d.h"
+// C++
 #include <memory>
+
+// Engine
+#include "model/Model.h"
+#include "3d/WorldTransform.h"
+#include "3d/object3d/Object3d.h"
+
 class Effect {
 public:
 	Effect() = default;

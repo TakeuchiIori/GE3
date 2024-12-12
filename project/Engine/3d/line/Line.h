@@ -6,9 +6,9 @@
 #include <array>
 
 // Math
-#include "Vector3.h"
-#include "Matrix4x4.h"
-#include "MathFunc.h"
+#include "math/Vector3.h"
+#include "math/Matrix4x4.h"
+#include "math/MathFunc.h"
 
 
 class Camera;

@@ -1,12 +1,20 @@
 #include "CollisionManager.h"
-#include "assert.h"
-#include "GlobalVariables.h"
-#include "ModelManager.h"
-#include "MathFunc.h"
+// C++
+#include <assert.h>
 #include <iostream>
+
+// Engine
+#include "GlobalVariables.h"
+#include "model/ModelManager.h"
+#include "CollisionTypeIdDef.h"
+
+// C++
+#include "math/MathFunc.h"
+
 #ifdef _DEBUG
 #include "imgui.h"
 #endif // _DEBUG
+
 
 
 

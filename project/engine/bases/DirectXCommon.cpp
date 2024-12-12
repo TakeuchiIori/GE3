@@ -1,9 +1,12 @@
 #include "DirectXCommon.h"
+
+// C++
 #include <cassert>
 #include <thread>
 #include <format>
 #include "d3dx12.h"
 
+// lib
 #pragma comment(lib,"d3d12.lib")
 #pragma comment(lib,"dxgi.lib")
 #pragma comment(lib, "dxguid.lib")

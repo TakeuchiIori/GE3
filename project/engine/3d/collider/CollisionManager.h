@@ -1,7 +1,10 @@
 #pragma once
+// Engine
 #include "Collider.h"
-#include "object3d/Object3d.h"
-#include "WorldTransform.h"
+#include "3d/object3d/Object3d.h"
+#include "3d/WorldTransform.h"
+
+// C++
 #include <list>
 #include <memory>
 

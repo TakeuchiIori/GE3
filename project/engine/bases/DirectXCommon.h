@@ -1,4 +1,5 @@
 #pragma once
+// C++
 #include <d3d12.h>
 #include <dxgi1_6.h>
 #include <wrl.h>
@@ -6,7 +7,11 @@
 #include <dxcapi.h>
 #include <string>
 #include <chrono>
+
+// Engine
 #include "WinApp.h"
+
+// DirectX
 #include "DirectXTex.h"
 
 

@@ -1,4 +1,6 @@
 #include "CameraManager.h"
+
+// C++
 #include <algorithm>
 
 std::shared_ptr<Camera> CameraManager::AddCamera()

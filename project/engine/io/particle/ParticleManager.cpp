@@ -1,8 +1,12 @@
 #include "ParticleManager.h"
-#include "DirectXCommon.h"
-#include "SrvManager.h"
-#include "TextureManager.h"
-#include "WinApp.h"
+
+// Engine
+#include "bases/DirectXCommon.h"
+#include "bases/SrvManager.h"
+#include "bases/TextureManager.h"
+#include "bases/WinApp.h"
+
+// C++
 #include <numbers>
 #include <cassert>
 

@@ -1,7 +1,12 @@
 #pragma once
-#include "Vector3.h"
+// C++
 #include <assert.h>
 #include <cmath>
+
+// Math
+#include "Vector3.h"
+
+
 struct Matrix4x4 {
 	float m[4][4];
 

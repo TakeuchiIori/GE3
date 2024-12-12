@@ -1,8 +1,9 @@
 #include "TitleScene.h"
-#include "SceneManager.h"
-#include "Input.h"
-#include "TextureManager.h"
-#include "ParticleManager.h"
+// Engine
+#include "3d/SceneManager.h"
+#include "io/input/Input.h"
+#include "bases/TextureManager.h"
+#include "io/particle/ParticleManager.h"
 
 
 #ifdef _DEBUG

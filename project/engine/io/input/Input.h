@@ -1,17 +1,20 @@
 #pragma once
+// C++
 #include <Windows.h>
 #include <wrl.h>
-#include "WinApp.h"
 #define DIRECTINPUT_VERSION     0x0800
 #include "dinput.h"
 #include "assert.h"
-#include "Vector2.h"
 #include <array>
 #include <vector>
 #include <Xinput.h>
 #include <chrono>
 
+// Engine
+#include "bases/WinApp.h"
 
+// Math
+#include "math/Vector2.h"
 #pragma comment(lib,"dinput8.lib")
 #pragma comment(lib,"dxguid.lib")
 #pragma comment(lib,"xinput.lib")

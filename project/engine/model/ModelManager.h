@@ -1,10 +1,14 @@
 #pragma once
+
+// C++
 #include <string>
 #include <map>
 #include <memory>
+
+// Engine
 #include "Model.h"
 #include "ModelCommon.h"
-#include "DirectXCommon.h"
+#include "bases/DirectXCommon.h"
 
 class ModelManager
 {

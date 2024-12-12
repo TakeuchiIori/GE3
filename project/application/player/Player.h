@@ -1,11 +1,16 @@
 #pragma once
-#include "object3d/Object3d.h"
-#include "MathFunc.h"
-#include "Vector3.h" 
-#include "Input.h"
+// Engine
+#include "3d/object3d/Object3d.h"
+#include "io/input/Input.h"
+#include "3d/WorldTransform.h"
+#include "3d/collider/Collider.h"
+
+// C++
 #include <memory>
-#include "WorldTransform.h"
-#include "collider/Collider.h"
+
+// Math
+#include "math/MathFunc.h"
+#include "math/Vector3.h" 
 
 class Player : public Collider
 {

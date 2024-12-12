@@ -1,8 +1,14 @@
 #pragma once
-#include "ParticleManager.h"
-#include "WorldTransform.h"
-#include "Vector3.h"
+// C++
 #include <string>
+
+// Engine
+#include "ParticleManager.h"
+#include "3d/WorldTransform.h"
+
+// Math
+#include "math/Vector3.h"
+
 
 
 class ParticleEmitter
