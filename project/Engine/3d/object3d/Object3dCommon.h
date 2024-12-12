@@ -1,6 +1,9 @@
 #pragma once
-#include "DirectXCommon.h"
-#include "camera/Camera.h"
+// Engine
+#include "bases/DirectXCommon.h"
+#include "3d/camera/Camera.h"
+
+// C++
 #include <memory>
 #include <mutex>
 

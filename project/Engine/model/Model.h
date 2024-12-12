@@ -1,16 +1,22 @@
 #pragma once
+
+// C++
 #include <wrl.h>
 #include <d3d12.h>
 #include <string>
 #include <vector>
-#include "Vector4.h"
-#include "Matrix4x4.h"
-#include "Vector2.h"
-#include "Vector3.h"
-#include "MathFunc.h"
-#include "DirectXCommon.h"
-#include "WorldTransform.h"
 #include <optional>
+
+// Engine
+#include "bases/DirectXCommon.h"
+#include "3D/WorldTransform.h"
+
+// Math
+#include "math/MathFunc.h"
+#include "math/Vector4.h"
+#include "math/Matrix4x4.h"
+#include "math/Vector2.h"
+#include "math/Vector3.h"
 
 // assimp
 #include <assimp/scene.h>

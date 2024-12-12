@@ -1,5 +1,5 @@
 #pragma once
-#include "DirectXCommon.h"
+#include "bases/DirectXCommon.h"
 #include <memory>
 #include <mutex>
 

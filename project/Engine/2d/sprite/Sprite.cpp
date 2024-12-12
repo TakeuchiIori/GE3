@@ -1,6 +1,6 @@
 #include "Sprite.h"
 #include "SpriteCommon.h"
-#include "TextureManager.h"
+#include "bases/TextureManager.h"
 
 Sprite::Sprite()
 {

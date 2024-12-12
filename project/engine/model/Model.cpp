@@ -1,9 +1,9 @@
 
-
+// Engine
 #include "Model.h"
 #include "ModelCommon.h"
-#include "TextureManager.h"
-#include "line/Line.h"
+#include "bases/TextureManager.h"
+#include "3D/line/Line.h"
 
 // C++
 #include <assert.h>

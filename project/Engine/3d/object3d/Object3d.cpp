@@ -1,16 +1,22 @@
 #include "Object3d.h"
 #include "Object3dCommon.h"
 #include <assert.h>
+// C++
 #include <fstream>
 #include <sstream>
-#include "TextureManager.h"
-#include "ModelManager.h"
-#include "Model.h"
-#include "WorldTransform.h"
+#include <algorithm>
+
+// Engine
+#include "bases/TextureManager.h"
+#include "model/ModelManager.h"
+#include "model/Model.h"
+#include "3d/WorldTransform.h"
+
+
 #ifdef _DEBUG
 #include "imgui.h"
 #endif // _DEBUG
-#include <algorithm>
+
 void Object3d::Initialize()
 {
 	// 引数で受け取ってメンバ変数に記録する

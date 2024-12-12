@@ -1,6 +1,6 @@
 #pragma once
-#include "SceneFactory.h"
-#include "Framework.h"
+#include "utility/SceneFactory.h"
+#include "bases/Framework.h"
 
 class MyGame : public Framework
 {

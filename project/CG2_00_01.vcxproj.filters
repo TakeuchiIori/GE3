@@ -210,7 +210,7 @@
     <ClCompile Include="application\scene\TitleScene.cpp">
       <Filter>ソース ファイル\Application\scene</Filter>
     </ClCompile>
-    <ClCompile Include="application\scene\SceneManager.cpp">
+    <ClCompile Include="Engine\3d\SceneManager.cpp">
       <Filter>ソース ファイル\Application\scene</Filter>
     </ClCompile>
     <ClCompile Include="application\scene\GameScene.cpp">
@@ -374,7 +374,7 @@
     <ClInclude Include="application\scene\TitleScene.h">
       <Filter>ヘッダー ファイル\Application\scene</Filter>
     </ClInclude>
-    <ClInclude Include="application\scene\SceneManager.h">
+    <ClInclude Include="Engine\3d\SceneManager.h">
       <Filter>ヘッダー ファイル\Application\scene</Filter>
     </ClInclude>
     <ClInclude Include="application\scene\GameScene.h">

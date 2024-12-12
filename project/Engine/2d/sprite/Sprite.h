@@ -1,15 +1,18 @@
 #pragma once
+// C++
 #include <wrl.h>
 #include <d3d12.h>
 #include <string>
-#include "DirectXTex.h"
-#include "SrvManager.h"
 
-// math
-#include "Vector4.h"
-#include "Matrix4x4.h"
-#include "MathFunc.h"
-#include "Vector2.h"
+// Engine
+#include "DirectXTex.h"
+#include "bases/SrvManager.h"
+
+// Math
+#include "math/Vector4.h"
+#include "math/Matrix4x4.h"
+#include "math/MathFunc.h"
+#include "math/Vector2.h"
 class SpriteCommon;
 class Sprite
 {
