@@ -35,7 +35,7 @@ void Line::DrawLine(const Vector3& start, const Vector3& end)
 
 	// GPUに頂点バッファを設定して描画
 	auto commandList = dxCommon_->GetCommandList();
-	commandList->SetGraphicsRootSignature(lineManager_->GetRootSignature_().Get());
+	commandList->SetGraphicsRootSignature(lineManager_->GetRootSignature().Get());
 	commandList->SetPipelineState(lineManager_->GetGraphicsPiplineState().Get());
 	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_LINELIST);
 	commandList->SetGraphicsRootConstantBufferView(0, materialResource_->GetGPUVirtualAddress());

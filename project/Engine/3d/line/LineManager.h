@@ -53,7 +53,7 @@ private:
 
 public:
 
-	Microsoft::WRL::ComPtr<ID3D12RootSignature> GetRootSignature_() { return rootSignature_.Get(); }
+	Microsoft::WRL::ComPtr<ID3D12RootSignature> GetRootSignature() { return rootSignature_.Get(); }
 	Microsoft::WRL::ComPtr<ID3D12PipelineState> GetGraphicsPiplineState() { return graphicsPipelineState_.Get(); }
 
 
