@@ -12,7 +12,7 @@
 // CRS = Craete Root Signature
 // CGP = Create Graphics Pipeline
 
-
+class DirectXCommon;
 class PipelineManager
 {
 public: 
@@ -93,7 +93,7 @@ private:
 
 private:
 
-	
+	DirectXCommon* dxCommon_ = nullptr;
 
 	std::unordered_map<std::string, Microsoft::WRL::ComPtr<ID3D12PipelineState>> pipelineStates_;
 	std::unordered_map<std::string, Microsoft::WRL::ComPtr<ID3D12RootSignature>> rootSignatures_;
