@@ -49,27 +49,6 @@ public:
 private:
 
 	//==================================================//
-	/*                ルートシグネチャ作成			        */
-	//==================================================//
-
-	/// <summary>
-	/// スプライト用のルートシグネチャ
-	/// </summary>
-	void CRS_Sprite();
-
-	/// <summary>
-	/// オブジェクト用のルートシグネチャ
-	/// </summary>
-	void CRS_Object();
-
-	/// <summary>
-	/// ライン用のルートシグネチャ
-	/// </summary>
-	void CRS_Line();
-
-private:
-
-	//==================================================//
 	/*					パイプライン作成					*/
 	//==================================================//
 
@@ -77,17 +56,17 @@ private:
 	/// <summary>
 	/// スプライト用パイプライン
 	/// </summary>
-	void CGP_Sprite();
+	void CreatePiplineSprite();
 
 	/// <summary>
 	/// オブジェクト用のパイプライン
 	/// </summary>
-	void CGP_Object();
+	void CreatePiplineObject();
 
 	/// <summary>
 	/// ライン用のパイプライン
 	/// </summary>
-	void CGP_Line();
+	void CreatePiplineLine();
 
 
 

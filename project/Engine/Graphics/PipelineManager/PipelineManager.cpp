@@ -43,17 +43,17 @@ void PipelineManager::CreatePipelineState(const std::string& key)
     D3D12_GRAPHICS_PIPELINE_STATE_DESC desc = {};
     if (key == "Sprite") {
         // スプライト用の設定
-        CRS_Sprite();
+		CreatePiplineSprite();
 
     }
     else if (key == "Object") {
         // オブジェクト用の設定
-        CRS_Object();
+		CreatePiplineObject();
 
     }
     else if (key == "Line") {
         // ライン用の設定
-        CRS_Line();
+		CreatePiplineLine();
     }
 
     auto device = dxCommon_->GetDevice();
@@ -92,12 +92,11 @@ void PipelineManager::CreatePipelineState(const std::string& key)
     pipelineStates_[key] = pipelineState;
 }
 
-void PipelineManager::CRS_Sprite()
+void PipelineManager::CreatePiplineSprite()
 {
-
 }
 
-void PipelineManager::CRS_Object()
+void PipelineManager::CreatePiplineObject()
 {
 	//===============================================================================//
 	/*								ルートシグネチャ									*/
@@ -109,7 +108,7 @@ void PipelineManager::CRS_Object()
 	descriptorRange[0].NumDescriptors = 1; // 数は1つ
 	descriptorRange[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV; // SRV
 	descriptorRange[0].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND; // Offsetを自動計算
-	
+
 
 	D3D12_ROOT_SIGNATURE_DESC descriptionRootSignature{};
 	descriptionRootSignature.Flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
@@ -167,7 +166,7 @@ void PipelineManager::CRS_Object()
 	staticSamplers[0].MaxLOD = D3D12_FLOAT32_MAX;										// ありったけのMipmapｗｐ使う
 	staticSamplers[0].ShaderRegister = 0;												// レジスタ番号0を使う
 	staticSamplers[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;					// PixelShaderで使う
-	
+
 	descriptionRootSignature.pStaticSamplers = staticSamplers;
 	descriptionRootSignature.NumStaticSamplers = _countof(staticSamplers);
 
@@ -266,18 +265,7 @@ void PipelineManager::CRS_Object()
 	assert(SUCCEEDED(hr));
 }
 
-void PipelineManager::CRS_Line()
+void PipelineManager::CreatePiplineLine()
 {
 }
 
-void PipelineManager::CGP_Sprite()
-{
-}
-
-void PipelineManager::CGP_Object()
-{
-}
-
-void PipelineManager::CGP_Line()
-{
-}
