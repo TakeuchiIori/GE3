@@ -518,11 +518,14 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\shaders\Particle.hlsli" />
+    <None Include="Resources\shaders\Skinning.hlsli" />
+    <None Include="Resources\shaders\Skinning.PS.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Resources\shaders\Particle.PS.hlsl" />
     <FxCompile Include="Resources\shaders\Particle.VS.hlsl" />
     <FxCompile Include="Resources\shaders\Line.VS.hlsl" />
     <FxCompile Include="Resources\shaders\Line.PS.hlsl" />
+    <FxCompile Include="Resources\shaders\Skinning.VS.hlsl" />
   </ItemGroup>
 </Project>
