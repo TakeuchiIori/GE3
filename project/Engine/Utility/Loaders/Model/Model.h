@@ -6,6 +6,7 @@
 #include <string>
 #include <vector>
 #include <optional>
+#include <span>
 
 // Engine
 #include "DX./DirectXCommon.h"
@@ -22,6 +23,8 @@
 #include <assimp/scene.h>
 #include <map>
 
+
+class SrvManager;
 class Line;
 class ModelCommon;
 class Model
@@ -56,12 +59,44 @@ public: // 構造体
 		std::string name;
 		std::vector<Node> children;
 	};
+
+	struct VertexWeightData {
+		float weight;
+		uint32_t vertexIndex;
+	};
+
+	struct JointWeightData {
+		Matrix4x4 inverseBindPoseMatrix;
+		std::vector<VertexWeightData> vertexWeights;
+	};
 	// モデルデータ
 	struct ModelData {
+		std::map<std::string, JointWeightData> skinClusterData;
 		std::vector<VertexData> vertices;
 		std::vector<uint32_t> indices;
 		MaterialData material;
 		Node rootNode;
+	};
+	// インフルエンス
+	const static uint32_t kNumMaxInfluence = 4;
+	struct VertexInfluence {
+		std::array<float, kNumMaxInfluence> weights;
+		std::array<int32_t, kNumMaxInfluence> jointindices;
+	};
+	// マトリックスパレット
+	struct WellForGPU {
+		Matrix4x4 skeletonSpaceMatrix;  // 位置用
+		Matrix4x4 skeletonSpaceInverseTransposeMatrix; // 法線用
+	};
+	// スキンクラスター
+	struct SkinCluster {
+		std::vector<Matrix4x4> inverseBindposeMatrices;
+		Microsoft::WRL::ComPtr<ID3D12Resource> influenceResource;
+		D3D12_VERTEX_BUFFER_VIEW influenceBufferView;
+		std::span<VertexInfluence> mappedInfluence;
+		Microsoft::WRL::ComPtr<ID3D12Resource> paletteResource;
+		std::span<WellForGPU> mappedPalette;
+		std::pair<D3D12_CPU_DESCRIPTOR_HANDLE, D3D12_GPU_DESCRIPTOR_HANDLE> paletteSrvHandle;
 	};
 
 	struct KeyframeVector3 {
@@ -187,6 +222,11 @@ private:
 	/// 任意の時刻を取得
 	/// </summary>
 	Quaternion CalculateValue(const std::vector<KeyframeQuaternion>& keyframes, float time);
+
+
+	SkinCluster CreateSkinCluster(const Skeleton& skeleton, const
+		ModelData& modelData, const Microsoft::WRL::ComPtr<ID3D12DescriptorHeap>& descriptorHeap, uint32_t descriptorSize);
+
 private:
 
 	/// <summary>
@@ -252,6 +292,9 @@ private: // メンバ変数
 
 	Skeleton skeleton_;
 
+private: // Skinning
+
+	SrvManager* srvManager_ = nullptr;
 
 };
 

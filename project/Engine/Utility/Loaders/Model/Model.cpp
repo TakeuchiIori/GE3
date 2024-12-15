@@ -2,6 +2,7 @@
 // Engine
 #include "Model.h"
 #include "ModelCommon.h"
+#include "SrvManager/SrvManager.h"
 #include "Loaders./Texture./TextureManager.h"
 #include "Drawer./LineManager/Line.h"
 
@@ -19,6 +20,8 @@ void Model::Initialize(ModelCommon* modelCommon, const std::string& directorypat
 {
 	// 引数から受け取ってメンバ変数に記録する
 	modelCommon_ = modelCommon;
+
+	srvManager_ = SrvManager::GetInstance();
 
 	// モデル読み込み
 	modelData_ = LoadModelIndexFile(directorypath, filename);
@@ -249,6 +252,69 @@ Quaternion Model::CalculateValue(const std::vector<KeyframeQuaternion>& keyframe
 	}
 	// ここまできた場合は一番後の時刻よりも後ろなので最後の値を返すことになる
 	return (*keyframes.rbegin()).value;
+}
+
+Model::SkinCluster Model::CreateSkinCluster(const Skeleton& skeleton, const ModelData& modelData, const Microsoft::WRL::ComPtr<ID3D12DescriptorHeap>& descriptorHeap, uint32_t descriptorSize)
+{
+	SkinCluster skinCluster;
+	auto device = modelCommon_->GetDxCommon()->GetDevice();
+	//=========================================================//
+	//					palette用のResourceを確保				   //
+	//=========================================================//
+
+	skinCluster.paletteResource = modelCommon_->GetDxCommon()->CreateBufferResource(sizeof(WellForGPU) * skeleton.joints.size());
+	WellForGPU* mappedPalette = nullptr;
+	skinCluster.paletteResource->Map(0, nullptr, reinterpret_cast<void**>(&mappedPalette));
+	skinCluster.mappedPalette = { mappedPalette,skeleton.joints.size() }; // spanを使ってアクセスできるようにする
+	skinCluster.paletteSrvHandle.first = srvManager_->GetCPUSRVDescriptorHandle(3);
+	skinCluster.paletteSrvHandle.second = srvManager_->GetGPUSRVDescriptorHandle(3);
+	// palette用のSRVを生成
+	srvManager_->CreateSRVforStructuredBuffer(skinCluster.paletteSrvHandle.first.ptr, skinCluster.paletteResource.Get(), 
+	UINT(skeleton.joints.size()), sizeof(WellForGPU));
+
+	//=========================================================//
+	//					Influece用のResourceを生成			   //
+	//=========================================================//
+
+	skinCluster.influenceResource = modelCommon_->GetDxCommon()->CreateBufferResource(sizeof(VertexInfluence) * modelData.vertices.size());
+	VertexInfluence* mappedInfluence = nullptr;
+	skinCluster.influenceResource->Map(0, nullptr, reinterpret_cast<void**>(&mappedInfluence));
+	std::memset(mappedInfluence, 0, sizeof(VertexInfluence) * modelData.vertices.size()); // 0埋め。weightを0にしておく
+	skinCluster.mappedInfluence = { mappedInfluence,modelData.vertices.size() };
+	/// Influence用のVBVを作成
+	skinCluster.influenceBufferView.BufferLocation = skinCluster.influenceResource->GetGPUVirtualAddress();
+	skinCluster.influenceBufferView.SizeInBytes = UINT(sizeof(VertexInfluence) * modelData.vertices.size());
+	skinCluster.influenceBufferView.StrideInBytes = sizeof(VertexInfluence);
+	/// InverseBindPosematrixを格納する場所を作成して、単位行列で埋める
+	skinCluster.inverseBindposeMatrices.resize(skeleton.joints.size());
+	std::generate(skinCluster.inverseBindposeMatrices.begin(), skinCluster.inverseBindposeMatrices.end(), MakeIdentity4x4());
+
+	//=========================================================//
+	//			ModelDataを解析してInfluenceを埋める			   //
+	//=========================================================//
+
+	for (const auto& JointWeight : modelData.skinClusterData) { // ModelのSkinCluster情報を解析
+		auto it = skeleton.jointMap.find(JointWeight.first); // jointweight.firstはjoint名なので、skeletonに対象となるjointは含まれるか判断
+		if (it == skeleton.jointMap.end()) { // そんな名前は存在しない。なので次に回す
+			continue;
+		}
+		// (*it).secondにはjointのindexが入ってるので、該当のindexのinverseBindPoseMatrixを代入
+		skinCluster.inverseBindposeMatrices[(*it).second] = JointWeight.second.inverseBindPoseMatrix;
+		for (const auto& vertexWeight : JointWeight.second.vertexWeights) {
+			auto& currentInfluence = skinCluster.mappedInfluence[vertexWeight.vertexIndex]; // 該当のいvertexIndexのinfluence情報を参照しておく
+			for (uint32_t index = 0; index < kNumMaxInfluence; ++index) {
+				if (currentInfluence.weights[index] == 0.0f) { // weight == 0が開いてる状態なので、その場所でweightとjointのindexを代入
+					currentInfluence.weights[index] = vertexWeight.weight;
+					currentInfluence.jointindices[index] = (*it).second;
+					break;
+				}
+			}
+		}
+	
+	}
+
+
+	return skinCluster;
 }
 
 
@@ -491,6 +557,29 @@ Model::ModelData Model::LoadModelIndexFile(const std::string& directoryPath, con
 			modelData.vertices[vertexIndex].texcoord = { texcoords.x,texcoords.y };
 		}
 		//=================================================//
+		//			 SkinCluster構築用のデータ取得を追加	   //
+		//=================================================//
+		for (uint32_t boneIndex = 0; boneIndex < mesh->mNumBones; ++boneIndex) {
+			aiBone* bone = mesh->mBones[boneIndex];
+			std::string jointName = bone->mName.C_Str();
+			JointWeightData& jointWeightData = modelData.skinClusterData[jointName];
+
+
+			aiMatrix4x4 bindPoseMatrixAssimp = bone->mOffsetMatrix.Inverse();
+			aiVector3D scale, translate;
+			aiQuaternion rotate;
+			bindPoseMatrixAssimp.Decompose(scale, rotate, translate);
+			Matrix4x4 bindposeMatrix = MakeAffineMatrix(
+				{ scale.x,scale.y,scale.z }, { rotate.x,-rotate.y,-rotate.z,rotate.w }, { -translate.x,translate.y,translate.z });
+			jointWeightData.inverseBindPoseMatrix = Inverse(bindposeMatrix);
+
+			for (uint32_t weightIndex = 0; weightIndex < bone->mNumWeights; ++weightIndex) {
+				jointWeightData.vertexWeights.push_back({ bone->mWeights[weightIndex].mWeight,bone->mWeights[weightIndex].mVertexId });
+			}
+		}
+		
+
+		//=================================================//
 		//				  Meshの中身（Face）を解析
 		//=================================================//
 		for (uint32_t faceIndex = 0; faceIndex < mesh->mNumFaces; ++faceIndex) {
@@ -508,6 +597,11 @@ Model::ModelData Model::LoadModelIndexFile(const std::string& directoryPath, con
 
 		}
 	}
+
+
+
+
+
 
 	//=================================================//
 	//				  materialを解析
