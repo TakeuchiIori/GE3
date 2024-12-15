@@ -108,6 +108,7 @@ void Model::UpdateAnimation()
 	animationTime_ += 1.0f / 60.0f;
 	ApplyAnimation(skeleton_, animation_, animationTime_);
 	UpdateSkeleton(skeleton_);
+	UpdateSkinCluster(*skinCluster_, skeleton_);
 }
 
 void Model::PlayAnimation()
@@ -120,6 +121,17 @@ void Model::PlayAnimation()
 	Vector3 scale = CalculateValue(rootNodeAnimation.scale, animationTime_);
 
 	modelData_.rootNode.localMatrix = MakeAffineMatrix(scale, rotate, translate);
+}
+
+void Model::UpdateSkinCluster(SkinCluster& skinCluster, const Skeleton& skeleton)
+{
+	for (size_t jointIndex = 0; jointIndex < skeleton.joints.size(); ++jointIndex) {
+		assert(jointIndex < skinCluster.inverseBindposeMatrices.size());
+		skinCluster.mappedPalette[jointIndex].skeletonSpaceMatrix =
+			skinCluster.inverseBindposeMatrices[jointIndex] * skeleton.joints[jointIndex].skeletonSpaceMatrix;
+		skinCluster.mappedPalette[jointIndex].skeletonSpaceInverseTransposeMatrix =
+			TransPose(Inverse(skinCluster.mappedPalette[jointIndex].skeletonSpaceMatrix));
+	}
 }
 
 void Model::CreateVertex()

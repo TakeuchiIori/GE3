@@ -175,6 +175,11 @@ public: // メンバ関数
 	/// </summary>
 	void PlayAnimation();
 
+	/// <summary>
+	/// スキンクラスターの更新
+	/// </summary>
+	void UpdateSkinCluster(SkinCluster& skinCluster,const Skeleton& skeleton);
+
 private:
 	/// <summary>
 	/// 頂点リソース
@@ -296,5 +301,6 @@ private: // Skinning
 
 	SrvManager* srvManager_ = nullptr;
 
+	SkinCluster* skinCluster_ = nullptr;
 };
 
