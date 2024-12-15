@@ -151,6 +151,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Application\Objects\Player\PlayerBullet.cpp" />
     <ClCompile Include="Engine\Graphics\WorldTransform\WorldTransform.cpp" />
     <ClCompile Include="Engine\Generators\Particle\ParticleEmitter.cpp" />
+    <ClCompile Include="Engine\Graphics\PipelineManager\SkinningManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application\Scenes\CoreScenes\Base\BaseScene.h" />
@@ -199,6 +200,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="Engine\Graphics\Drawer\LineManager\LineManager.h" />
     <ClInclude Include="Engine\Graphics\Drawer\LineManager\Line.h" />
     <ClInclude Include="Engine\Graphics\PipelineManager\PipelineManager.h" />
+    <ClInclude Include="Engine\Graphics\PipelineManager\SkinningManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="externals\DirectXTex\DirectXTex_Desktop_2022_Win10.vcxproj">

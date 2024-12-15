@@ -375,6 +375,9 @@
     <ClCompile Include="Engine\Utility\Loaders\Model\Model.cpp">
       <Filter>ソース ファイル\NOIR\Utility\Loaders\Model</Filter>
     </ClCompile>
+    <ClCompile Include="Engine\Graphics\PipelineManager\SkinningManager.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\Utility\Systems\Input\Input.h">
@@ -514,6 +517,9 @@
     </ClInclude>
     <ClInclude Include="Engine\Utility\Loaders\Texture\TextureManager.h">
       <Filter>ヘッダー ファイル\NOIR\Utility\Loaders\Texture</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Graphics\PipelineManager\SkinningManager.h">
+      <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
