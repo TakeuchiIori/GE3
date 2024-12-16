@@ -114,7 +114,7 @@ void TitleScene::Draw()
     player_->Draw();
     test_->Draw(testWorldTransform_);
 
-    line_->DrawLine(start_, end_);
+
 
     //test_->DrawSkeleton();
 

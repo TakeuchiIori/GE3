@@ -28,16 +28,19 @@ void SkinningManager::CreateRootSignature()
 {
 	HRESULT hr;
 
-	D3D12_DESCRIPTOR_RANGE descriptorRange[2] = {};
+	D3D12_DESCRIPTOR_RANGE descriptorRange[1] = {};
 	descriptorRange[0].BaseShaderRegister = 0; // 0から始まる
 	descriptorRange[0].NumDescriptors = 1; // 数は1つ
 	descriptorRange[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV; // SRV
 	descriptorRange[0].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND; // Offsetを自動計算
 
-	descriptorRange[1].BaseShaderRegister = 1; // t1
-	descriptorRange[1].NumDescriptors = 1;
-	descriptorRange[1].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
-	descriptorRange[1].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
+
+	D3D12_DESCRIPTOR_RANGE descriptorRangeBone[1] = {};
+	descriptorRangeBone[0].BaseShaderRegister = 1;
+	descriptorRangeBone[0].NumDescriptors = 1;
+	descriptorRangeBone[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
+	descriptorRangeBone[0].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
+
 
 	//=================== RootParameter 複数設定できるので配列 ===================//
 
@@ -81,8 +84,8 @@ void SkinningManager::CreateRootSignature()
 
 	rootParameters[7].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE; // ストラクチャーバッファー
 	rootParameters[7].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;
-	rootParameters[7].DescriptorTable.pDescriptorRanges = &descriptorRange[1];
-	rootParameters[7].DescriptorTable.NumDescriptorRanges = 1;
+	rootParameters[7].DescriptorTable.pDescriptorRanges = descriptorRangeBone;
+	rootParameters[7].DescriptorTable.NumDescriptorRanges = _countof(descriptorRangeBone);
 
 
 	D3D12_ROOT_SIGNATURE_DESC descriptionRootSignature = {};
@@ -184,14 +187,14 @@ void SkinningManager::CreateGraphicsPipeline()
 
 	HRESULT hr;
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC graphicsPipelineStateDesc{};
-	graphicsPipelineStateDesc.pRootSignature = rootSignature_.Get();				 // Rootsignature
-	graphicsPipelineStateDesc.InputLayout = inputLayoutDesc;					 // InputLayout
+	graphicsPipelineStateDesc.pRootSignature = rootSignature_.Get();			
+	graphicsPipelineStateDesc.InputLayout = inputLayoutDesc;					
 	graphicsPipelineStateDesc.VS = { vertexShaderBlob_->GetBufferPointer(),
-	vertexShaderBlob_->GetBufferSize() };										 // VertexShader
+	vertexShaderBlob_->GetBufferSize() };										
 	graphicsPipelineStateDesc.PS = { pixelShaderBlob_->GetBufferPointer(),
-	pixelShaderBlob_->GetBufferSize() };											 // PixelShader
-	graphicsPipelineStateDesc.BlendState = blendDesc_;							 // BlendState
-	graphicsPipelineStateDesc.RasterizerState = rasterrizerDesc_;   				 // RasterrizerState
+	pixelShaderBlob_->GetBufferSize() };										
+	graphicsPipelineStateDesc.BlendState = blendDesc_;							
+	graphicsPipelineStateDesc.RasterizerState = rasterrizerDesc_;   			
 	// Depthstencitの設定
 	graphicsPipelineStateDesc.DepthStencilState = depthStencilDesc_;
 	graphicsPipelineStateDesc.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;

@@ -57,64 +57,93 @@ void Model::Initialize(ModelCommon* modelCommon, const std::string& directorypat
 
 void Model::Draw()
 {
-	if (isAnimation_) {
-		D3D12_VERTEX_BUFFER_VIEW vbvs[2] = {
-		vertexBufferView_,					 // VertexDataのVBV
-		skinCluster_.influenceBufferView	 // InfluenceのVBV
-		};
-		modelCommon_->GetDxCommon()->GetCommandList()->IASetVertexBuffers(0, 2, vbvs); // VBVを設定
-		//modelCommon_->GetDxCommon()->GetCommandList()->SetGraphicsRootDescriptorTable(2, skinCluster_.paletteSrvHandle.second);
-	}
-	else {
+	if (skeleton_.joints.empty()) {
+		// スケルトンが存在しない場合
 		modelCommon_->GetDxCommon()->GetCommandList()->IASetVertexBuffers(0, 1, &vertexBufferView_); // VBVを設定
 	}
+	else {
+		// スケルトンが存在する場合
+		D3D12_VERTEX_BUFFER_VIEW vbvs[2] = {
+			vertexBufferView_,                       // VertexDataのVBV
+			skinCluster_.influenceBufferView        // InfluenceのVBV
+		};
+		modelCommon_->GetDxCommon()->GetCommandList()->IASetVertexBuffers(0, 2, vbvs); // VBVを設定
+
+		// スケルトン用のSRVを設定
+		modelCommon_->GetDxCommon()->GetCommandList()->SetGraphicsRootDescriptorTable(7, skinCluster_.paletteSrvHandle.second);
+	}
+
 
 	// indexbufferView
 	modelCommon_->GetDxCommon()->GetCommandList()->IASetIndexBuffer(&indexBufferView_); // IBVを設定
 	// SRVの設定
 	modelCommon_->GetDxCommon()->GetCommandList()->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetsrvHandleGPU(modelData_.material.textureFilePath)); // SRVのパラメータインデックスを変更
-	
-	
 	// 描画！！！DrawCall/ドローコール）
 	modelCommon_->GetDxCommon()->GetCommandList()->DrawIndexedInstanced(static_cast<UINT>(modelData_.indices.size()), 1, 0, 0,0);
 
 }
 
-void Model::DrawSkeleton(const Skeleton& skeleton,Line& line) {
-	// 描画する線の始点と終点を記録する配列
-	std::vector<Vector3> startPoints;
-	std::vector<Vector3> endPoints;
+void Model::DrawSkeletonRecursive(const Skeleton& skeleton, Line& line, int32_t currentIndex)
+{
+	const Joint& currentJoint = skeleton.joints[currentIndex];
 
-	// 全てのジョイントを走査
-	for (const auto& joint : skeleton.joints) {
-		// 親ジョイントが存在する場合
-		if (joint.parent.has_value()) {
-			// 親ジョイントを取得
-			const auto& parent = skeleton.joints[joint.parent.value()];
+	// 現在のジョイントの位置を取得
+	Vector3 currentPosition = {
+		currentJoint.skeletonSpaceMatrix.m[3][0],
+		currentJoint.skeletonSpaceMatrix.m[3][1],
+		currentJoint.skeletonSpaceMatrix.m[3][2]
+	};
 
-			// 親ジョイントの座標
-			Vector3 start = Vector3{
-				parent.skeletonSpaceMatrix.m[3][0],
-				parent.skeletonSpaceMatrix.m[3][1],
-				parent.skeletonSpaceMatrix.m[3][2]
-			};
+	// 親が存在する場合、親ジョイントと現在のジョイントを線でつなぐ
+	if (currentJoint.parent.has_value()) {
+		const Joint& parentJoint = skeleton.joints[currentJoint.parent.value()];
 
-			// 現在のジョイントの座標
-			Vector3 end = Vector3{
-				joint.skeletonSpaceMatrix.m[3][0],
-				joint.skeletonSpaceMatrix.m[3][1],
-				joint.skeletonSpaceMatrix.m[3][2]
-			};
+		Vector3 parentPosition = {
+			parentJoint.skeletonSpaceMatrix.m[3][0],
+			parentJoint.skeletonSpaceMatrix.m[3][1],
+			parentJoint.skeletonSpaceMatrix.m[3][2]
+		};
 
-			// 配列に始点と終点を格納
-			startPoints.push_back(start);
-			endPoints.push_back(end);
-		}
+		// 親ジョイントと現在のジョイントを線で描画
+		//line.DrawLine(parentPosition, currentPosition);
 	}
 
-	// 記録したすべての線を描画
-	for (size_t i = 0; i < startPoints.size(); ++i) {
-		line.DrawLine(startPoints[i], endPoints[i]);
+	// 子ジョイントを再帰的に処理する
+	for (int32_t childIndex : currentJoint.children) {
+		DrawSkeletonRecursive(skeleton, line, childIndex);
+	}
+}
+
+
+void Model::DrawSkeleton(const Skeleton& skeleton,Line& line) {
+	// ジョイント（骨）の一覧が空の場合は何もしない
+	if (skeleton.joints.empty()) {
+		return;
+	}
+
+	// Skeleton には親子関係を示す connections が格納されている
+	// connectionsは (parentIndex, childIndex) のペアのリストになっているので
+	// 各ペアに対して、親の位置と子の位置を線で結んで描画する
+	for (const auto& connection : skeleton.connections) {
+		int32_t parentIndex = connection.first;
+		int32_t childIndex = connection.second;
+
+		// 親ジョイントのワールド座標を行列から抽出
+		Vector3 parentPosition = {
+			skeleton.joints[parentIndex].skeletonSpaceMatrix.m[3][0],
+			skeleton.joints[parentIndex].skeletonSpaceMatrix.m[3][1],
+			skeleton.joints[parentIndex].skeletonSpaceMatrix.m[3][2]
+		};
+
+		// 子ジョイントのワールド座標を行列から抽出
+		Vector3 childPosition = {
+			skeleton.joints[childIndex].skeletonSpaceMatrix.m[3][0],
+			skeleton.joints[childIndex].skeletonSpaceMatrix.m[3][1],
+			skeleton.joints[childIndex].skeletonSpaceMatrix.m[3][2]
+		};
+
+		// 親ジョイントと子ジョイントを結ぶラインを描画
+		//line.DrawLine(parentPosition, childPosition);
 	}
 }
 
@@ -126,6 +155,7 @@ void Model::UpdateAnimation()
 	UpdateSkeleton(skeleton_);
 	UpdateSkinCluster(skinCluster_, skeleton_);
 }
+
 
 void Model::PlayAnimation()
 {
@@ -198,8 +228,6 @@ int32_t Model::CreateJoint(const Node& node, const std::optional<int32_t>& paren
 	return joint.index;
 }
 
-
-
 Model::Skeleton Model::CreateSkeleton(const Node& rootNode)
 {
 	Skeleton skeleton;
@@ -208,6 +236,9 @@ Model::Skeleton Model::CreateSkeleton(const Node& rootNode)
 	// 名前とindexのマッピングを行いアクセスしやすくなる
 	for (const Joint& joint : skeleton.joints) {
 		skeleton.jointMap.emplace(joint.name, joint.index);
+		if (joint.parent.has_value()) {
+			skeleton.connections.emplace_back(joint.parent.value(), joint.index);
+		}
 	}
 
 	return skeleton;
@@ -583,7 +614,26 @@ Model::ModelData Model::LoadModelIndexFile(const std::string& directoryPath, con
 			modelData.vertices[vertexIndex].position = { -position.x,position.y,position.z,1.0f };
 			modelData.vertices[vertexIndex].normal = { -normal.x,normal.y,normal.z };
 			modelData.vertices[vertexIndex].texcoord = { texcoords.x,texcoords.y };
+		}		
+
+		//=================================================//
+		//				  Meshの中身（Face）を解析
+		//=================================================//
+		for (uint32_t faceIndex = 0; faceIndex < mesh->mNumFaces; ++faceIndex) {
+			aiFace& face = mesh->mFaces[faceIndex];
+			assert(face.mNumIndices == 3);		   // 三角形のみ
+
+			//=================================================//
+			//				  Faceの中身（Vertex）を解析
+			//=================================================//
+
+			for (uint32_t element = 0; element < face.mNumIndices; ++element) {
+				uint32_t vertexIndex = face.mIndices[element];
+				modelData.indices.push_back(vertexIndex);
+			}
+
 		}
+
 		//=================================================//
 		//			 SkinCluster構築用のデータ取得を追加	   //
 		//=================================================//
@@ -604,25 +654,6 @@ Model::ModelData Model::LoadModelIndexFile(const std::string& directoryPath, con
 			for (uint32_t weightIndex = 0; weightIndex < bone->mNumWeights; ++weightIndex) {
 				jointWeightData.vertexWeights.push_back({ bone->mWeights[weightIndex].mWeight,bone->mWeights[weightIndex].mVertexId });
 			}
-		}
-		
-
-		//=================================================//
-		//				  Meshの中身（Face）を解析
-		//=================================================//
-		for (uint32_t faceIndex = 0; faceIndex < mesh->mNumFaces; ++faceIndex) {
-			aiFace& face = mesh->mFaces[faceIndex];
-			assert(face.mNumIndices == 3);		   // 三角形のみ
-
-			//=================================================//
-			//				  Faceの中身（Vertex）を解析
-			//=================================================//
-
-			for (uint32_t element = 0; element < face.mNumIndices; ++element) {
-				uint32_t vertexIndex = face.mIndices[element];
-				modelData.indices.push_back(vertexIndex);
-			}
-
 		}
 	}
 

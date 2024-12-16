@@ -64,9 +64,9 @@ void Object3d::Draw(WorldTransform& worldTransform)
 	}
 }
 
-void Object3d::DrawSkeleton()
+void Object3d::DrawSkeleton(const Model::Skeleton& skeleton, Line& line)
 {
-	model_->DrawSkeleton(model_->GetSkeleton(),*line_);
+	model_->DrawSkeleton(model_->GetSkeleton(),line);
 }
 
 void Object3d::CreateMaterialResource()

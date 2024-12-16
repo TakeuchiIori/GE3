@@ -149,6 +149,7 @@ public: // 構造体
 		int32_t root; // RootJointのIndex
 		std::map<std::string, int32_t> jointMap; // Joint名とIndexとの辞書
 		std::vector<Joint> joints; // 所属しているジョイント
+		std::vector<std::pair<int32_t, int32_t>> connections; // 接続情報: 親 -> 子のペア
 	};
 
 public: // メンバ関数
@@ -161,6 +162,8 @@ public: // メンバ関数
 	/// 描画
 	/// </summary>
 	void Draw();
+
+	void DrawSkeletonRecursive(const Skeleton& skeleton, Line& line, int32_t parentIndex);
 
 	/// <summary>
 	//  スケルトンの描画　※DrawLineを調整中なので仮
@@ -307,4 +310,5 @@ private: // Skinning
 
 	SkinCluster skinCluster_;
 };
+
 
