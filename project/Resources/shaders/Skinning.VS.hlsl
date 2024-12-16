@@ -18,7 +18,7 @@ struct Skinned
     float3 normal;
 };
 
-StructuredBuffer<Well> gMatrixPalette : register(t0);
+StructuredBuffer<Well> gMatrixPalette : register(t1);
 ConstantBuffer<TransformationMatrix> gTransformationMatrix : register(b0);
 
 struct VertexShaderInput

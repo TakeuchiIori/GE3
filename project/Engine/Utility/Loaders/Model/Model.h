@@ -7,6 +7,7 @@
 #include <vector>
 #include <optional>
 #include <span>
+#include <algorithm>
 
 // Engine
 #include "DX./DirectXCommon.h"
@@ -94,9 +95,11 @@ public: // 構造体
 		Microsoft::WRL::ComPtr<ID3D12Resource> influenceResource;
 		D3D12_VERTEX_BUFFER_VIEW influenceBufferView;
 		std::span<VertexInfluence> mappedInfluence;
+		uint32_t influSrvIndex;
 		Microsoft::WRL::ComPtr<ID3D12Resource> paletteResource;
 		std::span<WellForGPU> mappedPalette;
 		std::pair<D3D12_CPU_DESCRIPTOR_HANDLE, D3D12_GPU_DESCRIPTOR_HANDLE> paletteSrvHandle;
+		uint32_t srvIndex;
 	};
 
 	struct KeyframeVector3 {
@@ -230,7 +233,7 @@ private:
 
 
 	SkinCluster CreateSkinCluster(const Skeleton& skeleton, const
-		ModelData& modelData, const Microsoft::WRL::ComPtr<ID3D12DescriptorHeap>& descriptorHeap, uint32_t descriptorSize);
+		ModelData& modelData);
 
 private:
 
@@ -297,10 +300,11 @@ private: // メンバ変数
 
 	Skeleton skeleton_;
 
+	bool isAnimation_;
 private: // Skinning
 
 	SrvManager* srvManager_ = nullptr;
 
-	SkinCluster* skinCluster_ = nullptr;
+	SkinCluster skinCluster_;
 };
 

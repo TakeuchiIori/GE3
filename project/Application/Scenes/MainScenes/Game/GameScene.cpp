@@ -5,6 +5,7 @@
 #include "Loaders./Texture./TextureManager.h"
 #include "Particle./ParticleManager.h"
 #include "Object3D/Object3dCommon.h"
+#include "PipelineManager/SkinningManager.h"
 
 #ifdef _DEBUG
 #include "imgui.h"
@@ -107,12 +108,13 @@ void GameScene::Draw()
 
 #pragma region 3Dオブジェクト描画
     Object3dCommon::GetInstance()->DrawPreference();
+   // SkinningManager::GetInstance()->DrawPreference();
     LightManager::GetInstance()->SetCommandList();
     /// <summary>
     /// ここから描画可能です
     /// </summary>
     
-    player_->Draw();
+    //player_->Draw();
     test_->Draw(testWorldTransform_);
   
     line_->DrawLine(start_, end_);

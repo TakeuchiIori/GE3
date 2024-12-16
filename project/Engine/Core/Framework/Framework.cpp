@@ -54,6 +54,8 @@ void Framework::Initialize()
 	lineManager_ = LineManager::GetInstance();
 	lineManager_->Initialize();
 	
+	skinningManager_ = SkinningManager::GetInstance();
+	skinningManager_->Initialize(dxCommon_);
 }
 
 void Framework::Finalize()

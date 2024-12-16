@@ -18,6 +18,7 @@
 
 void Model::Initialize(ModelCommon* modelCommon, const std::string& directorypath, const std::string& filename, bool isAnimation)
 {
+	isAnimation_ = isAnimation;
 	// 引数から受け取ってメンバ変数に記録する
 	modelCommon_ = modelCommon;
 
@@ -27,13 +28,17 @@ void Model::Initialize(ModelCommon* modelCommon, const std::string& directorypat
 	modelData_ = LoadModelIndexFile(directorypath, filename);
 
 	// アニメーションをするならtrue
-	if (isAnimation) {
+	if (isAnimation_) {
 		animation_ = LoadAnimationFile(directorypath, filename);
-		
-	}
 
-	// 骨の作成
-	skeleton_ = CreateSkeleton(modelData_.rootNode);
+
+
+		// 骨の作成
+		skeleton_ = CreateSkeleton(modelData_.rootNode);
+
+		skinCluster_ = CreateSkinCluster(skeleton_, modelData_);
+
+	}
 
 	// 頂点データの初期化
 	CreateVertex();
@@ -52,13 +57,24 @@ void Model::Initialize(ModelCommon* modelCommon, const std::string& directorypat
 
 void Model::Draw()
 {
-	//DrawSkeleton(skeleton_);
-	// VertexBufferView
-	modelCommon_->GetDxCommon()->GetCommandList()->IASetVertexBuffers(0, 1, &vertexBufferView_); // VBVを設定
+	if (isAnimation_) {
+		D3D12_VERTEX_BUFFER_VIEW vbvs[2] = {
+		vertexBufferView_,					 // VertexDataのVBV
+		skinCluster_.influenceBufferView	 // InfluenceのVBV
+		};
+		modelCommon_->GetDxCommon()->GetCommandList()->IASetVertexBuffers(0, 2, vbvs); // VBVを設定
+		//modelCommon_->GetDxCommon()->GetCommandList()->SetGraphicsRootDescriptorTable(2, skinCluster_.paletteSrvHandle.second);
+	}
+	else {
+		modelCommon_->GetDxCommon()->GetCommandList()->IASetVertexBuffers(0, 1, &vertexBufferView_); // VBVを設定
+	}
+
 	// indexbufferView
 	modelCommon_->GetDxCommon()->GetCommandList()->IASetIndexBuffer(&indexBufferView_); // IBVを設定
 	// SRVの設定
 	modelCommon_->GetDxCommon()->GetCommandList()->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetsrvHandleGPU(modelData_.material.textureFilePath)); // SRVのパラメータインデックスを変更
+	
+	
 	// 描画！！！DrawCall/ドローコール）
 	modelCommon_->GetDxCommon()->GetCommandList()->DrawIndexedInstanced(static_cast<UINT>(modelData_.indices.size()), 1, 0, 0,0);
 
@@ -108,7 +124,7 @@ void Model::UpdateAnimation()
 	animationTime_ += 1.0f / 60.0f;
 	ApplyAnimation(skeleton_, animation_, animationTime_);
 	UpdateSkeleton(skeleton_);
-	UpdateSkinCluster(*skinCluster_, skeleton_);
+	UpdateSkinCluster(skinCluster_, skeleton_);
 }
 
 void Model::PlayAnimation()
@@ -266,7 +282,7 @@ Quaternion Model::CalculateValue(const std::vector<KeyframeQuaternion>& keyframe
 	return (*keyframes.rbegin()).value;
 }
 
-Model::SkinCluster Model::CreateSkinCluster(const Skeleton& skeleton, const ModelData& modelData, const Microsoft::WRL::ComPtr<ID3D12DescriptorHeap>& descriptorHeap, uint32_t descriptorSize)
+Model::SkinCluster Model::CreateSkinCluster(const Skeleton& skeleton, const ModelData& modelData)
 {
 	SkinCluster skinCluster;
 	auto device = modelCommon_->GetDxCommon()->GetDevice();
@@ -278,10 +294,10 @@ Model::SkinCluster Model::CreateSkinCluster(const Skeleton& skeleton, const Mode
 	WellForGPU* mappedPalette = nullptr;
 	skinCluster.paletteResource->Map(0, nullptr, reinterpret_cast<void**>(&mappedPalette));
 	skinCluster.mappedPalette = { mappedPalette,skeleton.joints.size() }; // spanを使ってアクセスできるようにする
-	skinCluster.paletteSrvHandle.first = srvManager_->GetCPUSRVDescriptorHandle(3);
-	skinCluster.paletteSrvHandle.second = srvManager_->GetGPUSRVDescriptorHandle(3);
-	// palette用のSRVを生成
-	srvManager_->CreateSRVforStructuredBuffer(skinCluster.paletteSrvHandle.first.ptr, skinCluster.paletteResource.Get(), 
+	skinCluster.srvIndex = srvManager_->Allocate();
+	skinCluster.paletteSrvHandle.first = srvManager_->GetCPUSRVDescriptorHandle(skinCluster.srvIndex);
+	skinCluster.paletteSrvHandle.second = srvManager_->GetGPUSRVDescriptorHandle(skinCluster.srvIndex);
+	srvManager_->CreateSRVforStructuredBuffer(skinCluster.srvIndex, skinCluster.paletteResource.Get(),
 	UINT(skeleton.joints.size()), sizeof(WellForGPU));
 
 	//=========================================================//
@@ -299,7 +315,7 @@ Model::SkinCluster Model::CreateSkinCluster(const Skeleton& skeleton, const Mode
 	skinCluster.influenceBufferView.StrideInBytes = sizeof(VertexInfluence);
 	/// InverseBindPosematrixを格納する場所を作成して、単位行列で埋める
 	skinCluster.inverseBindposeMatrices.resize(skeleton.joints.size());
-	std::generate(skinCluster.inverseBindposeMatrices.begin(), skinCluster.inverseBindposeMatrices.end(), MakeIdentity4x4());
+	std::generate(skinCluster.inverseBindposeMatrices.begin(), skinCluster.inverseBindposeMatrices.end(), MakeIdentity4x4);
 
 	//=========================================================//
 	//			ModelDataを解析してInfluenceを埋める			   //
