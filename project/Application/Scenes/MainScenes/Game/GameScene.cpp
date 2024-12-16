@@ -35,7 +35,8 @@ void GameScene::Initialize()
     // test
     test_ = std::make_unique<Object3d>();
     test_->Initialize();
-    test_->SetModel("simpleSkin.gltf",true);
+    //test_->SetModel("walk.gltf",true);
+    test_->SetModel("sneakWalk.gltf", true);
     testWorldTransform_.Initialize();
     //test_->SetLine(line_.get());
 
@@ -129,7 +130,7 @@ void GameScene::Draw()
     /// ここから描画可能です
     /// </summary>
 
-    //test_->Draw(testWorldTransform_);
+    test_->Draw(testWorldTransform_);
     
     // 骨描画
     if (test_ && test_->GetModel()->GetSkeleton().joints.size() > 0) {

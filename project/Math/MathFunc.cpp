@@ -259,7 +259,7 @@ Matrix4x4 MakeAffineMatrix(const Vector3& scale, const Quaternion& rotate, const
     Matrix4x4 translationMatrix = MakeTranslateMatrix(translate);
 
     // 行列を結合してアフィン変換行列を生成
-    return translationMatrix * rotationMatrix * scalingMatrix;
+    return scalingMatrix * rotationMatrix * translationMatrix;
 }
 
 

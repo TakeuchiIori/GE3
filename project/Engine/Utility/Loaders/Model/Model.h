@@ -186,6 +186,7 @@ public: // メンバ関数
 	/// </summary>
 	void UpdateSkinCluster(SkinCluster& skinCluster,const Skeleton& skeleton);
 
+	Vector3 ExtractJointPosition(const Joint& joint) const;
 private:
 	/// <summary>
 	/// 頂点リソース
@@ -238,6 +239,7 @@ private:
 	SkinCluster CreateSkinCluster(const Skeleton& skeleton, const
 		ModelData& modelData);
 
+	
 private:
 
 	/// <summary>
@@ -273,6 +275,14 @@ private:
 	/// アニメーション解析
 	/// </summary>
 	static Animation LoadAnimationFile(const std::string& directoryPath, const std::string& filename);
+
+
+
+	std::vector<Vector3> GetConnectionPositions();
+
+	uint32_t GetConnectionCount();
+
+	
 
 	
 

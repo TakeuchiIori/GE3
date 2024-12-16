@@ -83,6 +83,54 @@ void Model::Draw()
 
 }
 
+
+std::vector<Vector3> Model::GetConnectionPositions()
+{
+	std::vector<Vector3> connectionPositions;
+
+	for (const auto& joint : skeleton_.joints) {
+		if (joint.parent) { // 親が存在するボーンのみ
+			// 親の位置
+			Vector3 parentPosition = {
+				skeleton_.joints[*joint.parent].skeletonSpaceMatrix.m[3][0],
+				skeleton_.joints[*joint.parent].skeletonSpaceMatrix.m[3][1],
+				skeleton_.joints[*joint.parent].skeletonSpaceMatrix.m[3][2]
+			};
+
+			// 現在のボーンの位置
+			Vector3 currentPosition = {
+				joint.skeletonSpaceMatrix.m[3][0],
+				joint.skeletonSpaceMatrix.m[3][1],
+				joint.skeletonSpaceMatrix.m[3][2]
+			};
+
+			// 中間位置（オプション：つなぎ目として描画する場合）
+			Vector3 connectionPosition = (parentPosition + currentPosition) * 0.5f;
+
+			connectionPositions.push_back(connectionPosition);
+		}
+	}
+
+	return connectionPositions;
+}
+
+uint32_t Model::GetConnectionCount()
+{
+	return static_cast<int>(skeleton_.joints.size()) - 1; // 全ボーン数 - ルートボーン
+}
+
+
+
+Vector3 Model::ExtractJointPosition(const Joint& joint) const
+{
+	return {
+		joint.skeletonSpaceMatrix.m[3][0],
+		joint.skeletonSpaceMatrix.m[3][1],
+		joint.skeletonSpaceMatrix.m[3][2]
+	};
+}
+
+
 void Model::DrawSkeletonRecursive(const Skeleton& skeleton, Line& line, int32_t currentIndex)
 {
 	const Joint& currentJoint = skeleton.joints[currentIndex];
@@ -116,34 +164,22 @@ void Model::DrawSkeletonRecursive(const Skeleton& skeleton, Line& line, int32_t 
 
 
 void Model::DrawSkeleton(const Skeleton& skeleton,Line& line) {
-	// ジョイント（骨）の一覧が空の場合は何もしない
+	// スケルトンが空の場合は終了
 	if (skeleton.joints.empty()) {
 		return;
 	}
 
-	// Skeleton には親子関係を示す connections が格納されている
-	// connectionsは (parentIndex, childIndex) のペアのリストになっているので
-	// 各ペアに対して、親の位置と子の位置を線で結んで描画する
+	// スケルトン内の全ての接続を描画
 	for (const auto& connection : skeleton.connections) {
 		int32_t parentIndex = connection.first;
 		int32_t childIndex = connection.second;
 
-		// 親ジョイントのワールド座標を行列から抽出
-		Vector3 parentPosition = {
-			skeleton.joints[parentIndex].skeletonSpaceMatrix.m[3][0],
-			skeleton.joints[parentIndex].skeletonSpaceMatrix.m[3][1],
-			skeleton.joints[parentIndex].skeletonSpaceMatrix.m[3][2]
-		};
+		// 親ジョイントと子ジョイントのワールド座標を取得
+		const Vector3& parentPosition = ExtractJointPosition(skeleton.joints[parentIndex]);
+		const Vector3& childPosition = ExtractJointPosition(skeleton.joints[childIndex]);
 
-		// 子ジョイントのワールド座標を行列から抽出
-		Vector3 childPosition = {
-			skeleton.joints[childIndex].skeletonSpaceMatrix.m[3][0],
-			skeleton.joints[childIndex].skeletonSpaceMatrix.m[3][1],
-			skeleton.joints[childIndex].skeletonSpaceMatrix.m[3][2]
-		};
-
-		// 親ジョイントと子ジョイントを結ぶラインを描画
-		//line.DrawLine(parentPosition, childPosition);
+		// ラインを描画
+		line.DrawLine(parentPosition, childPosition);
 	}
 }
 
@@ -151,6 +187,7 @@ void Model::DrawSkeleton(const Skeleton& skeleton,Line& line) {
 void Model::UpdateAnimation()
 {
 	animationTime_ += 1.0f / 60.0f;
+	animationTime_ = std::fmod(animationTime_, animation_.duration);
 	ApplyAnimation(skeleton_, animation_, animationTime_);
 	UpdateSkeleton(skeleton_);
 	UpdateSkinCluster(skinCluster_, skeleton_);
@@ -173,8 +210,12 @@ void Model::UpdateSkinCluster(SkinCluster& skinCluster, const Skeleton& skeleton
 {
 	for (size_t jointIndex = 0; jointIndex < skeleton.joints.size(); ++jointIndex) {
 		assert(jointIndex < skinCluster.inverseBindposeMatrices.size());
+		
+		// スケルトン空間行列の計算
 		skinCluster.mappedPalette[jointIndex].skeletonSpaceMatrix =
 			skinCluster.inverseBindposeMatrices[jointIndex] * skeleton.joints[jointIndex].skeletonSpaceMatrix;
+		
+		// 法線用の行列を計算（転置逆行列）
 		skinCluster.mappedPalette[jointIndex].skeletonSpaceInverseTransposeMatrix =
 			TransPose(Inverse(skinCluster.mappedPalette[jointIndex].skeletonSpaceMatrix));
 	}
@@ -236,6 +277,7 @@ Model::Skeleton Model::CreateSkeleton(const Node& rootNode)
 	// 名前とindexのマッピングを行いアクセスしやすくなる
 	for (const Joint& joint : skeleton.joints) {
 		skeleton.jointMap.emplace(joint.name, joint.index);
+
 		if (joint.parent.has_value()) {
 			skeleton.connections.emplace_back(joint.parent.value(), joint.index);
 		}
@@ -249,6 +291,7 @@ void Model::UpdateSkeleton(Skeleton& skeleton)
 	// すべてのJointを更新。親が若いので通常ループで処理が可能になっている
 	for (Joint& joint : skeleton.joints) {
 		joint.localMatrix = MakeAffineMatrix(joint.transform.scale, joint.transform.rotate, joint.transform.translate);
+		
 		if (joint.parent) { // 親がいれば親の行列を掛ける
 			joint.skeletonSpaceMatrix = joint.localMatrix * skeleton.joints[*joint.parent].skeletonSpaceMatrix;
 		}
@@ -316,7 +359,7 @@ Quaternion Model::CalculateValue(const std::vector<KeyframeQuaternion>& keyframe
 Model::SkinCluster Model::CreateSkinCluster(const Skeleton& skeleton, const ModelData& modelData)
 {
 	SkinCluster skinCluster;
-	auto device = modelCommon_->GetDxCommon()->GetDevice();
+	//auto device = modelCommon_->GetDxCommon()->GetDevice();
 	//=========================================================//
 	//					palette用のResourceを確保				   //
 	//=========================================================//
@@ -722,3 +765,4 @@ Model::Animation Model::LoadAnimationFile(const std::string& directoryPath, cons
 
 	return animation;
 }
+
