@@ -116,10 +116,9 @@ void GameScene::Draw()
     /// </summary>
     
    // player_->Draw();
-  
-   
-    line_->DrawLine(start_,end_);
-
+    //line_->ClearVertices();
+    line_->UpdateVertices(start_, end_);
+    line_->DrawLine();
 
 #pragma endregion
 
@@ -131,11 +130,13 @@ void GameScene::Draw()
     /// </summary>
 
     test_->Draw(testWorldTransform_);
-    
+
     // 骨描画
     if (test_ && test_->GetModel()->GetSkeleton().joints.size() > 0) {
         test_->DrawSkeleton(test_->GetModel()->GetSkeleton(), *line_);
     }
+
+
 
 #pragma endregion
 

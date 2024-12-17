@@ -165,6 +165,8 @@ void Model::DrawSkeletonRecursive(const Skeleton& skeleton, Line& line, int32_t 
 
 void Model::DrawSkeleton(const Skeleton& skeleton,Line& line) {
 	// スケルトンが空の場合は終了
+	// ラインを描画
+	line.ClearVertices();
 	if (skeleton.joints.empty()) {
 		return;
 	}
@@ -178,8 +180,9 @@ void Model::DrawSkeleton(const Skeleton& skeleton,Line& line) {
 		const Vector3& parentPosition = ExtractJointPosition(skeleton.joints[parentIndex]);
 		const Vector3& childPosition = ExtractJointPosition(skeleton.joints[childIndex]);
 
-		// ラインを描画
-		line.DrawLine(parentPosition, childPosition);
+		
+		line.UpdateVertices(parentPosition, childPosition);
+		line.DrawLine();
 	}
 }
 
