@@ -153,6 +153,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Engine\Generators\Particle\ParticleEmitter.cpp" />
     <ClCompile Include="Engine\Graphics\PipelineManager\SkinningManager.cpp" />
     <ClCompile Include="Math\Quaternion.cpp" />
+    <ClCompile Include="Math\Vector3.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application\Scenes\CoreScenes\Base\BaseScene.h" />
