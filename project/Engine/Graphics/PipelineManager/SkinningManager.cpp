@@ -36,7 +36,7 @@ void SkinningManager::CreateRootSignature()
 
 
 	D3D12_DESCRIPTOR_RANGE descriptorRangeBone[1] = {};
-	descriptorRangeBone[0].BaseShaderRegister = 1;
+	descriptorRangeBone[0].BaseShaderRegister = 0;
 	descriptorRangeBone[0].NumDescriptors = 1;
 	descriptorRangeBone[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
 	descriptorRangeBone[0].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
@@ -82,6 +82,7 @@ void SkinningManager::CreateRootSignature()
 	rootParameters[6].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;					// PixelShaderで使う
 	rootParameters[6].Descriptor.ShaderRegister = 4;									// レジスタ番号4を使う
 
+	// アニメーション
 	rootParameters[7].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE; // ストラクチャーバッファー
 	rootParameters[7].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;
 	rootParameters[7].DescriptorTable.pDescriptorRanges = descriptorRangeBone;
@@ -176,7 +177,7 @@ void SkinningManager::CreateGraphicsPipeline()
 	inputElementDescs[3].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
 	inputElementDescs[4].SemanticName = "INDEX";
 	inputElementDescs[4].SemanticIndex = 0;
-	inputElementDescs[4].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+	inputElementDescs[4].Format = DXGI_FORMAT_R32G32B32A32_SINT;
 	inputElementDescs[4].InputSlot = 1;
 	inputElementDescs[4].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
 

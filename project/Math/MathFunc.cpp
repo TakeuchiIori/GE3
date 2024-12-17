@@ -249,19 +249,52 @@ Vector3 CatmullRomPosition(const std::vector<Vector3>& points, float t) {
 
 Matrix4x4 MakeAffineMatrix(const Vector3& scale, const Quaternion& rotate, const Vector3& translate)
 {
-    // スケーリング行列を生成
-    Matrix4x4 scalingMatrix = MakeScaleMatrix(scale);
+    Matrix4x4 result;
 
-    // 回転行列を生成
-    Matrix4x4 rotationMatrix = MakeRotateMatrix(rotate);
+    Matrix4x4 scaleMatrix = MakeScaleMatrix(scale);
+    Matrix4x4 rotateMatrix = MakeRotateMatrix(rotate);
+    Matrix4x4 translateMatrix = MakeTranslateMatrix(translate);
 
-    // 平行移動行列を生成
-    Matrix4x4 translationMatrix = MakeTranslateMatrix(translate);
-
-    // 行列を結合してアフィン変換行列を生成
-    return scalingMatrix * rotationMatrix * translationMatrix;
+    result = scaleMatrix * rotateMatrix * translateMatrix;
+    return result;
+}
+Quaternion Quaternion::operator+(const Quaternion& q) const {
+    return Quaternion(x + q.x, y + q.y, z + q.z, w + q.w);
 }
 
+Quaternion Quaternion::operator-(const Quaternion& q) const {
+    return Quaternion(x - q.x, y - q.y, z - q.z, w - q.w);
+}
+
+Quaternion& Quaternion::operator+=(const Quaternion& q) {
+    x += q.x;
+    y += q.y;
+    z += q.z;
+    w += q.w;
+    return *this;
+}
+
+Quaternion& Quaternion::operator-=(const Quaternion& q) {
+    x -= q.x;
+    y -= q.y;
+    z -= q.z;
+    w -= q.w;
+    return *this;
+}
+
+
+// スカラー倍演算子
+Quaternion Quaternion::operator*(float scalar) const {
+    return Quaternion(x * scalar, y * scalar, z * scalar, w * scalar);
+}
+
+Quaternion& Quaternion::operator*=(float scalar) {
+    x *= scalar;
+    y *= scalar;
+    z *= scalar;
+    w *= scalar;
+    return *this;
+}
 
 
 Quaternion IdentityQuaternion()
@@ -389,46 +422,29 @@ Quaternion Lerp(const Quaternion& q1, const Quaternion& q2, float t)
     return result;
 }
 
-Quaternion Slerp(const Quaternion& q0, const Quaternion& q1, float t) {
-    // クォータニオンの内積を計算
+Quaternion Slerp(Quaternion q0, Quaternion q1, float t) {
     float dot = Dot(q0, q1);
-
-    // クォータニオンが反対向きの場合、内積が負になるので符号を反転
-    const float THRESHOLD = 0.9995f;
     if (dot < 0.0f) {
+        q0 = { -q0.x, -q0.y, -q0.z, -q0.w }; // 反対方向に補間
         dot = -dot;
-        Quaternion negQ1 = { -q1.x, -q1.y, -q1.z, -q1.w };
-        return Slerp(q0, negQ1, t);
     }
 
-    // 内積が閾値以上の場合、線形補間を使用
-    if (dot > THRESHOLD) {
-        Quaternion result = {
-            q0.x + t * (q1.x - q0.x),
-            q0.y + t * (q1.y - q0.y),
-            q0.z + t * (q1.z - q0.z),
-            q0.w + t * (q1.w - q0.w)
-        };
-        // 正規化
-        float norm = std::sqrt(result.x * result.x + result.y * result.y + result.z * result.z + result.w * result.w);
-        return { result.x / norm, result.y / norm, result.z / norm, result.w / norm };
+    // なす角を求める
+    float theta = std::acos(dot);
+    float sinTheta = std::sin(theta);
+
+    // 補間係数を求める
+    if (sinTheta > 0.001f) { // 数値安定性のための閾値
+        float scale0 = std::sin((1 - t) * theta) / sinTheta;
+        float scale1 = std::sin(t * theta) / sinTheta;
+
+        // 補間後のQuaternionを計算
+        return q0 * scale0 + q1 * scale1;
     }
-
-    // 角度を計算
-    float theta_0 = std::acos(dot);
-    float theta = theta_0 * t;
-    float sin_theta = std::sin(theta);
-    float sin_theta_0 = std::sin(theta_0);
-
-    float s0 = std::cos(theta) - dot * sin_theta / sin_theta_0;
-    float s1 = sin_theta / sin_theta_0;
-
-    return {
-        s0 * q0.x + s1 * q1.x,
-        s0 * q0.y + s1 * q1.y,
-        s0 * q0.z + s1 * q1.z,
-        s0 * q0.w + s1 * q1.w
-    };
+    else {
+        // ほぼ同じ方向の場合、線形補間
+        return q0 * (1 - t) + q1 * t;
+    }
 }
 
 // クォータニオンからオイラー角を作成する関数

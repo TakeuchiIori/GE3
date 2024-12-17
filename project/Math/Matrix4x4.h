@@ -5,6 +5,8 @@
 
 // Math
 #include "Vector3.h"
+#include <initializer_list>
+#include <stdexcept>
 
 
 struct Matrix4x4 {
@@ -12,6 +14,8 @@ struct Matrix4x4 {
 
 	// デフォルトコンストラクタ
 	Matrix4x4() : m{ {0.0f} } {}
+
+	Matrix4x4(std::initializer_list<float> list);
 
 	// 行列の加算
 	Matrix4x4 operator+(const Matrix4x4& other) const {
@@ -84,6 +88,9 @@ struct Matrix4x4 {
 		return *this;
 	}
 };
+
+
+
 struct UVTransform {
 	Vector3 scale;
 	Vector3 rotate;
@@ -96,9 +103,9 @@ Matrix4x4 Subtract(Matrix4x4 matrix1, Matrix4x4 matrix2);
 // 3. 行列の積 
 Matrix4x4 Multiply(Matrix4x4 matrix1, Matrix4x4 matrix2);
 // 4. 逆行列
-Matrix4x4 Inverse(Matrix4x4 matrix);
+Matrix4x4 Inverse(const Matrix4x4& m);
 // 5. 転置行列 
-Matrix4x4 TransPose(Matrix4x4 matrix);
+Matrix4x4 TransPose(const Matrix4x4& matrix);
 // 6. 単位行列 
 Matrix4x4 MakeIdentity4x4();
 // 7. 拡大縮小行列

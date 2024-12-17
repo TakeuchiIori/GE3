@@ -77,6 +77,7 @@ public: // 構造体
 		std::vector<uint32_t> indices;
 		MaterialData material;
 		Node rootNode;
+		bool hasBones;
 	};
 	// インフルエンス
 	const static uint32_t kNumMaxInfluence = 4;
@@ -102,21 +103,14 @@ public: // 構造体
 		uint32_t srvIndex;
 	};
 
-	struct KeyframeVector3 {
-		Vector3 value;			 // キーフレームの値
-		float time;				 // キーフレームの時刻（秒）
-	};
-
-	struct KeyframeQuaternion {
-		Quaternion value;		 // キーフレームの値
-		float time;				 // キーフレームの時刻（秒）
-	};
-
+	
 	template <typename tValue>
 	struct Keyframe {
 		float time;
 		tValue value;
 	};
+	using KeyframeVector3 = Keyframe<Vector3>;
+	using KeyframeQuaternion = Keyframe<Quaternion>;
 
 	template<typename tValue>
 	struct AnimationCurve {
@@ -124,9 +118,9 @@ public: // 構造体
 	};
 
 	struct NodeAnimation {
-		std::vector<KeyframeVector3> translate;
-		std::vector<KeyframeQuaternion> rotate;
-		std::vector<KeyframeVector3> scale;
+		AnimationCurve<Vector3> translate;
+		AnimationCurve<Quaternion> rotate;
+		AnimationCurve<Vector3> scale;
 	};
 
 	struct Animation {
@@ -194,7 +188,7 @@ private:
 	void CreateVertex();
 
 	/// <summary>
-	/// INdexリソース作成
+	/// Indexリソース作成
 	/// </summary>
 	void CreteIndex();
 
@@ -239,6 +233,9 @@ private:
 	SkinCluster CreateSkinCluster(const Skeleton& skeleton, const
 		ModelData& modelData);
 
+	std::vector<Vector3> GetConnectionPositions();
+
+	uint32_t GetConnectionCount();
 	
 private:
 
@@ -274,13 +271,12 @@ private:
 	/// <summary>
 	/// アニメーション解析
 	/// </summary>
-	static Animation LoadAnimationFile(const std::string& directoryPath, const std::string& filename);
+	Animation LoadAnimationFile(const std::string& directoryPath, const std::string& filename);
+
+	static bool HasBones(const aiScene* scene);
 
 
 
-	std::vector<Vector3> GetConnectionPositions();
-
-	uint32_t GetConnectionCount();
 
 	
 

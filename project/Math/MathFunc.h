@@ -14,7 +14,7 @@
 
 struct Quaternion
 {
-	float w, x, y, z;
+	float x, y, z, w;
 	// 単位クォータニオンを簡単に返すための静的メンバ
 	static Quaternion Identity() {
 		return { 0.0f, 0.0f, 0.0f, 1.0f };
@@ -29,7 +29,19 @@ struct Quaternion
 			w * q.z + x * q.y - y * q.x + z * q.w
 		);
 	}
+
+	Quaternion operator+(const Quaternion& q) const;
+	Quaternion operator-(const Quaternion& q) const;
+	Quaternion& operator+=(const Quaternion& q);
+	Quaternion& operator-=(const Quaternion& q);
+	// スカラー倍演算子
+	Quaternion operator*(float scalar) const;
+	Quaternion& operator*=(float scalar);
+
 };
+
+
+
 
 // 位置・回転・スケールを保持する EulerTransform 構造体
 struct EulerTransform {
@@ -145,6 +157,7 @@ Vector3 CatmullRomInterpolation(const Vector3& p0, const Vector3& p1, const Vect
 // ぐちずえんじんご提供
 Vector3 CatmullRomPosition(const std::vector<Vector3>& points, float t);
 
+// Quaternion回転を含むアフィン変換
 Matrix4x4 MakeAffineMatrix(const Vector3& scale, const Quaternion& rotate, const Vector3& translate);
 
 // 単位クォータニオンを返す関数
@@ -180,7 +193,7 @@ float Dot(const Quaternion& q0, const Quaternion& q1);
 Quaternion Lerp(const Quaternion& q1, const Quaternion& q2, float t);
 
 // 2つのクォータニオン間で球面線形補間（Slerp）を行う関数
-Quaternion Slerp(const Quaternion& q0, const Quaternion& q1, float t);
+Quaternion Slerp(Quaternion q0, Quaternion q1, float t);
 
 // クォータニオンからオイラー角を作成する関数
 Vector3 QuaternionToEuler(const Quaternion& q);
