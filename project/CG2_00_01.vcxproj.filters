@@ -378,6 +378,9 @@
     <ClCompile Include="Engine\Graphics\PipelineManager\SkinningManager.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
+    <ClCompile Include="Math\Quaternion.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\Utility\Systems\Input\Input.h">
@@ -519,6 +522,9 @@
       <Filter>ヘッダー ファイル\NOIR\Utility\Loaders\Texture</Filter>
     </ClInclude>
     <ClInclude Include="Engine\Graphics\PipelineManager\SkinningManager.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Math\Quaternion.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>

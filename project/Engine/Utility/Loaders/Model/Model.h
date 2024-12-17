@@ -15,6 +15,7 @@
 
 // Math
 #include "MathFunc.h"
+#include "Quaternion.h"
 #include "Vector4.h"
 #include "Matrix4x4.h"
 #include "Vector2.h"
