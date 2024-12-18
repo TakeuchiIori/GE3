@@ -41,8 +41,8 @@ void Object3d::Draw(WorldTransform& worldTransform)
 	if (model_) {
 		if (camera_) {
 			const Matrix4x4& viewProjectionMatrix = camera_->GetViewProjectionMatrix();
-			worldViewProjectionMatrix = worldTransform.GetMatWorld() /** model_->GetModelData().rootNode.localMatrix*/  * viewProjectionMatrix;
-			worldMatrix = worldTransform.GetMatWorld() /** model_->GetModelData().rootNode.localMatrix*/;
+			worldViewProjectionMatrix = worldTransform.GetMatWorld() * viewProjectionMatrix;
+			worldMatrix = worldTransform.GetMatWorld();
 		}
 		else {
 
@@ -64,9 +64,9 @@ void Object3d::Draw(WorldTransform& worldTransform)
 	}
 }
 
-void Object3d::DrawSkeleton()
+void Object3d::DrawSkeleton(const Model::Skeleton& skeleton, Line& line)
 {
-	model_->DrawSkeleton(model_->GetSkeleton(),*line_);
+	model_->DrawSkeleton(model_->GetSkeleton(),line);
 }
 
 void Object3d::CreateMaterialResource()

@@ -6,6 +6,8 @@
 #include <string>
 #include <vector>
 #include <optional>
+#include <span>
+#include <algorithm>
 
 // Engine
 #include "DX./DirectXCommon.h"
@@ -13,6 +15,7 @@
 
 // Math
 #include "MathFunc.h"
+#include "Quaternion.h"
 #include "Vector4.h"
 #include "Matrix4x4.h"
 #include "Vector2.h"
@@ -22,6 +25,8 @@
 #include <assimp/scene.h>
 #include <map>
 
+
+class SrvManager;
 class Line;
 class ModelCommon;
 class Model
@@ -56,29 +61,57 @@ public: // 構造体
 		std::string name;
 		std::vector<Node> children;
 	};
+
+	struct VertexWeightData {
+		float weight;
+		uint32_t vertexIndex;
+	};
+
+	struct JointWeightData {
+		Matrix4x4 inverseBindPoseMatrix;
+		std::vector<VertexWeightData> vertexWeights;
+	};
 	// モデルデータ
 	struct ModelData {
+		std::map<std::string, JointWeightData> skinClusterData;
 		std::vector<VertexData> vertices;
 		std::vector<uint32_t> indices;
 		MaterialData material;
 		Node rootNode;
+		bool hasBones;
+	};
+	// インフルエンス
+	const static uint32_t kNumMaxInfluence = 4;
+	struct VertexInfluence {
+		std::array<float, kNumMaxInfluence> weights;
+		std::array<int32_t, kNumMaxInfluence> jointindices;
+	};
+	// マトリックスパレット
+	struct WellForGPU {
+		Matrix4x4 skeletonSpaceMatrix;  // 位置用
+		Matrix4x4 skeletonSpaceInverseTransposeMatrix; // 法線用
+	};
+	// スキンクラスター
+	struct SkinCluster {
+		std::vector<Matrix4x4> inverseBindposeMatrices;
+		Microsoft::WRL::ComPtr<ID3D12Resource> influenceResource;
+		D3D12_VERTEX_BUFFER_VIEW influenceBufferView;
+		std::span<VertexInfluence> mappedInfluence;
+		uint32_t influSrvIndex;
+		Microsoft::WRL::ComPtr<ID3D12Resource> paletteResource;
+		std::span<WellForGPU> mappedPalette;
+		std::pair<D3D12_CPU_DESCRIPTOR_HANDLE, D3D12_GPU_DESCRIPTOR_HANDLE> paletteSrvHandle;
+		uint32_t srvIndex;
 	};
 
-	struct KeyframeVector3 {
-		Vector3 value;			 // キーフレームの値
-		float time;				 // キーフレームの時刻（秒）
-	};
-
-	struct KeyframeQuaternion {
-		Quaternion value;		 // キーフレームの値
-		float time;				 // キーフレームの時刻（秒）
-	};
-
+	
 	template <typename tValue>
 	struct Keyframe {
 		float time;
 		tValue value;
 	};
+	using KeyframeVector3 = Keyframe<Vector3>;
+	using KeyframeQuaternion = Keyframe<Quaternion>;
 
 	template<typename tValue>
 	struct AnimationCurve {
@@ -86,9 +119,9 @@ public: // 構造体
 	};
 
 	struct NodeAnimation {
-		std::vector<KeyframeVector3> translate;
-		std::vector<KeyframeQuaternion> rotate;
-		std::vector<KeyframeVector3> scale;
+		AnimationCurve<Vector3> translate;
+		AnimationCurve<Quaternion> rotate;
+		AnimationCurve<Vector3> scale;
 	};
 
 	struct Animation {
@@ -111,6 +144,7 @@ public: // 構造体
 		int32_t root; // RootJointのIndex
 		std::map<std::string, int32_t> jointMap; // Joint名とIndexとの辞書
 		std::vector<Joint> joints; // 所属しているジョイント
+		std::vector<std::pair<int32_t, int32_t>> connections; // 接続情報: 親 -> 子のペア
 	};
 
 public: // メンバ関数
@@ -123,6 +157,8 @@ public: // メンバ関数
 	/// 描画
 	/// </summary>
 	void Draw();
+
+	void DrawSkeletonRecursive(const Skeleton& skeleton, Line& line, int32_t parentIndex);
 
 	/// <summary>
 	//  スケルトンの描画　※DrawLineを調整中なので仮
@@ -140,6 +176,12 @@ public: // メンバ関数
 	/// </summary>
 	void PlayAnimation();
 
+	/// <summary>
+	/// スキンクラスターの更新
+	/// </summary>
+	void UpdateSkinCluster(SkinCluster& skinCluster,const Skeleton& skeleton);
+
+	Vector3 ExtractJointPosition(const Joint& joint) const;
 private:
 	/// <summary>
 	/// 頂点リソース
@@ -147,7 +189,7 @@ private:
 	void CreateVertex();
 
 	/// <summary>
-	/// INdexリソース作成
+	/// Indexリソース作成
 	/// </summary>
 	void CreteIndex();
 
@@ -187,6 +229,15 @@ private:
 	/// 任意の時刻を取得
 	/// </summary>
 	Quaternion CalculateValue(const std::vector<KeyframeQuaternion>& keyframes, float time);
+
+
+	SkinCluster CreateSkinCluster(const Skeleton& skeleton, const
+		ModelData& modelData);
+
+	std::vector<Vector3> GetConnectionPositions();
+
+	uint32_t GetConnectionCount();
+	
 private:
 
 	/// <summary>
@@ -221,7 +272,14 @@ private:
 	/// <summary>
 	/// アニメーション解析
 	/// </summary>
-	static Animation LoadAnimationFile(const std::string& directoryPath, const std::string& filename);
+	Animation LoadAnimationFile(const std::string& directoryPath, const std::string& filename);
+
+	static bool HasBones(const aiScene* scene);
+
+
+
+
+	
 
 	
 
@@ -252,6 +310,12 @@ private: // メンバ変数
 
 	Skeleton skeleton_;
 
+	bool isAnimation_;
+private: // Skinning
 
+	SrvManager* srvManager_ = nullptr;
+
+	SkinCluster skinCluster_;
 };
+
 

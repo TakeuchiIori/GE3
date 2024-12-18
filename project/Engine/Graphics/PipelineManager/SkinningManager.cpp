@@ -1,52 +1,54 @@
-#include "Object3dCommon.h"
+#include "SkinningManager.h"
 #include "PipelineManager/PipelineManager.h"
 // シングルトンインスタンスの初期化
-std::unique_ptr<Object3dCommon> Object3dCommon::instance = nullptr;
-std::once_flag Object3dCommon::initInstanceFlag;
+std::unique_ptr<SkinningManager> SkinningManager::instance = nullptr;
+std::once_flag SkinningManager::initInstanceFlag;
 
 /// <summary>
 /// シングルトンインスタンスの取得
 /// </summary>
-Object3dCommon* Object3dCommon::GetInstance()
+SkinningManager* SkinningManager::GetInstance()
 {
 	std::call_once(initInstanceFlag, []() {
-		instance.reset(new Object3dCommon());
+		instance.reset(new SkinningManager());
 		});
 	return instance.get();
 }
 
-void Object3dCommon::Initialize(DirectXCommon* dxCommon)
+void SkinningManager::Initialize(DirectXCommon* dxCommon)
 {
 	// 引数で受け取ってメンバ変数に記録する
 	dxCommon_ = dxCommon;
 
-	rootSignature_ = PipelineManager::GetInstance()->GetRootSignature("Object");
-	graphicsPipelineState_ = PipelineManager::GetInstance()->GetPipeLineStateObject("Object");
+	rootSignature_ = PipelineManager::GetInstance()->GetRootSignature("Animation");
+	graphicsPipelineState_ = PipelineManager::GetInstance()->GetPipeLineStateObject("Animation");
 }
 
-void Object3dCommon::DrawPreference()
+
+
+void SkinningManager::DrawPreference()
 {
-	//// ルートシグネチャをセット
+	// ルートシグネチャをセット
 	SetRootSignature();
 
-	//// パイプラインをセット
+	// パイプラインをセット
 	SetGraphicsCommand();
 
 	// プリミティブトポロジーをセット
 	SetPrimitiveTopology();
 }
 
-void Object3dCommon::SetRootSignature()
+void SkinningManager::SetRootSignature()
 {
 	dxCommon_->GetCommandList()->SetGraphicsRootSignature(rootSignature_.Get());
 }
 
-void Object3dCommon::SetGraphicsCommand()
+void SkinningManager::SetGraphicsCommand()
 {
 	dxCommon_->GetCommandList()->SetPipelineState(graphicsPipelineState_.Get());
 }
 
-void Object3dCommon::SetPrimitiveTopology()
+void SkinningManager::SetPrimitiveTopology()
 {
 	dxCommon_->GetCommandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 }

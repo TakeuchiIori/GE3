@@ -2,6 +2,7 @@
 // Engine
 #include "Model.h"
 #include "ModelCommon.h"
+#include "SrvManager/SrvManager.h"
 #include "Loaders./Texture./TextureManager.h"
 #include "Drawer./LineManager/Line.h"
 
@@ -17,20 +18,28 @@
 
 void Model::Initialize(ModelCommon* modelCommon, const std::string& directorypath, const std::string& filename, bool isAnimation)
 {
+	isAnimation_ = isAnimation;
 	// 引数から受け取ってメンバ変数に記録する
 	modelCommon_ = modelCommon;
+
+	srvManager_ = SrvManager::GetInstance();
 
 	// モデル読み込み
 	modelData_ = LoadModelIndexFile(directorypath, filename);
 
 	// アニメーションをするならtrue
-	if (isAnimation) {
+	if (isAnimation_) {
 		animation_ = LoadAnimationFile(directorypath, filename);
-		
-	}
 
-	// 骨の作成
-	skeleton_ = CreateSkeleton(modelData_.rootNode);
+
+		if (modelData_.hasBones) {
+			// 骨の作成
+			skeleton_ = CreateSkeleton(modelData_.rootNode);
+
+			skinCluster_ = CreateSkinCluster(skeleton_, modelData_);
+		}
+
+	}
 
 	// 頂点データの初期化
 	CreateVertex();
@@ -42,16 +51,29 @@ void Model::Initialize(ModelCommon* modelCommon, const std::string& directorypat
 	TextureManager::GetInstance()->LoadTexture(modelData_.material.textureFilePath);
 
 	// 読み込んだテクスチャ番号の取得
-	modelData_.material.textureIndex =
-		TextureManager::GetInstance()->GetTextureIndexByFilePath(modelData_.material.textureFilePath);
+	modelData_.material.textureIndex =TextureManager::GetInstance()->GetTextureIndexByFilePath(modelData_.material.textureFilePath);
 
 }
 
 void Model::Draw()
 {
-	//DrawSkeleton(skeleton_);
-	// VertexBufferView
-	modelCommon_->GetDxCommon()->GetCommandList()->IASetVertexBuffers(0, 1, &vertexBufferView_); // VBVを設定
+	if (skeleton_.joints.empty()) {
+		// スケルトンが存在しない場合
+		modelCommon_->GetDxCommon()->GetCommandList()->IASetVertexBuffers(0, 1, &vertexBufferView_); // VBVを設定
+	}
+	else {
+		// スケルトンが存在する場合
+		D3D12_VERTEX_BUFFER_VIEW vbvs[2] = {
+			vertexBufferView_,                       // VertexDataのVBV
+			skinCluster_.influenceBufferView        // InfluenceのVBV
+		};
+		modelCommon_->GetDxCommon()->GetCommandList()->IASetVertexBuffers(0, 2, vbvs); // VBVを設定
+
+		// スケルトン用のSRVを設定
+		modelCommon_->GetDxCommon()->GetCommandList()->SetGraphicsRootDescriptorTable(7, skinCluster_.paletteSrvHandle.second);
+	}
+
+
 	// indexbufferView
 	modelCommon_->GetDxCommon()->GetCommandList()->IASetIndexBuffer(&indexBufferView_); // IBVを設定
 	// SRVの設定
@@ -61,41 +83,105 @@ void Model::Draw()
 
 }
 
-void Model::DrawSkeleton(const Skeleton& skeleton,Line& line) {
-	// 描画する線の始点と終点を記録する配列
-	std::vector<Vector3> startPoints;
-	std::vector<Vector3> endPoints;
 
-	// 全てのジョイントを走査
-	for (const auto& joint : skeleton.joints) {
-		// 親ジョイントが存在する場合
-		if (joint.parent.has_value()) {
-			// 親ジョイントを取得
-			const auto& parent = skeleton.joints[joint.parent.value()];
+std::vector<Vector3> Model::GetConnectionPositions()
+{
+	std::vector<Vector3> connectionPositions;
 
-			// 親ジョイントの座標
-			Vector3 start = Vector3{
-				parent.skeletonSpaceMatrix.m[3][0],
-				parent.skeletonSpaceMatrix.m[3][1],
-				parent.skeletonSpaceMatrix.m[3][2]
+	for (const auto& joint : skeleton_.joints) {
+		if (joint.parent) { // 親が存在するボーンのみ
+			// 親の位置
+			Vector3 parentPosition = {
+				skeleton_.joints[*joint.parent].skeletonSpaceMatrix.m[3][0],
+				skeleton_.joints[*joint.parent].skeletonSpaceMatrix.m[3][1],
+				skeleton_.joints[*joint.parent].skeletonSpaceMatrix.m[3][2]
 			};
 
-			// 現在のジョイントの座標
-			Vector3 end = Vector3{
+			// 現在のボーンの位置
+			Vector3 currentPosition = {
 				joint.skeletonSpaceMatrix.m[3][0],
 				joint.skeletonSpaceMatrix.m[3][1],
 				joint.skeletonSpaceMatrix.m[3][2]
 			};
 
-			// 配列に始点と終点を格納
-			startPoints.push_back(start);
-			endPoints.push_back(end);
+			// 中間位置（オプション：つなぎ目として描画する場合）
+			Vector3 connectionPosition = (parentPosition + currentPosition) * 0.5f;
+
+			connectionPositions.push_back(connectionPosition);
 		}
 	}
 
-	// 記録したすべての線を描画
-	for (size_t i = 0; i < startPoints.size(); ++i) {
-		line.DrawLine(startPoints[i], endPoints[i]);
+	return connectionPositions;
+}
+
+uint32_t Model::GetConnectionCount()
+{
+	return static_cast<int>(skeleton_.joints.size()) - 1; // 全ボーン数 - ルートボーン
+}
+
+
+
+Vector3 Model::ExtractJointPosition(const Joint& joint) const
+{
+	return {
+		joint.skeletonSpaceMatrix.m[3][0],
+		joint.skeletonSpaceMatrix.m[3][1],
+		joint.skeletonSpaceMatrix.m[3][2]
+	};
+}
+
+
+void Model::DrawSkeletonRecursive(const Skeleton& skeleton, Line& line, int32_t currentIndex)
+{
+	const Joint& currentJoint = skeleton.joints[currentIndex];
+
+	// 現在のジョイントの位置を取得
+	Vector3 currentPosition = {
+		currentJoint.skeletonSpaceMatrix.m[3][0],
+		currentJoint.skeletonSpaceMatrix.m[3][1],
+		currentJoint.skeletonSpaceMatrix.m[3][2]
+	};
+
+	// 親が存在する場合、親ジョイントと現在のジョイントを線でつなぐ
+	if (currentJoint.parent.has_value()) {
+		const Joint& parentJoint = skeleton.joints[currentJoint.parent.value()];
+
+		Vector3 parentPosition = {
+			parentJoint.skeletonSpaceMatrix.m[3][0],
+			parentJoint.skeletonSpaceMatrix.m[3][1],
+			parentJoint.skeletonSpaceMatrix.m[3][2]
+		};
+
+		// 親ジョイントと現在のジョイントを線で描画
+		//line.DrawLine(parentPosition, currentPosition);
+	}
+
+	// 子ジョイントを再帰的に処理する
+	for (int32_t childIndex : currentJoint.children) {
+		DrawSkeletonRecursive(skeleton, line, childIndex);
+	}
+}
+
+
+void Model::DrawSkeleton(const Skeleton& skeleton,Line& line) {
+	// スケルトンが空の場合は終了
+	// ラインを描画
+	//line.ClearVertices();
+	if (skeleton.joints.empty()) {
+		return;
+	}
+
+	// スケルトン内の全ての接続を描画
+	for (const auto& connection : skeleton.connections) {
+		int32_t parentIndex = connection.first;
+		int32_t childIndex = connection.second;
+
+		// 親ジョイントと子ジョイントのワールド座標を取得
+		const Vector3& parentPosition = ExtractJointPosition(skeleton.joints[parentIndex]);
+		const Vector3& childPosition = ExtractJointPosition(skeleton.joints[childIndex]);
+
+		
+		line.UpdateVertices(parentPosition, childPosition);
 	}
 }
 
@@ -103,20 +189,75 @@ void Model::DrawSkeleton(const Skeleton& skeleton,Line& line) {
 void Model::UpdateAnimation()
 {
 	animationTime_ += 1.0f / 60.0f;
-	ApplyAnimation(skeleton_, animation_, animationTime_);
-	UpdateSkeleton(skeleton_);
+	animationTime_ = std::fmod(animationTime_, animation_.duration);
+	if (modelData_.hasBones) {
+		ApplyAnimation(skeleton_, animation_, animationTime_);
+		UpdateSkeleton(skeleton_);
+		UpdateSkinCluster(skinCluster_, skeleton_);
+	}
+	else {
+		PlayAnimation();
+	}
 }
+
 
 void Model::PlayAnimation()
 {
 	animationTime_ += 1.0f / 60.0f;
 	animationTime_ = std::fmod(animationTime_, animation_.duration); // 最後まで再生したら最初からリピート再生
 	NodeAnimation& rootNodeAnimation = animation_.nodeAnimations[modelData_.rootNode.name]; // rootNodeのAnimationを取得
-	Vector3 translate = CalculateValue(rootNodeAnimation.translate, animationTime_); // 指定時刻の値を取得
-	Quaternion rotate= CalculateValue(rootNodeAnimation.rotate, animationTime_);
-	Vector3 scale = CalculateValue(rootNodeAnimation.scale, animationTime_);
+	Vector3 translate = CalculateValue(rootNodeAnimation.translate.keyframes, animationTime_); // 指定時刻の値を取得
+	Quaternion rotate= CalculateValue(rootNodeAnimation.rotate.keyframes, animationTime_);
+	Vector3 scale = CalculateValue(rootNodeAnimation.scale.keyframes, animationTime_);
 
 	modelData_.rootNode.localMatrix = MakeAffineMatrix(scale, rotate, translate);
+}
+
+void Model::UpdateSkeleton(Skeleton& skeleton)
+{
+	// すべてのJointを更新。親が若いので通常ループで処理が可能になっている
+	for (Joint& joint : skeleton.joints) {
+		joint.localMatrix = MakeAffineMatrix(joint.transform.scale, joint.transform.rotate, joint.transform.translate);
+
+		if (joint.parent) { // 親がいれば親の行列を掛ける
+			joint.skeletonSpaceMatrix = joint.localMatrix * skeleton.joints[*joint.parent].skeletonSpaceMatrix;
+		}
+		else { // 親がいないのでlocalMatrixとskeletonSpaceMatrixは一致する
+			joint.skeletonSpaceMatrix = joint.localMatrix;
+
+		}
+	}
+}
+
+void Model::ApplyAnimation(Skeleton& skeleton, const Animation& animation, float animationTime) {
+	for (Joint& joint : skeleton.joints) {
+		// 対象のJointのAnimationがあれば、値の適用を行う。
+		// 下記のif文はC++17から可能になったinit-statement付きのif文。
+		if (auto it = animation.nodeAnimations.find(joint.name); it != animation.nodeAnimations.end()) {
+			const NodeAnimation& rootNodeAnimation = (*it).second;
+			joint.transform.scale = CalculateValue(rootNodeAnimation.scale.keyframes, animationTime);
+			joint.transform.rotate = CalculateValue(rootNodeAnimation.rotate.keyframes, animationTime);
+			joint.transform.translate = CalculateValue(rootNodeAnimation.translate.keyframes, animationTime);
+			
+		}
+	}
+}
+
+
+
+void Model::UpdateSkinCluster(SkinCluster& skinCluster, const Skeleton& skeleton)
+{
+	for (size_t jointIndex = 0; jointIndex < skeleton.joints.size(); ++jointIndex) {
+		assert(jointIndex < skinCluster.inverseBindposeMatrices.size());
+		
+		// スケルトン空間行列の計算
+		skinCluster.mappedPalette[jointIndex].skeletonSpaceMatrix =
+			skinCluster.inverseBindposeMatrices[jointIndex] * skeleton.joints[jointIndex].skeletonSpaceMatrix;
+		
+		// 法線用の行列を計算（転置逆行列）
+		skinCluster.mappedPalette[jointIndex].skeletonSpaceInverseTransposeMatrix =
+			TransPose(Inverse(skinCluster.mappedPalette[jointIndex].skeletonSpaceMatrix));
+	}
 }
 
 void Model::CreateVertex()
@@ -147,7 +288,7 @@ void Model::CreteIndex()
 	indexResource_->Unmap(0, nullptr);
 }
 
-int32_t Model::CreateJoint(const Node& node, const std::optional<int32_t>& parent, std::vector<Joint>& joints)
+int32_t Model::CreateJoint(const Model::Node& node, const std::optional<int32_t>& parent, std::vector<Joint>& joints)
 {
 	Joint joint;
 	joint.name = node.name;
@@ -167,9 +308,7 @@ int32_t Model::CreateJoint(const Node& node, const std::optional<int32_t>& paren
 	return joint.index;
 }
 
-
-
-Model::Skeleton Model::CreateSkeleton(const Node& rootNode)
+Model::Skeleton Model::CreateSkeleton(const Model::Node& rootNode)
 {
 	Skeleton skeleton;
 	skeleton.root = CreateJoint(rootNode, {}, skeleton.joints);
@@ -177,39 +316,81 @@ Model::Skeleton Model::CreateSkeleton(const Node& rootNode)
 	// 名前とindexのマッピングを行いアクセスしやすくなる
 	for (const Joint& joint : skeleton.joints) {
 		skeleton.jointMap.emplace(joint.name, joint.index);
+
+		if (joint.parent.has_value()) {
+			skeleton.connections.emplace_back(joint.parent.value(), joint.index);
+		}
 	}
 
 	return skeleton;
 }
 
-void Model::UpdateSkeleton(Skeleton& skeleton)
+
+Model::SkinCluster Model::CreateSkinCluster(const Skeleton& skeleton, const ModelData& modelData)
 {
-	// すべてのJointを更新。親が若いので通常ループで処理が可能になっている
-	for (Joint& joint : skeleton.joints) {
-		joint.localMatrix = MakeAffineMatrix(joint.transform.scale, joint.transform.rotate, joint.transform.translate);
-		if (joint.parent) { // 親がいれば親の行列を掛ける
-			joint.skeletonSpaceMatrix = joint.localMatrix * skeleton.joints[*joint.parent].skeletonSpaceMatrix;
-		}
-		else { // 親がいないのでlocalMatrixとskeletonSpaceMatrixは一致する
-			joint.skeletonSpaceMatrix = joint.localMatrix;
+	SkinCluster skinCluster;
+	//auto device = modelCommon_->GetDxCommon()->GetDevice();
+	//=========================================================//
+	//					palette用のResourceを確保				   //
+	//=========================================================//
 
+	skinCluster.paletteResource = modelCommon_->GetDxCommon()->CreateBufferResource(sizeof(WellForGPU) * skeleton.joints.size());
+	WellForGPU* mappedPalette = nullptr;
+	skinCluster.paletteResource->Map(0, nullptr, reinterpret_cast<void**>(&mappedPalette));
+	skinCluster.mappedPalette = { mappedPalette,skeleton.joints.size() }; // spanを使ってアクセスできるようにする
+	skinCluster.srvIndex = srvManager_->Allocate();
+	skinCluster.paletteSrvHandle.first = srvManager_->GetCPUSRVDescriptorHandle(skinCluster.srvIndex);
+	skinCluster.paletteSrvHandle.second = srvManager_->GetGPUSRVDescriptorHandle(skinCluster.srvIndex);
+	srvManager_->CreateSRVforStructuredBuffer(skinCluster.srvIndex, skinCluster.paletteResource.Get(),
+		UINT(skeleton.joints.size()), sizeof(WellForGPU));
+
+	//=========================================================//
+	//					Influece用のResourceを生成			   //
+	//=========================================================//
+
+	skinCluster.influenceResource = modelCommon_->GetDxCommon()->CreateBufferResource(sizeof(VertexInfluence) * modelData.vertices.size());
+	VertexInfluence* mappedInfluence = nullptr;
+	skinCluster.influenceResource->Map(0, nullptr, reinterpret_cast<void**>(&mappedInfluence));
+	std::memset(mappedInfluence, 0, sizeof(VertexInfluence) * modelData.vertices.size()); // 0埋め。weightを0にしておく
+	skinCluster.mappedInfluence = { mappedInfluence,modelData.vertices.size() };
+	/// Influence用のVBVを作成
+	skinCluster.influenceBufferView.BufferLocation = skinCluster.influenceResource->GetGPUVirtualAddress();
+	skinCluster.influenceBufferView.SizeInBytes = UINT(sizeof(VertexInfluence) * modelData.vertices.size());
+	skinCluster.influenceBufferView.StrideInBytes = sizeof(VertexInfluence);
+	/// InverseBindPosematrixを格納する場所を作成して、単位行列で埋める
+	skinCluster.inverseBindposeMatrices.resize(skeleton.joints.size());
+	std::generate(skinCluster.inverseBindposeMatrices.begin(), skinCluster.inverseBindposeMatrices.end(), []() { return MakeIdentity4x4(); });
+
+	//=========================================================//
+	//			ModelDataを解析してInfluenceを埋める			   //
+	//=========================================================//
+
+	for (const auto& jointWeight : modelData.skinClusterData) { // ModelのSkinCluster情報を解析
+		auto it = skeleton.jointMap.find(jointWeight.first); // jointweight.firstはjoint名なので、skeletonに対象となるjointは含まれるか判断
+		if (it == skeleton.jointMap.end()) { // そんな名前は存在しない。なので次に回す
+			continue;
 		}
-	}
+		// (*it).secondにはjointのindexが入ってるので、該当のindexのinverseBindPoseMatrixを代入
+		skinCluster.inverseBindposeMatrices[(*it).second] = jointWeight.second.inverseBindPoseMatrix;
+		for (const auto& vertexWeight : jointWeight.second.vertexWeights) {
+			auto& currentInfluence = skinCluster.mappedInfluence[vertexWeight.vertexIndex]; // 該当のいvertexIndexのinfluence情報を参照しておく
+			for (uint32_t index = 0; index < kNumMaxInfluence; ++index) {
+				if (currentInfluence.weights[index] == 0.0f) { // weight == 0が開いてる状態なので、その場所でweightとjointのindexを代入
+					currentInfluence.weights[index] = vertexWeight.weight;
+					currentInfluence.jointindices[index] = (*it).second;
+					break;
+				}
+			}
+		}
+
+	}	
+
+
+	return skinCluster;
 }
 
 
-void Model::ApplyAnimation(Skeleton& skeleton, const Animation& animation, float animationTime) {
-	for (Joint& joint : skeleton.joints) {
-		// 対象のJointのAnimationがあれば、値の適用を行う。
-		// 下記のif文はC++17から可能になったinit-statement付きのif文。
-		if (auto it = animation.nodeAnimations.find(joint.name); it != animation.nodeAnimations.end()) {
-			const NodeAnimation& rootNodeAnimation = (*it).second;
-			joint.transform.translate = CalculateValue(rootNodeAnimation.translate, animationTime);
-			joint.transform.rotate = CalculateValue(rootNodeAnimation.rotate, animationTime);
-			joint.transform.scale = CalculateValue(rootNodeAnimation.scale, animationTime);
-		}
-	}
-}
+
 
 Vector3 Model::CalculateValue(const std::vector<KeyframeVector3>& keyframes, float time)
 {
@@ -233,31 +414,26 @@ Vector3 Model::CalculateValue(const std::vector<KeyframeVector3>& keyframes, flo
 
 Quaternion Model::CalculateValue(const std::vector<KeyframeQuaternion>& keyframes, float time)
 {
-	assert(!keyframes.empty());
-	if (keyframes.size() == 1 || time <= keyframes[0].time) {
+	assert(!keyframes.empty());// キーがないものは返す値がわからないのでだめ
+	if (keyframes.size() == 1 || time <= keyframes[0].time) {// キーが一つか、時刻がキーフレーム前なら最初の値とする
 		return keyframes[0].value;
 	}
-
 	for (size_t index = 0; index < keyframes.size() - 1; ++index) {
 		size_t nextIndex = index + 1;
-		// indexとnextIndexの2つのkeyframeを取得して範囲内に時刻があるか判定
+		// indexとnextIndexの二つのkeyframeを取得して範囲内に時刻があるかを判定
 		if (keyframes[index].time <= time && time <= keyframes[nextIndex].time) {
 			// 範囲内を補間する
 			float t = (time - keyframes[index].time) / (keyframes[nextIndex].time - keyframes[index].time);
 			return Lerp(keyframes[index].value, keyframes[nextIndex].value, t);
 		}
 	}
-	// ここまできた場合は一番後の時刻よりも後ろなので最後の値を返すことになる
+	// ここまで来た場合は一番後の時刻よりも後ろなので最後の値を返すことにする
 	return (*keyframes.rbegin()).value;
 }
 
 
-
 Model::Node Model::ReadNode(aiNode* node) {
 	Node result;
-	aiMatrix4x4 aiLocalMatrix = node->mTransformation;
-	aiLocalMatrix.Transpose();
-
 	aiVector3D scale, translate;
 	aiQuaternion rotate;
 	node->mTransformation.Decompose(scale, rotate, translate); // assimpの行列からSRTを抽出する関数を利用
@@ -393,74 +569,6 @@ Model::ModelData Model::LoadObjFile(const std::string& directoryPath, const std:
 	return modelData;
 }
 
-// assimp
-Model::ModelData Model::LoadModelFile(const std::string& directoryPath, const std::string& filename)
-{
-	//=================================================//
-	//					 .obj読み込み
-	//=================================================//
-	ModelData modelData;
-	Assimp::Importer importer;
-	std::string filePath = directoryPath + "/" + filename;
-	const aiScene* scene = importer.ReadFile(filePath.c_str(), aiProcess_FlipWindingOrder | aiProcess_FlipUVs);
-	assert(scene->HasMeshes()); // メッシュが無いと非対応
-	modelData.rootNode = ReadNode(scene->mRootNode);
-	//=================================================//
-	//					 Meshを解析
-	//=================================================//
-
-	for (uint32_t meshIndex = 0; meshIndex < scene->mNumMeshes; ++meshIndex) {
-		aiMesh* mesh = scene->mMeshes[meshIndex];
-		assert(mesh->HasNormals());			  // 法線が無い場合のMeshは 04-00 では非対応
-		assert(mesh->HasTextureCoords(0));	  // TexcoordがないMeshは今回は非対応
-		
-
-		//=================================================//
-		//				  Meshの中身（Face）を解析
-		//=================================================//
-
-		for (uint32_t faceIndex = 0; faceIndex < mesh->mNumFaces; ++faceIndex) {
-			aiFace& face = mesh->mFaces[faceIndex];
-			assert(face.mNumIndices == 3);		   // 三角形のみ
-
-			//=================================================//
-			//				  Faceの中身（Vertex）を解析
-			//=================================================//
-
-			for (uint32_t element = 0; element < face.mNumIndices; ++element) {
-				uint32_t vertexIndex = face.mIndices[element];
-				aiVector3D& position = mesh->mVertices[vertexIndex];
-				aiVector3D& normal = mesh->mNormals[vertexIndex];
-				aiVector3D& texcoord = mesh->mTextureCoords[0][vertexIndex];
-				VertexData vertex;
-				vertex.position = { position.x,position.y,position.z ,1.0f };
-				vertex.normal = { normal.x,normal.y,normal.z };
-				vertex.texcoord = { texcoord.x,texcoord.y };
-				// aiProcess_MakeLeftHandedは z *= -1 で、右手->左手に変換するので手動で対処
-				vertex.position.x *= -1.0f;
-				vertex.normal.x *= -1.0f;
-				modelData.vertices.push_back(vertex);
-			}
-		}
-	}
-	//=================================================//
-	//				  materialを解析
-	//=================================================//
-
-	for (uint32_t materialIndex = 0; materialIndex < scene->mNumMaterials; ++materialIndex) {
-		aiMaterial* material = scene->mMaterials[materialIndex];
-		if (material->GetTextureCount(aiTextureType_DIFFUSE) != 0) {
-			aiString textureFilePath;
-			material->GetTexture(aiTextureType_DIFFUSE, 0, &textureFilePath);
-			modelData.material.textureFilePath = directoryPath + "/" + textureFilePath.C_Str();
-		}
-
-	}
-	
-	return modelData;
-}
-
-
 Model::ModelData Model::LoadModelIndexFile(const std::string& directoryPath, const std::string& filename)
 {
 	//=================================================//
@@ -472,6 +580,8 @@ Model::ModelData Model::LoadModelIndexFile(const std::string& directoryPath, con
 	const aiScene* scene = importer.ReadFile(filePath.c_str(), aiProcess_FlipWindingOrder | aiProcess_FlipUVs);
 	assert(scene->HasMeshes()); // メッシュが無いと非対応
 	modelData.rootNode = ReadNode(scene->mRootNode);
+	// ボーンが含まれているかを判別
+	modelData.hasBones = HasBones(scene);
 	//=================================================//
 	//					 Meshを解析
 	//=================================================//
@@ -486,33 +596,63 @@ Model::ModelData Model::LoadModelIndexFile(const std::string& directoryPath, con
 			aiVector3D& normal = mesh->mNormals[vertexIndex];
 			aiVector3D& texcoords = mesh->mTextureCoords[0][vertexIndex];
 			// 右手系->左手系への変換を忘れずに
-			modelData.vertices[vertexIndex].position = { -position.x,position.y,position.z,1.0f };
-			modelData.vertices[vertexIndex].normal = { -normal.x,normal.y,normal.z };
-			modelData.vertices[vertexIndex].texcoord = { texcoords.x,texcoords.y };
+			modelData.vertices[vertexIndex].position = { -position.x, position.y, position.z, 1.0f };
+			modelData.vertices[vertexIndex].normal = { -normal.x, normal.y, normal.z };
+			modelData.vertices[vertexIndex].texcoord = { texcoords.x, texcoords.y };
 		}
-		//=================================================//
-		//				  Meshの中身（Face）を解析
-		//=================================================//
+
+		// 面からIndexの情報を取得する
 		for (uint32_t faceIndex = 0; faceIndex < mesh->mNumFaces; ++faceIndex) {
 			aiFace& face = mesh->mFaces[faceIndex];
-			assert(face.mNumIndices == 3);		   // 三角形のみ
+			// 四角形だったら三角形に変換
+			if (face.mNumIndices == 4) {
+				uint32_t i0 = face.mIndices[0];
+				uint32_t i1 = face.mIndices[1];
+				uint32_t i2 = face.mIndices[2];
+				uint32_t i3 = face.mIndices[3];
 
-			//=================================================//
-			//				  Faceの中身（Vertex）を解析
-			//=================================================//
+				// 四角形を2つの三角形に分割
+				modelData.indices.push_back(i0);
+				modelData.indices.push_back(i1);
+				modelData.indices.push_back(i2);
 
-			for (uint32_t element = 0; element < face.mNumIndices; ++element) {
-				uint32_t vertexIndex = face.mIndices[element];
-				modelData.indices.push_back(vertexIndex);
+				modelData.indices.push_back(i0);
+				modelData.indices.push_back(i2);
+				modelData.indices.push_back(i3);
 			}
+			// 三角形だったらそのまま使う
+			else if (face.mNumIndices == 3) {
+				for (uint32_t element = 0; element < face.mNumIndices; ++element) {
+					modelData.indices.push_back(face.mIndices[element]);
+				}
+			}
+		}
 
+		//=================================================//
+		//			 SkinCluster構築用のデータ取得を追加	   //
+		//=================================================//
+		for (uint32_t boneIndex = 0; boneIndex < mesh->mNumBones; ++boneIndex) {
+			aiBone* bone = mesh->mBones[boneIndex];
+			std::string jointName = bone->mName.C_Str();
+			JointWeightData& jointWeightData = modelData.skinClusterData[jointName];
+
+
+			aiMatrix4x4 bindPoseMatrixAssimp = bone->mOffsetMatrix.Inverse();
+			aiVector3D scale, translate;
+			aiQuaternion rotate;
+			bindPoseMatrixAssimp.Decompose(scale, rotate, translate);
+			Matrix4x4 bindposeMatrix = MakeAffineMatrix(
+				{ scale.x,scale.y,scale.z }, { rotate.x,-rotate.y,-rotate.z,rotate.w }, { -translate.x,translate.y,translate.z });
+			jointWeightData.inverseBindPoseMatrix = Inverse(bindposeMatrix);
+
+			for (uint32_t weightIndex = 0; weightIndex < bone->mNumWeights; ++weightIndex) {
+				jointWeightData.vertexWeights.push_back({ bone->mWeights[weightIndex].mWeight,bone->mWeights[weightIndex].mVertexId });
+			}
 		}
 	}
-
 	//=================================================//
 	//				  materialを解析
 	//=================================================//
-
 	for (uint32_t materialIndex = 0; materialIndex < scene->mNumMaterials; ++materialIndex) {
 		aiMaterial* material = scene->mMaterials[materialIndex];
 		if (material->GetTextureCount(aiTextureType_DIFFUSE) != 0) {
@@ -520,9 +660,7 @@ Model::ModelData Model::LoadModelIndexFile(const std::string& directoryPath, con
 			material->GetTexture(aiTextureType_DIFFUSE, 0, &textureFilePath);
 			modelData.material.textureFilePath = directoryPath + "/" + textureFilePath.C_Str();
 		}
-
 	}
-
 	return modelData;
 }
 
@@ -547,25 +685,49 @@ Model::Animation Model::LoadAnimationFile(const std::string& directoryPath, cons
 			KeyframeVector3 keyframe;
 			keyframe.time = float(keyAssimp.mTime / animationAssimp->mTicksPerSecond); // ここも秒に変換
 			keyframe.value = { -keyAssimp.mValue.x,keyAssimp.mValue.y ,keyAssimp.mValue.z };
-			nodeAnimation.translate.push_back(keyframe);
+			nodeAnimation.translate.keyframes.push_back(keyframe);
 		}
-		// Rotate
-		for (uint32_t keyIndex = 0; keyIndex < nodeAnimationAssimp->mNumRotationKeys; ++keyIndex) {
-			aiQuatKey& keyAssimp = nodeAnimationAssimp->mRotationKeys[keyIndex];
-			KeyframeQuaternion keyframe;
-			keyframe.time = float(keyAssimp.mTime / animationAssimp->mTicksPerSecond); // ここも秒に変換
-			keyframe.value = { keyAssimp.mValue.x, -keyAssimp.mValue.y , -keyAssimp.mValue.z ,keyAssimp.mValue.w };
-			nodeAnimation.rotate.push_back(keyframe);
-		}
+
 		// Scale
 		for (uint32_t keyIndex = 0; keyIndex < nodeAnimationAssimp->mNumScalingKeys; ++keyIndex) {
 			aiVectorKey& keyAssimp = nodeAnimationAssimp->mScalingKeys[keyIndex];
 			KeyframeVector3 keyframe;
 			keyframe.time = float(keyAssimp.mTime / animationAssimp->mTicksPerSecond); // ここも秒に変換
 			keyframe.value = { keyAssimp.mValue.x,keyAssimp.mValue.y ,keyAssimp.mValue.z };
-			nodeAnimation.scale.push_back(keyframe);
+			nodeAnimation.scale.keyframes.push_back(keyframe);
 		}
+
+		// Rotate
+		for (uint32_t keyIndex = 0; keyIndex < nodeAnimationAssimp->mNumRotationKeys; ++keyIndex) {
+			aiQuatKey& keyAssimp = nodeAnimationAssimp->mRotationKeys[keyIndex];
+			KeyframeQuaternion keyframe;
+			keyframe.time = float(keyAssimp.mTime / animationAssimp->mTicksPerSecond); // ここも秒に変換
+			keyframe.value = { keyAssimp.mValue.x, -keyAssimp.mValue.y , -keyAssimp.mValue.z ,keyAssimp.mValue.w };
+			nodeAnimation.rotate.keyframes.push_back(keyframe);
+		}
+
 	}
 
 	return animation;
+}
+
+bool Model::HasBones(const aiScene* scene)
+{
+	// メッシュがなければボーンもない
+	if (!scene->HasMeshes()) {
+		return false;
+	}
+
+	// 各メッシュをチェック
+	for (uint32_t meshIndex = 0; meshIndex < scene->mNumMeshes; ++meshIndex) {
+		aiMesh* mesh = scene->mMeshes[meshIndex];
+
+		// ボーン数が0でなければボーンがあると判断
+		if (mesh->mNumBones > 0) {
+			return true;
+		}
+	}
+
+	// どのメッシュにもボーンが含まれていない場合
+	return false;
 }

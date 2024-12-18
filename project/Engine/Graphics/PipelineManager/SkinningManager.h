@@ -9,15 +9,18 @@
 
 // 3Dオブジェクト共通部
 class DirectXCommon;
-class Object3dCommon
+class SkinningManager
 {
 public: // メンバ関数
     // シングルトンインスタンスの取得
-    static Object3dCommon* GetInstance();
+    static SkinningManager* GetInstance();
+
+    // 終了処理
+    void Finalize();
 
     // コンストラクタとデストラクタ
-    Object3dCommon() = default;
-    ~Object3dCommon() = default;
+    SkinningManager() = default;
+    ~SkinningManager() = default;
 
     /// <summary>
     /// 初期化
@@ -56,19 +59,19 @@ private:
 
 private:
     // シングルトンインスタンス
-    static std::unique_ptr<Object3dCommon> instance;
+    static std::unique_ptr<SkinningManager> instance;
     static std::once_flag initInstanceFlag;
 
     // コピーコンストラクタと代入演算子を削除
-    Object3dCommon(Object3dCommon&) = delete;
-    Object3dCommon& operator=(Object3dCommon&) = delete;
+    SkinningManager(SkinningManager&) = delete;
+    SkinningManager& operator=(SkinningManager&) = delete;
 
     // DirectX共通クラスのポインタ
     DirectXCommon* dxCommon_;
     // デフォルトカメラのポインタ
     Camera* defaultCamera_ = nullptr;
 
-    // ルートシグネチャとグラフィックパイプラインステートのポインタ
-    Microsoft::WRL::ComPtr<ID3D12RootSignature> rootSignature_ = nullptr;
-    Microsoft::WRL::ComPtr<ID3D12PipelineState> graphicsPipelineState_ = nullptr;
+    Microsoft::WRL::ComPtr<ID3D12RootSignature> rootSignature_;
+    Microsoft::WRL::ComPtr<ID3D12PipelineState> graphicsPipelineState_;
 };
+

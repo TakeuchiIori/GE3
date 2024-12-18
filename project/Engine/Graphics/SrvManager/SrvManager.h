@@ -67,7 +67,8 @@ public: // メンバ関数
 	void CreateSRVforTexture2D(uint32_t srvIndex, ID3D12Resource* pResource, DXGI_FORMAT Format, UINT MipLevels);
 	void CreateSRVforStructuredBuffer(uint32_t srvIndex, ID3D12Resource* pResource, UINT numElements, UINT
 		structureByteStride);
-
+	void CreateSkinClusterSRVforStructuredBuffer(uint32_t srvIndex, ID3D12Resource* pResource, UINT numElements, UINT
+		structureByteStride);
 public:
 	// 最大SRV数（最大テクスチャ枚数）
 	static const uint32_t kMaxSRVCount_;
