@@ -7,96 +7,41 @@ void PipelineManager::Initialize()
 	dxCommon_ = DirectXCommon::GetInstance();
 }
 
-void PipelineManager::SetRootSignature(const std::string& key)
-{
-    // パイプラインステートの存在確認
-    if (pipelineStates_.find(key) == pipelineStates_.end()) {
-        // 存在しない場合は作成
-        CreateRootSignature(key);
-    }
-
-    auto commandList = dxCommon_->GetCommandList();
-    //ルートシグネチャをコマンドリストに設定
-    commandList->SetGraphicsRootSignature(rootSignatures_[key].Get());
-}
-
 void PipelineManager::SetPipeline(const std::string& key)
 {
-    // パイプラインステートの存在確認
-    if (pipelineStates_.find(key) == pipelineStates_.end()) {
-        // 存在しない場合は作成
-        CreatePipelineState(key);
-    }
-
     auto commandList = dxCommon_->GetCommandList();
-    // パイプラインステートをコマンドリストに設定
+    // コマンドリストに設定
+	commandList->SetComputeRootSignature(rootSignatures_[key].Get());
     commandList->SetPipelineState(pipelineStates_[key].Get());
 }
 
-void PipelineManager::CreateRootSignature(const std::string& key)
-{
-}
 
-void PipelineManager::CreatePipelineState(const std::string& key)
+void PipelineManager::CreatePSO(const std::string& key)
 {
-    // パイプラインステートの設定を構築
-    D3D12_GRAPHICS_PIPELINE_STATE_DESC desc = {};
     if (key == "Sprite") {
         // スプライト用の設定
-		CreatePiplineSprite();
+		CreatePSO_Sprite();
 
     }
     else if (key == "Object") {
         // オブジェクト用の設定
-		CreatePiplineObject();
+		CreatePSO_Object();
 
     }
     else if (key == "Line") {
         // ライン用の設定
-		CreatePiplineLine();
+		CreatePSO_Line();
     }
-
-    auto device = dxCommon_->GetDevice();
-
-    // ルートシグネチャの作成または取得
-    if (rootSignatures_.find(key) == rootSignatures_.end()) {
-        // ルートシグネチャの作成処理
-        D3D12_ROOT_SIGNATURE_DESC rootSigDesc = {};
-        // ... 設定
-        Microsoft::WRL::ComPtr<ID3DBlob> signatureBlob;
-        Microsoft::WRL::ComPtr<ID3DBlob> errorBlob;
-
-        HRESULT hr = D3D12SerializeRootSignature(&rootSigDesc, D3D_ROOT_SIGNATURE_VERSION_1, &signatureBlob, &errorBlob);
-        if (FAILED(hr)) {
-            throw std::runtime_error("Failed to serialize root signature");
-        }
-
-        Microsoft::WRL::ComPtr<ID3D12RootSignature> rootSignature;
-        hr = device->CreateRootSignature(0, signatureBlob->GetBufferPointer(), signatureBlob->GetBufferSize(), IID_PPV_ARGS(&rootSignature));
-        if (FAILED(hr)) {
-            throw std::runtime_error("Failed to create root signature");
-        }
-        rootSignatures_[key] = rootSignature;
-    }
-
-    // パイプラインステートにルートシグネチャを設定
-    desc.pRootSignature = rootSignatures_[key].Get();
-
-    // パイプラインステートの作成
-    Microsoft::WRL::ComPtr<ID3D12PipelineState> pipelineState;
-    HRESULT hr = device->CreateGraphicsPipelineState(&desc, IID_PPV_ARGS(&pipelineState));
-    if (FAILED(hr)) {
-        throw std::runtime_error("Failed to create graphics pipeline state");
-    }
-
-    pipelineStates_[key] = pipelineState;
 }
 
-void PipelineManager::CreatePiplineSprite()
+
+
+void PipelineManager::CreatePSO_Sprite()
 {
+
 }
 
-void PipelineManager::CreatePiplineObject()
+void PipelineManager::CreatePSO_Object()
 {
 	//===============================================================================//
 	/*								ルートシグネチャ									*/
@@ -261,11 +206,119 @@ void PipelineManager::CreatePiplineObject()
 	// 実際に生成
 
 	hr = dxCommon_->GetDevice()->CreateGraphicsPipelineState(&graphicsPipelineStateDesc,
-		IID_PPV_ARGS(pipelineStates_["Particle"].GetAddressOf()));
+		IID_PPV_ARGS(pipelineStates_["Object"].GetAddressOf()));
 	assert(SUCCEEDED(hr));
 }
 
-void PipelineManager::CreatePiplineLine()
+void PipelineManager::CreatePSO_Animation()
 {
+
+}
+
+void PipelineManager::CreatePSO_Line()
+{
+	D3D12_DESCRIPTOR_RANGE descriptorRange[1] = {};
+	descriptorRange[0].BaseShaderRegister = 0; // 0から始まる
+	descriptorRange[0].NumDescriptors = 1; // 数は1つ
+	descriptorRange[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV; // SRV
+	descriptorRange[0].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND; // Offsetを自動計算
+
+	// マテリアル
+	D3D12_ROOT_PARAMETER rootParameters[2] = {};
+	rootParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;		 		// CBVを使う
+	rootParameters[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;				// PixelShaderで使う
+	rootParameters[0].Descriptor.ShaderRegister = 0;								// レジスタ番号0とバインド
+
+	// 座標変換行列
+	rootParameters[1].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;				// CBVを使う
+	rootParameters[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;			// VertexShaderで使う
+	rootParameters[1].Descriptor.ShaderRegister = 1;								// レジスタ番号0とバインド
+
+	D3D12_ROOT_SIGNATURE_DESC descriptionRootSignature = {};
+	descriptionRootSignature.Flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
+	descriptionRootSignature.pParameters = rootParameters;						// ルートパラメーター配列へのポインタ
+	descriptionRootSignature.NumParameters = _countof(rootParameters);			// 配列の長さ
+
+
+	// シリアライズしてバイナリにする
+	Microsoft::WRL::ComPtr<ID3DBlob> signatureBlob = nullptr;
+	Microsoft::WRL::ComPtr<ID3DBlob> errorBlob = nullptr;
+	
+	HRESULT hr = D3D12SerializeRootSignature(&descriptionRootSignature,
+		D3D_ROOT_SIGNATURE_VERSION_1, &signatureBlob, &errorBlob);
+	if (FAILED(hr)) {
+		DirectXCommon::Log(reinterpret_cast<char*>(errorBlob->GetBufferPointer()));
+		assert(false);
+	}
+	// バイナリを元に生成
+	hr = dxCommon_->GetDevice()->CreateRootSignature(0, signatureBlob->GetBufferPointer(),
+		signatureBlob->GetBufferSize(), IID_PPV_ARGS(&rootSignatures_["Line"]));
+	assert(SUCCEEDED(hr));
+
+	// BlendDtateの設定
+	D3D12_BLEND_DESC blendDesc{};
+	blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
+
+	// RasterrizerStateの設定
+	D3D12_RASTERIZER_DESC rasterrizerDesc{};
+	rasterrizerDesc.CullMode = D3D12_CULL_MODE_NONE;
+	rasterrizerDesc.FillMode = D3D12_FILL_MODE_SOLID;
+
+	// Shaderをコンパイルする
+	Microsoft::WRL::ComPtr<IDxcBlob> vertexShaderBlob;
+	Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob;
+	vertexShaderBlob = dxCommon_->CompileShader(L"Resources/shaders/Line.VS.hlsl",
+		L"vs_6_0");
+	assert(vertexShaderBlob != nullptr);
+	pixelShaderBlob = dxCommon_->CompileShader(L"Resources/shaders/Line.PS.hlsl",
+		L"ps_6_0");
+	assert(pixelShaderBlob != nullptr);
+
+	// DepthStencilStateの設定
+	D3D12_DEPTH_STENCIL_DESC depthStencilDesc{};
+	depthStencilDesc.DepthEnable = true;
+	depthStencilDesc.StencilEnable = false;
+	depthStencilDesc.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ZERO;
+	depthStencilDesc.DepthFunc = D3D12_COMPARISON_FUNC_ALWAYS;
+
+
+	//===========================================================================//
+	/*								パイプライン									*/
+	//===========================================================================//
+
+
+	D3D12_INPUT_ELEMENT_DESC inputElementDescs[1] = {};
+	inputElementDescs[0].SemanticName = "POSITION";
+	inputElementDescs[0].SemanticIndex = 0;
+	inputElementDescs[0].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+	inputElementDescs[0].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
+
+	D3D12_INPUT_LAYOUT_DESC inputLayoutDesc = {};
+	inputLayoutDesc.pInputElementDescs = inputElementDescs;
+	inputLayoutDesc.NumElements = _countof(inputElementDescs);
+
+	D3D12_GRAPHICS_PIPELINE_STATE_DESC graphicsPipelineStateDesc{};
+	graphicsPipelineStateDesc.pRootSignature = rootSignatures_["Line"].Get();
+	graphicsPipelineStateDesc.InputLayout = inputLayoutDesc;
+	graphicsPipelineStateDesc.VS = { vertexShaderBlob->GetBufferPointer(),
+	vertexShaderBlob->GetBufferSize() };
+	graphicsPipelineStateDesc.PS = { pixelShaderBlob->GetBufferPointer(),
+	pixelShaderBlob->GetBufferSize() };
+	graphicsPipelineStateDesc.BlendState = blendDesc;
+	graphicsPipelineStateDesc.RasterizerState = rasterrizerDesc;
+	graphicsPipelineStateDesc.DepthStencilState = depthStencilDesc;
+	graphicsPipelineStateDesc.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
+	graphicsPipelineStateDesc.NumRenderTargets = 1;
+	graphicsPipelineStateDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
+	// 利用するトポロジ（形状）のタイプ
+	graphicsPipelineStateDesc.PrimitiveTopologyType =
+		D3D12_PRIMITIVE_TOPOLOGY_TYPE_LINE;
+	// どのように画面に色を打ち込むのか設定（気にしなくて良い）
+	graphicsPipelineStateDesc.SampleDesc.Count = 1;
+	graphicsPipelineStateDesc.SampleMask = D3D12_DEFAULT_SAMPLE_MASK;
+	// 実際に生成
+	HRESULT hr = dxCommon_->GetDevice()->CreateGraphicsPipelineState(&graphicsPipelineStateDesc,
+		IID_PPV_ARGS(pipelineStates_["line"].GetAddressOf());
+	assert(SUCCEEDED(hr));
 }
 

@@ -93,10 +93,7 @@ private:
 
 	const uint32_t kMaxNum = 4096u * 4u;
 	uint32_t index = 0u;
-
 	VertexData vertices_[2];
 
-	Vector3 lastStart_; // 前回の始点
-	Vector3 lastEnd_;   // 前回の終点
 };
 

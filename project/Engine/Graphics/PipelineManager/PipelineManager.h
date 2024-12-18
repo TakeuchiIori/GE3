@@ -8,10 +8,6 @@
 #include <unordered_map>
 
 
-
-// CRS = Craete Root Signature
-// CGP = Create Graphics Pipeline
-
 class DirectXCommon;
 class PipelineManager
 {
@@ -22,11 +18,9 @@ public:
 	/// </summary>
 	void Initialize();
 
-	/// <summary>
-	/// ルートシグネチャをセット
-	/// </summary>
-	/// <param name="key"></param>
-	void SetRootSignature(const std::string& key);
+	//==================================================//
+	/*				実際にパイプラインを作成					*/
+	//==================================================//
 
 	/// <summary>
 	/// パイプラインのセット
@@ -35,45 +29,45 @@ public:
 	void SetPipeline(const std::string& key);
 
 	/// <summary>
-	/// ルートシグネチャの作成
-	/// </summary>
-	/// <param name="key"></param>
-	void CreateRootSignature(const std::string& key);
-
-	/// <summary>
 	/// パイプラインの作成
 	/// </summary>
 	/// <param name="key"></param>
-	void CreatePipelineState(const std::string& key);
+	void CreatePSO(const std::string& key);
+
+
 
 private:
 
 	//==================================================//
-	/*					パイプライン作成					*/
+	/*				各パイプラインの作成					*/
 	//==================================================//
 
 
 	/// <summary>
 	/// スプライト用パイプライン
 	/// </summary>
-	void CreatePiplineSprite();
+	void CreatePSO_Sprite();
 
 	/// <summary>
 	/// オブジェクト用のパイプライン
 	/// </summary>
-	void CreatePiplineObject();
+	void CreatePSO_Object();
 
 	/// <summary>
 	/// ライン用のパイプライン
 	/// </summary>
-	void CreatePiplineLine();
+	void CreatePSO_Animation();
+
+	/// <summary>
+	/// ライン用のパイプライン
+	/// </summary>
+	void CreatePSO_Line();
 
 
 
 private:
 
 	DirectXCommon* dxCommon_ = nullptr;
-
 	std::unordered_map<std::string, Microsoft::WRL::ComPtr<ID3D12PipelineState>> pipelineStates_;
 	std::unordered_map<std::string, Microsoft::WRL::ComPtr<ID3D12RootSignature>> rootSignatures_;
 
