@@ -120,7 +120,7 @@ void GameScene::Draw()
     /// ここから描画可能です
     /// </summary>
     
-   // player_->Draw();
+    player_->Draw();
     line_->UpdateVertices(start_, end_);
     line_->DrawLine();
 

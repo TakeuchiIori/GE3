@@ -12,15 +12,7 @@
 #include <list>
 #include <unordered_map >
 
-// Math
-#include "Vector4.h"
-#include "Matrix4x4.h"
-#include "Vector2.h"
-#include "Vector3.h"
-#include "Mathfunc.h"
-
 class DirectXCommon;
-class SrvManager;
 class LineManager
 {
 
@@ -39,19 +31,6 @@ public: // メンバ関数
 	/// 初期化
 	/// </summary>
 	void Initialize();
-private:
-
-	/// <summary>
-	///  ルートシグネチャ生成
-	/// </summary>
-	void CreateRootSignature();
-
-	/// <summary>
-	/// パイプライン生成
-	/// </summary>
-	void CreateGraphicsPipeline();
-	
-	
 
 public:
 
@@ -60,24 +39,10 @@ public:
 
 
 private: 
-
 	// 外部からのポインタ
 	DirectXCommon* dxCommon_ = nullptr;
-	SrvManager* srvManager_ = nullptr;
-
-	
-
 	Microsoft::WRL::ComPtr<ID3D12RootSignature> rootSignature_;
 	Microsoft::WRL::ComPtr<ID3D12PipelineState> graphicsPipelineState_;
-	Microsoft::WRL::ComPtr<IDxcBlob> vertexShaderBlob_;
-	Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob_;
-
-	Microsoft::WRL::ComPtr<ID3DBlob> signatureBlob_;
-	Microsoft::WRL::ComPtr<ID3DBlob> errorBlob_;
-
-	D3D12_BLEND_DESC blendDesc_{};
-	D3D12_RASTERIZER_DESC rasterrizerDesc_{};
-	D3D12_DEPTH_STENCIL_DESC depthStencilDesc_{};
 
 };
 

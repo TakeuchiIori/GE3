@@ -15,9 +15,6 @@ public: // メンバ関数
     // シングルトンインスタンスの取得
     static Object3dCommon* GetInstance();
 
-    // 終了処理
-    void Finalize();
-
     // コンストラクタとデストラクタ
     Object3dCommon() = default;
     ~Object3dCommon() = default;
@@ -41,15 +38,6 @@ public: // アクセッサ
     void SetDefaultCamera(Camera* camera) { this->defaultCamera_ = camera; }
 
 private:
-    /// <summary>
-    /// ルートシグネチャの作成
-    /// </summary>
-    void CreateRootSignature();
-
-    /// <summary>
-    /// グラフィックスパイプラインの生成
-    /// </summary>
-    void CreateGraphicsPipeline();
 
     /// <summary>
     /// ルートシグネチャをセット
@@ -79,34 +67,6 @@ private:
     DirectXCommon* dxCommon_;
     // デフォルトカメラのポインタ
     Camera* defaultCamera_ = nullptr;
-
-    // ディスクリプターレンジ
-    D3D12_DESCRIPTOR_RANGE descriptorRange[1] = {};
-    // ルートシグネチャの説明構造体
-    D3D12_ROOT_SIGNATURE_DESC descriptionRootSignature{};
-    // RootParameter配列
-    D3D12_ROOT_PARAMETER rootParameters[7] = {};
-    // 静的サンプラーの設定
-    D3D12_STATIC_SAMPLER_DESC staticSamplers[1] = {};
-    // 入力レイアウトの説明
-    D3D12_INPUT_ELEMENT_DESC inputElementDescs[3] = {};
-
-    // ブレンドステートの設定
-    D3D12_BLEND_DESC blendDesc{};
-    // ラスタライザーステートの設定
-    D3D12_RASTERIZER_DESC rasterrizerDesc{};
-    // デプスステンシルステートの設定
-    D3D12_DEPTH_STENCIL_DESC depthStencilDesc{};
-
-    // 頂点シェーダーとピクセルシェーダーのバイナリデータ
-    Microsoft::WRL::ComPtr<IDxcBlob> vertexShaderBlob;
-    Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob;
-
-    Microsoft::WRL::ComPtr<ID3DBlob> signatureBlob;
-    Microsoft::WRL::ComPtr<ID3DBlob> errorBlob;
-
-    // 入力レイアウトの説明構造体
-    D3D12_INPUT_LAYOUT_DESC inputLayoutDesc{};
 
     // ルートシグネチャとグラフィックパイプラインステートのポインタ
     Microsoft::WRL::ComPtr<ID3D12RootSignature> rootSignature_ = nullptr;

@@ -41,15 +41,6 @@ public: // アクセッサ
     void SetDefaultCamera(Camera* camera) { this->defaultCamera_ = camera; }
 
 private:
-    /// <summary>
-    /// ルートシグネチャの作成
-    /// </summary>
-    void CreateRootSignature();
-
-    /// <summary>
-    /// グラフィックスパイプラインの生成
-    /// </summary>
-    void CreateGraphicsPipeline();
 
     /// <summary>
     /// ルートシグネチャをセット
@@ -82,15 +73,5 @@ private:
 
     Microsoft::WRL::ComPtr<ID3D12RootSignature> rootSignature_;
     Microsoft::WRL::ComPtr<ID3D12PipelineState> graphicsPipelineState_;
-    Microsoft::WRL::ComPtr<IDxcBlob> vertexShaderBlob_;
-    Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob_;
-
-    Microsoft::WRL::ComPtr<ID3DBlob> signatureBlob_;
-    Microsoft::WRL::ComPtr<ID3DBlob> errorBlob_;
-
-    D3D12_BLEND_DESC blendDesc_{};
-    D3D12_RASTERIZER_DESC rasterrizerDesc_{};
-    D3D12_DEPTH_STENCIL_DESC depthStencilDesc_{};
-
 };
 
