@@ -40,8 +40,8 @@ void GameScene::Initialize()
     // test
     test_ = std::make_unique<Object3d>();
     test_->Initialize();
-    //test_->SetModel("walk.gltf",true);
-    test_->SetModel("sneakWalk.gltf", true);
+    test_->SetModel("walk.gltf",true);
+    //test_->SetModel("sneakWalk.gltf", true);
     testWorldTransform_.Initialize();
     //test_->SetLine(line_.get());
 
@@ -120,9 +120,9 @@ void GameScene::Draw()
     /// ここから描画可能です
     /// </summary>
     
-    player_->Draw();
+    //player_->Draw();
     line_->UpdateVertices(start_, end_);
-    line_->DrawLine();
+    //line_->DrawLine();
 
 #pragma endregion
 
