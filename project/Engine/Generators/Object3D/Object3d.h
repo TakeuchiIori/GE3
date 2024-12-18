@@ -8,12 +8,14 @@
 
 // Engine
 #include "Systems/Camera/Camera.h"
+#include "Loaders/Model/Model.h"
 
 // Math
 #include "Vector4.h"
 #include "Matrix4x4.h"
 #include "Vector2.h"
 #include "Vector3.h"
+
 
 class Line;
 class WorldTransform;
@@ -42,7 +44,7 @@ public: // メンバ関数
 	/// <summary>
 	/// スケルトン描画
 	/// </summary>
-	void DrawSkeleton();
+	void DrawSkeleton(const Model::Skeleton& skeleton, Line& line);
 
 	/// <summary>
 	/// モデルのセット
@@ -84,7 +86,7 @@ public: // アクセッサ
 
 	
 	void SetCamera(Camera* camera) { this->camera_ = camera; }
-	void SetLine(Line* line) { this->line_ = line; }
+	//void SetLine(Line* line) { this->line_ = line; }
 
 	// マテリアル
 	const Vector4& GetMaterialColor() const { return materialData_->color; }
@@ -115,7 +117,6 @@ private:
 	Object3dCommon* object3dCommon_ = nullptr;
 	Model* model_ = nullptr;
 	Camera* camera_ = nullptr;
-	Line* line_ = nullptr;
 
 	// テクスチャ左上座標
 	Vector2 textureLeftTop_ = { 0.0f,0.0f };

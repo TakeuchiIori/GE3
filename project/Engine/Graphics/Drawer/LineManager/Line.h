@@ -27,14 +27,18 @@ public:
 	/// <summary>
 	/// 線を描画
 	/// </summary>
-	void DrawLine(const Vector3& start, const Vector3& end);
+	void DrawLine();
 
-private:
+	void ClearVertices();
 
 	/// <summary>
 	/// 頂点を作成
 	/// </summary>
 	void UpdateVertices(const Vector3& start, const Vector3& end);
+
+private:
+
+
 
 	/// <summary>
 	/// 頂点リソース
@@ -87,9 +91,9 @@ private:
 	Microsoft::WRL::ComPtr<ID3D12Resource> transformationResource_;
 	TransformationMatrix* transformationMatrix_ = nullptr;
 
+	const uint32_t kMaxNum = 4096u * 4u;
+	uint32_t index = 0u;
 	VertexData vertices_[2];
 
-	Vector3 lastStart_; // 前回の始点
-	Vector3 lastEnd_;   // 前回の終点
 };
 

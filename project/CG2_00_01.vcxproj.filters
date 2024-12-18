@@ -375,6 +375,15 @@
     <ClCompile Include="Engine\Utility\Loaders\Model\Model.cpp">
       <Filter>ソース ファイル\NOIR\Utility\Loaders\Model</Filter>
     </ClCompile>
+    <ClCompile Include="Engine\Graphics\PipelineManager\SkinningManager.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Math\Quaternion.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Math\Vector3.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\Utility\Systems\Input\Input.h">
@@ -515,14 +524,23 @@
     <ClInclude Include="Engine\Utility\Loaders\Texture\TextureManager.h">
       <Filter>ヘッダー ファイル\NOIR\Utility\Loaders\Texture</Filter>
     </ClInclude>
+    <ClInclude Include="Engine\Graphics\PipelineManager\SkinningManager.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Math\Quaternion.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\shaders\Particle.hlsli" />
+    <None Include="Resources\shaders\Skinning.hlsli" />
+    <None Include="Resources\shaders\Skinning.PS.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Resources\shaders\Particle.PS.hlsl" />
     <FxCompile Include="Resources\shaders\Particle.VS.hlsl" />
     <FxCompile Include="Resources\shaders\Line.VS.hlsl" />
     <FxCompile Include="Resources\shaders\Line.PS.hlsl" />
+    <FxCompile Include="Resources\shaders\Skinning.VS.hlsl" />
   </ItemGroup>
 </Project>

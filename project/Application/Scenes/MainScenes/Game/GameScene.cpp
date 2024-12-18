@@ -5,6 +5,8 @@
 #include "Loaders./Texture./TextureManager.h"
 #include "Particle./ParticleManager.h"
 #include "Object3D/Object3dCommon.h"
+#include "PipelineManager/SkinningManager.h"
+#include "Loaders/Model/Model.h"
 
 #ifdef _DEBUG
 #include "imgui.h"
@@ -26,6 +28,11 @@ void GameScene::Initialize()
     line_->Initialize();
     line_->SetCamera(currentCamera_.get());
 
+    boneLine_ = std::make_unique<Line>();
+    boneLine_->Initialize();
+    boneLine_->SetCamera(currentCamera_.get());
+
+
     // 各オブジェクトの初期化
     player_ = std::make_unique<Player>();
     player_->Initialize();
@@ -33,7 +40,8 @@ void GameScene::Initialize()
     // test
     test_ = std::make_unique<Object3d>();
     test_->Initialize();
-    test_->SetModel("sneakWalk.gltf",true);
+    //test_->SetModel("walk.gltf",true);
+    test_->SetModel("sneakWalk.gltf", true);
     testWorldTransform_.Initialize();
     //test_->SetLine(line_.get());
 
@@ -113,11 +121,26 @@ void GameScene::Draw()
     /// </summary>
     
     player_->Draw();
-    test_->Draw(testWorldTransform_);
-  
-    line_->DrawLine(start_, end_);
+    line_->UpdateVertices(start_, end_);
+    line_->DrawLine();
 
-    //test_->DrawSkeleton();
+#pragma endregion
+
+#pragma region 骨付きアニメーション描画
+    SkinningManager::GetInstance()->DrawPreference();
+    LightManager::GetInstance()->SetCommandList();
+    /// <summary>
+    /// ここから描画可能です
+    /// </summary>
+
+    test_->Draw(testWorldTransform_);
+
+    // 骨描画
+    if (test_ && test_->GetModel()->GetSkeleton().joints.size() > 0) {
+        test_->DrawSkeleton(test_->GetModel()->GetSkeleton(), *boneLine_);
+    }
+
+    boneLine_->DrawLine();
 
 #pragma endregion
 

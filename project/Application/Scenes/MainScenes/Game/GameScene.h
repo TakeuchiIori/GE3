@@ -89,6 +89,7 @@ private:
 
     // Line
     std::unique_ptr<Line> line_;
+    std::unique_ptr<Line> boneLine_;
 
     Vector3 start_ = { 0.0f,0.0f,0.0f };
 

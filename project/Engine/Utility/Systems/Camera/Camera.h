@@ -77,7 +77,7 @@ private: // メンバ変数
 	float nearClip_;			 // ニアクリップ距離
 	float farClip_;				 // ファークリップ距離
 
-	Vector3 followCameraOffsetPosition_ = Vector3(0.0f, 10.0f, -18.0f);
+	Vector3 followCameraOffsetPosition_ = Vector3(0.0f, 5.0f, -10.0f);
 
 	Vector3 followCameraOffsetRotare_ = Vector3(0.51f, 0.0f, 0.0f);
 
