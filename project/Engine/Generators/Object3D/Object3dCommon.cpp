@@ -1,5 +1,5 @@
 #include "Object3dCommon.h"
-
+#include "PipelineManager/PipelineManager.h"
 // シングルトンインスタンスの初期化
 std::unique_ptr<Object3dCommon> Object3dCommon::instance = nullptr;
 std::once_flag Object3dCommon::initInstanceFlag;
@@ -20,8 +20,11 @@ void Object3dCommon::Initialize(DirectXCommon* dxCommon)
 	// 引数で受け取ってメンバ変数に記録する
 	dxCommon_ = dxCommon;
 
+	rootSignature_ = PipelineManager::GetInstance()->GetRootSignature("Object");
+	graphicsPipelineState_ = PipelineManager::GetInstance()->GetPipeLineStateObject("Object");
+	
 	// パイプラインの生成
-	CreateGraphicsPipeline();
+	//CreateGraphicsPipeline();
 }
 
 void Object3dCommon::CreateRootSignature()
@@ -102,7 +105,7 @@ void Object3dCommon::CreateRootSignature()
 	// バイナリを元に生成
 
 	hr = dxCommon_->GetDevice()->CreateRootSignature(0, signatureBlob->GetBufferPointer(),
-		signatureBlob->GetBufferSize(), IID_PPV_ARGS(&rootSignature));
+		signatureBlob->GetBufferSize(), IID_PPV_ARGS(&rootSignature_));
 	assert(SUCCEEDED(hr));
 
 
@@ -157,7 +160,7 @@ void Object3dCommon::CreateGraphicsPipeline()
 
 	HRESULT hr;
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC graphicsPipelineStateDesc{};
-	graphicsPipelineStateDesc.pRootSignature = rootSignature.Get();				 // Rootsignature
+	graphicsPipelineStateDesc.pRootSignature = rootSignature_.Get();				 // Rootsignature
 	graphicsPipelineStateDesc.InputLayout = inputLayoutDesc;					 // InputLayout
 	graphicsPipelineStateDesc.VS = { vertexShaderBlob->GetBufferPointer(),
 	vertexShaderBlob->GetBufferSize() };										 // VertexShader
@@ -180,17 +183,17 @@ void Object3dCommon::CreateGraphicsPipeline()
 	// 実際に生成
 
 	hr = dxCommon_->GetDevice()->CreateGraphicsPipelineState(&graphicsPipelineStateDesc,
-		IID_PPV_ARGS(&graphicsPipelineState));
+		IID_PPV_ARGS(&graphicsPipelineState_));
 	assert(SUCCEEDED(hr));
 
 }
 
 void Object3dCommon::DrawPreference()
 {
-	// ルートシグネチャをセット
+	//// ルートシグネチャをセット
 	SetRootSignature();
 
-	// パイプラインをセット
+	//// パイプラインをセット
 	SetGraphicsCommand();
 
 	// プリミティブトポロジーをセット
@@ -199,12 +202,12 @@ void Object3dCommon::DrawPreference()
 
 void Object3dCommon::SetRootSignature()
 {
-	dxCommon_->GetCommandList()->SetGraphicsRootSignature(rootSignature.Get());
+	dxCommon_->GetCommandList()->SetGraphicsRootSignature(rootSignature_.Get());
 }
 
 void Object3dCommon::SetGraphicsCommand()
 {
-	dxCommon_->GetCommandList()->SetPipelineState(graphicsPipelineState.Get());
+	dxCommon_->GetCommandList()->SetPipelineState(graphicsPipelineState_.Get());
 }
 
 void Object3dCommon::SetPrimitiveTopology()

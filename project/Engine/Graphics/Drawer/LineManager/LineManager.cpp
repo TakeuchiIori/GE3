@@ -1,6 +1,6 @@
 #include "LineManager.h"
 #include "DX./DirectXCommon.h"
-#include "SrvManager./SrvManager.h"
+#include "PipelineManager/PipelineManager.h"
 
 
 LineManager* LineManager::GetInstance()
@@ -13,10 +13,10 @@ void LineManager::Initialize()
 {
 	// ポインタを渡す
 	dxCommon_ = DirectXCommon::GetInstance();
-	srvManager_ = SrvManager::GetInstance();
+	
+	rootSignature_ = PipelineManager::GetInstance()->GetRootSignature("Line");
+	graphicsPipelineState_ = PipelineManager::GetInstance()->GetPipeLineStateObject("Line");
 
-	// パイプライン生成
-	CreateGraphicsPipeline();
 }
 
 

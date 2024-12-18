@@ -20,6 +20,7 @@
 #include "Corescenes./Factory/AbstractSceneFactory.h"
 #include "Debugger./LeakChecker.h"
 #include "PipelineManager/SkinningManager.h"
+#include "PipelineManager/PipelineManager.h"
 
 // ゲーム全体
 class Framework
@@ -78,6 +79,7 @@ protected:
 	LightManager* lightManager_ = nullptr;
 	LineManager* lineManager_ = nullptr;
 	SkinningManager* skinningManager_ = nullptr;
+	PipelineManager* pipelineManager_ = nullptr;
 private:
 	
 	// ゲーム終了フラグ

@@ -2,39 +2,42 @@
 #include "DX./DirectXCommon.h"
 
 
+PipelineManager* PipelineManager::GetInstance()
+{
+	static PipelineManager instance;
+	return &instance;
+}
+
 void PipelineManager::Initialize()
 {
 	dxCommon_ = DirectXCommon::GetInstance();
-}
 
-void PipelineManager::SetPipeline(const std::string& key)
-{
-    auto commandList = dxCommon_->GetCommandList();
-    // コマンドリストに設定
-	commandList->SetComputeRootSignature(rootSignatures_[key].Get());
-    commandList->SetPipelineState(pipelineStates_[key].Get());
-}
-
-
-void PipelineManager::CreatePSO(const std::string& key)
-{
-    if (key == "Sprite") {
-        // スプライト用の設定
 		CreatePSO_Sprite();
-
-    }
-    else if (key == "Object") {
-        // オブジェクト用の設定
 		CreatePSO_Object();
-
-    }
-    else if (key == "Line") {
-        // ライン用の設定
 		CreatePSO_Line();
-    }
-	else if (key == "Animation") {
-		// ライン用の設定
 		CreatePSO_Animation();
+		CreatePSO_Particle();
+}
+
+ID3D12RootSignature* PipelineManager::GetRootSignature(const std::string& key)
+{
+	auto it = rootSignatures_.find(key);
+	if (it != rootSignatures_.end()) {
+		return rootSignatures_[key].Get();
+	}
+	else {
+		return nullptr;
+	}
+}
+
+ID3D12PipelineState* PipelineManager::GetPipeLineStateObject(const std::string& key)
+{
+	auto it = pipelineStates_.find(key);
+	if (it != pipelineStates_.end()) {
+		return pipelineStates_[key].Get();
+	}
+	else {
+		return nullptr;
 	}
 }
 
@@ -537,7 +540,6 @@ void PipelineManager::CreatePSO_Animation()
 	inputLayoutDesc.NumElements = _countof(inputElementDescs);
 
 
-	HRESULT hr;
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC graphicsPipelineStateDesc{};
 	graphicsPipelineStateDesc.pRootSignature = rootSignatures_["Animation"].Get();
 	graphicsPipelineStateDesc.InputLayout = inputLayoutDesc;
@@ -670,8 +672,12 @@ void PipelineManager::CreatePSO_Line()
 	graphicsPipelineStateDesc.SampleDesc.Count = 1;
 	graphicsPipelineStateDesc.SampleMask = D3D12_DEFAULT_SAMPLE_MASK;
 	// 実際に生成
-	HRESULT hr = dxCommon_->GetDevice()->CreateGraphicsPipelineState(&graphicsPipelineStateDesc,
-		IID_PPV_ARGS(pipelineStates_["line"].GetAddressOf()));
+	hr = dxCommon_->GetDevice()->CreateGraphicsPipelineState(&graphicsPipelineStateDesc,
+		IID_PPV_ARGS(pipelineStates_["Line"].GetAddressOf()));
 	assert(SUCCEEDED(hr));
+}
+
+void PipelineManager::CreatePSO_Particle()
+{
 }
 

@@ -29,6 +29,10 @@ void Framework::Initialize()
 	// テクスチャマネージャの生成
 	textureManager_ = TextureManager::GetInstance();
 	textureManager_->Initialize(dxCommon_, srvManager_);
+	
+	// PSOマネージャの生成
+	pipelineManager_ = PipelineManager::GetInstance();
+	pipelineManager_->Initialize();
 
 	// スプライト共通部の生成
 	spriteCommon_ = SpriteCommon::GetInstance();

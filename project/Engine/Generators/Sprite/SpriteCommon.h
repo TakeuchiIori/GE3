@@ -84,8 +84,8 @@ private:
     Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob;
 
     D3D12_INPUT_LAYOUT_DESC inputLayoutDesc{};
-    Microsoft::WRL::ComPtr<ID3D12RootSignature> rootSignature = nullptr;
-    Microsoft::WRL::ComPtr<ID3D12PipelineState> graphicsPipelineState = nullptr;
+    Microsoft::WRL::ComPtr<ID3D12RootSignature> rootSignature_ = nullptr;
+    Microsoft::WRL::ComPtr<ID3D12PipelineState> graphicsPipelineState_= nullptr;
     Microsoft::WRL::ComPtr<ID3DBlob> signatureBlob;
     Microsoft::WRL::ComPtr<ID3DBlob> errorBlob;
 };

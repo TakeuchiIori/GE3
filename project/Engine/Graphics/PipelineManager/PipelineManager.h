@@ -12,29 +12,19 @@ class DirectXCommon;
 class PipelineManager
 {
 public: 
+	// コンストラクタとデストラクタ
+	 PipelineManager() = default;
+	~ PipelineManager() = default;
+
+	static  PipelineManager* GetInstance();
 
 	/// <summary>
 	/// 初期化
 	/// </summary>
 	void Initialize();
 
-	//==================================================//
-	/*				実際にパイプラインを作成					*/
-	//==================================================//
-
-	/// <summary>
-	/// パイプラインのセット
-	/// </summary>
-	/// <param name="key"></param>
-	void SetPipeline(const std::string& key);
-
-	/// <summary>
-	/// パイプラインの作成
-	/// </summary>
-	/// <param name="key"></param>
-	void CreatePSO(const std::string& key);
-
-
+	ID3D12RootSignature* GetRootSignature(const std::string& key);
+	ID3D12PipelineState* GetPipeLineStateObject(const std::string& key);
 
 private:
 
@@ -63,10 +53,17 @@ private:
 	/// </summary>
 	void CreatePSO_Line();
 
+	/// <summary>
+	/// ライン用のパイプライン
+	/// </summary>
+	void CreatePSO_Particle();
 
 
 private:
-
+	PipelineManager(const  PipelineManager&) = delete;
+	PipelineManager& operator=(const  PipelineManager&) = delete;
+	PipelineManager(PipelineManager&&) = delete;
+	PipelineManager& operator=(PipelineManager&&) = delete;
 	DirectXCommon* dxCommon_ = nullptr;
 	std::unordered_map<std::string, Microsoft::WRL::ComPtr<ID3D12PipelineState>> pipelineStates_;
 	std::unordered_map<std::string, Microsoft::WRL::ComPtr<ID3D12RootSignature>> rootSignatures_;
