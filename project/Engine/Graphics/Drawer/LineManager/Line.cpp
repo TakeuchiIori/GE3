@@ -40,23 +40,17 @@ void Line::DrawLine()
 	commandList->SetGraphicsRootConstantBufferView(0, materialResource_->GetGPUVirtualAddress());
 	commandList->SetGraphicsRootConstantBufferView(1, transformationResource_->GetGPUVirtualAddress());
 	commandList->IASetVertexBuffers(0, 1, &vertexBufferView_);
-	commandList->DrawInstanced(index * 2, 1, 0, 0); // ラインは2つの頂点で構成
+	commandList->DrawInstanced(index, index / 2, 0, 0); // ラインは2つの頂点で構成
 	
-
-}
-
-void Line::ClearVertices()
-{
-	index = 0u; // 頂点インデックスをリセット
+	index = 0u;
 }
 
 void Line::UpdateVertices(const Vector3& start, const Vector3& end)
 {
 	assert(index < kMaxNum);
+
 	vertexData_[index++].position = { start.x, start.y, start.z, 1.0f }; // 始点
 	vertexData_[index++].position = { end.x, end.y, end.z, 1.0f };       // 終点
-
-
 }
 
 void Line::CrateVetexResource()

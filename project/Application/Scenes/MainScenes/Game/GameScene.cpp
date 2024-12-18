@@ -28,6 +28,11 @@ void GameScene::Initialize()
     line_->Initialize();
     line_->SetCamera(currentCamera_.get());
 
+    boneLine_ = std::make_unique<Line>();
+    boneLine_->Initialize();
+    boneLine_->SetCamera(currentCamera_.get());
+
+
     // 各オブジェクトの初期化
     player_ = std::make_unique<Player>();
     player_->Initialize();
@@ -116,7 +121,6 @@ void GameScene::Draw()
     /// </summary>
     
    // player_->Draw();
-    //line_->ClearVertices();
     line_->UpdateVertices(start_, end_);
     line_->DrawLine();
 
@@ -133,10 +137,10 @@ void GameScene::Draw()
 
     // 骨描画
     if (test_ && test_->GetModel()->GetSkeleton().joints.size() > 0) {
-        test_->DrawSkeleton(test_->GetModel()->GetSkeleton(), *line_);
+        test_->DrawSkeleton(test_->GetModel()->GetSkeleton(), *boneLine_);
     }
 
-
+    boneLine_->DrawLine();
 
 #pragma endregion
 

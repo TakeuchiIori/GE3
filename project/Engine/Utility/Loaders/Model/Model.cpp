@@ -166,7 +166,7 @@ void Model::DrawSkeletonRecursive(const Skeleton& skeleton, Line& line, int32_t 
 void Model::DrawSkeleton(const Skeleton& skeleton,Line& line) {
 	// スケルトンが空の場合は終了
 	// ラインを描画
-	line.ClearVertices();
+	//line.ClearVertices();
 	if (skeleton.joints.empty()) {
 		return;
 	}
@@ -182,7 +182,6 @@ void Model::DrawSkeleton(const Skeleton& skeleton,Line& line) {
 
 		
 		line.UpdateVertices(parentPosition, childPosition);
-		line.DrawLine();
 	}
 }
 
