@@ -69,6 +69,29 @@ private: // メンバ関数（非公開）
 	/// </summary>
 	void MoveKey();
 
+public: // コマンドパターンによる移動関数
+
+	/// <summary>
+	/// 前に進む
+	/// </summary>
+	void MoveFront();
+
+	/// <summary>
+	/// 後ろに進む
+	/// </summary>
+	void MoveBehind();
+
+	/// <summary>
+	/// 右に進む
+	/// </summary>
+	void MoveRight();
+
+	/// <summary>
+	/// 左に進む
+	/// </summary>
+	void MoveLeft();
+
+
 
 public: // アクセッサ
 	// プレイヤーの位置を取得する関数

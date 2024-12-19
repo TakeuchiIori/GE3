@@ -14,7 +14,8 @@
 #include "Player/Player.h"
 #include "WorldTransform./WorldTransform.h"
 #include "Drawer/LineManager/Line.h"
-
+#include "Player/ICommand/ICommandMove.h"
+#include "Player/InputHandle/InputHandleMove.h"
 // Math
 #include "Vector3.h"
 
@@ -87,12 +88,14 @@ private:
     // プレイヤー
     std::unique_ptr<Player> player_;
 
+    // コマンドパターン
+    std::unique_ptr<InputHandleMove> inputHandler_ = nullptr;
+    ICommandMove* iCommand_ = nullptr;
+
     // Line
     std::unique_ptr<Line> line_;
     std::unique_ptr<Line> boneLine_;
-
     Vector3 start_ = { 0.0f,0.0f,0.0f };
-
     Vector3 end_ = { 10.0f,0.0f,10.0f };
  
 };

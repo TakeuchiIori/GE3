@@ -102,22 +102,82 @@ void Player::MoveKey()
         -sinf(worldTransform_.rotation_.y)
     };
 
+    //// キーボード入力による移動
+    //if (input_->PushKey(DIK_W)) {
+    //    // 前進（進行方向に沿って前方に移動）
+    //    worldTransform_.translation_ += forwardDirection * moveSpeed_.z;
+    //}
+    //if (input_->PushKey(DIK_S)) {
+    //    // 後退（進行方向に沿って後方に移動）
+    //    worldTransform_.translation_ -= forwardDirection * moveSpeed_.z;
+    //}
+    //if (input_->PushKey(DIK_A)) {
+    //    // 左に移動（進行方向に垂直な左方向に移動）
+    //    worldTransform_.translation_ -= rightDirection * moveSpeed_.y;
+    //}
+    //if (input_->PushKey(DIK_D)) {
+    //    // 右に移動（進行方向に垂直な右方向に移動）
+    //    worldTransform_.translation_ += rightDirection * moveSpeed_.y;
+    //}
+}
+
+void Player::MoveFront()
+{    // 移動方向を計算（Y軸の回転に基づいて計算）
+    Vector3 forwardDirection = {
+        sinf(worldTransform_.rotation_.y), // Y軸の回転に応じた前方方向
+        0.0f,
+        cosf(worldTransform_.rotation_.y)
+    };
+
     // キーボード入力による移動
     if (input_->PushKey(DIK_W)) {
         // 前進（進行方向に沿って前方に移動）
         worldTransform_.translation_ += forwardDirection * moveSpeed_.z;
     }
+
+
+}
+
+void Player::MoveBehind()
+{
+    // 移動方向を計算（Y軸の回転に基づいて計算）
+    Vector3 forwardDirection = {
+        sinf(worldTransform_.rotation_.y), // Y軸の回転に応じた前方方向
+        0.0f,
+        cosf(worldTransform_.rotation_.y)
+    };
     if (input_->PushKey(DIK_S)) {
         // 後退（進行方向に沿って後方に移動）
         worldTransform_.translation_ -= forwardDirection * moveSpeed_.z;
     }
-    if (input_->PushKey(DIK_A)) {
-        // 左に移動（進行方向に垂直な左方向に移動）
-        worldTransform_.translation_ -= rightDirection * moveSpeed_.y;
-    }
+
+}
+
+void Player::MoveRight()
+{
+    Vector3 rightDirection = {
+    cosf(worldTransform_.rotation_.y),
+    0.0f,
+    -sinf(worldTransform_.rotation_.y)
+    };
+
     if (input_->PushKey(DIK_D)) {
         // 右に移動（進行方向に垂直な右方向に移動）
         worldTransform_.translation_ += rightDirection * moveSpeed_.y;
+    }
+}
+
+void Player::MoveLeft()
+{
+    Vector3 rightDirection = {
+    cosf(worldTransform_.rotation_.y),
+    0.0f,
+    -sinf(worldTransform_.rotation_.y)
+    };
+
+    if (input_->PushKey(DIK_A)) {
+        // 左に移動（進行方向に垂直な左方向に移動）
+        worldTransform_.translation_ -= rightDirection * moveSpeed_.y;
     }
 }
 

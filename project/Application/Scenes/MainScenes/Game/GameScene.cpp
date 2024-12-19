@@ -33,6 +33,16 @@ void GameScene::Initialize()
     boneLine_->SetCamera(currentCamera_.get());
 
 
+    // コマンドパターン
+    inputHandler_ = std::make_unique<InputHandleMove>();
+
+    inputHandler_->AssignMoveFrontCommandPressKeyW();
+    inputHandler_->AssignMoveBehindCommandPressKeyS();
+    inputHandler_->AssignMoveRightCommandPressKeyD();
+    inputHandler_->AssignMoveLeftCommandPressKeyA();
+
+
+
     // 各オブジェクトの初期化
     player_ = std::make_unique<Player>();
     player_->Initialize();
@@ -69,6 +79,12 @@ void GameScene::Update()
     //    SceneManager::GetInstance()->ChangeScene("TITLE");
     //}
     
+    iCommand_ = inputHandler_->HandleInput();
+
+    if (this->iCommand_) {
+        iCommand_->Exec(*player_.get());
+    }
+
     // プレイヤーの更新
     player_->Update();
     test_->UpdateAnimation();
@@ -120,7 +136,7 @@ void GameScene::Draw()
     /// ここから描画可能です
     /// </summary>
     
-    //player_->Draw();
+    player_->Draw();
     line_->UpdateVertices(start_, end_);
     //line_->DrawLine();
 
