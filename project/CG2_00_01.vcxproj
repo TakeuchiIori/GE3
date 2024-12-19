@@ -110,6 +110,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Engine\Utility\Loaders\Model\Animation.cpp" />
     <ClCompile Include="Application\Scenes\CoreScenes\Base\BaseScene.cpp" />
     <ClCompile Include="Application\Scenes\MainScenes\Game\GameScene.cpp" />
     <ClCompile Include="Application\Scenes\CoreScenes\Manager\SceneManager.cpp" />
@@ -131,6 +132,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Engine\Graphics\Drawer\LineManager\LineManager.cpp" />
     <ClCompile Include="Engine\Graphics\Drawer\LineManager\Line.cpp" />
     <ClCompile Include="Engine\Graphics\PipelineManager\PipelineManager.cpp" />
+    <ClCompile Include="Engine\Utility\Loaders\Model\Joint.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Math\Matrix4x4.cpp" />
     <ClCompile Include="Engine\Utility\Loaders\Model\Model.cpp" />
@@ -155,8 +157,11 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Math\Quaternion.cpp" />
     <ClCompile Include="Math\Vector3.cpp" />
     <ClCompile Include="Engine\Utility\Loaders\Model\Skeleton.cpp" />
+    <ClCompile Include="Engine\Utility\Loaders\Model\Node.cpp" />
+    <ClCompile Include="Engine\Utility\Loaders\Model\SkinCluster.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Engine\Utility\Loaders\Model\Animation.h" />
     <ClInclude Include="Application\Scenes\CoreScenes\Base\BaseScene.h" />
     <ClInclude Include="Application\Scenes\MainScenes\Game\GameScene.h" />
     <ClInclude Include="Application\Scenes\CoreScenes\Manager\SceneManager.h" />
@@ -174,6 +179,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="Engine\Core\DX\DirectXCommon.h" />
     <ClInclude Include="Engine\Utility\Debugger\LeakChecker.h" />
     <ClInclude Include="Engine\Utility\Systems\Input\Input.h" />
+    <ClInclude Include="Engine\Utility\Loaders\Model\Joint.h" />
     <ClInclude Include="Math\MathFunc.h" />
     <ClInclude Include="Math\Matrix3x3.h" />
     <ClInclude Include="Math\Matrix4x4.h" />
@@ -206,6 +212,8 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="Engine\Graphics\PipelineManager\PipelineManager.h" />
     <ClInclude Include="Engine\Graphics\PipelineManager\SkinningManager.h" />
     <ClInclude Include="Engine\Utility\Loaders\Model\Skeleton.h" />
+    <ClInclude Include="Engine\Utility\Loaders\Model\Node.h" />
+    <ClInclude Include="Engine\Utility\Loaders\Model\SkinCluster.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="externals\DirectXTex\DirectXTex_Desktop_2022_Win10.vcxproj">
