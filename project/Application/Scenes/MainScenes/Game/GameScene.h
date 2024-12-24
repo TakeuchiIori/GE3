@@ -12,6 +12,7 @@
 #include "Particle/ParticleEmitter.h"
 #include "Object3D/Object3d.h"
 #include "Player/Player.h"
+#include "Enemy/Enemy.h"
 #include "WorldTransform./WorldTransform.h"
 #include "Drawer/LineManager/Line.h"
 #include "Player/ICommand/ICommandMove.h"
@@ -87,6 +88,10 @@ private:
 
     // プレイヤー
     std::unique_ptr<Player> player_;
+
+    // 敵
+    std::unique_ptr<Enemy> enemy_;
+
 
     // コマンドパターン
     std::unique_ptr<InputHandleMove> inputHandler_ = nullptr;

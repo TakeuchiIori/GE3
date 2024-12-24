@@ -1,0 +1,83 @@
+#pragma once
+
+// Engine
+#include "Object3D./Object3d.h"
+#include "Systems/Input./Input.h"
+#include "WorldTransform./WorldTransform.h"
+#include "Collision./Collider.h"
+
+// C++
+#include <memory>
+
+// Math
+#include "MathFunc.h"
+#include "Vector3.h" 
+
+class Enemy : public Collider
+{
+public:
+
+	/// <summary>
+	/// 初期化
+	/// </summary>
+	void Initialize();
+
+	/// <summary>
+	/// 更新
+	/// </summary>
+	void Update();
+
+	/// <summary>
+	/// 描画
+	/// </summary>
+	void Draw();
+
+	/// <summary>
+	/// ImGui
+	/// </summary>
+	void ShowCoordinatesImGui();
+
+
+	/// <summary>
+	/// 衝突を検出したら呼び出されるコールバック関数
+	/// </summary>
+	void OnCollision([[maybe_unused]] Collider* other) override;
+
+	/// <summary>
+	/// 中心座標を取得
+	/// </summary>
+	/// <returns></returns>
+	Vector3 GetCenterPosition() const override;
+
+
+private:
+
+	/// <summary>
+	/// 移動処理
+	/// </summary>
+	void Move();
+
+
+
+
+public: // アクセッサ
+
+	const Vector3& GetPosition() const { return worldTransform_.translation_; }
+	const Vector3& GetRotation() const { return worldTransform_.rotation_; }
+
+
+
+
+private:
+
+	WorldTransform worldTransform_;
+	std::unique_ptr<Object3d> base_ = nullptr;
+	Input* input_ = nullptr;
+
+	bool isColliding_ = false;
+	Vector3 moveSpeed_;
+	bool isDrawEnabled_ = true;
+
+
+};
+

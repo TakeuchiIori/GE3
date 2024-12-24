@@ -110,6 +110,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Application\Objects\Enemy\Enemy.cpp" />
     <ClCompile Include="Engine\Utility\Loaders\Model\Animation.cpp" />
     <ClCompile Include="Application\Scenes\CoreScenes\Base\BaseScene.cpp" />
     <ClCompile Include="Application\Scenes\MainScenes\Game\GameScene.cpp" />
@@ -163,6 +164,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Engine\Utility\Loaders\Model\SkinCluster.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Application\Objects\Enemy\Enemy.h" />
     <ClInclude Include="Engine\Utility\Loaders\Model\Animation.h" />
     <ClInclude Include="Application\Scenes\CoreScenes\Base\BaseScene.h" />
     <ClInclude Include="Application\Scenes\MainScenes\Game\GameScene.h" />

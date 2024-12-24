@@ -47,6 +47,10 @@ void GameScene::Initialize()
     player_ = std::make_unique<Player>();
     player_->Initialize();
 
+    // 敵
+    enemy_ = std::make_unique<Enemy>();
+    enemy_->Initialize();
+
     // test
     test_ = std::make_unique<Object3d>();
     test_->Initialize();
@@ -87,6 +91,7 @@ void GameScene::Update()
 
     // プレイヤーの更新
     player_->Update();
+    enemy_->Update();
     test_->UpdateAnimation();
 
     // カメラ更新
@@ -137,6 +142,7 @@ void GameScene::Draw()
     /// </summary>
     
     player_->Draw();
+    enemy_->Draw();
     line_->UpdateVertices(start_, end_);
     //line_->DrawLine();
 
