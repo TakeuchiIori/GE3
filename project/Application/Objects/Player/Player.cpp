@@ -24,8 +24,6 @@ void Player::Initialize()
     moveSpeed_ = { 0.25f, 0.25f , 0.25f };
     worldTransform_.Initialize();
 
-    //worldTransform_.scale_ = { 2.0f,2.0f,2.0f };
-
     //GlobalVariables* globalvariables = GlobalVariables::GetInstance();
     const char* groupName = "Player";
     // グループを追加

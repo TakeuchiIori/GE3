@@ -96,7 +96,6 @@ public: // コマンドパターンによる移動関数
 public: // アクセッサ
 	// プレイヤーの位置を取得する関数
 	const Vector3& GetPosition() const { return worldTransform_.translation_; }
-
 	const Vector3& GetRotation() const { return worldTransform_.rotation_; }
 
 private: // メンバ変数

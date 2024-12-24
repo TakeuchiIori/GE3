@@ -155,14 +155,15 @@ void GameScene::Draw()
     /// ここから描画可能です
     /// </summary>
 
-    test_->Draw(testWorldTransform_);
+   // test_->Draw(testWorldTransform_);
 
     // 骨描画
-    if (test_ && test_->GetModel()->GetSkeleton().joints.size() > 0) {
-        test_->DrawSkeleton(test_->GetModel()->GetSkeleton(), *boneLine_);
-    }
+    //if (test_ && test_->GetModel()->GetSkeleton().joints.size() > 0) {
+    //    test_->DrawSkeleton(test_->GetModel()->GetSkeleton(), *boneLine_);
+    //    boneLine_->DrawLine();
+    //}
 
-    boneLine_->DrawLine();
+   
 
 #pragma endregion
 
