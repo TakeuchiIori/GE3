@@ -162,6 +162,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Engine\Utility\Loaders\Model\Skeleton.cpp" />
     <ClCompile Include="Engine\Utility\Loaders\Model\Node.cpp" />
     <ClCompile Include="Engine\Utility\Loaders\Model\SkinCluster.cpp" />
+    <ClCompile Include="Application\Objects\Player\PlayerWeapon\PlayerWeapon.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application\Objects\Enemy\Enemy.h" />
@@ -220,6 +221,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="Engine\Utility\Loaders\Model\Skeleton.h" />
     <ClInclude Include="Engine\Utility\Loaders\Model\Node.h" />
     <ClInclude Include="Engine\Utility\Loaders\Model\SkinCluster.h" />
+    <ClInclude Include="Application\Objects\Player\PlayerWeapon\PlayerWeapon.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="externals\DirectXTex\DirectXTex_Desktop_2022_Win10.vcxproj">
