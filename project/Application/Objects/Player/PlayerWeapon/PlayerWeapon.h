@@ -39,6 +39,9 @@ private:
 
 public:
 	
+	void SetParent(WorldTransform& worldTransform) { worldTransform_.parent_ = &worldTransform; }
+
+
 	const WorldTransform& GetWorldTransform() { return worldTransform_; }
 	const Vector3& GetScale() { return worldTransform_.scale_; }
 	const Vector3& GetRotation() { return worldTransform_.rotation_; }

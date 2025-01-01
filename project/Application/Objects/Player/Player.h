@@ -5,6 +5,7 @@
 #include "WorldTransform./WorldTransform.h"
 #include "Collision./Collider.h"
 
+#include "PlayerWeapon/PlayerWeapon.h"
 // C++
 #include <memory>
 
@@ -12,6 +13,7 @@
 #include "MathFunc.h"
 #include "Vector3.h" 
 
+class PlayerWeapon;
 class Player : public Collider
 {
 
@@ -69,6 +71,11 @@ private: // メンバ関数（非公開）
 	/// </summary>
 	void MoveKey();
 
+	/// <summary>
+	/// 攻撃
+	/// </summary>
+	void Attack();
+
 public: // コマンドパターンによる移動関数
 
 	/// <summary>
@@ -101,8 +108,12 @@ public: // アクセッサ
 private: // メンバ変数
 
 	WorldTransform worldTransform_;
+
+	// ポインタ
 	std::unique_ptr<Object3d> base_ = nullptr;
 	Input* input_ = nullptr;
+	std::unique_ptr<PlayerWeapon> weapon_;
+
 
 	bool isColliding_ = false;
 	Vector3 moveSpeed_;

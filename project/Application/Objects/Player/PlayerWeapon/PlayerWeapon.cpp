@@ -12,9 +12,10 @@ void PlayerWeapon::Initialize()
 	// object3dの初期化
 	weapon_ = std::make_unique<Object3d>();
 	weapon_->Initialize();
-	weapon_->SetModel("");
+	weapon_->SetModel("cube.obj");
 
-
+	worldTransform_.Initialize();
+	worldTransform_.translation_.z = -2.0f;
 
 }
 
