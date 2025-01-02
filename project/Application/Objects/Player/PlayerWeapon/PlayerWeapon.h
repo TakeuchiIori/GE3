@@ -5,7 +5,8 @@
 #include "Systems/Input./Input.h"
 #include "WorldTransform./WorldTransform.h"
 #include "Collision./Collider.h"
-
+#include <json.hpp>
+using json = nlohmann::json;
 // C++
 #include <memory>
 
@@ -16,6 +17,35 @@
 class PlayerWeapon
 {
 public:
+	//==========================================================================//
+	//								構造体など								　　	//
+	//==========================================================================//
+	enum class WeaponState {
+		Idle,        // 待機中
+		Attacking,   // 攻撃中
+		Dashing,     // ダッシュ攻撃中
+		Cooldown     // クールダウン中
+	};
+
+	struct SRTKeyframe {
+		float time;                 // キーフレームの時間（0.0～1.0）
+		Vector3 position;           // 位置（Translation）
+		Vector3 scale;              // スケール（Scale）
+		Vector3 rotation;             // 回転（Rotation）
+	};
+
+	struct AttackMotion {
+		float duration;             // モーションの長さ（秒単位）
+		float hitStartTime;         // ヒット判定が有効になる時間
+		float hitEndTime;           // ヒット判定が無効になる時間
+		std::vector<SRTKeyframe > srtKeyframes; // SRTのキーフレームデータ
+	};
+
+public: 
+	//==========================================================================//
+	//								基本的な関数								　　	//
+	//==========================================================================//
+
 	/// <summary>
 	/// 初期化
 	/// </summary>
@@ -29,15 +59,96 @@ public:
 	/// <summary>
 	/// 描画
 	/// </summary>
-	void Draw();
+	void Draw();  
 
-private:
+	/// <summary>
+	/// デバッグ用UIの描画
+	/// </summary>
+	void DrawDebugUI();
 
+	json ToJson() const;              // パラメータをJSONに変換
+	void FromJson(const json& data);  // JSONからパラメータを読み込み
+
+	void SaveToFile(const std::string& filename) const;
+	void LoadFromFile(const std::string& filename);
+
+private: 
+	//==========================================================================//
+	//								メンバ関数								　　	//
+	//==========================================================================//
+
+
+	/// <summary>
+	/// コンボが可能かどうかを判定
+	/// </summary>
+	bool IsComboAvailable() const;
+
+	// 各モーションの初期化関数
+
+	/// <summary>
+	///	 全ての状態を初期化管理
+	/// </summary>
+	void InitializeState();
+
+	/// <summary>
+	/// 通常モーションの初期化
+	/// </summary>
+	void InitIdle();
+
+	/// <summary>
+	/// 攻撃関数の初期化
+	/// </summary>
+	void InitAttack();
+
+	/// <summary>
+	/// ダッシュ攻撃の初期化
+	/// </summary>
+	void InitDash();
+
+	/// <summary>
+	/// クールダウンの初期化
+	/// </summary>
+	void InitCooldown();
+
+
+	// 各モーションの更新処理
+
+	/// <summary>
+	/// 全状態の更新処理
+	/// </summary>
+	void UpdateState();
+
+	/// <summary>
+	/// 通常モーション（何もしていない時）
+	/// </summary>
+	/// <param name="deltaTime"></param>
+	void IdleMotion(float deltaTime);
+
+	/// <summary>
+	/// 攻撃モーションの更新
+	/// </summary>
+	/// <param name="deltaTime"></param>
+	void UpdateAttackMotion(float deltaTime);
+
+	/// <summary>
+	/// ダッシュ攻撃の更新処理
+	/// </summary>
+	/// <param name="deltaTime"></param>
+	void UpdateDashMotion(float deltaTime);
+
+	/// <summary>
+	/// クールダウンの更新
+	/// </summary>
+	/// <param name="deltaTime"></param>
+	void UpdateCooldown(float deltaTime);
 
 
 
 
 public:
+	//==========================================================================//
+	//								アクセッサ								　　	//
+	//==========================================================================//
 	
 	void SetParent(WorldTransform& worldTransform) { worldTransform_.parent_ = &worldTransform; }
 
@@ -48,9 +159,30 @@ public:
 	const Vector3& GetTranslation() { return worldTransform_.translation_; }
 
 private:
+	//==========================================================================//
+	//								メンバ変数								　　	//
+	//==========================================================================//
 
+	// ポインタ
 	std::unique_ptr<Object3d> weapon_;
+	Input* input_ = nullptr;
+	// ワールドトランスフォーム
 	WorldTransform worldTransform_;
 
+
+	WeaponState state_ = WeaponState::Idle; // 武器の状態
+	std::optional<WeaponState> stateRequest_;
+	float idleTime_ = 0.0f;                 // Idle状態の時間経過
+	float attackProgress_ = 0.0f;           // 攻撃モーションの進行度（0.0～1.0）
+	float cooldownTime_ = 0.5f;             // クールダウンの時間（秒単位）
+	float elapsedCooldownTime_ = 0.0f;      // クールダウン経過時間
+
+	const AttackMotion* currentMotion_ = nullptr; // 現在の攻撃モーション
+	const AttackMotion* dashMotion_ = nullptr;
+	std::vector<AttackMotion> attackMotions_; // 複数の攻撃モーションを管理
+
+	bool canCombo_ = false;      // コンボ可能かどうか
+	float comboWindow_ = 0.5f;   // コンボ入力の猶予時間（秒）
+	float elapsedComboTime_ = 0.0f; // コンボ猶予時間の経過時間
 };
 

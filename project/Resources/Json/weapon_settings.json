@@ -1,0 +1,141 @@
+{
+    "attackMotions": [
+        {
+            "duration": 1.0,
+            "hitEndTime": 0.800000011920929,
+            "hitStartTime": 0.20000000298023224,
+            "keyframes": [
+                {
+                    "position": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "rotation": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "time": 0.0
+                },
+                {
+                    "position": [
+                        0.0,
+                        0.0,
+                        -1.0
+                    ],
+                    "rotation": [
+                        0.0,
+                        45.0,
+                        0.0
+                    ],
+                    "scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "time": 0.5
+                },
+                {
+                    "position": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "rotation": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "time": 1.0
+                }
+            ]
+        },
+        {
+            "duration": 1.0,
+            "hitEndTime": 0.800000011920929,
+            "hitStartTime": 0.20000000298023224,
+            "keyframes": [
+                {
+                    "position": [
+                        -2.0,
+                        0.0,
+                        0.0
+                    ],
+                    "rotation": [
+                        0.0,
+                        -90.0,
+                        0.0
+                    ],
+                    "scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "time": 0.0
+                },
+                {
+                    "position": [
+                        0.0,
+                        0.0,
+                        2.0
+                    ],
+                    "rotation": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "time": 0.5
+                },
+                {
+                    "position": [
+                        2.0,
+                        0.0,
+                        0.0
+                    ],
+                    "rotation": [
+                        0.0,
+                        90.0,
+                        0.0
+                    ],
+                    "scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "time": 1.0
+                }
+            ]
+        }
+    ],
+    "cooldownTime": 0.5,
+    "currentState": 0,
+    "elapsedCooldownTime": 0.0,
+    "worldTransform": {
+        "rotation": [
+            0.0,
+            3.232003688812256,
+            0.0
+        ],
+        "translation": [
+            0.0,
+            -0.04514395818114281,
+            -2.0
+        ]
+    }
+}

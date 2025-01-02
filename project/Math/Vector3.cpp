@@ -170,4 +170,14 @@ Vector3 CatmullRomPosition(const std::vector<Vector3>& points, float t) {
     return CatmullRomInterpolation(p0, p1, p2, p3, t_2);
 }
 
+Vector3 lerp(const Vector3& a, const Vector3& b, float t) {
+    return {
+        a.x + (b.x - a.x) * t,
+        a.y + (b.y - a.y) * t,
+        a.z + (b.z - a.z) * t
+    };
+}
 
+float lerp(float a, float b, float t) {
+    return a + (b - a) * t;
+}

@@ -159,7 +159,8 @@ Vector3 Cross(const Vector3& v1, const Vector3& v2);
 
 Vector3 Lerp(const Vector3& a, const Vector3& b, float t);
 
-
+Vector3 lerp(const Vector3& a, const Vector3& b, float t);
+float lerp(float a, float b, float t);
 
 
 

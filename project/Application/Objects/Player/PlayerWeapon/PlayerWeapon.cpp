@@ -3,9 +3,15 @@
 #include "Loaders./Model./ModelManager.h"
 #include "Object3D./Object3dCommon.h"
 
+// C++
+#include <fstream>
+#include <iostream>
+
+// ImGui
 #ifdef _DEBUG
 #include "imgui.h" 
 #endif // _DEBUG
+
 
 void PlayerWeapon::Initialize()
 {
@@ -14,17 +20,409 @@ void PlayerWeapon::Initialize()
 	weapon_->Initialize();
 	weapon_->SetModel("cube.obj");
 
+	// インプット
+	input_ = Input::GetInstance();
+
 	worldTransform_.Initialize();
 	worldTransform_.translation_.z = -2.0f;
 
+
+	// 通常攻撃モーション
+	attackMotions_.push_back({
+		1.0f, 0.2f, 0.8f, {
+			{0.0f, {0, 0, 0}, {1.0f, 1.0f, 1.0f}, {0, 0, 0}},     // 振り始め
+			{0.5f, {0, 0, -1}, {1.0f, 1.0f, 1.0f}, {0, 45, 0}},   // 中間
+			{1.0f, {0, 0, 0}, {1.0f, 1.0f, 1.0f}, {0, 0, 0}}      // 元の位置
+		}
+		});
+
+	// ダッシュ攻撃モーション
+	attackMotions_.push_back({
+		1.0f, 0.2f, 0.8f, { // duration, hitStartTime, hitEndTime
+			{0.0f, {-2.0f, 0.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {0, -90, 0}}, // 左端スタート
+			{0.5f, {0.0f, 0.0f, 2.0f}, {1.0f, 1.0f, 1.0f}, {0, 0, 0}},    // 中央（正面）
+			{1.0f, {2.0f, 0.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {0, 90, 0}}    // 右端フィニッシュ
+		}
+		});
 }
 
 void PlayerWeapon::Update()
 {
+	// 全状態の初期化
+	InitializeState();
+
+	// 全状態の更新処理
+	UpdateState();
+
+	// ワールドトランスフォームの更新
 	worldTransform_.UpdateMatrix();
+
+#ifdef _DEBUG
+	DrawDebugUI();
+#endif // _DEBUG
+
 }
 
 void PlayerWeapon::Draw()
 {
 	weapon_->Draw(worldTransform_);
+}
+
+void PlayerWeapon::DrawDebugUI() {
+#ifdef _DEBUG
+	if (ImGui::Begin("Weapon Debug")) {
+		// 現在の状態
+		ImGui::Text("Current State: %s",
+			state_ == WeaponState::Idle ? "Idle" :
+			state_ == WeaponState::Attacking ? "Attacking" :
+			state_ == WeaponState::Dashing ? "Dashing" : "Cooldown");
+
+		// クールダウンの時間
+		ImGui::SliderFloat("Cooldown Time", &cooldownTime_, 0.1f, 5.0f, "%.2f");
+
+		// 経過クールダウン時間
+		ImGui::Text("Elapsed Cooldown Time: %.2f", elapsedCooldownTime_);
+
+		// 攻撃モーションの進行度
+		if (state_ == WeaponState::Attacking) {
+			ImGui::Text("Attack Progress: %.2f", attackProgress_);
+		}
+
+		// ダッシュ攻撃モーションの進行度
+		if (state_ == WeaponState::Dashing) {
+			ImGui::Text("Dash Progress: %.2f", attackProgress_);
+		}
+
+		// デバッグ用の状態遷移ボタン
+		if (ImGui::Button("Set to Idle")) {
+			stateRequest_ = WeaponState::Idle;
+		}
+		if (ImGui::Button("Set to Attacking")) {
+			stateRequest_ = WeaponState::Attacking;
+		}
+		if (ImGui::Button("Set to Dashing")) {
+			stateRequest_ = WeaponState::Dashing;
+		}
+		if (ImGui::Button("Set to Cooldown")) {
+			stateRequest_ = WeaponState::Cooldown;
+		}
+	}
+
+	// 各モーションのパラメータ調整
+	for (size_t i = 0; i < attackMotions_.size(); ++i) {
+		if (ImGui::CollapsingHeader(("Motion " + std::to_string(i)).c_str())) {
+			ImGui::Text("Motion Parameters:");
+			ImGui::SliderFloat("Duration", &attackMotions_[i].duration, 0.1f, 5.0f, "%.2f");
+			ImGui::SliderFloat("Hit Start Time", &attackMotions_[i].hitStartTime, 0.0f, attackMotions_[i].duration, "%.2f");
+			ImGui::SliderFloat("Hit End Time", &attackMotions_[i].hitEndTime, attackMotions_[i].hitStartTime, attackMotions_[i].duration);
+
+			// キーフレームの調整
+			for (size_t j = 0; j < attackMotions_[i].srtKeyframes.size(); ++j) {
+				std::string label;
+				if (j == 0) {
+					label = "Start Position";
+				}
+				else if (j == attackMotions_[i].srtKeyframes.size() - 1) {
+					label = "End Position";
+				}
+				else {
+					label = "Mid Position " + std::to_string(j);
+				}
+
+				if (ImGui::TreeNode((label + " (Keyframe " + std::to_string(j) + ")").c_str())) {
+					ImGui::Text("%s", label.c_str());
+					ImGui::SliderFloat("Time", &attackMotions_[i].srtKeyframes[j].time, 0.0f, attackMotions_[i].duration, "%.2f");
+					ImGui::SliderFloat3("Position", reinterpret_cast<float*>(&attackMotions_[i].srtKeyframes[j].position), -10.0f, 10.0f);
+					ImGui::SliderFloat3("Scale", reinterpret_cast<float*>(&attackMotions_[i].srtKeyframes[j].scale), 0.1f, 5.0f);
+					ImGui::SliderFloat3("Rotation", reinterpret_cast<float*>(&attackMotions_[i].srtKeyframes[j].rotation), -360.0f, 360.0f);
+					ImGui::TreePop();
+				}
+			}
+		}
+	}
+
+	// 保存と読み込み
+	if (ImGui::Button("Save Settings")) {
+		SaveToFile("Resources./Json./weapon_settings.json");
+	}
+
+	if (ImGui::Button("Load Settings")) {
+		LoadFromFile("Resources./Json./weapon_settings.json");
+	}
+	ImGui::End();
+#endif
+
+}
+
+json PlayerWeapon::ToJson() const {
+	json motionData = json::array();
+	for (const auto& motion : attackMotions_) {
+		json keyframes = json::array();
+		for (const auto& keyframe : motion.srtKeyframes) {
+			keyframes.push_back({
+				{"time", keyframe.time},
+				{"position", {keyframe.position.x, keyframe.position.y, keyframe.position.z}},
+				{"scale", {keyframe.scale.x, keyframe.scale.y, keyframe.scale.z}},
+				{"rotation", {keyframe.rotation.x, keyframe.rotation.y, keyframe.rotation.z}}
+				});
+		}
+		motionData.push_back({
+			{"duration", motion.duration},
+			{"hitStartTime", motion.hitStartTime},
+			{"hitEndTime", motion.hitEndTime},
+			{"keyframes", keyframes}
+			});
+	}
+
+	return {
+		{"currentState", static_cast<int>(state_)},
+		{"worldTransform", {
+			{"translation", {worldTransform_.translation_.x, worldTransform_.translation_.y, worldTransform_.translation_.z}},
+			{"rotation", {worldTransform_.rotation_.x, worldTransform_.rotation_.y, worldTransform_.rotation_.z}}
+		}},
+		{"attackMotions", motionData},
+		{"cooldownTime", cooldownTime_},
+		{"elapsedCooldownTime", elapsedCooldownTime_}
+	};
+}
+
+void PlayerWeapon::FromJson(const json& data)
+{
+	state_ = static_cast<WeaponState>(data["currentState"].get<int>());
+	worldTransform_.translation_ = {
+		data["worldTransform"]["translation"][0].get<float>(),
+		data["worldTransform"]["translation"][1].get<float>(),
+		data["worldTransform"]["translation"][2].get<float>()
+	};
+	worldTransform_.rotation_ = {
+		data["worldTransform"]["rotation"][0].get<float>(),
+		data["worldTransform"]["rotation"][1].get<float>(),
+		data["worldTransform"]["rotation"][2].get<float>()
+	};
+
+	attackMotions_.clear();
+	for (const auto& motion : data["attackMotions"]) {
+		AttackMotion newMotion;
+		newMotion.duration = motion["duration"].get<float>();
+		newMotion.hitStartTime = motion["hitStartTime"].get<float>();
+		newMotion.hitEndTime = motion["hitEndTime"].get<float>();
+		for (const auto& keyframe : motion["keyframes"]) {
+			newMotion.srtKeyframes.push_back({
+				keyframe["time"].get<float>(),
+				{keyframe["position"][0].get<float>(), keyframe["position"][1].get<float>(), keyframe["position"][2].get<float>()},
+				{keyframe["scale"][0].get<float>(), keyframe["scale"][1].get<float>(), keyframe["scale"][2].get<float>()},
+				{keyframe["rotation"][0].get<float>(), keyframe["rotation"][1].get<float>(), keyframe["rotation"][2].get<float>()}
+				});
+		}
+		attackMotions_.push_back(newMotion);
+	}
+
+	cooldownTime_ = data["cooldownTime"].get<float>();
+	elapsedCooldownTime_ = data["elapsedCooldownTime"].get<float>();
+}
+
+void PlayerWeapon::SaveToFile(const std::string& filename) const
+{
+	std::ofstream file(filename);
+	if (file.is_open()) {
+		file << ToJson().dump(4); // JSONをフォーマット付きで保存
+		file.close();
+	}
+}
+
+void PlayerWeapon::LoadFromFile(const std::string& filename)
+{
+	// ファイルを開く
+	std::ifstream file(filename);
+	if (!file) {
+		std::cerr << "Failed to open file: " << filename << std::endl;
+		return;
+	}
+
+	// JSONデータを読み込む
+	json data;
+	file >> data;
+	file.close();
+
+	// JSONデータをPlayerWeaponに適用
+	FromJson(data);
+	std::cout << "File loaded successfully: " << filename << std::endl;
+}
+
+bool PlayerWeapon::IsComboAvailable() const
+{
+	return canCombo_ && elapsedComboTime_ <= comboWindow_;
+}
+
+void PlayerWeapon::InitializeState()
+{
+	if (stateRequest_) {
+		// 状態の変更（リクエストの変更）
+		state_ = stateRequest_.value();
+		switch (state_)
+		{
+		case PlayerWeapon::WeaponState::Idle:
+			InitIdle();
+			break;
+		case PlayerWeapon::WeaponState::Attacking:
+			InitAttack();
+			break;
+		case PlayerWeapon::WeaponState::Dashing:
+			InitDash();
+			break;
+		case PlayerWeapon::WeaponState::Cooldown:
+			InitCooldown();
+			break;
+		}
+		// リクエストをリセット
+		stateRequest_ = nullopt;
+	}
+}
+
+void PlayerWeapon::InitIdle()
+{
+	idleTime_ = 0.0f;
+	worldTransform_.translation_ = { 0.0f, 0.0f, -2.0f };
+	worldTransform_.rotation_ = { 0.0f, 0.0f, 0.0f };
+}
+
+void PlayerWeapon::InitAttack()
+{
+	attackProgress_ = 0.0f;
+	currentMotion_ = &attackMotions_[0];
+}
+
+void PlayerWeapon::InitDash()
+{
+	attackProgress_ = 0.0f;
+	currentMotion_ = &attackMotions_[1];
+}
+
+void PlayerWeapon::InitCooldown()
+{
+	elapsedCooldownTime_ = 0.0f;
+}
+
+void PlayerWeapon::UpdateState()
+{
+	const float deltaTime = 0.016f;
+	switch (state_)
+	{
+	case PlayerWeapon::WeaponState::Idle:
+		IdleMotion(deltaTime);
+		break;
+	case PlayerWeapon::WeaponState::Attacking:
+		UpdateAttackMotion(deltaTime);
+		break;
+	case PlayerWeapon::WeaponState::Dashing:
+		UpdateDashMotion(deltaTime);
+		break;
+	case PlayerWeapon::WeaponState::Cooldown:
+		UpdateCooldown(deltaTime);
+		break;
+	}
+}
+
+
+void PlayerWeapon::IdleMotion(float deltaTime)
+{
+	// スペースを押されたらアタック
+	if (input_->PushKey(DIK_SPACE)) {
+		stateRequest_ = WeaponState::Attacking;
+		return;
+	}
+
+	idleTime_ += deltaTime;
+
+	// 垂直方向のぷかぷか運動
+	float verticalOffset = sin(idleTime_) * 0.5f; // 振幅0.1のsin波
+
+	// 回転運動
+	float rotationSpeed = 1.0f; // 回転速度（度/秒）
+	worldTransform_.rotation_.y += rotationSpeed * deltaTime;
+
+	// 更新
+	worldTransform_.translation_.y = verticalOffset; // 上下運動を適用
+	worldTransform_.UpdateMatrix();
+
+}
+
+void PlayerWeapon::UpdateAttackMotion(float deltaTime)
+{
+	attackProgress_ += deltaTime / currentMotion_->duration;
+
+	// SRTの補間による更新
+	const auto& keyframes = currentMotion_->srtKeyframes;
+	for (size_t i = 0; i < keyframes.size() - 1; ++i) {
+		if (attackProgress_ >= keyframes[i].time && attackProgress_ <= keyframes[i + 1].time) {
+			float t = (attackProgress_ - keyframes[i].time) / (keyframes[i + 1].time - keyframes[i].time);
+			// 位置の補間
+			worldTransform_.translation_ = Lerp(keyframes[i].position, keyframes[i + 1].position, t);
+			// 回転の補間
+			worldTransform_.rotation_ = lerp(keyframes[i].rotation, keyframes[i + 1].rotation, t);
+		}
+	}
+
+	// コンボ可能タイミングの管理
+	if (attackProgress_ >= 0.5f && !canCombo_) {
+		canCombo_ = true;
+		elapsedComboTime_ = 0.0f;
+	}
+
+	if (attackProgress_ >= 0.7f) {
+		if (IsComboAvailable() && input_->PushKey(DIK_SPACE)) {
+			stateRequest_ = WeaponState::Dashing;
+			currentMotion_ = dashMotion_; // ダッシュ攻撃モーション
+			attackProgress_ = 0.0f;
+			canCombo_ = false;
+		}
+		else if (attackProgress_ >= 1.0f) {
+			stateRequest_ = WeaponState::Cooldown;
+		}
+	}
+	//// モーション終了
+	//if (attackProgress_ >= 1.0f) {
+	//	stateRequest_ = WeaponState::Cooldown; // クールダウン状態へ移行
+	//	attackProgress_ = 0.0f;
+	//	elapsedCooldownTime_ = 0.0f;
+	//}
+}
+
+void PlayerWeapon::UpdateDashMotion(float deltaTime)
+{
+	attackProgress_ += deltaTime / currentMotion_->duration;
+
+	// ダッシュ攻撃モーションの補間
+	const auto& keyframes = currentMotion_->srtKeyframes;
+	for (size_t i = 0; i < keyframes.size() - 1; ++i) {
+		if (attackProgress_ >= keyframes[i].time && attackProgress_ <= keyframes[i + 1].time) {
+			float t = (attackProgress_ - keyframes[i].time) / (keyframes[i + 1].time - keyframes[i].time);
+			worldTransform_.translation_ = Lerp(keyframes[i].position, keyframes[i + 1].position, t);
+			worldTransform_.rotation_ = Lerp(keyframes[i].rotation, keyframes[i + 1].rotation, t);
+		}
+	}
+
+	if (attackProgress_ >= 1.0f) {
+		stateRequest_ = WeaponState::Cooldown;
+	}
+
+	//// モーション終了
+	//if (attackProgress_ >= 1.0f) {
+	//	stateRequest_ = WeaponState::Cooldown; // クールダウン状態へ移行
+	//	attackProgress_ = 0.0f;
+	//	elapsedCooldownTime_ = 0.0f;
+	//}
+
+}
+
+void PlayerWeapon::UpdateCooldown(float deltaTime)
+{
+	// 経過時間を更新
+	elapsedCooldownTime_ += deltaTime;
+
+	// クールダウンが終了したら状態をIdleに戻す
+	if (elapsedCooldownTime_ >= cooldownTime_) {
+		stateRequest_ = WeaponState::Idle; // 武器の状態を待機に戻す
+		elapsedCooldownTime_ = 0.0f; // 経過時間をリセット
+	}
 }
