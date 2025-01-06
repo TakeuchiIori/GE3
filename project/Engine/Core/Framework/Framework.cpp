@@ -53,7 +53,7 @@ void Framework::Initialize()
 
 	// コライダーの生成 (未完成)
 	collisionManager_ = CollisionManager::GetInstance();
-	collisionManager_->Initialize();
+	//collisionManager_->Initialize();
 	
 	// LineManagerの生成
 	lineManager_ = LineManager::GetInstance();

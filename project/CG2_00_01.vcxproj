@@ -137,6 +137,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Engine\Utility\Loaders\Model\Joint.cpp" />
     <ClCompile Include="Application\Objects\Player\ICommand\ICommandMove.cpp" />
     <ClCompile Include="Application\Objects\Player\InputHandle\InputHandleMove.cpp" />
+    <ClCompile Include="Application\Objects\Ground\Ground.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Math\Matrix4x4.cpp" />
     <ClCompile Include="Engine\Utility\Loaders\Model\Model.cpp" />
@@ -189,6 +190,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="Engine\Utility\Loaders\Model\Joint.h" />
     <ClInclude Include="Application\Objects\Player\ICommand\ICommandMove.h" />
     <ClInclude Include="Application\Objects\Player\InputHandle\InputHandleMove.h" />
+    <ClInclude Include="Application\Objects\Ground\Ground.h" />
     <ClInclude Include="Math\MathFunc.h" />
     <ClInclude Include="Math\Matrix3x3.h" />
     <ClInclude Include="Math\Matrix4x4.h" />

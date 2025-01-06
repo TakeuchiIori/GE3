@@ -17,6 +17,8 @@
 #include "Drawer/LineManager/Line.h"
 #include "Player/ICommand/ICommandMove.h"
 #include "Player/InputHandle/InputHandleMove.h"
+#include "Ground/Ground.h"
+
 // Math
 #include "Vector3.h"
 
@@ -93,6 +95,9 @@ private:
 
     // 敵
     std::unique_ptr<Enemy> enemy_;
+
+    // 地面
+    std::unique_ptr< Ground> ground_;
 
 
     // コマンドパターン

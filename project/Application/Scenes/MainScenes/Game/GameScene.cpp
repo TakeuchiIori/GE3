@@ -24,7 +24,7 @@ void GameScene::Initialize()
     // カメラの生成
     currentCamera_ = cameraManager_.AddCamera();
     Object3dCommon::GetInstance()->SetDefaultCamera(currentCamera_.get());
-   
+    CollisionManager::GetInstance()->Initialize();
     // 線
     line_ = std::make_unique<Line>();
     line_->Initialize();
@@ -52,6 +52,10 @@ void GameScene::Initialize()
     // 敵
     enemy_ = std::make_unique<Enemy>();
     enemy_->Initialize();
+
+    // 地面
+    ground_ = std::make_unique<Ground>();
+    ground_->Initialize();
 
     // test
     test_ = std::make_unique<Object3d>();
@@ -93,9 +97,10 @@ void GameScene::Update()
     CheckAllCollisions();
     CollisionManager::GetInstance()->UpdateWorldTransform();
 
-    // プレイヤーの更新
+    // objの更新
     player_->Update();
     enemy_->Update();
+    ground_->Update();
     test_->UpdateAnimation();
 
     // カメラ更新
@@ -149,6 +154,7 @@ void GameScene::Draw()
     CollisionManager::GetInstance()->Draw();
     player_->Draw();
     enemy_->Draw();
+    ground_->Draw();
     line_->UpdateVertices(start_, end_);
   
     //line_->DrawLine();
@@ -273,11 +279,13 @@ void GameScene::CheckAllCollisions() {
     // コライダーをリストに登録
     CollisionManager::GetInstance()->AddCollider(player_.get());
 
+    // コライダーリストに登録
+    CollisionManager::GetInstance()->AddCollider(player_->GetPlayerWeapon());
+
     // 敵全てについて
     CollisionManager::GetInstance()->AddCollider(enemy_.get());
 
-    // コライダーリストに登録
-    CollisionManager::GetInstance()->AddCollider(player_->GetPlayerWeapon());
+
 
     // 衝突判定と応答
     CollisionManager::GetInstance()->CheckAllCollisions();

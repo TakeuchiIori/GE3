@@ -21,7 +21,7 @@ void Enemy::Initialize()
     input_ = Input::GetInstance();
     moveSpeed_ = { 0.25f, 0.25f , 0.25f };
     worldTransform_.Initialize();
-
+    worldTransform_.translation_.y = 0.0f;
     //GlobalVariables* globalvariables = GlobalVariables::GetInstance();
     const char* groupName = "Enemy";
     // グループを追加
@@ -92,12 +92,9 @@ void Enemy::OnCollision(Collider* other)
     // 衝突相手が敵なら
     if (typeID == static_cast<uint32_t>(CollisionTypeIdDef::kPlayer)) {
 
-       // isColliding_ = false;
-        isDrawEnabled_ = false;
+       isColliding_ = true;
     }
-    else {
-        isDrawEnabled_ = true;
-    }
+
 }
 
 Vector3 Enemy::GetCenterPosition() const
@@ -117,4 +114,13 @@ Matrix4x4 Enemy::GetWorldMatrix() const
 
 void Enemy::Move()
 {
+    // 衝突中フラグが立っている場合は非表示に
+    if (isColliding_) {
+        isDrawEnabled_ = false; // 描画を無効に
+    }
+    else {
+        isDrawEnabled_ = true; // 描画を有効に
+    }
+    // 衝突状態をリセット
+    isColliding_ = false; // 毎フレーム初期化
 }

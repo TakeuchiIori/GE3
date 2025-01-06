@@ -28,7 +28,7 @@ void Player::Initialize()
     input_ = Input::GetInstance();
     moveSpeed_ = { 0.25f, 0.25f , 0.25f };
     worldTransform_.Initialize();
-
+    worldTransform_.translation_.y = 1.0f;
     weapon_->SetParent(worldTransform_);
     
 
@@ -154,34 +154,30 @@ void Player::Jump()
     // ジャンプ開始
     if (!isJumping_ && weapon_->GetIsJumpAttack()) {
         isJumping_ = true;
-        jumpTime_ = 0.0f;         // ジャンプ時間をリセット
-        jumpVelocity_ = jumpPower_; // ジャンプ初速度を設定
+        jumpTime_ = 0.0f; // ジャンプ時間をリセット
     }
 
-    // ジャンプ中の処理
     if (isJumping_) {
-        // ジャンプ時間を更新 (1フレーム16ms)
-        jumpTime_ += 0.016f;
+        // ジャンプ時間を更新
+        jumpTime_ += 0.016f; // 仮に1フレーム16msと仮定 (60FPS)
 
         if (jumpTime_ <= 0.5f) { // ジャンプ期間内 (0〜0.5秒)
-            // イージングで高さを補完 (EaseOutQuad)
-            float t = jumpTime_ / 0.5f; // 時間を正規化 (0〜1)
-            float height = jumpHeight_ * (1 - (1 - t) * (1 - t)); // イージング (EaseOutQuad)
+            // 正規化した時間 (0〜1)
+            float t = jumpTime_ / 0.5f;
+
+            // 高さの計算 (EaseInOutQuad)
+            // 上昇と下降を1つの関数で処理
+            float height = jumpHeight_ * (t < 0.5f
+                ? 2 * t * t        // 上昇 (EaseIn)
+                : -2 * (t - 1) * (t - 1) + 1); // 下降 (EaseOut)
 
             // プレイヤーのY座標を補完
             worldTransform_.translation_.y = groundY_ + height;
         }
         else {
-            // ジャンプ終了処理 (地面に向けて落下開始)
-            jumpVelocity_ += gravity_ * 0.016f; // 重力を適用
-            worldTransform_.translation_.y += jumpVelocity_ * 0.016f;
-
-            // 地面に到達した場合
-            if (worldTransform_.translation_.y <= groundY_) {
-                worldTransform_.translation_.y = groundY_; // 地面に固定
-                isJumping_ = false;                       // ジャンプ終了
-                jumpVelocity_ = 0.0f;                     // 速度をリセット
-            }
+            // ジャンプ終了
+            worldTransform_.translation_.y = groundY_; // 地面に戻す
+            isJumping_ = false;                       // ジャンプ終了
         }
     }
 }
@@ -306,7 +302,7 @@ void Player::OnCollision(Collider* other)
 Vector3 Player::GetCenterPosition() const
 {
     // ローカル座標でのオフセット
-    const Vector3 offset = { 0.0f, 0.0f, 0.0f };
+    const Vector3 offset = { 0.0f, 1.5f, 0.0f };
     // ワールド座標に変換
     Vector3 worldPos = TransformCoordinates(offset, worldTransform_.matWorld_);
 
