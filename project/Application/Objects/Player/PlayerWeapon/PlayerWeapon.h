@@ -26,6 +26,7 @@ public:
 		Dashing,     // ダッシュ攻撃中
 		LSwing,
 		RSwing,
+		JumpAttack,
 		Cooldown     // クールダウン中
 	};
 
@@ -118,6 +119,11 @@ private:
 	void InitRightHorizontalSwiwng();
 
 	/// <summary>
+	/// ジャンプ攻撃
+	/// </summary>
+	void InitJumpAttack();
+
+	/// <summary>
 	/// クールダウンの初期化
 	/// </summary>
 	void InitCooldown();
@@ -158,6 +164,11 @@ private:
 	/// </summary>
 	void UpdateRightHorizontalSwiwng(float deltaTime);
 
+	/// <summary>
+	/// ジャンプ攻撃
+	/// </summary>
+	void UpdateJumpAttack(float deltaTime);
+
 
 	/// <summary>
 	/// クールダウンの更新
@@ -197,6 +208,8 @@ public:
 	const Vector3& GetRotation() { return worldTransform_.rotation_; }
 	const Vector3& GetTranslation() { return worldTransform_.translation_; }
 
+	const bool& GetIsJumpAttack() { return isJumpAttack_; }
+
 private:
 	//==========================================================================//
 	//								メンバ変数								　　	//
@@ -224,8 +237,10 @@ private:
 	const AttackMotion* dashMotion_ = nullptr; // ダッシュモーション
 	const AttackMotion* LSwing_= nullptr; // 左横振り
 	const AttackMotion* RSwing_= nullptr; // 右横振り
+	const AttackMotion* jumpAttack_ = nullptr; // 右横振り
 
 	bool canCombo_ = false;      // コンボ可能かどうか
+	bool isJumpAttack_ = false;	 // ジャンプ攻撃フラグ
 	float comboWindow_ = 0.5f;   // コンボ入力の猶予時間（秒）
 	float elapsedComboTime_ = 0.0f; // コンボ猶予時間の経過時間
 

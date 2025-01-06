@@ -78,9 +78,9 @@ private: // メンバ関数（非公開）
 	void MoveKey();
 
 	/// <summary>
-	/// 攻撃
+	/// ジャンプ
 	/// </summary>
-	void Attack();
+	void Jump();
 
 public: // コマンドパターンによる移動関数
 
@@ -126,5 +126,13 @@ private: // メンバ変数
 	Vector3 moveSpeed_;
 	bool isDrawEnabled_ = true;
 
+	bool isJumping_ = false;       // ジャンプ中かどうか
+	float jumpVelocity_ = 0.0f;    // ジャンプの上昇速度
+	const float gravity_ = -9.8f;  // 重力加速度
+	const float groundY_ = 0.0f;   // 地面の高さ
+	const float jumpPower_ = 5.0f; // ジャンプ力
+	const float jumpHeight_ = jumpPower_;
+	float jumpTime_ = 0.0f;           // ジャンプ開始からの経過時間
+	const float jumpDuration_ = 0.5f; // ジャンプの補完時間
 };
 

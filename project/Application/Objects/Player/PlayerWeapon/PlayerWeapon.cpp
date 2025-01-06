@@ -57,9 +57,16 @@ void PlayerWeapon::Initialize()
 		{0.0f, {4.0f, 6.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, MakeRotateAxisAngleQuaternion({90, 0, -45})},   // スタート
 		{0.25f, {0.0f, 0.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, MakeRotateAxisAngleQuaternion({90, 0, -45})},   // 中央
 		{0.5f, {-4.0f, -6.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, MakeRotateAxisAngleQuaternion({90, 0, -45})}    // フィニッシュ
-	}
+		}
 		});
 
+	attackMotions_.push_back({
+		0.5f, 0.2f, 0.8f, {
+		{0.0f, {0.0f, 6.0f, 2.0f}, {1.0f, 1.0f, 1.0f}, MakeRotateAxisAngleQuaternion({90 + 360 * 0.0f , 0, 0})},   // スタート
+		{0.25f, {0.0f, 3.0f, 2.0f}, {1.0f, 1.0f, 1.0f}, MakeRotateAxisAngleQuaternion({90 + 360 * 0.5f, 0, 0})},   // 中央
+		{0.5f, {0.0f, 0.0f, 2.0f}, {1.0f, 1.0f, 1.0f}, MakeRotateAxisAngleQuaternion({90 + 360 * 1.0f, 0, 0})}    // フィニッシュ
+		}
+		});
 
 #pragma endregion
 
@@ -155,7 +162,9 @@ void PlayerWeapon::DrawDebugUI() {
 			ImGui::SliderFloat("Duration", &attackMotions_[i].duration, 0.1f, 50.0f, "%.2f");
 			ImGui::SliderFloat("Hit Start Time", &attackMotions_[i].hitStartTime, 0.0f, attackMotions_[i].duration, "%.2f");
 			ImGui::SliderFloat("Hit End Time", &attackMotions_[i].hitEndTime, attackMotions_[i].hitStartTime, attackMotions_[i].duration);
-
+			if (i == 3) {
+				ImGui::Checkbox("Jump Frag", &isJumpAttack_);
+			}
 			// キーフレームの調整
 			for (size_t j = 0; j < attackMotions_[i].srtKeyframes.size(); ++j) {
 				std::string label;
@@ -332,6 +341,9 @@ void PlayerWeapon::InitializeState()
 		case PlayerWeapon::WeaponState::RSwing:
 			InitRightHorizontalSwiwng();
 			break;
+		case PlayerWeapon::WeaponState::JumpAttack:
+			InitJumpAttack();
+			break;
 		case PlayerWeapon::WeaponState::Cooldown:
 			InitCooldown();
 			break;
@@ -350,6 +362,8 @@ void PlayerWeapon::InitIdle()
 	worldTransform_.translation_ = { 0.0f, 0.0f, -2.0f };
 	worldTransform_.rotation_ = { 0.0f, 0.0f, 0.0f };
 	attackProgress_ = 0.0f;
+	// ジャンプフラグをFalse
+	isJumpAttack_ = false;
 }
 
 /// <summary>
@@ -359,7 +373,7 @@ void PlayerWeapon::InitAttack()
 {
 	attackProgress_ = 0.0f;
 	currentMotion_ = &attackMotions_[0];
-	
+
 }
 
 /// <summary>
@@ -381,6 +395,13 @@ void PlayerWeapon::InitRightHorizontalSwiwng()
 {
 	attackProgress_ = 0.0f;
 	currentMotion_ = &attackMotions_[2];
+}
+
+void PlayerWeapon::InitJumpAttack()
+{
+	attackProgress_ = 0.0f;
+	currentMotion_ = &attackMotions_[3];
+	isJumpAttack_ = true;
 }
 
 /// <summary>
@@ -413,6 +434,9 @@ void PlayerWeapon::UpdateState()
 		break;
 	case PlayerWeapon::WeaponState::RSwing:
 		UpdateRightHorizontalSwiwng(deltaTime);
+		break;
+	case PlayerWeapon::WeaponState::JumpAttack:
+		UpdateJumpAttack(deltaTime);
 		break;
 	case PlayerWeapon::WeaponState::Cooldown:
 		UpdateCooldown(deltaTime);
@@ -477,7 +501,7 @@ void PlayerWeapon::UpdateAttackMotion(float deltaTime)
 	if (attackProgress_ >= 0.5f) {
 		if (IsComboAvailable() && input_->PushKey(DIK_SPACE)) {
 			stateRequest_ = WeaponState::LSwing;
-			currentMotion_ = LSwing_; 
+			currentMotion_ = LSwing_;
 			attackProgress_ = 0.0f;
 			canCombo_ = false;
 		}
@@ -510,7 +534,7 @@ void PlayerWeapon::UpdateDashMotion(float deltaTime)
 	}
 
 	// コンボ可能タイミングの管理
-	if (attackProgress_ >= 0.1f && !canCombo_) {
+	if (attackProgress_ >= 0.5f && !canCombo_) {
 		canCombo_ = true;
 		elapsedComboTime_ = 0.0f;
 	}
@@ -546,7 +570,7 @@ void PlayerWeapon::UpdateLeftHorizontalSwing(float deltaTime)
 	}
 
 	// コンボ可能タイミングの管理
-	if (attackProgress_ >= 0.1f && !canCombo_) {
+	if (attackProgress_ >= 0.5f && !canCombo_) {
 		canCombo_ = true;
 		elapsedComboTime_ = 0.0f;
 	}
@@ -584,7 +608,44 @@ void PlayerWeapon::UpdateRightHorizontalSwiwng(float deltaTime)
 	}
 
 	// コンボ可能タイミングの管理
-	if (attackProgress_ >= 0.1f && !canCombo_) {
+	if (attackProgress_ >= 0.5f && !canCombo_) {
+		canCombo_ = true;
+		elapsedComboTime_ = 0.0f;
+	}
+
+	// コンボ開始
+	if (attackProgress_ >= 0.5f) {
+		if (IsComboAvailable() && input_->PushKey(DIK_SPACE)) {
+			stateRequest_ = WeaponState::JumpAttack;
+			currentMotion_ = jumpAttack_; // ダッシュ攻撃モーション
+			attackProgress_ = 0.0f;
+			canCombo_ = false;
+		}
+		// モーション終了
+		else if (attackProgress_ >= 0.7f) {
+			stateRequest_ = WeaponState::Cooldown; // クールダウン状態へ移行
+		}
+	}
+
+}
+
+void PlayerWeapon::UpdateJumpAttack(float deltaTime)
+{
+	attackProgress_ += deltaTime / currentMotion_->duration;
+
+	// 攻撃モーションの補間
+	const auto& keyframes = currentMotion_->srtKeyframes;
+	for (size_t i = 0; i < keyframes.size() - 1; ++i) {
+		if (attackProgress_ >= keyframes[i].time && attackProgress_ <= keyframes[i + 1].time) {
+			float t = (attackProgress_ - keyframes[i].time) / (keyframes[i + 1].time - keyframes[i].time);
+			t = std::clamp(t, 0.0f, 1.0f);
+			worldTransform_.translation_ = Lerp(keyframes[i].position, keyframes[i + 1].position, t);
+			worldTransform_.rotation_ = QuaternionToEuler(Slerp(keyframes[i].rotation, keyframes[i + 1].rotation, t));
+		}
+	}
+
+	// コンボ可能タイミングの管理
+	if (attackProgress_ >= 0.5f && !canCombo_) {
 		canCombo_ = true;
 		elapsedComboTime_ = 0.0f;
 	}
@@ -602,7 +663,6 @@ void PlayerWeapon::UpdateRightHorizontalSwiwng(float deltaTime)
 			stateRequest_ = WeaponState::Cooldown; // クールダウン状態へ移行
 		}
 	}
-
 }
 
 /// <summary>
@@ -628,7 +688,7 @@ void PlayerWeapon::OnCollision(Collider* other)
 	// 衝突相手が敵なら
 	if (typeID == static_cast<uint32_t>(CollisionTypeIdDef::kEnemy)) {
 
-		
+
 	}
 
 }

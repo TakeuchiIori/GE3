@@ -75,7 +75,10 @@ void Player::UpdateWorldTransform()
 void Player::Move()
 {
     // キーボードで移動
-    MoveKey();
+    if (!isJumping_) {
+        MoveKey();
+    }
+    Jump();
 }
 
 void Player::MoveKey()
@@ -140,14 +143,47 @@ void Player::MoveKey()
         worldTransform_.translation_ += rightDirection * moveSpeed_.y;
     }
 
-
+    if (weapon_->GetIsJumpAttack()) {
+        worldTransform_.translation_ += forwardDirection * moveSpeed_.y;
+    }
 
 }
 
-void Player::Attack()
+void Player::Jump()
 {
+    // ジャンプ開始
+    if (!isJumping_ && weapon_->GetIsJumpAttack()) {
+        isJumping_ = true;
+        jumpTime_ = 0.0f;         // ジャンプ時間をリセット
+        jumpVelocity_ = jumpPower_; // ジャンプ初速度を設定
+    }
 
+    // ジャンプ中の処理
+    if (isJumping_) {
+        // ジャンプ時間を更新 (1フレーム16ms)
+        jumpTime_ += 0.016f;
 
+        if (jumpTime_ <= 0.5f) { // ジャンプ期間内 (0〜0.5秒)
+            // イージングで高さを補完 (EaseOutQuad)
+            float t = jumpTime_ / 0.5f; // 時間を正規化 (0〜1)
+            float height = jumpHeight_ * (1 - (1 - t) * (1 - t)); // イージング (EaseOutQuad)
+
+            // プレイヤーのY座標を補完
+            worldTransform_.translation_.y = groundY_ + height;
+        }
+        else {
+            // ジャンプ終了処理 (地面に向けて落下開始)
+            jumpVelocity_ += gravity_ * 0.016f; // 重力を適用
+            worldTransform_.translation_.y += jumpVelocity_ * 0.016f;
+
+            // 地面に到達した場合
+            if (worldTransform_.translation_.y <= groundY_) {
+                worldTransform_.translation_.y = groundY_; // 地面に固定
+                isJumping_ = false;                       // ジャンプ終了
+                jumpVelocity_ = 0.0f;                     // 速度をリセット
+            }
+        }
+    }
 }
 
 void Player::MoveFront()
