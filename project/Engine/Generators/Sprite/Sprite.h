@@ -45,7 +45,7 @@ public: // 基本的関数
 	/// <summary>
 	/// 初期化
 	/// </summary>
-	void Initialize(std::string& textureFilePath);
+	void Initialize(const std::string& textureFilePath);
 
 	/// <summary>
 	/// 更新
@@ -60,7 +60,7 @@ public: // 基本的関数
 	/// <summary>
 	/// テクスチャ変更
 	/// </summary>
-	void ChangeTexture(std::string textureFilePath);
+	void ChangeTexture(const std::string textureFilePath);
 
 private: // メンバ関数
 
@@ -111,8 +111,8 @@ public: // アクセッサ
 	/*===============================================//
 						  回転
 	//===============================================*/
-	float GetRotation()const { return rotation_; }
-	void SetRotation(float rotation) { rotation_ = rotation; }
+	Vector3 GetRotation()const { return rotation_; }
+	void SetRotation(Vector3 rotation) { rotation_ = rotation; }
 
 	/*===============================================//
 						  拡縮
@@ -204,7 +204,7 @@ private: // メンバ変数
 
 	// スプライト
 	Vector2 position_ = { 0.0f,0.0f };
-	float rotation_ = 0.0f;
+	Vector3 rotation_ = { 0.0f,0.0f,0.0f };
 	Vector2 size_ = { 100.0f,100.0f };
 
 	// アンカーポイント

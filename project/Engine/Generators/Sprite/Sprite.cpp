@@ -6,7 +6,7 @@ Sprite::Sprite()
 {
 }
 
-void Sprite::Initialize(std::string& textureFilePath)
+void Sprite::Initialize(const std::string& textureFilePath)
 {
 	this->spriteCommon_ = SpriteCommon::GetInstance();
 
@@ -36,7 +36,7 @@ void Sprite::Update()
 	// スプライトのSRT
 
 	transform_.translate = { position_.x,position_.y,0.0f };
-	transform_.rotate = { 0.0f,0.0f,rotation_ };
+	transform_.rotate = { rotation_.x,rotation_.y,rotation_.z };
 	transform_.scale = { size_.x,size_.y,1.0f };
 	Matrix4x4 worldMatrix = MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.translate);
 	Matrix4x4 viewMatrix = MakeIdentity4x4();
@@ -225,7 +225,7 @@ void Sprite::AdjustTaxtureSize()
 	size_ = textureSize_;
 }
 
-void Sprite::ChangeTexture(std::string textureFilePath)
+void Sprite::ChangeTexture(const std::string textureFilePath)
 {
 	// 新しいテクスチャをロード
 	TextureManager::GetInstance()->LoadTexture(textureFilePath);

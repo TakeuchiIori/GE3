@@ -11,6 +11,7 @@
 #include "Systems/Audio/Audio.h"
 #include "Particle/ParticleEmitter.h"
 #include "Object3D/Object3d.h"
+#include "Sprite/Sprite.h"
 #include "Player/Player.h"
 #include "Enemy/Enemy.h"
 #include "WorldTransform./WorldTransform.h"
@@ -85,6 +86,8 @@ private:
     std::unique_ptr<ParticleEmitter> particleEmitter_;
     Vector3 emitterPosition_;
     uint32_t particleCount_;
+
+    std::unique_ptr<Sprite> sprite_;
    
     // 3Dモデル
     std::unique_ptr<Object3d> test_;
