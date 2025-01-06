@@ -1,6 +1,6 @@
 #include "Collider.h"
 // Engine
-#include "CollisionManager.h"
+
 
 void Collider::Initialize() {
 	worldTransform_.Initialize();

@@ -79,5 +79,5 @@ private:
 	std::list<Collider*> colliders_;
 	// bool型
 	bool isDrawCollider_ = false;
-	Object3d* obj_;
+	std::unique_ptr<Object3d> obj_;
 };

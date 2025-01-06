@@ -28,7 +28,7 @@ void CollisionManager::Initialize() {
 
 
 	// OBject3dの初期化
-	obj_ =new Object3d();
+	obj_ = std::make_unique<Object3d>();
 	obj_->Initialize();
 	obj_->SetModel("ICO.obj",false);
 	isDrawCollider_ = false;
@@ -42,7 +42,7 @@ void CollisionManager::Initialize() {
 void CollisionManager::UpdateWorldTransform() {
 
 	ApplyGlobalVariables();
-	DebugImGui();
+	//DebugImGui();
 	// 非表示なら抜ける
 	if (!isDrawCollider_) {
 		return;
@@ -64,7 +64,7 @@ void CollisionManager::Draw() {
 	// 全てのコライダーについて
 	for (Collider* collider : colliders_) {
 		// 描画
-		collider->Draw(obj_);
+		collider->Draw(obj_.get());
 	}
 }
 
