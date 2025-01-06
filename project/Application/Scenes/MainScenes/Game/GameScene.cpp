@@ -7,6 +7,8 @@
 #include "Object3D/Object3dCommon.h"
 #include "PipelineManager/SkinningManager.h"
 #include "Loaders/Model/Model.h"
+#include "Collision/CollisionManager.h"
+
 
 #ifdef _DEBUG
 #include "imgui.h"
@@ -88,6 +90,9 @@ void GameScene::Update()
     //if (this->iCommand_) {
     //    iCommand_->Exec(*player_.get());
     //}
+
+    CheckAllCollisions();
+    CollisionManager::GetInstance()->UpdateWorldTransform();
 
     // プレイヤーの更新
     player_->Update();
@@ -255,5 +260,25 @@ void GameScene::ShowImGui()
 #endif // _DEBUG
 }
 
+void GameScene::CheckAllCollisions() {
+
+    // 衝突マネージャーのリセット
+    CollisionManager::GetInstance()->Reset();
+
+    // コライダーをリストに登録
+    CollisionManager::GetInstance()->AddCollider(player_.get());
+
+    // 敵全てについて
+    CollisionManager::GetInstance()->AddCollider(enemy_.get());
+
+    // コライダーリストに登録
+    CollisionManager::GetInstance()->AddCollider(player_->GetPlayerWeapon());
+
+
+
+    // 衝突判定と応答
+    CollisionManager::GetInstance()->CheckAllCollisions();
+
+}
 
 

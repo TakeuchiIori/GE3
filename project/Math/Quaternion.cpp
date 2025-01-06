@@ -101,6 +101,97 @@ Quaternion MakeRotateAxisAngleQuaternion(const Vector3& axis, float angle) {
     return { normAxis.x * sinHalfAngle, normAxis.y * sinHalfAngle, normAxis.z * sinHalfAngle, cosHalfAngle };
 }
 
+//Quaternion CombineRotations(const Quaternion& q1, const Quaternion& q2)
+//{
+//    return {
+//        q1.w * q2.w - q1.x * q2.x - q1.y * q2.y - q1.z * q2.z,
+//        q1.w * q2.x + q1.x * q2.w + q1.y * q2.z - q1.z * q2.y,
+//        q1.w * q2.y - q1.x * q2.z + q1.y * q2.w + q1.z * q2.x,
+//        q1.w * q2.z + q1.x * q2.y - q1.y * q2.x + q1.z * q2.w
+//    };
+//}
+
+/// <summary>
+/// 2つのクォータニオンをハミルトン積（乗算）で合成する関数
+/// </summary>
+Quaternion CombineRotations(const Quaternion& lhs, const Quaternion& rhs)
+{
+    // ハミルトン積の計算（左：lhs, 右：rhs）
+    // w成分
+    float newW = lhs.w * rhs.w
+        - lhs.x * rhs.x
+        - lhs.y * rhs.y
+        - lhs.z * rhs.z;
+
+    // x成分
+    float newX = lhs.w * rhs.x
+        + lhs.x * rhs.w
+        + lhs.y * rhs.z
+        - lhs.z * rhs.y;
+
+    // y成分
+    float newY = lhs.w * rhs.y
+        - lhs.x * rhs.z
+        + lhs.y * rhs.w
+        + lhs.z * rhs.x;
+
+    // z成分
+    float newZ = lhs.w * rhs.z
+        + lhs.x * rhs.y
+        - lhs.y * rhs.x
+        + lhs.z * rhs.w;
+
+    return { newX, newY, newZ, newW };
+}
+
+
+Quaternion MakeRotateAxisAngleQuaternion(const Vector3& angles) {
+    // 度→ラジアン
+    const float deg2Rad = 3.14159265359f / 180.0f;
+    float radX = angles.x * deg2Rad;
+    float radY = angles.y * deg2Rad;
+    float radZ = angles.z * deg2Rad;
+
+    // X軸回転
+    float sinHalfX = sin(radX * 0.5f);
+    float cosHalfX = cos(radX * 0.5f);
+    // (x, y, z, w)
+    Quaternion quatX = {
+        sinHalfX,  // x
+        0.0f,      // y
+        0.0f,      // z
+        cosHalfX   // w
+    };
+
+    // Y軸回転
+    float sinHalfY = sin(radY * 0.5f);
+    float cosHalfY = cos(radY * 0.5f);
+    Quaternion quatY = {
+        0.0f,
+        sinHalfY,
+        0.0f,
+        cosHalfY
+    };
+
+    // Z軸回転
+    float sinHalfZ = sin(radZ * 0.5f);
+    float cosHalfZ = cos(radZ * 0.5f);
+    Quaternion quatZ = {
+        0.0f,
+        0.0f,
+        sinHalfZ,
+        cosHalfZ
+    };
+
+    // 順序：X → Y → Z に回したいなら → Q = Z * Y * X
+    // 実際に適用されるのは「X軸回転 → Y軸回転 → Z軸回転」
+    Quaternion zy = CombineRotations(quatZ, quatY);
+    Quaternion zyx = CombineRotations(zy, quatX);
+
+    return zyx;
+}
+
+
 Vector3 RotateVector(const Vector3& vector, const Quaternion& quaternion) {
     Quaternion qVector = { vector.x, vector.y, vector.z, 0.0f };
     Quaternion qConjugate = { -quaternion.x, -quaternion.y, -quaternion.z, quaternion.w };
@@ -313,10 +404,11 @@ Vector3 RotateVectorByQuaternion(const Vector3& vec, const Quaternion& quat) {
 // オイラー角をクォータニオンに変換する関数
 Quaternion EulerToQuaternion(const Vector3& euler)
 {
-    // オイラー角をラジアンに変換
-    float pitch = euler.x;
-    float yaw = euler.y;
-    float roll = euler.z;
+    // オイラー角をラジアンに変換（もし入力が度であれば以下を有効化）
+    constexpr float DEG_TO_RAD = 3.14159265358979323846f / 180.0f;
+    float pitch = euler.x * DEG_TO_RAD; // x軸 (Pitch)
+    float yaw = euler.y * DEG_TO_RAD; // y軸 (Yaw)
+    float roll = euler.z * DEG_TO_RAD; // z軸 (Roll)
 
     // 半角を計算
     float cy = cos(yaw * 0.5f);

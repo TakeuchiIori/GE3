@@ -52,6 +52,12 @@ public: // ポリモーフィズム
 	/// <returns></returns>
 	Vector3 GetCenterPosition() const override;
 
+	/// <summary>
+	/// 
+	/// </summary>
+	/// <returns></returns>
+	Matrix4x4 GetWorldMatrix() const override;
+
 
 
 private: // メンバ関数（非公開）
@@ -104,6 +110,7 @@ public: // アクセッサ
 	// プレイヤーの位置を取得する関数
 	const Vector3& GetPosition() const { return worldTransform_.translation_; }
 	const Vector3& GetRotation() const { return worldTransform_.rotation_; }
+	PlayerWeapon* GetPlayerWeapon() { return weapon_.get(); }
 
 private: // メンバ変数
 

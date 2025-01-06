@@ -6,6 +6,7 @@
 
 // Math
 #include "Vector3.h"
+#include "Matrix4x4.h"
 
 class Collider {
 public:
@@ -34,7 +35,7 @@ public: // ポリモーフィズム
 	// 中心座標を取得
 	virtual Vector3 GetCenterPosition() const = 0;
 
-
+	virtual Matrix4x4 GetWorldMatrix() const = 0;
 
 
 
@@ -43,7 +44,7 @@ public: // アクセッサ
 	/// <summary>
 	/// ゲッター
 	/// </summary>
-	float Getradius() { return radius_; }
+	float GetRadius() { return radius_; }
 
 	/// <summary>
 	/// セッター

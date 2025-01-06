@@ -49,6 +49,12 @@ public:
 	/// <returns></returns>
 	Vector3 GetCenterPosition() const override;
 
+	/// <summary>
+	/// 
+	/// </summary>
+	/// <returns></returns>
+	Matrix4x4 GetWorldMatrix() const override;
+
 
 private:
 

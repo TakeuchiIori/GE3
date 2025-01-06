@@ -8,6 +8,8 @@
 #include <list>
 #include <memory>
 
+#include "MathFunc.h"
+
 class CollisionManager {
 public: // 基本的な関数
 
@@ -36,6 +38,11 @@ public: // 基本的な関数
 	/// </summary>
 	void Draw();
 
+	/// <summary>
+	/// ImGui
+	/// </summary>
+	void DebugImGui();
+
 public:
 	/// <summary>
 	/// リセット
@@ -59,6 +66,8 @@ public:
 
 
 	void ApplyGlobalVariables();
+
+	bool TestAxis(const Vector3& axis, const Vector3& T, const Vector3 axesA[3], const Vector3& halfExtentsA, const Vector3 axesB[3], const Vector3& halfExtentsB);
 
 private:
 

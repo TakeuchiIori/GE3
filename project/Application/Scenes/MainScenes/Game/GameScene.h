@@ -69,6 +69,8 @@ private:
     /// </summary>
     void ShowImGui();
 
+    void CheckAllCollisions();
+
 
 private:
     // カメラ

@@ -84,12 +84,12 @@ void Framework::Update()
 	// 入力は初めに更新
 	input_->Update();
 
-	collisionManager_->Reset();
-	collisionManager_->CheckAllCollisions();
+	//collisionManager_->Reset();
+	//collisionManager_->CheckAllCollisions();
 
 	// コライダーの更新
 #ifdef _DEBUG
-	collisionManager_->UpdateWorldTransform();
+	//collisionManager_->UpdateWorldTransform();
 #endif
 
 	// シーン全体の更新

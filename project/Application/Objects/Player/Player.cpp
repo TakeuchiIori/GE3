@@ -37,6 +37,7 @@ void Player::Initialize()
     // グループを追加
     GlobalVariables::GetInstance()->CreateGroup(groupName);
 
+    //Collider::Initialize();
     // TypeIDの設定
     Collider::SetTypeID(static_cast<uint32_t>(CollisionTypeIdDef::kPlayer));
 }
@@ -46,11 +47,13 @@ void Player::Update()
   
     Move();
 
-    weapon_->Update();
+   
 
     ShowCoordinatesImGui();
 
     UpdateWorldTransform();
+
+    weapon_->Update();
 }
 
 void Player::Draw()
@@ -86,6 +89,19 @@ void Player::MoveKey()
 
     ===============================================================*/
 
+    // 移動方向を計算（Y軸の回転に基づいて計算）
+    Vector3 forwardDirection = {
+        sinf(worldTransform_.rotation_.y), // Y軸の回転に応じた前方方向
+        0.0f,
+        cosf(worldTransform_.rotation_.y)
+    };
+    Vector3 rightDirection = {
+        cosf(worldTransform_.rotation_.y),
+        0.0f,
+        -sinf(worldTransform_.rotation_.y)
+    };
+
+#ifdef _DEBUG
     // 上下の回転（ピッチ）の処理
     if (input_->PushKey(DIK_UP)) {
         worldTransform_.rotation_.x -= rotationSpeed;  // 上方向に回転
@@ -102,17 +118,9 @@ void Player::MoveKey()
         worldTransform_.rotation_.y += rotationSpeed;  // 右に回転
     }
 
-    // 移動方向を計算（Y軸の回転に基づいて計算）
-    Vector3 forwardDirection = {
-        sinf(worldTransform_.rotation_.y), // Y軸の回転に応じた前方方向
-        0.0f,
-        cosf(worldTransform_.rotation_.y)
-    };
-    Vector3 rightDirection = {
-        cosf(worldTransform_.rotation_.y),
-        0.0f,
-        -sinf(worldTransform_.rotation_.y)
-    };
+
+#endif // _DEBUG
+
 
     // キーボード入力による移動
     if (input_->PushKey(DIK_W)) {
@@ -131,6 +139,9 @@ void Player::MoveKey()
         // 右に移動（進行方向に垂直な右方向に移動）
         worldTransform_.translation_ += rightDirection * moveSpeed_.y;
     }
+
+
+
 }
 
 void Player::Attack()
@@ -248,7 +259,11 @@ void Player::OnCollision(Collider* other)
     // 衝突相手が敵なら
     if (typeID == static_cast<uint32_t>(CollisionTypeIdDef::kEnemy)) {
 
-        isColliding_ = true;
+        //isColliding_ = true;
+        isDrawEnabled_ = false;
+    }
+    else {
+        isDrawEnabled_ = true;
     }
 }
 
@@ -260,4 +275,9 @@ Vector3 Player::GetCenterPosition() const
     Vector3 worldPos = TransformCoordinates(offset, worldTransform_.matWorld_);
 
     return worldPos;
+}
+
+Matrix4x4 Player::GetWorldMatrix() const
+{
+    return worldTransform_.matWorld_;
 }

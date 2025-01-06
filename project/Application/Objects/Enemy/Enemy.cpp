@@ -25,7 +25,8 @@ void Enemy::Initialize()
     //GlobalVariables* globalvariables = GlobalVariables::GetInstance();
     const char* groupName = "Enemy";
     // グループを追加
-    GlobalVariables::GetInstance()->CreateGroup(groupName);
+   // GlobalVariables::GetInstance()->CreateGroup(groupName);
+   // Collider::Initialize();
     // TypeIDの設定
     Collider::SetTypeID(static_cast<uint32_t>(CollisionTypeIdDef::kEnemy));
 }
@@ -48,6 +49,40 @@ void Enemy::Draw()
 
 void Enemy::ShowCoordinatesImGui()
 {
+#ifdef _DEBUG
+    ImGui::Begin("Enemy");
+    ImGui::Checkbox("Enable Draw", &isDrawEnabled_);
+
+    // スケール
+    //ImGui::Text("Scale");
+    //float scale[3] = { worldTransform_.scale_.x, worldTransform_.scale_.y, worldTransform_.scale_.z };
+    //if (ImGui::SliderFloat3("Scale", scale, 0.1f, 10.0f, "%.2f")) {
+    //    worldTransform_.scale_.x = std::max(0.1f, scale[0]);
+    //    worldTransform_.scale_.y = std::max(0.1f, scale[1]);
+    //    worldTransform_.scale_.z = std::max(0.1f, scale[2]);
+    //}
+
+    // 回転
+    ImGui::Text("Rotation");
+    float rotation[3] = { worldTransform_.rotation_.x, worldTransform_.rotation_.y, worldTransform_.rotation_.z };
+    if (ImGui::SliderFloat3("Rotation", rotation, -360.0f, 360.0f, "%.2f")) {
+        worldTransform_.rotation_.x = rotation[0];
+        worldTransform_.rotation_.y = rotation[1];
+        worldTransform_.rotation_.z = rotation[2];
+    }
+
+    // 平行移動
+    ImGui::Text("Translation");
+    float translation[3] = { worldTransform_.translation_.x, worldTransform_.translation_.y, worldTransform_.translation_.z };
+    if (ImGui::SliderFloat3("Translation", translation, -100.0f, 100.0f, "%.2f")) {
+        worldTransform_.translation_.x = translation[0];
+        worldTransform_.translation_.y = translation[1];
+        worldTransform_.translation_.z = translation[2];
+    }
+
+    ImGui::End();
+#endif // _DEBUG
+
 }
 
 void Enemy::OnCollision(Collider* other)
@@ -57,7 +92,11 @@ void Enemy::OnCollision(Collider* other)
     // 衝突相手が敵なら
     if (typeID == static_cast<uint32_t>(CollisionTypeIdDef::kPlayer)) {
 
-        isColliding_ = true;
+       // isColliding_ = false;
+        isDrawEnabled_ = false;
+    }
+    else {
+        isDrawEnabled_ = true;
     }
 }
 
@@ -69,6 +108,11 @@ Vector3 Enemy::GetCenterPosition() const
     Vector3 worldPos = TransformCoordinates(offset, worldTransform_.matWorld_);
 
     return worldPos;
+}
+
+Matrix4x4 Enemy::GetWorldMatrix() const
+{
+    return worldTransform_.matWorld_;
 }
 
 void Enemy::Move()

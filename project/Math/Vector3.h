@@ -162,6 +162,7 @@ Vector3 Lerp(const Vector3& a, const Vector3& b, float t);
 Vector3 lerp(const Vector3& a, const Vector3& b, float t);
 float lerp(float a, float b, float t);
 
+Vector3 Slerp(const Vector3& v0, const Vector3& v1, float t);
 
 
 

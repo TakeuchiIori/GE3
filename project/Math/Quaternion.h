@@ -61,6 +61,13 @@ Quaternion Inverse(const Quaternion& quaternion);
 // 指定した軸と角度で回転を表すクォータニオンを作成する関数
 Quaternion MakeRotateAxisAngleQuaternion(const Vector3& axis, float angle);
 
+// 複数の回転を合成
+Quaternion CombineRotations(const Quaternion& q1, const Quaternion& q2);
+
+Quaternion MakeRotateAxisAngleQuaternion(const Vector3& angles);
+
+Quaternion CombineRotations(const Quaternion& lhs, const Quaternion& rhs);
+
 // クォータニオンを使ってベクトルを回転させる関数
 Vector3 RotateVector(const Vector3& vector, const Quaternion& quaternion);
 

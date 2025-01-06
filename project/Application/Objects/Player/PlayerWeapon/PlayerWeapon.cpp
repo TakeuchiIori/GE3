@@ -2,10 +2,14 @@
 // Engine
 #include "Loaders./Model./ModelManager.h"
 #include "Object3D./Object3dCommon.h"
+#include "Collision/GlobalVariables.h"
+
+
 
 // C++
 #include <fstream>
 #include <iostream>
+
 
 // ImGui
 #ifdef _DEBUG
@@ -13,12 +17,16 @@
 #endif // _DEBUG
 
 
+
+/// <summary>
+/// 初期化
+/// </summary>
 void PlayerWeapon::Initialize()
 {
 	// object3dの初期化
 	weapon_ = std::make_unique<Object3d>();
 	weapon_->Initialize();
-	weapon_->SetModel("cube.obj");
+	weapon_->SetModel("weapon.obj");
 
 	// インプット
 	input_ = Input::GetInstance();
@@ -26,26 +34,46 @@ void PlayerWeapon::Initialize()
 	worldTransform_.Initialize();
 	worldTransform_.translation_.z = -2.0f;
 
-
+#pragma region 各モーションの初期化
 	// 通常攻撃モーション
 	attackMotions_.push_back({
-		1.0f, 0.2f, 0.8f, {
-			{0.0f, {0, 0, 0}, {1.0f, 1.0f, 1.0f}, {0, 0, 0}},     // 振り始め
-			{0.5f, {0, 0, -1}, {1.0f, 1.0f, 1.0f}, {0, 45, 0}},   // 中間
-			{1.0f, {0, 0, 0}, {1.0f, 1.0f, 1.0f}, {0, 0, 0}}      // 元の位置
+		0.5f, 0.2f, 0.8f, {
+			{0.0f, {0, 4, 0}, {1.0f, 1.0f, 1.0f}, MakeRotateAxisAngleQuaternion({1, 0, 0}, 0)},   // 初期状態
+			{0.25f, {0, 2, 2}, {1.0f, 1.0f, 1.0f}, MakeRotateAxisAngleQuaternion({1, 0, 0}, 45)}, // 振り下ろし途中
+			{0.5f, {0, 0, 2}, {1.0f, 1.0f, 1.0f}, MakeRotateAxisAngleQuaternion({1, 0, 0}, 90)} // 完了
 		}
 		});
-
 	// ダッシュ攻撃モーション
 	attackMotions_.push_back({
-		1.0f, 0.2f, 0.8f, { // duration, hitStartTime, hitEndTime
-			{0.0f, {-2.0f, 0.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {0, -90, 0}}, // 左端スタート
-			{0.5f, {0.0f, 0.0f, 2.0f}, {1.0f, 1.0f, 1.0f}, {0, 0, 0}},    // 中央（正面）
-			{1.0f, {2.0f, 0.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {0, 90, 0}}    // 右端フィニッシュ
+		0.5f, 0.2f, 0.8f, {
+			{0.0f, {-4.0f, 6.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, MakeRotateAxisAngleQuaternion({90, 0, 45})},   // スタート
+			{0.25f, {0.0f, 0.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, MakeRotateAxisAngleQuaternion({90, 0, 45})},   // 中央
+			{0.5f, {4.0f, -6.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, MakeRotateAxisAngleQuaternion({90, 0, 45})}    // フィニッシュ
 		}
 		});
+
+	attackMotions_.push_back({
+	0.5f, 0.2f, 0.8f, {
+		{0.0f, {4.0f, 6.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, MakeRotateAxisAngleQuaternion({90, 0, -45})},   // スタート
+		{0.25f, {0.0f, 0.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, MakeRotateAxisAngleQuaternion({90, 0, -45})},   // 中央
+		{0.5f, {-4.0f, -6.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, MakeRotateAxisAngleQuaternion({90, 0, -45})}    // フィニッシュ
+	}
+		});
+
+
+#pragma endregion
+
+
+	// グループを追加
+	//Collider::Initialize();
+
+	// TypeIDの設定
+	Collider::SetTypeID(static_cast<uint32_t>(CollisionTypeIdDef::kPlayerWeapon));
 }
 
+/// <summary>
+/// 更新
+/// </summary>
 void PlayerWeapon::Update()
 {
 	// 全状態の初期化
@@ -63,11 +91,17 @@ void PlayerWeapon::Update()
 
 }
 
+/// <summary>
+/// 描画
+/// </summary>
 void PlayerWeapon::Draw()
 {
 	weapon_->Draw(worldTransform_);
 }
 
+/// <summary>
+/// ImGui
+/// </summary>
 void PlayerWeapon::DrawDebugUI() {
 #ifdef _DEBUG
 	if (ImGui::Begin("Weapon Debug")) {
@@ -84,14 +118,8 @@ void PlayerWeapon::DrawDebugUI() {
 		ImGui::Text("Elapsed Cooldown Time: %.2f", elapsedCooldownTime_);
 
 		// 攻撃モーションの進行度
-		if (state_ == WeaponState::Attacking) {
-			ImGui::Text("Attack Progress: %.2f", attackProgress_);
-		}
+		ImGui::Text("Attack Progress: %.2f", attackProgress_);
 
-		// ダッシュ攻撃モーションの進行度
-		if (state_ == WeaponState::Dashing) {
-			ImGui::Text("Dash Progress: %.2f", attackProgress_);
-		}
 
 		// デバッグ用の状態遷移ボタン
 		if (ImGui::Button("Set to Idle")) {
@@ -99,6 +127,12 @@ void PlayerWeapon::DrawDebugUI() {
 		}
 		if (ImGui::Button("Set to Attacking")) {
 			stateRequest_ = WeaponState::Attacking;
+		}
+		if (ImGui::Button("Set to Left Swing")) {
+			stateRequest_ = WeaponState::LSwing;
+		}
+		if (ImGui::Button("Set to Right Swing")) {
+			stateRequest_ = WeaponState::RSwing;
 		}
 		if (ImGui::Button("Set to Dashing")) {
 			stateRequest_ = WeaponState::Dashing;
@@ -108,11 +142,16 @@ void PlayerWeapon::DrawDebugUI() {
 		}
 	}
 
+	// SRTの変更
+	ImGui::SliderFloat3("Position", &worldTransform_.translation_.x, 0.0f, 100.0f, "%.2f");
+	ImGui::SliderFloat3("Rotation", &worldTransform_.rotation_.x, 0.0f, 360.0f, "%.2f");
+	ImGui::SliderFloat3("Scale", &worldTransform_.scale_.x, 0.0f, 100.0f, "%.2f");
+
 	// 各モーションのパラメータ調整
 	for (size_t i = 0; i < attackMotions_.size(); ++i) {
 		if (ImGui::CollapsingHeader(("Motion " + std::to_string(i)).c_str())) {
 			ImGui::Text("Motion Parameters:");
-			ImGui::SliderFloat("Duration", &attackMotions_[i].duration, 0.1f, 5.0f, "%.2f");
+			ImGui::SliderFloat("Duration", &attackMotions_[i].duration, 0.1f, 50.0f, "%.2f");
 			ImGui::SliderFloat("Hit Start Time", &attackMotions_[i].hitStartTime, 0.0f, attackMotions_[i].duration, "%.2f");
 			ImGui::SliderFloat("Hit End Time", &attackMotions_[i].hitEndTime, attackMotions_[i].hitStartTime, attackMotions_[i].duration);
 
@@ -221,6 +260,10 @@ void PlayerWeapon::FromJson(const json& data)
 	elapsedCooldownTime_ = data["elapsedCooldownTime"].get<float>();
 }
 
+/// <summary>
+/// JSONに保存
+/// </summary>
+/// <param name="filename"></param>
 void PlayerWeapon::SaveToFile(const std::string& filename) const
 {
 	std::ofstream file(filename);
@@ -230,6 +273,10 @@ void PlayerWeapon::SaveToFile(const std::string& filename) const
 	}
 }
 
+/// <summary>
+/// JSONファイル読み込み
+/// </summary>
+/// <param name="filename"></param>
 void PlayerWeapon::LoadFromFile(const std::string& filename)
 {
 	// ファイルを開く
@@ -249,11 +296,18 @@ void PlayerWeapon::LoadFromFile(const std::string& filename)
 	std::cout << "File loaded successfully: " << filename << std::endl;
 }
 
+/// <summary>
+/// コンボ可能かのフラグ
+/// </summary>
+/// <returns></returns>
 bool PlayerWeapon::IsComboAvailable() const
 {
 	return canCombo_ && elapsedComboTime_ <= comboWindow_;
 }
 
+/// <summary>
+/// 全状態の初期化
+/// </summary>
 void PlayerWeapon::InitializeState()
 {
 	if (stateRequest_) {
@@ -270,6 +324,12 @@ void PlayerWeapon::InitializeState()
 		case PlayerWeapon::WeaponState::Dashing:
 			InitDash();
 			break;
+		case PlayerWeapon::WeaponState::LSwing:
+			InitLeftHorizontalSwing();
+			break;
+		case PlayerWeapon::WeaponState::RSwing:
+			InitRightHorizontalSwiwng();
+			break;
 		case PlayerWeapon::WeaponState::Cooldown:
 			InitCooldown();
 			break;
@@ -279,30 +339,59 @@ void PlayerWeapon::InitializeState()
 	}
 }
 
+/// <summary>
+/// 待機モーションの初期化
+/// </summary>
 void PlayerWeapon::InitIdle()
 {
 	idleTime_ = 0.0f;
 	worldTransform_.translation_ = { 0.0f, 0.0f, -2.0f };
 	worldTransform_.rotation_ = { 0.0f, 0.0f, 0.0f };
+	attackProgress_ = 0.0f;
 }
 
+/// <summary>
+/// 通常攻撃の初期化
+/// </summary>
 void PlayerWeapon::InitAttack()
 {
 	attackProgress_ = 0.0f;
 	currentMotion_ = &attackMotions_[0];
+	
 }
 
+/// <summary>
+/// 横攻撃の初期化
+/// </summary>
 void PlayerWeapon::InitDash()
 {
 	attackProgress_ = 0.0f;
 	currentMotion_ = &attackMotions_[1];
 }
 
+void PlayerWeapon::InitLeftHorizontalSwing()
+{
+	attackProgress_ = 0.0f;
+	currentMotion_ = &attackMotions_[1];
+}
+
+void PlayerWeapon::InitRightHorizontalSwiwng()
+{
+	attackProgress_ = 0.0f;
+	currentMotion_ = &attackMotions_[2];
+}
+
+/// <summary>
+/// _クールダウンの初期化
+/// </summary>
 void PlayerWeapon::InitCooldown()
 {
 	elapsedCooldownTime_ = 0.0f;
 }
 
+/// <summary>
+/// 全体の各状態の更新処理
+/// </summary>
 void PlayerWeapon::UpdateState()
 {
 	const float deltaTime = 0.016f;
@@ -317,13 +406,22 @@ void PlayerWeapon::UpdateState()
 	case PlayerWeapon::WeaponState::Dashing:
 		UpdateDashMotion(deltaTime);
 		break;
+	case PlayerWeapon::WeaponState::LSwing:
+		UpdateLeftHorizontalSwing(deltaTime);
+		break;
+	case PlayerWeapon::WeaponState::RSwing:
+		UpdateRightHorizontalSwiwng(deltaTime);
+		break;
 	case PlayerWeapon::WeaponState::Cooldown:
 		UpdateCooldown(deltaTime);
 		break;
 	}
 }
 
-
+/// <summary>
+/// 待機モーション
+/// </summary>
+/// <param name="deltaTime"></param>
 void PlayerWeapon::IdleMotion(float deltaTime)
 {
 	// スペースを押されたらアタック
@@ -343,10 +441,14 @@ void PlayerWeapon::IdleMotion(float deltaTime)
 
 	// 更新
 	worldTransform_.translation_.y = verticalOffset; // 上下運動を適用
-	worldTransform_.UpdateMatrix();
+	//worldTransform_.UpdateMatrix();
 
 }
 
+/// <summary>
+/// 通常攻撃
+/// </summary>
+/// <param name="deltaTime"></param>
 void PlayerWeapon::UpdateAttackMotion(float deltaTime)
 {
 	attackProgress_ += deltaTime / currentMotion_->duration;
@@ -359,7 +461,7 @@ void PlayerWeapon::UpdateAttackMotion(float deltaTime)
 			// 位置の補間
 			worldTransform_.translation_ = Lerp(keyframes[i].position, keyframes[i + 1].position, t);
 			// 回転の補間
-			worldTransform_.rotation_ = lerp(keyframes[i].rotation, keyframes[i + 1].rotation, t);
+			worldTransform_.rotation_ = QuaternionToEuler(Slerp(keyframes[i].rotation, keyframes[i + 1].rotation, t));
 		}
 	}
 
@@ -369,25 +471,27 @@ void PlayerWeapon::UpdateAttackMotion(float deltaTime)
 		elapsedComboTime_ = 0.0f;
 	}
 
-	if (attackProgress_ >= 0.7f) {
+	// コンボ開始
+	if (attackProgress_ >= 0.5f) {
 		if (IsComboAvailable() && input_->PushKey(DIK_SPACE)) {
-			stateRequest_ = WeaponState::Dashing;
-			currentMotion_ = dashMotion_; // ダッシュ攻撃モーション
+			stateRequest_ = WeaponState::LSwing;
+			currentMotion_ = LSwing_; // ダッシュ攻撃モーション
 			attackProgress_ = 0.0f;
 			canCombo_ = false;
 		}
-		else if (attackProgress_ >= 1.0f) {
-			stateRequest_ = WeaponState::Cooldown;
+		// モーション終了
+		else if (attackProgress_ >= 0.7f) {
+			stateRequest_ = WeaponState::Cooldown; // クールダウン状態へ移行
 		}
 	}
-	//// モーション終了
-	//if (attackProgress_ >= 1.0f) {
-	//	stateRequest_ = WeaponState::Cooldown; // クールダウン状態へ移行
-	//	attackProgress_ = 0.0f;
-	//	elapsedCooldownTime_ = 0.0f;
-	//}
+
+
 }
 
+/// <summary>
+/// 横攻撃
+/// </summary>
+/// <param name="deltaTime"></param>
 void PlayerWeapon::UpdateDashMotion(float deltaTime)
 {
 	attackProgress_ += deltaTime / currentMotion_->duration;
@@ -397,24 +501,111 @@ void PlayerWeapon::UpdateDashMotion(float deltaTime)
 	for (size_t i = 0; i < keyframes.size() - 1; ++i) {
 		if (attackProgress_ >= keyframes[i].time && attackProgress_ <= keyframes[i + 1].time) {
 			float t = (attackProgress_ - keyframes[i].time) / (keyframes[i + 1].time - keyframes[i].time);
+			t = std::clamp(t, 0.0f, 1.0f);
 			worldTransform_.translation_ = Lerp(keyframes[i].position, keyframes[i + 1].position, t);
-			worldTransform_.rotation_ = Lerp(keyframes[i].rotation, keyframes[i + 1].rotation, t);
+			worldTransform_.rotation_ = QuaternionToEuler(Slerp(keyframes[i].rotation, keyframes[i + 1].rotation, t));
 		}
 	}
 
-	if (attackProgress_ >= 1.0f) {
-		stateRequest_ = WeaponState::Cooldown;
+	// コンボ可能タイミングの管理
+	if (attackProgress_ >= 0.1f && !canCombo_) {
+		canCombo_ = true;
+		elapsedComboTime_ = 0.0f;
 	}
 
-	//// モーション終了
-	//if (attackProgress_ >= 1.0f) {
-	//	stateRequest_ = WeaponState::Cooldown; // クールダウン状態へ移行
-	//	attackProgress_ = 0.0f;
-	//	elapsedCooldownTime_ = 0.0f;
-	//}
+	// コンボ開始
+	if (attackProgress_ >= 0.5f) {
+		if (IsComboAvailable() && input_->PushKey(DIK_SPACE)) {
+			stateRequest_ = WeaponState::Dashing;
+			currentMotion_ = dashMotion_; // ダッシュ攻撃モーション
+			attackProgress_ = 0.0f;
+			canCombo_ = false;
+		}
+		// モーション終了
+		else if (attackProgress_ >= 0.7f) {
+			stateRequest_ = WeaponState::Cooldown; // クールダウン状態へ移行
+		}
+	}
+}
+
+void PlayerWeapon::UpdateLeftHorizontalSwing(float deltaTime)
+{
+	attackProgress_ += deltaTime / currentMotion_->duration;
+
+	// 攻撃モーションの補間
+	const auto& keyframes = currentMotion_->srtKeyframes;
+	for (size_t i = 0; i < keyframes.size() - 1; ++i) {
+		if (attackProgress_ >= keyframes[i].time && attackProgress_ <= keyframes[i + 1].time) {
+			float t = (attackProgress_ - keyframes[i].time) / (keyframes[i + 1].time - keyframes[i].time);
+			t = std::clamp(t, 0.0f, 1.0f);
+			worldTransform_.translation_ = Lerp(keyframes[i].position, keyframes[i + 1].position, t);
+			worldTransform_.rotation_ = QuaternionToEuler(Slerp(keyframes[i].rotation, keyframes[i + 1].rotation, t));
+		}
+	}
+
+	// コンボ可能タイミングの管理
+	if (attackProgress_ >= 0.1f && !canCombo_) {
+		canCombo_ = true;
+		elapsedComboTime_ = 0.0f;
+	}
+
+	// コンボ開始
+	if (attackProgress_ >= 0.5f) {
+		if (IsComboAvailable() && input_->PushKey(DIK_SPACE)) {
+			stateRequest_ = WeaponState::RSwing;
+			currentMotion_ = RSwing_; // ダッシュ攻撃モーション
+			attackProgress_ = 0.0f;
+			canCombo_ = false;
+		}
+		// モーション終了
+		else if (attackProgress_ >= 0.7f) {
+			stateRequest_ = WeaponState::Cooldown; // クールダウン状態へ移行
+		}
+	}
 
 }
 
+void PlayerWeapon::UpdateRightHorizontalSwiwng(float deltaTime)
+{
+	attackProgress_ += deltaTime / currentMotion_->duration;
+
+	// 攻撃モーションの補間
+	const auto& keyframes = currentMotion_->srtKeyframes;
+	for (size_t i = 0; i < keyframes.size() - 1; ++i) {
+		if (attackProgress_ >= keyframes[i].time && attackProgress_ <= keyframes[i + 1].time) {
+			float t = (attackProgress_ - keyframes[i].time) / (keyframes[i + 1].time - keyframes[i].time);
+			t = std::clamp(t, 0.0f, 1.0f);
+			worldTransform_.translation_ = Lerp(keyframes[i].position, keyframes[i + 1].position, t);
+			worldTransform_.rotation_ = QuaternionToEuler(Slerp(keyframes[i].rotation, keyframes[i + 1].rotation, t));
+		}
+	}
+
+	// コンボ可能タイミングの管理
+	if (attackProgress_ >= 0.1f && !canCombo_) {
+		canCombo_ = true;
+		elapsedComboTime_ = 0.0f;
+	}
+
+	// コンボ開始
+	if (attackProgress_ >= 0.5f) {
+		if (IsComboAvailable() && input_->PushKey(DIK_SPACE)) {
+			//stateRequest_ = WeaponState::Dashing;
+			//currentMotion_ = dashMotion_; // ダッシュ攻撃モーション
+			//attackProgress_ = 0.0f;
+			//canCombo_ = false;
+		}
+		// モーション終了
+		else if (attackProgress_ >= 0.7f) {
+			stateRequest_ = WeaponState::Cooldown; // クールダウン状態へ移行
+		}
+	}
+
+}
+
+/// <summary>
+/// クールダウン
+/// </summary>
+/// <param name="deltaTime"></param>
 void PlayerWeapon::UpdateCooldown(float deltaTime)
 {
 	// 経過時間を更新
@@ -426,3 +617,31 @@ void PlayerWeapon::UpdateCooldown(float deltaTime)
 		elapsedCooldownTime_ = 0.0f; // 経過時間をリセット
 	}
 }
+
+void PlayerWeapon::OnCollision(Collider* other)
+{
+	// 衝突相手の種別IDを取得
+	uint32_t typeID = other->GetTypeID();
+	// 衝突相手が敵なら
+	if (typeID == static_cast<uint32_t>(CollisionTypeIdDef::kEnemy)) {
+
+		
+	}
+
+}
+
+Vector3 PlayerWeapon::GetCenterPosition() const
+{
+	// ローカル座標でのオフセット
+	const Vector3 offset = { 0.0f, 0.0f, 0.0f };
+	// ワールド座標に変換
+	Vector3 worldPos = TransformCoordinates(offset, worldTransform_.matWorld_);
+
+	return worldPos;
+}
+
+Matrix4x4 PlayerWeapon::GetWorldMatrix() const
+{
+	return worldTransform_.matWorld_;
+}
+

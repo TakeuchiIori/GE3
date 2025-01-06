@@ -14,7 +14,7 @@ using json = nlohmann::json;
 #include "MathFunc.h"
 #include "Vector3.h" 
 
-class PlayerWeapon
+class PlayerWeapon final : public Collider
 {
 public:
 	//==========================================================================//
@@ -24,6 +24,8 @@ public:
 		Idle,        // 待機中
 		Attacking,   // 攻撃中
 		Dashing,     // ダッシュ攻撃中
+		LSwing,
+		RSwing,
 		Cooldown     // クールダウン中
 	};
 
@@ -31,7 +33,7 @@ public:
 		float time;                 // キーフレームの時間（0.0～1.0）
 		Vector3 position;           // 位置（Translation）
 		Vector3 scale;              // スケール（Scale）
-		Vector3 rotation;             // 回転（Rotation）
+		Quaternion rotation;        // 回転（Rotation）
 	};
 
 	struct AttackMotion {
@@ -106,6 +108,16 @@ private:
 	void InitDash();
 
 	/// <summary>
+	/// 左横振り攻撃
+	/// </summary>
+	void InitLeftHorizontalSwing();
+
+	/// <summary>
+	/// 右横振り攻撃
+	/// </summary>
+	void InitRightHorizontalSwiwng();
+
+	/// <summary>
 	/// クールダウンの初期化
 	/// </summary>
 	void InitCooldown();
@@ -137,13 +149,40 @@ private:
 	void UpdateDashMotion(float deltaTime);
 
 	/// <summary>
+	/// 左横振り攻撃
+	/// </summary>
+	void UpdateLeftHorizontalSwing(float deltaTime);
+
+	/// <summary>
+	/// 右横振り攻撃
+	/// </summary>
+	void UpdateRightHorizontalSwiwng(float deltaTime);
+
+
+	/// <summary>
 	/// クールダウンの更新
 	/// </summary>
 	/// <param name="deltaTime"></param>
 	void UpdateCooldown(float deltaTime);
 
+public: // ポリモーフィズム
 
+	/// <summary>
+	/// 衝突を検出したら呼び出されるコールバック関数
+	/// </summary>
+	void OnCollision([[maybe_unused]] Collider* other) override;
 
+	/// <summary>
+	/// 中心座標を取得
+	/// </summary>
+	/// <returns></returns>
+	Vector3 GetCenterPosition() const override;
+
+	/// <summary>
+	/// 
+	/// </summary>
+	/// <returns></returns>
+	Matrix4x4 GetWorldMatrix() const override;
 
 public:
 	//==========================================================================//
@@ -177,12 +216,18 @@ private:
 	float cooldownTime_ = 0.5f;             // クールダウンの時間（秒単位）
 	float elapsedCooldownTime_ = 0.0f;      // クールダウン経過時間
 
+
 	const AttackMotion* currentMotion_ = nullptr; // 現在の攻撃モーション
-	const AttackMotion* dashMotion_ = nullptr;
 	std::vector<AttackMotion> attackMotions_; // 複数の攻撃モーションを管理
+
+	// 各モーション
+	const AttackMotion* dashMotion_ = nullptr; // ダッシュモーション
+	const AttackMotion* LSwing_= nullptr; // 左横振り
+	const AttackMotion* RSwing_= nullptr; // 右横振り
 
 	bool canCombo_ = false;      // コンボ可能かどうか
 	float comboWindow_ = 0.5f;   // コンボ入力の猶予時間（秒）
 	float elapsedComboTime_ = 0.0f; // コンボ猶予時間の経過時間
+
 };
 
