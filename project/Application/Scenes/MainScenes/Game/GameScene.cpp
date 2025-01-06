@@ -72,7 +72,6 @@ void GameScene::Initialize()
     particleCount_ = 1;
     particleEmitter_ = std::make_unique<ParticleEmitter>(particleName, emitterPosition_, particleCount_);
 
-   
 }
 
 /// <summary>
@@ -120,6 +119,8 @@ void GameScene::Update()
    
     // ライティング
     LightManager::GetInstance()->ShowLightingEditor();
+
+   
 }
 
 
@@ -145,10 +146,11 @@ void GameScene::Draw()
     /// <summary>
     /// ここから描画可能です
     /// </summary>
-    
+    CollisionManager::GetInstance()->Draw();
     player_->Draw();
     enemy_->Draw();
     line_->UpdateVertices(start_, end_);
+  
     //line_->DrawLine();
 
 #pragma endregion
@@ -239,6 +241,9 @@ void GameScene::UpdateCamera()
 void GameScene::ShowImGui()
 {
 #ifdef _DEBUG
+    ImGui::Begin("FPS");
+    ImGui::Text("FPS:%.1f", ImGui::GetIO().Framerate);
+    ImGui::End();
     ImGui::Begin("Emitter");
     ImGui::DragFloat3("Emitter Position", &emitterPosition_.x, 0.1f);
     particleEmitter_->SetPosition(emitterPosition_);
@@ -273,8 +278,6 @@ void GameScene::CheckAllCollisions() {
 
     // コライダーリストに登録
     CollisionManager::GetInstance()->AddCollider(player_->GetPlayerWeapon());
-
-
 
     // 衝突判定と応答
     CollisionManager::GetInstance()->CheckAllCollisions();

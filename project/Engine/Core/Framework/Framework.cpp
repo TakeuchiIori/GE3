@@ -1,4 +1,5 @@
 #include "Framework.h"
+#include <Collision/GlobalVariables.h>
 
 void Framework::Initialize()
 {
@@ -60,6 +61,8 @@ void Framework::Initialize()
 	
 	skinningManager_ = SkinningManager::GetInstance();
 	skinningManager_->Initialize(dxCommon_);
+
+	GlobalVariables::GetInstance()->LoadFiles();
 }
 
 void Framework::Finalize()
@@ -79,11 +82,13 @@ void Framework::Finalize()
 
 void Framework::Update()
 {
+	
 	// ImGui受付開始
 	imguiManager_->Begin();
 	// 入力は初めに更新
 	input_->Update();
-
+	// グローバル変数の更新
+	GlobalVariables::GetInstance()->Update();
 	//collisionManager_->Reset();
 	//collisionManager_->CheckAllCollisions();
 

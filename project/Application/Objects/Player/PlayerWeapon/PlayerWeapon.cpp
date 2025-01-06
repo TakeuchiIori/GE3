@@ -65,7 +65,7 @@ void PlayerWeapon::Initialize()
 
 
 	// グループを追加
-	//Collider::Initialize();
+	Collider::Initialize();
 
 	// TypeIDの設定
 	Collider::SetTypeID(static_cast<uint32_t>(CollisionTypeIdDef::kPlayerWeapon));
@@ -149,6 +149,7 @@ void PlayerWeapon::DrawDebugUI() {
 
 	// 各モーションのパラメータ調整
 	for (size_t i = 0; i < attackMotions_.size(); ++i) {
+		ImGui::PushID(i);
 		if (ImGui::CollapsingHeader(("Motion " + std::to_string(i)).c_str())) {
 			ImGui::Text("Motion Parameters:");
 			ImGui::SliderFloat("Duration", &attackMotions_[i].duration, 0.1f, 50.0f, "%.2f");
@@ -178,6 +179,7 @@ void PlayerWeapon::DrawDebugUI() {
 				}
 			}
 		}
+		ImGui::PopID();
 	}
 
 	// 保存と読み込み
@@ -475,7 +477,7 @@ void PlayerWeapon::UpdateAttackMotion(float deltaTime)
 	if (attackProgress_ >= 0.5f) {
 		if (IsComboAvailable() && input_->PushKey(DIK_SPACE)) {
 			stateRequest_ = WeaponState::LSwing;
-			currentMotion_ = LSwing_; // ダッシュ攻撃モーション
+			currentMotion_ = LSwing_; 
 			attackProgress_ = 0.0f;
 			canCombo_ = false;
 		}

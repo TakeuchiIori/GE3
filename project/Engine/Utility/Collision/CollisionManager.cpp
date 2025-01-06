@@ -27,8 +27,10 @@ CollisionManager* CollisionManager::GetInstance()
 void CollisionManager::Initialize() {
 
 
-	// モデル読み込み
-	//ModelManager::GetInstance()->LoadModel("ICO.obj");
+	// OBject3dの初期化
+	obj_ =new Object3d();
+	obj_->Initialize();
+	obj_->SetModel("ICO.obj",false);
 	isDrawCollider_ = false;
 	GlobalVariables* globalvariables = GlobalVariables::GetInstance();
 	const char* groupName = "Collider";
@@ -81,8 +83,8 @@ void CollisionManager::DebugImGui()
 			if (ImGui::CollapsingHeader(("Collider " + std::to_string(index)).c_str())) {
 				ImGui::Text("Type ID: %u", collider->GetTypeID());
 				Vector3 pos = collider->GetCenterPosition();
-				ImGui::Text("Position: (%.2f)", pos);
-				float radius = collider->GetRadius();
+				ImGui::Text("Position: (%.2f,%.2f,%.2f)", pos.x,pos.y,pos.z);
+				float radius = collider->GetRadiusFloat();
 				ImGui::Text("Radius: (%.2f)", radius);
 			}
 			ImGui::PopID();
@@ -102,12 +104,6 @@ void CollisionManager::Reset() {
 }
 
 void CollisionManager::CheckCollisionPair(Collider* colliderA, Collider* colliderB) {
-	// 両方のIDが同じかどちらかがNoneだった場合早期リターン
-	if (colliderA->GetTypeID() == colliderB->GetTypeID() ||
-		colliderA->GetTypeID() == static_cast<uint32_t>(CollisionTypeIdDef::kNone) ||
-		colliderB->GetTypeID() == static_cast<uint32_t>(CollisionTypeIdDef::kNone)) {
-		return;
-	}
 	// コライダーAの座標を取得
 	Vector3 PosA = colliderA->GetCenterPosition();
 	// コライダーBの座標を取得
@@ -118,7 +114,7 @@ void CollisionManager::CheckCollisionPair(Collider* colliderA, Collider* collide
 	float distance = Length(subtract);
 
 	// 球と球の交差判定
-	if (distance <= (colliderA->GetRadius() + colliderB->GetRadius())) {
+	if (distance <= (colliderA->GetRadiusFloat() + colliderB->GetRadiusFloat())) {
 		// コライダーAの衝突時コールバックを呼び出す
 		colliderA->OnCollision(colliderB);
 		// コライダーBの衝突時コールバックを呼び出す
