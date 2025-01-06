@@ -549,6 +549,7 @@ void PlayerWeapon::UpdateLeftHorizontalSwing(float deltaTime)
 		elapsedComboTime_ = 0.0f;
 	}
 
+
 	// コンボ開始
 	if (attackProgress_ >= 0.5f) {
 		if (IsComboAvailable() && input_->PushKey(DIK_SPACE)) {
