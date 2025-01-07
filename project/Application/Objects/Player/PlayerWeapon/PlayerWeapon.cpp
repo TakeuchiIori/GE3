@@ -32,6 +32,7 @@ void PlayerWeapon::Initialize()
 	input_ = Input::GetInstance();
 
 	worldTransform_.Initialize();
+	worldTransform_.translation_.y = 0.0f;
 	worldTransform_.translation_.z = -2.0f;
 
 #pragma region 各モーションの初期化
@@ -63,8 +64,8 @@ void PlayerWeapon::Initialize()
 	attackMotions_.push_back({
 		0.5f, 0.2f, 0.8f, {
 		{0.0f, {0.0f, 6.0f, 2.0f}, {1.0f, 1.0f, 1.0f}, MakeRotateAxisAngleQuaternion({90 + 360 * 0.0f , 0, 0})},   // スタート
-		{0.25f, {0.0f, 3.0f, 2.0f}, {1.0f, 1.0f, 1.0f}, MakeRotateAxisAngleQuaternion({90 + 360 * 0.5f, 0, 0})},   // 中央
-		{0.5f, {0.0f, 0.0f, 2.0f}, {1.0f, 1.0f, 1.0f}, MakeRotateAxisAngleQuaternion({90 + 360 * 1.0f, 0, 0})}    // フィニッシュ
+		{0.5f, {0.0f, 3.0f, 2.0f}, {1.0f, 1.0f, 1.0f}, MakeRotateAxisAngleQuaternion({90 + 360 * 0.5f, 0, 0})},   // 中央
+		{1.0f, {0.0f, 0.0f, 2.0f}, {1.0f, 1.0f, 1.0f}, MakeRotateAxisAngleQuaternion({90 + 360 * 1.0f, 0, 0})}    // フィニッシュ
 		}
 		});
 
@@ -460,14 +461,14 @@ void PlayerWeapon::IdleMotion(float deltaTime)
 	idleTime_ += deltaTime;
 
 	// 垂直方向のぷかぷか運動
-	float verticalOffset = sin(idleTime_) * 0.5f; // 振幅0.1のsin波
+	float verticalOffset = sin(idleTime_) * 0.1f; // 振幅0.1のsin波
 
 	// 回転運動
 	float rotationSpeed = 1.0f; // 回転速度（度/秒）
 	worldTransform_.rotation_.y += rotationSpeed * deltaTime;
 
 	// 更新
-	worldTransform_.translation_.y = verticalOffset; // 上下運動を適用
+	worldTransform_.translation_.y =  verticalOffset; // 上下運動を適用
 	//worldTransform_.UpdateMatrix();
 
 }
@@ -646,13 +647,13 @@ void PlayerWeapon::UpdateJumpAttack(float deltaTime)
 	}
 
 	// コンボ可能タイミングの管理
-	if (attackProgress_ >= 0.5f && !canCombo_) {
+	if (attackProgress_ >= 1.0f && !canCombo_) {
 		canCombo_ = true;
 		elapsedComboTime_ = 0.0f;
 	}
 
 	// コンボ開始
-	if (attackProgress_ >= 0.5f) {
+	if (attackProgress_ >= 1.0f) {
 		if (IsComboAvailable() && input_->PushKey(DIK_SPACE)) {
 			//stateRequest_ = WeaponState::Dashing;
 			//currentMotion_ = dashMotion_; // ダッシュ攻撃モーション
@@ -660,8 +661,9 @@ void PlayerWeapon::UpdateJumpAttack(float deltaTime)
 			//canCombo_ = false;
 		}
 		// モーション終了
-		else if (attackProgress_ >= 0.7f) {
+		else if (attackProgress_ >= 1.2f) {
 			stateRequest_ = WeaponState::Cooldown; // クールダウン状態へ移行
+			isJumpAttack_ = false;
 		}
 	}
 }

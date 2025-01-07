@@ -132,6 +132,7 @@ private: // メンバ変数
 	const float jumpPower_ = 5.0f; // ジャンプ力
 	const float jumpHeight_ = jumpPower_;
 	float jumpTime_ = 0.0f;           // ジャンプ開始からの経過時間
-	const float jumpDuration_ = 0.5f; // ジャンプの補完時間
+	const float jumpDuration_ = 1.0f; // ジャンプの補完時間
+	const float fallSpeedFactor_ = 1.5f;
 };
 

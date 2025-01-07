@@ -161,18 +161,29 @@ void Player::Jump()
         // ジャンプ時間を更新
         jumpTime_ += 0.016f; // 仮に1フレーム16msと仮定 (60FPS)
 
-        if (jumpTime_ <= 0.5f) { // ジャンプ期間内 (0〜0.5秒)
-            // 正規化した時間 (0〜1)
-            float t = jumpTime_ / 0.5f;
+        // 正規化した時間 t (0.0f〜1.0f)
+        float t = jumpTime_ / jumpDuration_;
 
+        if (t <= 1.0f) { // ジャンプ期間内
             // 高さの計算 (EaseInOutQuad)
-            // 上昇と下降を1つの関数で処理
-            float height = jumpHeight_ * (t < 0.5f
-                ? 2 * t * t        // 上昇 (EaseIn)
-                : -2 * (t - 1) * (t - 1) + 1); // 下降 (EaseOut)
+            if (t < 0.5f) {
+                // 上昇 (EaseIn)
+                float normalizedT = t * 2.0f; // 0.0〜0.5を0.0〜1.0に変換
+                float height = jumpHeight_ * (normalizedT * normalizedT);
+                worldTransform_.translation_.y = groundY_ + height;
+            }
+            else {
+                // 下降 (EaseOut) + 速度係数
+                float normalizedT = (t - 0.5f) * 2.0f; // 0.5〜1.0を0.0〜1.0に変換
+                float height = jumpHeight_ * (1.0f - (normalizedT * normalizedT) * fallSpeedFactor_);
+                worldTransform_.translation_.y = groundY_ + height;
+            }
 
-            // プレイヤーのY座標を補完
-            worldTransform_.translation_.y = groundY_ + height;
+            // 強制着地条件
+            if (worldTransform_.translation_.y <= 1.0f) {
+                worldTransform_.translation_.y = groundY_; // 地面に固定
+                isJumping_ = false;                       // ジャンプ終了
+            }
         }
         else {
             // ジャンプ終了
