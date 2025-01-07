@@ -130,6 +130,8 @@ private: // メンバ変数
 	Vector3 moveSpeed_;
 	bool isDrawEnabled_ = true;
 
+	bool isUpdate_ = true;
+
 	bool isJumping_ = false;       // ジャンプ中かどうか
 	float jumpVelocity_ = 0.0f;    // ジャンプの上昇速度
 	const float gravity_ = -9.8f;  // 重力加速度

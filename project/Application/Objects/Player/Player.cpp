@@ -40,18 +40,18 @@ void Player::Initialize()
 
     // TypeIDの設定
     Collider::SetTypeID(static_cast<uint32_t>(CollisionTypeIdDef::kPlayer));
+    Collider::SetRadiusFloat(2.0f);
 }
 
 void Player::Update()
 {
-  
-    Move();
-
-   
+    if (!isUpdate_) {
+        ApplyGlobalVariables();
+    }
+    Move();   
 
     ShowCoordinatesImGui();
 
-    ApplyGlobalVariables();
 
     UpdateWorldTransform();
 
@@ -76,6 +76,16 @@ void Player::UpdateWorldTransform()
 
 void Player::Move()
 {
+    // 衝突中フラグが立っている場合は非表示に
+    if (isColliding_) {
+        isDrawEnabled_ = false; // 描画を無効に
+    }
+    else {
+        isDrawEnabled_ = true; // 描画を有効に
+    }
+    // 衝突状態をリセット
+    isColliding_ = false; // 毎フレーム初期化
+
     // キーボードで移動
     if (!isJumping_) {
         MoveKey();
@@ -261,7 +271,8 @@ void Player::ShowCoordinatesImGui()
     // ImGuiウィンドウを利用してプレイヤーの座標を表示
     ImGui::Begin("Player Editor");
     ImGui::Text("DrawCall");
-    ImGui::Checkbox("Enable Draw", &isDrawEnabled_);
+    ImGui::Checkbox("Enable Draw", &isDrawEnabled_); 
+    ImGui::Checkbox("IsUpdate", &isUpdate_);
     // スケール
     ImGui::Text("Scale");
     float scale[3] = { worldTransform_.scale_.x, worldTransform_.scale_.y, worldTransform_.scale_.z };
@@ -303,13 +314,9 @@ void Player::OnCollision(Collider* other)
     uint32_t typeID = other->GetTypeID();
     // 衝突相手が敵なら
     if (typeID == static_cast<uint32_t>(CollisionTypeIdDef::kEnemy)) {
+        isColliding_ = true;
+    }
 
-        //isColliding_ = true;
-        isDrawEnabled_ = false;
-    }
-    else {
-        isDrawEnabled_ = true;
-    }
 }
 
 Vector3 Player::GetCenterPosition() const

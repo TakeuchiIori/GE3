@@ -61,10 +61,11 @@ void PlayerWeapon::Initialize()
 		}
 		});
 
+	// ジャンプ
 	attackMotions_.push_back({
-		0.5f, 0.2f, 0.8f, {
-		{0.0f, {0.0f, 6.0f, 2.0f}, {1.0f, 1.0f, 1.0f}, MakeRotateAxisAngleQuaternion({90 + 360 * 0.0f , 0, 0})},   // スタート
-		{0.5f, {0.0f, 3.0f, 2.0f}, {1.0f, 1.0f, 1.0f}, MakeRotateAxisAngleQuaternion({90 + 360 * 0.5f, 0, 0})},   // 中央
+		1.0f, 0.2f, 0.8f, {
+		{0.0f, {0.0f, 0.0f, 2.0f}, {1.0f, 1.0f, 1.0f}, MakeRotateAxisAngleQuaternion({90 + 360 * 0.0f , 0, 0})},   // スタート
+		{0.5f, {0.0f, 0.0f, 2.0f}, {1.0f, 1.0f, 1.0f}, MakeRotateAxisAngleQuaternion({90 + 360 * 0.5f, 0, 0})},   // 中央
 		{1.0f, {0.0f, 0.0f, 2.0f}, {1.0f, 1.0f, 1.0f}, MakeRotateAxisAngleQuaternion({90 + 360 * 1.0f, 0, 0})}    // フィニッシュ
 		}
 		});
@@ -83,11 +84,51 @@ void PlayerWeapon::Initialize()
 
 	// グループを追加
 	Collider::Initialize();
-	Collider::SetRadiusFloat(2.0f);
-
+	Collider::SetRadiusFloat(0.0f);
+	SaveGlobalVariables();
 	// TypeIDの設定
 	Collider::SetTypeID(static_cast<uint32_t>(CollisionTypeIdDef::kPlayerWeapon));
 }
+
+void PlayerWeapon::SaveGlobalVariables() {
+	GlobalVariables* globalVariables = GlobalVariables::GetInstance();
+	const char* groupName = "PlayerWeapon";
+	// グループを追加
+	GlobalVariables::GetInstance()->CreateGroup(groupName);
+
+	// 武器の位置・回転・スケール
+	globalVariables->AddItem(groupName, "Translation", worldTransform_.translation_);
+	globalVariables->AddItem(groupName, "Rotation", worldTransform_.rotation_);
+	globalVariables->AddItem(groupName, "Scale", worldTransform_.scale_);
+
+	// クールダウン時間
+	globalVariables->AddItem(groupName, "CooldownTime", cooldownTime_);
+
+	// コンボ猶予時間
+	globalVariables->AddItem(groupName, "ComboWindow", comboWindow_);
+
+	// 各モーションのパラメータ
+	for (size_t i = 0; i < attackMotions_.size(); ++i) {
+		std::string motionName = "AttackMotion_" + std::to_string(i);
+
+		globalVariables->AddItem(groupName, motionName + "_Duration", attackMotions_[i].duration);
+		globalVariables->AddItem(groupName, motionName + "_HitStartTime", attackMotions_[i].hitStartTime);
+		globalVariables->AddItem(groupName, motionName + "_HitEndTime", attackMotions_[i].hitEndTime);
+
+		for (size_t j = 0; j < attackMotions_[i].srtKeyframes.size(); ++j) {
+			std::string keyframeName = motionName + "_Keyframe_" + std::to_string(j);
+
+			globalVariables->AddItem(groupName, keyframeName + "_Time", attackMotions_[i].srtKeyframes[j].time);
+			globalVariables->AddItem(groupName, keyframeName + "_Position", attackMotions_[i].srtKeyframes[j].position);
+			globalVariables->AddItem(groupName, keyframeName + "_Scale", attackMotions_[i].srtKeyframes[j].scale);
+			globalVariables->AddItem(groupName, keyframeName + "_Rotation", attackMotions_[i].srtKeyframes[j].rotation);
+		}
+	}
+
+	// 保存
+	//globalVariables->SaveFile(groupName);
+}
+
 
 /// <summary>
 /// 更新
@@ -99,6 +140,8 @@ void PlayerWeapon::Update()
 
 	// 全状態の更新処理
 	UpdateState();
+
+	//ApplyGlobalVariables();
 
 	// ワールドトランスフォームの更新
 	worldTransform_.UpdateMatrix();
@@ -362,24 +405,38 @@ void PlayerWeapon::InitializeState()
 		{
 		case PlayerWeapon::WeaponState::Idle:
 			InitIdle();
+			// Idle時の当たり判定半径を0.0fに設定
+			Collider::SetRadiusFloat(0.0f);
 			break;
 		case PlayerWeapon::WeaponState::Attacking:
 			InitAttack();
+			// Attacking時の当たり判定半径を2.0fに設定
+			Collider::SetRadiusFloat(2.0f);
 			break;
 		case PlayerWeapon::WeaponState::LSwing:
 			InitLeftHorizontalSwing();
+			// LSwing時の当たり判定半径を2.0fに設定
+			Collider::SetRadiusFloat(2.0f);
 			break;
 		case PlayerWeapon::WeaponState::RSwing:
 			InitRightHorizontalSwiwng();
+			// RSwing時の当たり判定半径を2.0fに設定
+			Collider::SetRadiusFloat(2.0f);
 			break;
 		case PlayerWeapon::WeaponState::JumpAttack:
 			InitJumpAttack();
+			// JumpAttack時の当たり判定半径を2.0fに設定
+			Collider::SetRadiusFloat(2.0f);
 			break;
 		case PlayerWeapon::WeaponState::Dashing:
 			InitDash();
+			// Dashing時の当たり判定半径を2.0fに設定
+			Collider::SetRadiusFloat(2.0f);
 			break;
 		case PlayerWeapon::WeaponState::Cooldown:
 			InitCooldown();
+			// Cooldown時の当たり判定半径を2.0fに設定
+			Collider::SetRadiusFloat(2.0f);
 			break;
 		}
 		// リクエストをリセット
@@ -638,6 +695,10 @@ void PlayerWeapon::UpdateJumpAttack(float deltaTime)
 		}
 	}
 
+	if (attackProgress_ >= 0.9f) {
+		isJumpAttack_ = false;
+	}
+
 	// コンボ可能タイミングの管理
 	if (attackProgress_ >= 1.0f && !canCombo_) {
 		canCombo_ = true;
@@ -655,7 +716,7 @@ void PlayerWeapon::UpdateJumpAttack(float deltaTime)
 		// モーション終了
 		else if (attackProgress_ >= 1.2f) {
 			stateRequest_ = WeaponState::Cooldown; // クールダウン状態へ移行
-			isJumpAttack_ = false;
+			
 		}
 	}
 }
@@ -739,3 +800,36 @@ Matrix4x4 PlayerWeapon::GetWorldMatrix() const
 	return worldTransform_.matWorld_;
 }
 
+void PlayerWeapon::ApplyGlobalVariables() {
+	GlobalVariables* globalVariables = GlobalVariables::GetInstance();
+	const char* groupName = "PlayerWeapon";
+
+	// 武器の位置・回転・スケール
+	worldTransform_.translation_ = globalVariables->GetVector3Value(groupName, "Translation");
+	worldTransform_.rotation_ = globalVariables->GetVector3Value(groupName, "Rotation");
+	worldTransform_.scale_ = globalVariables->GetVector3Value(groupName, "Scale");
+
+	// クールダウン時間
+	cooldownTime_ = globalVariables->GetFloatValue(groupName, "CooldownTime");
+
+	// コンボ猶予時間
+	comboWindow_ = globalVariables->GetFloatValue(groupName, "ComboWindow");
+
+	// 各モーションのパラメータ
+	for (size_t i = 0; i < attackMotions_.size(); ++i) {
+		std::string motionName = "AttackMotion_" + std::to_string(i);
+
+		attackMotions_[i].duration = globalVariables->GetFloatValue(groupName, motionName + "_Duration");
+		attackMotions_[i].hitStartTime = globalVariables->GetFloatValue(groupName, motionName + "_HitStartTime");
+		attackMotions_[i].hitEndTime = globalVariables->GetFloatValue(groupName, motionName + "_HitEndTime");
+
+		for (size_t j = 0; j < attackMotions_[i].srtKeyframes.size(); ++j) {
+			std::string keyframeName = motionName + "_Keyframe_" + std::to_string(j);
+
+			attackMotions_[i].srtKeyframes[j].time = globalVariables->GetFloatValue(groupName, keyframeName + "_Time");
+			attackMotions_[i].srtKeyframes[j].position = globalVariables->GetVector3Value(groupName, keyframeName + "_Position");
+			attackMotions_[i].srtKeyframes[j].scale = globalVariables->GetVector3Value(groupName, keyframeName + "_Scale");
+			attackMotions_[i].srtKeyframes[j].rotation = globalVariables->GetQuaternionValue(groupName, keyframeName + "_Rotation");
+		}
+	}
+}

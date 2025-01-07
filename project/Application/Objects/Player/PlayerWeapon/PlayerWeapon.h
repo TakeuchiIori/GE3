@@ -54,6 +54,8 @@ public:
 	/// </summary>
 	void Initialize();
 
+	void SaveGlobalVariables();
+
 	/// <summary>
 	///  更新
 	/// </summary>
@@ -194,6 +196,8 @@ public: // ポリモーフィズム
 	/// </summary>
 	/// <returns></returns>
 	Matrix4x4 GetWorldMatrix() const override;
+
+	void ApplyGlobalVariables();
 
 public:
 	//==========================================================================//

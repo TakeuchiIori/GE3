@@ -260,6 +260,16 @@ void GlobalVariables::AddItem(const std::string& groupName, const std::string& k
 	}
 }
 
+void GlobalVariables::AddItem(const std::string& groupName, const std::string& key, const Quaternion& value)
+{
+	// グループの参照を取得
+	Group& group = datas_[groupName];
+	// 項目が未登録なら
+	if (group.items.find(key) == group.items.end()) {
+		SetValue(groupName, key, value);
+	}
+}
+
 void GlobalVariables::AddItem(const std::string& groupName, const std::string& key, const bool& value) {
 	// グループの参照を取得
 	Group& group = datas_[groupName];
@@ -291,6 +301,17 @@ void GlobalVariables::SetValue(const string& groupName, const string& key, float
 }
 
 void GlobalVariables::SetValue(const string& groupName, const string& key, const Vector3 value) {
+	// グループの参照を取得
+	Group& group = datas_[groupName];
+	// 新しい項目のデータを設定
+	Item newItem{};
+	newItem.value = value;
+	// 設定した項目をmapに追加
+	group.items[key] = newItem;
+}
+
+void GlobalVariables::SetValue(const std::string& groupName, const std::string& key, const Quaternion value)
+{
 	// グループの参照を取得
 	Group& group = datas_[groupName];
 	// 新しい項目のデータを設定
@@ -368,4 +389,20 @@ bool GlobalVariables::GetBoolValue(const std::string& groupName, const std::stri
 	assert(std::holds_alternative<bool>(item.value));
 	// 指定グループから指定のキーの値を取得
 	return std::get<bool>(item.value);
+}
+
+Quaternion GlobalVariables::GetQuaternionValue(const std::string& groupName, const std::string& key) const
+{
+	// 指定グループが存在するか確認
+	assert(datas_.find(groupName) != datas_.end());
+	// グループの参照を取得
+	const Group& group = datas_.at(groupName);
+	// 指定グループに指定のキーが存在するか確認
+	assert(group.items.find(key) != group.items.end());
+	// アイテムの参照を取得
+	const Item& item = group.items.at(key);
+	// bool型の値を保持しているか確認
+	assert(std::holds_alternative<Quaternion>(item.value));
+	// 指定グループから指定のキーの値を取得
+	return std::get<Quaternion>(item.value);
 }
