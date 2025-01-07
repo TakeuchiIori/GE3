@@ -23,10 +23,10 @@ public:
 	enum class WeaponState {
 		Idle,        // 待機中
 		Attacking,   // 攻撃中
+		LSwing,		 // 左斜め切り
+		RSwing,		 // 右斜め切り
+		JumpAttack,	 // ジャンプ攻撃
 		Dashing,     // ダッシュ攻撃中
-		LSwing,
-		RSwing,
-		JumpAttack,
 		Cooldown     // クールダウン中
 	};
 
@@ -104,11 +104,6 @@ private:
 	void InitAttack();
 
 	/// <summary>
-	/// ダッシュ攻撃の初期化
-	/// </summary>
-	void InitDash();
-
-	/// <summary>
 	/// 左横振り攻撃
 	/// </summary>
 	void InitLeftHorizontalSwing();
@@ -122,6 +117,11 @@ private:
 	/// ジャンプ攻撃
 	/// </summary>
 	void InitJumpAttack();
+
+	/// <summary>
+	/// ダッシュ攻撃の初期化
+	/// </summary>
+	void InitDash();
 
 	/// <summary>
 	/// クールダウンの初期化
@@ -149,12 +149,6 @@ private:
 	void UpdateAttackMotion(float deltaTime);
 
 	/// <summary>
-	/// ダッシュ攻撃の更新処理
-	/// </summary>
-	/// <param name="deltaTime"></param>
-	void UpdateDashMotion(float deltaTime);
-
-	/// <summary>
 	/// 左横振り攻撃
 	/// </summary>
 	void UpdateLeftHorizontalSwing(float deltaTime);
@@ -168,6 +162,12 @@ private:
 	/// ジャンプ攻撃
 	/// </summary>
 	void UpdateJumpAttack(float deltaTime);
+
+	/// <summary>
+	/// ダッシュ攻撃の更新処理
+	/// </summary>
+	/// <param name="deltaTime"></param>
+	void UpdateDashMotion(float deltaTime);
 
 
 	/// <summary>

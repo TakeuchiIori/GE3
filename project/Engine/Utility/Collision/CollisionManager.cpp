@@ -32,16 +32,16 @@ void CollisionManager::Initialize() {
 	obj_->Initialize();
 	obj_->SetModel("ICO.obj",false);
 	isDrawCollider_ = false;
-	GlobalVariables* globalvariables = GlobalVariables::GetInstance();
-	const char* groupName = "Collider";
-	// グループを追加
-	GlobalVariables::GetInstance()->CreateGroup(groupName);
-	globalvariables->AddItem(groupName, "Collider", isDrawCollider_);
+	//GlobalVariables* globalvariables = GlobalVariables::GetInstance();
+	//const char* groupName = "Collider";
+	//// グループを追加
+	//GlobalVariables::GetInstance()->CreateGroup(groupName);
+	//globalvariables->AddItem(groupName, "Collider", isDrawCollider_);
 
 }
 void CollisionManager::UpdateWorldTransform() {
 
-	ApplyGlobalVariables();
+	//ApplyGlobalVariables();
 	DebugImGui();
 	// 非表示なら抜ける
 	if (!isDrawCollider_) {

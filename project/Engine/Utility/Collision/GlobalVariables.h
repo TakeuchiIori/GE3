@@ -13,7 +13,7 @@ using json = nlohmann::json;
 /// <summary>
 /// グローバル変数
 /// </summary>
-const std::string kDirectoryPath = "resource/GlobalVariables/";
+const std::string kDirectoryPath = "Resources/GlobalVariables/";
 
 class GlobalVariables {
 public: // インナークラス

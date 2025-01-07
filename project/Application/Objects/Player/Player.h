@@ -57,6 +57,11 @@ public: // ポリモーフィズム
 	/// <returns></returns>
 	Matrix4x4 GetWorldMatrix() const override;
 
+	/// <summary>
+	/// 調整項目の保存
+	/// </summary>
+	void ApplyGlobalVariables();
+
 
 
 private: // メンバ関数（非公開）

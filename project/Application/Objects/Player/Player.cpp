@@ -32,12 +32,12 @@ void Player::Initialize()
     weapon_->SetParent(worldTransform_);
     
 
-    //GlobalVariables* globalvariables = GlobalVariables::GetInstance();
+    GlobalVariables* globalvariables = GlobalVariables::GetInstance();
     const char* groupName = "Player";
     // グループを追加
     GlobalVariables::GetInstance()->CreateGroup(groupName);
+    globalvariables->AddItem(groupName, "Translation", worldTransform_.translation_);
 
-    //Collider::Initialize();
     // TypeIDの設定
     Collider::SetTypeID(static_cast<uint32_t>(CollisionTypeIdDef::kPlayer));
 }
@@ -50,6 +50,8 @@ void Player::Update()
    
 
     ShowCoordinatesImGui();
+
+    ApplyGlobalVariables();
 
     UpdateWorldTransform();
 
@@ -323,4 +325,10 @@ Vector3 Player::GetCenterPosition() const
 Matrix4x4 Player::GetWorldMatrix() const
 {
     return worldTransform_.matWorld_;
+}
+void Player::ApplyGlobalVariables() {
+    GlobalVariables* globalVariables = GlobalVariables::GetInstance();
+    const char* groupName = "Player";
+    worldTransform_.translation_ = globalVariables->GetVector3Value(groupName, "Translation");
+
 }
