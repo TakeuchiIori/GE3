@@ -87,7 +87,7 @@ private:
     Vector3 emitterPosition_;
     uint32_t particleCount_;
 
-    std::unique_ptr<Sprite> sprite_;
+   
    
     // 3Dモデル
     std::unique_ptr<Object3d> test_;

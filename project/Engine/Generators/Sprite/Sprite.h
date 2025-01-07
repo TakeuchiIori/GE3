@@ -5,7 +5,7 @@
 #include <string>
 
 // Engine
-
+#include "Systems/Camera/Camera.h"
 #include "SrvManager./SrvManager.h"
 
 // Math
@@ -156,10 +156,13 @@ public: // アクセッサ
 	// SrvManagerのセッター
 	void SetSrvManager(SrvManager* srvManager) { this->srvManagaer_ = srvManager; }
 
+	void SetCamera(Camera* camera) { this->camera_ = camera; }
+
 private: // メンバ変数
 
 	SpriteCommon* spriteCommon_ = nullptr;
 	SrvManager* srvManagaer_;
+	Camera* camera_;
 	/*===============================================//
 						Resouurces
 	//===============================================*/

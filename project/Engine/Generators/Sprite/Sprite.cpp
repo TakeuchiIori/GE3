@@ -28,11 +28,12 @@ void Sprite::Initialize(const std::string& textureFilePath)
 
 	transform_ = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
 
+	CreateVertex();
 }
 
 void Sprite::Update()
 {
-	CreateVertex();
+	
 	// スプライトのSRT
 
 	transform_.translate = { position_.x,position_.y,0.0f };
@@ -49,6 +50,13 @@ void Sprite::Update()
 
 void Sprite::Draw()
 {
+	// WVP行列を更新
+	if (camera_) {
+		transformationMatrixData_->WVP = camera_->GetViewProjectionMatrix();
+	}
+	else {
+		transformationMatrixData_->WVP = MakeIdentity4x4();
+	}
 	// VertexBufferView
 	spriteCommon_->GetDxCommon()->GetCommandList()->IASetVertexBuffers(0, 1, &vertexBufferView_); // VBVを設定
 	// IndexBufferView

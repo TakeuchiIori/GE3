@@ -76,11 +76,7 @@ void GameScene::Initialize()
     particleCount_ = 1;
     particleEmitter_ = std::make_unique<ParticleEmitter>(particleName, emitterPosition_, particleCount_);
 
-    sprite_ = std::make_unique<Sprite>();
-    sprite_->Initialize("Resources./Shadow.png");
 
-    Vector3 rotate = { 90.0f,0.0f,0.0f };
-    sprite_->SetRotation(rotate);
 }
 
 /// <summary>
@@ -102,10 +98,11 @@ void GameScene::Update()
     CheckAllCollisions();
     CollisionManager::GetInstance()->UpdateWorldTransform();
 
-    sprite_->Update();
-    sprite_->SetPosition(Vector2{ player_->GetPosition().x,0.0f });
+
     // objの更新
     player_->Update();
+
+
     enemy_->Update();
     ground_->Update();
     test_->UpdateAnimation();
@@ -146,8 +143,7 @@ void GameScene::Draw()
     /// <summary>
     /// ここから描画可能です
     /// </summary>
-    sprite_->Draw();
-   // ParticleManager::GetInstance()->Draw();
+    ParticleManager::GetInstance()->Draw();
    
 
 #pragma endregion

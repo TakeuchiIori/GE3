@@ -56,7 +56,7 @@ void PipelineManager::CreatePSO_Sprite()
 	descriptionRootSignature.Flags =
 		D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
 
-	D3D12_ROOT_PARAMETER rootParameters[7] = {};
+	D3D12_ROOT_PARAMETER rootParameters[4] = {};
 	// マテリアル
 	rootParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;		 			// CBVを使う
 	rootParameters[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;					// PixelShaderで使う
@@ -78,20 +78,20 @@ void PipelineManager::CreatePSO_Sprite()
 	rootParameters[3].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;					// VertexShaderで使う
 	rootParameters[3].Descriptor.ShaderRegister = 1;									// レジスタ番号1を使う
 
-	// 鏡面反射
-	rootParameters[4].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;					// CBVを使う
-	rootParameters[4].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;					// VertexShaderで使う
-	rootParameters[4].Descriptor.ShaderRegister = 2;
+	//// 鏡面反射
+	//rootParameters[4].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;					// CBVを使う
+	//rootParameters[4].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;					// VertexShaderで使う
+	//rootParameters[4].Descriptor.ShaderRegister = 2;
 
-	// ポイントライト
-	rootParameters[5].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;					// CBVを使う
-	rootParameters[5].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;					// PixelShaderで使う
-	rootParameters[5].Descriptor.ShaderRegister = 3;									// レジスタ番号1を使う
+	//// ポイントライト
+	//rootParameters[5].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;					// CBVを使う
+	//rootParameters[5].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;					// PixelShaderで使う
+	//rootParameters[5].Descriptor.ShaderRegister = 3;									// レジスタ番号1を使う
 
-	// スポットライト
-	rootParameters[6].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;					// CBVを使う
-	rootParameters[6].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;					// PixelShaderで使う
-	rootParameters[6].Descriptor.ShaderRegister = 4;									// レジスタ番号4を使う
+	//// スポットライト
+	//rootParameters[6].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;					// CBVを使う
+	//rootParameters[6].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;					// PixelShaderで使う
+	//rootParameters[6].Descriptor.ShaderRegister = 4;									// レジスタ番号4を使う
 
 	descriptionRootSignature.pParameters = rootParameters;								// ルートパラメーター配列へのポインタ
 	descriptionRootSignature.NumParameters = _countof(rootParameters);					// 配列の長さ
@@ -123,7 +123,7 @@ void PipelineManager::CreatePSO_Sprite()
 	// バイナリを元に生成
 
 	hr = dxCommon_->GetDevice()->CreateRootSignature(0, signatureBlob->GetBufferPointer(),
-		signatureBlob->GetBufferSize(), IID_PPV_ARGS(rootSignatures_["Sprite"].GetAddressOf()));
+		signatureBlob->GetBufferSize(), IID_PPV_ARGS(&rootSignatures_["Sprite"]));
 	assert(SUCCEEDED(hr));
 
 
@@ -159,10 +159,10 @@ void PipelineManager::CreatePSO_Sprite()
 	// Shaderをコンパイルする
 	Microsoft::WRL::ComPtr<IDxcBlob> vertexShaderBlob;
 	Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob;
-	vertexShaderBlob = dxCommon_->CompileShader(L"Resources/shaders/Object3d.VS.hlsl",
+	vertexShaderBlob = dxCommon_->CompileShader(L"Resources/shaders/Sprite.VS.hlsl",
 		L"vs_6_0");
 	assert(vertexShaderBlob != nullptr);
-	pixelShaderBlob = dxCommon_->CompileShader(L"Resources/shaders/Object3d.PS.hlsl",
+	pixelShaderBlob = dxCommon_->CompileShader(L"Resources/shaders/Sprite.PS.hlsl",
 		L"ps_6_0");
 	assert(pixelShaderBlob != nullptr);
 
