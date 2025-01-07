@@ -319,8 +319,9 @@ void PlayerWeapon::InitIdle()
 	worldTransform_.translation_ = { 0.0f, 0.0f, -2.0f };
 	worldTransform_.rotation_ = { 0.0f, 0.0f, 0.0f };
 	attackProgress_ = 0.0f;
-	// ジャンプフラグをFalse
+	// 各状態フラグをFalse
 	isJumpAttack_ = false;
+	isDashAttack_ = false;
 }
 
 /// <summary>
@@ -357,6 +358,7 @@ void PlayerWeapon::InitDash()
 {
 	attackProgress_ = 0.0f;
 	currentMotion_ = &attackMotions_[4];
+	isDashAttack_ = true;
 	isJumpAttack_ = false;
 }
 
@@ -602,6 +604,10 @@ void PlayerWeapon::UpdateDashMotion(float deltaTime)
 		}
 	}
 
+	if (attackProgress_ >= 0.4f) {
+		isDashAttack_ = false;
+	}
+
 	// コンボ可能タイミングの管理
 	if (attackProgress_ >= 0.5f && !canCombo_) {
 		canCombo_ = true;
@@ -617,7 +623,7 @@ void PlayerWeapon::UpdateDashMotion(float deltaTime)
 			//canCombo_ = false;
 		}
 		// モーション終了
-		else if (attackProgress_ >= 0.7f) {
+		else if (attackProgress_ >= 0.5f) {
 			stateRequest_ = WeaponState::Cooldown; // クールダウン状態へ移行
 		}
 	}

@@ -86,6 +86,11 @@ private: // メンバ関数（非公開）
 	/// </summary>
 	void Jump();
 
+	/// <summary>
+	/// ダッシュ
+	/// </summary>
+	void Dash();
+
 public: // コマンドパターンによる移動関数
 
 	/// <summary>
@@ -141,5 +146,10 @@ private: // メンバ変数
 	float jumpTime_ = 0.0f;           // ジャンプ開始からの経過時間
 	float jumpDuration_ = 1.0f; // ジャンプの補完時間
 	float fallSpeedFactor_ = 1.5f;
+
+	bool isDash_ = false;
+	float dashTime_ = 0.0f;          // ダッシュの経過時間
+	const float dashDuration_ = 0.5f; // ダッシュの継続時間
+	const float dashSpeed_ = 50.0f;   // ダッシュの速度
 };
 

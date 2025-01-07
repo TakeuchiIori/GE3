@@ -99,11 +99,19 @@ void Player::Move()
     // 衝突状態をリセット
     isColliding_ = false; // 毎フレーム初期化
 
+    if (!isDash_ && weapon_->GetIsDashAttack()) {
+        isDash_ = true;
+    }
+
     // キーボードで移動
-    if (!isJumping_) {
+    if (!isJumping_ && !weapon_->GetIsJumpAttack()) {
         MoveKey();
     }
     Jump();
+
+    if (isDash_) {
+        Dash();
+    }
 }
 
 void Player::MoveKey()
@@ -214,6 +222,35 @@ void Player::Jump()
             // ジャンプ終了
             worldTransform_.translation_.y = 1.0f; // 地面に戻す
             isJumping_ = false;                       // ジャンプ終了
+        }
+    }
+}
+
+void Player::Dash()
+{
+    if (isDash_) {
+        // ダッシュ時間を更新
+        dashTime_ += 0.016f; // 仮に1フレーム16ms (60FPS)
+
+        // 正規化した時間 t (0.0f〜1.0f)
+        float t = dashTime_ / dashDuration_;
+
+        if (t <= 1.0f) {
+            // 移動方向を計算（Y軸の回転に基づいて計算）
+            Vector3 forwardDirection = {
+                sinf(worldTransform_.rotation_.y), // Y軸の回転に応じた前方方向
+                0.0f,
+                cosf(worldTransform_.rotation_.y)
+            };
+
+            // ダッシュ速度に基づいて補間移動 (EaseOutExpo)
+            float dashFactor = (t == 1.0f) ? 1.0f : 1.0f - powf(2.0f, -10.0f * t); // EaseOutExpo
+            worldTransform_.translation_ += forwardDirection * (dashSpeed_ * dashFactor * 0.016f);
+        }
+        else {
+            // ダッシュ終了
+            isDash_ = false;
+            dashTime_ = 0.0f; // ダッシュ時間をリセット
         }
     }
 }
