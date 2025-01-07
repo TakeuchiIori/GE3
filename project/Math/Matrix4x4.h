@@ -125,6 +125,8 @@ Matrix4x4 MakeRotateMatrixY(float radian);
 //    Z軸回転行列
 Matrix4x4 MakeRotateMatrixZ(float radian);
 
+Matrix4x4 MakeRotateMatrixXYZ(Vector3& rad);
+
 // 11. 3次元のアフィン変換行列
 Matrix4x4 MakeAffineMatrix(const Vector3& scale, const Vector3& rotate, const Vector3& translate);
 

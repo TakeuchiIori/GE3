@@ -45,7 +45,7 @@ void Player::Initialize()
     globalVariables->AddItem(groupName, "Translation", worldTransform_.translation_);
     // Transform関連
     globalVariables->AddItem(groupName, "Translation", worldTransform_.translation_);
-    globalVariables->AddItem(groupName, "Rotation", worldTransform_.rotation_);
+   // globalVariables->AddItem(groupName, "Rotation", worldTransform_.rotation_);
     globalVariables->AddItem(groupName, "Scale", worldTransform_.scale_);
     // 移動関連
     globalVariables->AddItem(groupName, "MoveSpeed", moveSpeed_);
@@ -117,10 +117,70 @@ void Player::Move()
     if (!isJumping_ && !weapon_->GetIsJumpAttack()) {
         MoveKey();
     }
+    MoveController();
     Jump();
+    //// XInputデバイスの状態を取得
+    //XINPUT_STATE state;
+    //if (!Input::GetInstance()->GetJoystickState(0, state)) {
+    //    return; // コントローラーが接続されていない場合は終了
+    //}
 
+    //// 左スティックの入力を取得
+    //float leftStickX = state.Gamepad.sThumbLX / 32768.0f; // 正規化（-1.0～1.0）
+    //float leftStickY = state.Gamepad.sThumbLY / 32768.0f;
+
+    //// 入力が一定の閾値以上でない場合は無視
+    //if (std::fabs(leftStickX) < 0.1f) leftStickX = 0.0f;
+    //if (std::fabs(leftStickY) < 0.1f) leftStickY = 0.0f;
+
+    //// 移動方向を計算
+    //Vector3 forwardDirection = {
+    //    sinf(worldTransform_.rotation_.y), // Y軸の回転に応じた前方方向
+    //    0.0f,
+    //    cosf(worldTransform_.rotation_.y)
+    //};
+    //Vector3 rightDirection = {
+    //    cosf(worldTransform_.rotation_.y),
+    //    0.0f,
+    //    -sinf(worldTransform_.rotation_.y)
+    //};
+
+    //// 入力に基づく移動
+    //worldTransform_.translation_ += forwardDirection * moveSpeed_.z * leftStickY;
+    //worldTransform_.translation_ += rightDirection * moveSpeed_.x * leftStickX;
+
+    //// Aボタンでジャンプ
+    //if (state.Gamepad.wButtons & XINPUT_GAMEPAD_A) {
+    //    Jump();
+    //}
     if (isDash_) {
         Dash();
+    }
+}
+
+void Player::MoveController()
+{
+        // マウスの移動量を取得
+    Input::MouseMove mouseMove = Input::GetInstance()->GetMouseMove();
+
+    // マウス感度（調整可能）
+    const float mouseSensitivity = 0.001f;
+
+    // 水平方向の回転 (左右回転: Y軸)
+    worldTransform_.rotation_.y += mouseMove.lX * mouseSensitivity;
+
+    // 垂直方向の回転 (上下回転: X軸)
+   // worldTransform_.rotation_.x += mouseMove.lY * mouseSensitivity;
+
+    // 上下回転の制限（ピッチ回転を -89° ～ 89° に制限）
+   // worldTransform_.rotation_.x = std::clamp(worldTransform_.rotation_.x, -89.0f, 89.0f);
+
+    // 水平方向の回転を正規化（0° ～ 360°）
+    if (worldTransform_.rotation_.y > 360.0f) {
+        worldTransform_.rotation_.y -= 360.0f;
+    }
+    else if (worldTransform_.rotation_.y < 0.0f) {
+        worldTransform_.rotation_.y += 360.0f;
     }
 }
 
@@ -148,7 +208,7 @@ void Player::MoveKey()
         -sinf(worldTransform_.rotation_.y)
     };
 
-#ifdef _DEBUG
+
     // 上下の回転（ピッチ）の処理
     if (input_->PushKey(DIK_UP)) {
         worldTransform_.rotation_.x -= rotationSpeed;  // 上方向に回転
@@ -166,7 +226,7 @@ void Player::MoveKey()
     }
 
 
-#endif // _DEBUG
+
 
 
     // キーボード入力による移動
@@ -400,7 +460,7 @@ void Player::ApplyGlobalVariables() {
 
     // Transform関連
     worldTransform_.translation_ = globalVariables->GetVector3Value(groupName, "Translation");
-    worldTransform_.rotation_ = globalVariables->GetVector3Value(groupName, "Rotation");
+    //worldTransform_.rotation_ = globalVariables->GetVector3Value(groupName, "Rotation");
     worldTransform_.scale_ = globalVariables->GetVector3Value(groupName, "Scale");
 
     // 移動関連

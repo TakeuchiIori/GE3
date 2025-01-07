@@ -16,7 +16,7 @@ void Enemy::Initialize()
     // OBject3dの初期化
     base_ = std::make_unique<Object3d>();
     base_->Initialize();
-    base_->SetModel("cube.obj");
+    base_->SetModel("needle_body.obj");
     //needle_Body
     // その他初期化
     input_ = Input::GetInstance();
