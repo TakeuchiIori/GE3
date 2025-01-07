@@ -149,7 +149,7 @@ private: // メンバ変数
 
 	bool isDash_ = false;
 	float dashTime_ = 0.0f;          // ダッシュの経過時間
-	const float dashDuration_ = 0.5f; // ダッシュの継続時間
-	const float dashSpeed_ = 50.0f;   // ダッシュの速度
+	const float dashDuration_ = 0.4f; // ダッシュの継続時間
+	const float dashSpeed_ = 100.0f;   // ダッシュの速度
 };
 

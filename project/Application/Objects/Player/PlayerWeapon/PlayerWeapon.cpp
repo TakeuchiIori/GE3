@@ -71,10 +71,16 @@ void PlayerWeapon::Initialize()
 		});
 
 	attackMotions_.push_back({
-		0.5f, 0.3f, 1.0f, { // モーションの時間・開始時間・終了時間を調整
-			{0.0f, {4.0f, 0.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, MakeRotateAxisAngleQuaternion({0, 0, -90})}, // 準備動作：少し下げて後ろに構える
-			{0.25f, {0.0f, 0.0f, 4.0f}, {1.0f, 1.0f, 1.0f}, MakeRotateAxisAngleQuaternion({90, 0, -90})},   // 中間動作：前方に大きく振り抜く
-			{0.5f, {-4.0f, 0.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, MakeRotateAxisAngleQuaternion({180, 0, -90})}   // 終了動作：振り抜き後の位置で止まる
+	0.5f, 0.3f, 1.0f, { // モーションの合計時間・開始時間・終了時間を調整
+			// モーション1: 真横に振る動作
+			{0.0f,  { 4.0f, 0.0f,  0.0f}, {1.0f, 1.0f, 1.0f}, MakeRotateAxisAngleQuaternion({0, 0, -90})},   // 準備動作：少し下げて後ろに構える
+			{0.125f, {0.0f, 0.0f,  4.0f}, {1.0f, 1.0f, 1.0f}, MakeRotateAxisAngleQuaternion({90, 0, -90})},  // 中間動作：前方に大きく振り抜く
+			{0.25f, {-4.0f, 0.0f,  0.0f}, {1.0f, 1.0f, 1.0f}, MakeRotateAxisAngleQuaternion({180, 0, -90})}, // 振り抜き後の位置で止まる
+
+			// モーション2: 逆方向に振り返す動作
+			{0.25f,  {-4.0f, 0.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, MakeRotateAxisAngleQuaternion({180, 0, -90})}, // 開始位置：振り抜き後の位置
+			{0.375f, { 0.0f, 0.0f, 4.0f}, {1.0f, 1.0f, 1.0f}, MakeRotateAxisAngleQuaternion({90, 0,  -90})}, // 中間動作：逆方向に振り返す
+			{0.5f,   { 4.0f, 0.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, MakeRotateAxisAngleQuaternion({0, 0,  -90})}   // 終了動作：元の位置に戻る
 		}
 		});
 
