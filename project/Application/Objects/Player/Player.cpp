@@ -206,13 +206,13 @@ void Player::Jump()
 
             // 強制着地条件
             if (worldTransform_.translation_.y <= 1.0f) {
-                worldTransform_.translation_.y = groundY_; // 地面に固定
+                worldTransform_.translation_.y = 1.0f; // 地面に固定
                 isJumping_ = false;                       // ジャンプ終了
             }
         }
         else {
             // ジャンプ終了
-            worldTransform_.translation_.y = groundY_; // 地面に戻す
+            worldTransform_.translation_.y = 1.0f; // 地面に戻す
             isJumping_ = false;                       // ジャンプ終了
         }
     }

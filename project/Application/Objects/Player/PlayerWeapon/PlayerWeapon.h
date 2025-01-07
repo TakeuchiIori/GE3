@@ -207,6 +207,7 @@ public:
 	const Vector3& GetTranslation() { return worldTransform_.translation_; }
 
 	const bool& GetIsJumpAttack() { return isJumpAttack_; }
+	const bool& GetIsDashAttack() { return isDashAttack_; }
 
 private:
 	//==========================================================================//
@@ -239,6 +240,7 @@ private:
 
 	bool canCombo_ = false;      // コンボ可能かどうか
 	bool isJumpAttack_ = false;	 // ジャンプ攻撃フラグ
+	bool isDashAttack_ = false;	 // ダッシュ攻撃フラグ
 	float comboWindow_ = 0.5f;   // コンボ入力の猶予時間（秒）
 	float elapsedComboTime_ = 0.0f; // コンボ猶予時間の経過時間
 

@@ -144,9 +144,11 @@ void PlayerWeapon::Update()
 	// 全状態の更新処理
 	UpdateState();
 
-	if (state_ != PlayerWeapon::WeaponState::Idle || 
-		state_ != PlayerWeapon::WeaponState::Cooldown) {
+	if (state_ != PlayerWeapon::WeaponState::Idle && state_ != PlayerWeapon::WeaponState::Cooldown) {
 		Collider::SetRadiusFloat(2.0f);
+	}
+	else {
+		Collider::SetRadiusFloat(0.0f);
 	}
 
 
