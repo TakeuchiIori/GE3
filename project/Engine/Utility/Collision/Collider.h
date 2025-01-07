@@ -46,6 +46,8 @@ public: // アクセッサ
 	/// </summary>
 	float GetRadiusFloat() { return radiusFloat_; }
 
+	Vector3 GetRadiusVector3() { return radiusVector3_; }
+
 	/// <summary>
 	/// セッター
 	/// </summary>
@@ -67,6 +69,7 @@ private:
 	WorldTransform worldTransform_;
 	// 衝突判定
 	float radiusFloat_ = 1.5f;
+	Vector3 radiusVector3_ = { 1.5f,1.5f,1.5f };
 	// 種別ID
 	uint32_t typeID_ = 0u;
 

@@ -64,7 +64,7 @@ void CollisionManager::Draw() {
 	// 全てのコライダーについて
 	for (Collider* collider : colliders_) {
 		// 描画
-		collider->Draw(obj_.get());
+		//collider->Draw(obj_.get());
 	}
 }
 
@@ -169,8 +169,8 @@ void CollisionManager::CheckAllCollisions() {
 //		Vector3(matB.m[2][0], matB.m[2][1], matB.m[2][2])
 //	};
 //
-//	Vector3 halfExtentsA = colliderA->GetRadius(); // Aの半径
-//	Vector3 halfExtentsB = colliderB->GetRadius(); // Bの半径
+//	Vector3 halfExtentsA = colliderA->GetRadiusVector3(); // Aの半径
+//	Vector3 halfExtentsB = colliderB->GetRadiusVector3(); // Bの半径
 //
 //	// 中心間ベクトル
 //	Vector3 T = centerB - centerA;

@@ -288,8 +288,6 @@ void GameScene::CheckAllCollisions() {
     // 敵全てについて
     CollisionManager::GetInstance()->AddCollider(enemy_.get());
 
-
-
     // 衝突判定と応答
     CollisionManager::GetInstance()->CheckAllCollisions();
 
