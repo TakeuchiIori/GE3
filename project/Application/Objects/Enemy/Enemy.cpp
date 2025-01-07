@@ -15,13 +15,13 @@ void Enemy::Initialize()
     // OBject3dの初期化
     base_ = std::make_unique<Object3d>();
     base_->Initialize();
-    base_->SetModel("needle_Body.obj");
-
+    base_->SetModel("cube.obj");
+    //needle_Body
     // その他初期化
     input_ = Input::GetInstance();
     moveSpeed_ = { 0.25f, 0.25f , 0.25f };
     worldTransform_.Initialize();
-    worldTransform_.translation_.y = 0.0f;
+    worldTransform_.translation_.y = 1.0f;
     //GlobalVariables* globalvariables = GlobalVariables::GetInstance();
     const char* groupName = "Enemy";
     // グループを追加

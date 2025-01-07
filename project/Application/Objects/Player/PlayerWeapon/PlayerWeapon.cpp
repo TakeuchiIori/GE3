@@ -84,7 +84,7 @@ void PlayerWeapon::Initialize()
 
 	// グループを追加
 	Collider::Initialize();
-	Collider::SetRadiusFloat(0.0f);
+	//
 	SaveGlobalVariables();
 	// TypeIDの設定
 	Collider::SetTypeID(static_cast<uint32_t>(CollisionTypeIdDef::kPlayerWeapon));
@@ -140,6 +140,11 @@ void PlayerWeapon::Update()
 
 	// 全状態の更新処理
 	UpdateState();
+
+	if (state_ != PlayerWeapon::WeaponState::Idle && 
+		state_ != PlayerWeapon::WeaponState::Cooldown) {
+		Collider::SetRadiusFloat(2.0f);
+	}
 
 	//ApplyGlobalVariables();
 
@@ -405,38 +410,24 @@ void PlayerWeapon::InitializeState()
 		{
 		case PlayerWeapon::WeaponState::Idle:
 			InitIdle();
-			// Idle時の当たり判定半径を0.0fに設定
-			Collider::SetRadiusFloat(0.0f);
 			break;
 		case PlayerWeapon::WeaponState::Attacking:
 			InitAttack();
-			// Attacking時の当たり判定半径を2.0fに設定
-			Collider::SetRadiusFloat(2.0f);
 			break;
 		case PlayerWeapon::WeaponState::LSwing:
 			InitLeftHorizontalSwing();
-			// LSwing時の当たり判定半径を2.0fに設定
-			Collider::SetRadiusFloat(2.0f);
 			break;
 		case PlayerWeapon::WeaponState::RSwing:
 			InitRightHorizontalSwiwng();
-			// RSwing時の当たり判定半径を2.0fに設定
-			Collider::SetRadiusFloat(2.0f);
 			break;
 		case PlayerWeapon::WeaponState::JumpAttack:
 			InitJumpAttack();
-			// JumpAttack時の当たり判定半径を2.0fに設定
-			Collider::SetRadiusFloat(2.0f);
 			break;
 		case PlayerWeapon::WeaponState::Dashing:
 			InitDash();
-			// Dashing時の当たり判定半径を2.0fに設定
-			Collider::SetRadiusFloat(2.0f);
 			break;
 		case PlayerWeapon::WeaponState::Cooldown:
 			InitCooldown();
-			// Cooldown時の当たり判定半径を2.0fに設定
-			Collider::SetRadiusFloat(2.0f);
 			break;
 		}
 		// リクエストをリセット

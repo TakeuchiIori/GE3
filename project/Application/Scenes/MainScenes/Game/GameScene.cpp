@@ -158,7 +158,7 @@ void GameScene::Draw()
     player_->Draw();
     enemy_->Draw();
     ground_->Draw();
-    line_->UpdateVertices(start_, end_);
+    //line_->UpdateVertices(start_, end_);
   
     //line_->DrawLine();
    
