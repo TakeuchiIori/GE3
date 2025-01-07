@@ -114,7 +114,7 @@ void Player::Move()
     }
 
     // キーボードで移動
-    if (!isJumping_ && !weapon_->GetIsJumpAttack()) {
+    if (!isJumping_ && !weapon_->GetIsJumpAttack() || !isDash_) {
         MoveKey();
     }
     MoveController();

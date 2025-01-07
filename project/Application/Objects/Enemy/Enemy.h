@@ -18,6 +18,7 @@ class Enemy : public Collider
 {
 public:
 
+	Enemy();
 	/// <summary>
 	/// 初期化
 	/// </summary>
@@ -68,12 +69,19 @@ private:
 
 
 public: // アクセッサ
-
+	/// <summary>
+	/// ワールド変換データを取得
+	/// </summary>
+	/// <returns>"ワールド変換データ</returns>
+	const WorldTransform& GetWorldTransform() { return worldTransform_; }
 	const Vector3& GetPosition() const { return worldTransform_.translation_; }
 	const Vector3& GetRotation() const { return worldTransform_.rotation_; }
 	void SetPosition(const Vector3& pos) { worldTransform_.translation_ = pos; }
 	void SetPlayer(const Player* player) { player_ = player; }; // プレイヤーをセットする関数
-
+	/// <summary>
+	/// シリアルナンバーの取得
+	/// </summary>
+	uint32_t GetSerialNumber() const { return serialNumber_; }
 
 private:
 	const Player* player_; // プレイヤーの参照
@@ -89,6 +97,9 @@ private:
 	Vector3 moveSpeed_;
 	bool isDrawEnabled_ = true;
 
-
+	// シリアルナンバー
+	uint32_t serialNumber_ = 0;
+	// 次のシリアルナンバー
+	static uint32_t nextSerialNumber_;
 };
 

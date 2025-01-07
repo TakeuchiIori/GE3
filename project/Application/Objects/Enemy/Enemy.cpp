@@ -10,7 +10,14 @@
 #ifdef _DEBUG
 #include "imgui.h" 
 #endif // _DEBUG
-
+// 次のシリアルナンバー
+uint32_t Enemy::nextSerialNumber_ = 0;
+Enemy::Enemy() {
+    // シリアルナンバーを振る
+    serialNumber_ = nextSerialNumber_;
+    // 番号の追加
+    ++nextSerialNumber_;
+}
 void Enemy::Initialize()
 {
     // OBject3dの初期化

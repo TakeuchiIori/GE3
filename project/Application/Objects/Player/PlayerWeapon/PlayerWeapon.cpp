@@ -15,6 +15,7 @@
 #ifdef _DEBUG
 #include "imgui.h" 
 #endif // _DEBUG
+#include <Enemy/Enemy.h>
 
 
 
@@ -141,6 +142,18 @@ void PlayerWeapon::SaveGlobalVariables() {
 /// </summary>
 void PlayerWeapon::Update()
 {
+	effects_.remove_if([](Effect* effect) {
+		if (!effect->GetIsAlive()) {
+			delete effect;
+			return true;
+		}
+		return false;
+		});
+	for (Effect* effect : effects_) {
+		effect->Update();
+	}
+
+
 	if (!isUpdate_) {
 		ApplyGlobalVariables();
 	}
@@ -173,6 +186,9 @@ void PlayerWeapon::Update()
 /// </summary>
 void PlayerWeapon::Draw()
 {
+	for (Effect* effect : effects_) {
+		effect->Draw();
+	}
 	weapon_->Draw(worldTransform_);
 }
 
@@ -658,7 +674,22 @@ void PlayerWeapon::OnCollision(Collider* other)
 	// 衝突相手が敵なら
 	if (typeID == static_cast<uint32_t>(CollisionTypeIdDef::kEnemy)) {
 
+		Enemy* enemy = static_cast<Enemy*>(other);
+		uint32_t serialNumber = enemy->GetSerialNumber();
 
+		// 接触履歴があれば何もせずに抜ける
+		if (contactRecord_.CheckHistory(serialNumber)) {
+			return;
+		}
+		// 接触履歴に登録
+		contactRecord_.record(serialNumber);
+
+		// 敵の位置にエフェクトを発生させる
+		Effect* effect = new Effect();
+		effect->Initialize();
+		effect->SetWorldTransform(enemy->GetWorldTransform());
+		effect->Update();
+		effects_.push_back(effect);
 	}
 
 }

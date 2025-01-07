@@ -13,6 +13,8 @@ using json = nlohmann::json;
 // Math
 #include "MathFunc.h"
 #include "Vector3.h" 
+#include <Collision/ContactRecord.h>
+#include <Collision/Effect.h>
 
 class PlayerWeapon final : public Collider
 {
@@ -219,6 +221,10 @@ private:
 	Input* input_ = nullptr;
 	// ワールドトランスフォーム
 	WorldTransform worldTransform_;
+	// 接触記録クラス
+	ContactRecord contactRecord_;
+	// エフェクト
+	std::list<Effect*> effects_;
 	bool isUpdate_ = true;
 
 	WeaponState state_ = WeaponState::Idle; // 武器の状態
