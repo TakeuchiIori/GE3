@@ -13,6 +13,7 @@
 #include "MathFunc.h"
 #include "Vector3.h" 
 
+class Player;
 class Enemy : public Collider
 {
 public:
@@ -70,18 +71,20 @@ public: // アクセッサ
 
 	const Vector3& GetPosition() const { return worldTransform_.translation_; }
 	const Vector3& GetRotation() const { return worldTransform_.rotation_; }
-
-
+	void SetPosition(const Vector3& pos) { worldTransform_.translation_ = pos; }
+	void SetPlayer(const Player* player) { player_ = player; }; // プレイヤーをセットする関数
 
 
 private:
-
+	const Player* player_; // プレイヤーの参照
 	WorldTransform worldTransform_;
 	WorldTransform WS_;
 	std::unique_ptr<Object3d> shadow_;
 	std::unique_ptr<Object3d> base_ = nullptr;
 	Input* input_ = nullptr;
 
+	float radius_ = 2.0f;
+	float speed_ = 0.25f;
 	bool isColliding_ = false;
 	Vector3 moveSpeed_;
 	bool isDrawEnabled_ = true;

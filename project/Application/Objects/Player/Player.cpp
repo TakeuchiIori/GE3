@@ -124,6 +124,7 @@ void Player::Move()
     }
 }
 
+
 void Player::MoveKey()
 {
     // 回転のスピード設定（回転速度を適宜設定）

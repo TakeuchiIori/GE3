@@ -9,6 +9,8 @@
 #include "Loaders/Model/Model.h"
 #include "Collision/CollisionManager.h"
 
+#include <cstdlib>
+#include <ctime>
 
 #ifdef _DEBUG
 #include "imgui.h"
@@ -21,6 +23,7 @@
 /// </summary>
 void GameScene::Initialize()
 {
+    srand(static_cast<unsigned int>(time(nullptr))); // 乱数シード設定
     // カメラの生成
     currentCamera_ = cameraManager_.AddCamera();
     Object3dCommon::GetInstance()->SetDefaultCamera(currentCamera_.get());
@@ -53,6 +56,7 @@ void GameScene::Initialize()
     // 敵
     enemy_ = std::make_unique<Enemy>();
     enemy_->Initialize();
+    enemy_->SetPlayer(player_.get());
 
     // 地面
     ground_ = std::make_unique<Ground>();
@@ -98,7 +102,17 @@ void GameScene::Update()
 
     CheckAllCollisions();
     CollisionManager::GetInstance()->UpdateWorldTransform();
+    // スポーンタイマーを更新
+    spawnTimer_ += 1.0f / 60.0f; // フレーム時間を加算
+    if (spawnTimer_ >= spawnInterval_) {
+        SpawnEnemy();
+        spawnTimer_ = 0.0f;
+    }
 
+    // 各敵を更新
+    for (auto& enemy : enemies_) {
+        enemy->Update();
+    }
 
     // objの更新
     player_->Update();
@@ -163,7 +177,11 @@ void GameScene::Draw()
     /// </summary>
     CollisionManager::GetInstance()->Draw();
     player_->Draw();
-    enemy_->Draw();
+  //  enemy_->Draw();
+        // その他の描画処理
+    for (auto& enemy : enemies_) {
+        enemy->Draw();
+    }
     ground_->Draw();
     //line_->UpdateVertices(start_, end_);
   
@@ -293,11 +311,33 @@ void GameScene::CheckAllCollisions() {
     CollisionManager::GetInstance()->AddCollider(player_->GetPlayerWeapon());
 
     // 敵全てについて
+        // その他の描画処理
+    for (auto& enemy : enemies_) {
+        CollisionManager::GetInstance()->AddCollider(enemy.get());
+    }
     CollisionManager::GetInstance()->AddCollider(enemy_.get());
 
     // 衝突判定と応答
     CollisionManager::GetInstance()->CheckAllCollisions();
 
+}
+
+void GameScene::SpawnEnemy()
+{
+    // ランダムな位置を計算
+    Vector3 playerPos = player_->GetPosition();
+    float offsetX = (rand() % 100 / 100.0f) * spawnRange_ * 2 - spawnRange_;
+    float offsetZ = (rand() % 100 / 100.0f) * spawnRange_ * 2 - spawnRange_;
+    Vector3 spawnPos = playerPos + Vector3{ offsetX, 0.0f, offsetZ };
+
+    // 新しい敵を生成
+    auto newEnemy = std::make_unique<Enemy>();
+    newEnemy->Initialize();
+    newEnemy->SetPlayer(player_.get());
+    newEnemy->SetPosition(spawnPos);
+
+    // リストに追加
+    enemies_.emplace_back(std::move(newEnemy));
 }
 
 

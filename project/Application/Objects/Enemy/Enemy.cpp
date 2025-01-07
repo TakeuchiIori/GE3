@@ -5,6 +5,7 @@
 #include "Object3D./Object3dCommon.h"
 #include "Collision./GlobalVariables.h"
 #include "Collision/CollisionTypeIdDef.h"
+#include "Player/Player.h"
 
 #ifdef _DEBUG
 #include "imgui.h" 
@@ -126,6 +127,16 @@ Matrix4x4 Enemy::GetWorldMatrix() const
 
 void Enemy::Move()
 {
+    Vector3 playerPos = player_->GetPosition();
+    playerPos = playerPos - Vector3{ 0,1.0f,0 };
+    Vector3 pos = { playerPos - worldTransform_.translation_ };
+    float weponRadius = 4.0f;
+    if (Length(pos) > weponRadius + radius_)// プレイヤーの半径 + エネミー半径 - 0.1fくらい？
+    {
+        pos = Normalize(pos);
+        worldTransform_.translation_ += pos * speed_;
+    }
+
     // 衝突中フラグが立っている場合は非表示に
     if (isColliding_) {
         isDrawEnabled_ = false; // 描画を無効に

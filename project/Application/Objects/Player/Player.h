@@ -81,6 +81,8 @@ private: // メンバ関数（非公開）
 	/// </summary>
 	void Move();
 
+	void MoveController();
+
 	/// <summary>
 	/// キーボードで移動処理
 	/// </summary>
