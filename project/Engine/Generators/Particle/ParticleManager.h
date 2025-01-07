@@ -156,6 +156,10 @@ private:
 	/// </summary>
 	void UpdateParticleMove();
 
+	void UpdateParticlePlayer(Vector3& pos);
+
+	void UpdateParticlePlayerWeapon(Vector3& pos);
+
 	void UpdateParticleRadial();
 
 	void UpdateParticleSpiral();

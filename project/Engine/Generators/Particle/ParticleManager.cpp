@@ -185,6 +185,16 @@ void ParticleManager::UpdateParticleMove()
 
 }
 
+void ParticleManager::UpdateParticlePlayer(Vector3& pos)
+{
+
+}
+
+void ParticleManager::UpdateParticlePlayerWeapon(Vector3& pos)
+{
+
+}
+
 void ParticleManager::UpdateParticleRadial()
 {
 	for (auto& [groupName, particleGroup] : particleGroups_) {
