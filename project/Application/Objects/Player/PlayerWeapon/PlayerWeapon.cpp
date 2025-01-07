@@ -71,10 +71,10 @@ void PlayerWeapon::Initialize()
 		});
 
 	attackMotions_.push_back({
-		0.5f, 0.2f, 0.8f, {
-		{0.0f, {0.0f, 6.0f, 2.0f}, {1.0f, 1.0f, 1.0f}, MakeRotateAxisAngleQuaternion({90 + 360 * 0.0f , 0, 0})},   // スタート
-		{0.5f, {0.0f, 3.0f, 2.0f}, {1.0f, 1.0f, 1.0f}, MakeRotateAxisAngleQuaternion({90 + 360 * 0.5f, 0, 0})},   // 中央
-		{1.0f, {0.0f, 0.0f, 2.0f}, {1.0f, 1.0f, 1.0f}, MakeRotateAxisAngleQuaternion({90 + 360 * 1.0f, 0, 0})}    // フィニッシュ
+		0.5f, 0.3f, 1.0f, { // モーションの時間・開始時間・終了時間を調整
+			{0.0f, {4.0f, 0.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, MakeRotateAxisAngleQuaternion({0, 0, -90})}, // 準備動作：少し下げて後ろに構える
+			{0.25f, {0.0f, 0.0f, 4.0f}, {1.0f, 1.0f, 1.0f}, MakeRotateAxisAngleQuaternion({90, 0, -90})},   // 中間動作：前方に大きく振り抜く
+			{0.5f, {-4.0f, 0.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, MakeRotateAxisAngleQuaternion({180, 0, -90})}   // 終了動作：振り抜き後の位置で止まる
 		}
 		});
 
@@ -574,13 +574,13 @@ void PlayerWeapon::UpdateJumpAttack(float deltaTime)
 	// コンボ開始
 	if (attackProgress_ >= 1.0f) {
 		if (IsComboAvailable() && input_->PushKey(DIK_SPACE)) {
-			//stateRequest_ = WeaponState::Dashing;
-			//currentMotion_ = dashMotion_; // ダッシュ攻撃モーション
-			//attackProgress_ = 0.0f;
-			//canCombo_ = false;
+			stateRequest_ = WeaponState::Dashing;
+			currentMotion_ = dashMotion_; // ダッシュ攻撃モーション
+			attackProgress_ = 0.0f;
+			canCombo_ = false;
 		}
 		// モーション終了
-		else if (attackProgress_ >= 1.2f) {
+		else if (attackProgress_ >= 1.5f) {
 			stateRequest_ = WeaponState::Cooldown; // クールダウン状態へ移行
 			
 		}
@@ -611,10 +611,10 @@ void PlayerWeapon::UpdateDashMotion(float deltaTime)
 	// コンボ開始
 	if (attackProgress_ >= 0.5f) {
 		if (IsComboAvailable() && input_->PushKey(DIK_SPACE)) {
-			stateRequest_ = WeaponState::Dashing;
-			currentMotion_ = dashMotion_; // ダッシュ攻撃モーション
-			attackProgress_ = 0.0f;
-			canCombo_ = false;
+			//stateRequest_ = WeaponState::Dashing;
+			//currentMotion_ = dashMotion_; // ダッシュ攻撃モーション
+			//attackProgress_ = 0.0f;
+			//canCombo_ = false;
 		}
 		// モーション終了
 		else if (attackProgress_ >= 0.7f) {
