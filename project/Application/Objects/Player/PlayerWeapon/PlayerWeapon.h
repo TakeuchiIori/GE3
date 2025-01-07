@@ -71,12 +71,6 @@ public:
 	/// </summary>
 	void DrawDebugUI();
 
-	json ToJson() const;              // パラメータをJSONに変換
-	void FromJson(const json& data);  // JSONからパラメータを読み込み
-
-	void SaveToFile(const std::string& filename) const;
-	void LoadFromFile(const std::string& filename);
-
 private: 
 	//==========================================================================//
 	//								メンバ関数								　　	//
@@ -224,7 +218,7 @@ private:
 	Input* input_ = nullptr;
 	// ワールドトランスフォーム
 	WorldTransform worldTransform_;
-
+	bool isUpdate_ = true;
 
 	WeaponState state_ = WeaponState::Idle; // 武器の状態
 	std::optional<WeaponState> stateRequest_;

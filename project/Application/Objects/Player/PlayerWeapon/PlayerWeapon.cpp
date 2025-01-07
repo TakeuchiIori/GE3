@@ -135,18 +135,21 @@ void PlayerWeapon::SaveGlobalVariables() {
 /// </summary>
 void PlayerWeapon::Update()
 {
+	if (!isUpdate_) {
+		ApplyGlobalVariables();
+	}
 	// 全状態の初期化
 	InitializeState();
 
 	// 全状態の更新処理
 	UpdateState();
 
-	if (state_ != PlayerWeapon::WeaponState::Idle && 
+	if (state_ != PlayerWeapon::WeaponState::Idle || 
 		state_ != PlayerWeapon::WeaponState::Cooldown) {
 		Collider::SetRadiusFloat(2.0f);
 	}
 
-	//ApplyGlobalVariables();
+
 
 	// ワールドトランスフォームの更新
 	worldTransform_.UpdateMatrix();
@@ -171,6 +174,7 @@ void PlayerWeapon::Draw()
 void PlayerWeapon::DrawDebugUI() {
 #ifdef _DEBUG
 	if (ImGui::Begin("Weapon Debug")) {
+		ImGui::Checkbox("Update", &isUpdate_);
 		// 現在の状態
 		ImGui::Text("Current State: %s",
 			state_ == WeaponState::Idle ? "Idle" :
@@ -253,140 +257,9 @@ void PlayerWeapon::DrawDebugUI() {
 		ImGui::PopID();
 	}
 
-	// 保存と読み込み
-	if (ImGui::Button("Save Settings")) {
-		SaveToFile("Resources./Json./weapon_settings.json");
-	}
-
-	if (ImGui::Button("Load Settings")) {
-		LoadFromFile("Resources./Json./weapon_settings.json");
-	}
 	ImGui::End();
 #endif
 
-}
-
-json PlayerWeapon::ToJson() const {
-	json motionData = json::array();
-	for (const auto& motion : attackMotions_) {
-		json keyframes = json::array();
-		for (const auto& keyframe : motion.srtKeyframes) {
-			keyframes.push_back({
-				{"time", keyframe.time},
-				{"position", {keyframe.position.x, keyframe.position.y, keyframe.position.z}},
-				{"scale", {keyframe.scale.x, keyframe.scale.y, keyframe.scale.z}},
-				{"rotation", {keyframe.rotation.x, keyframe.rotation.y, keyframe.rotation.z}}
-				});
-		}
-		motionData.push_back({
-			{"duration", motion.duration},
-			{"hitStartTime", motion.hitStartTime},
-			{"hitEndTime", motion.hitEndTime},
-			{"keyframes", keyframes}
-			});
-	}
-
-	return {
-		{"currentState", static_cast<int>(state_)},
-		{"worldTransform", {
-			{"translation", {worldTransform_.translation_.x, worldTransform_.translation_.y, worldTransform_.translation_.z}},
-			{"rotation", {worldTransform_.rotation_.x, worldTransform_.rotation_.y, worldTransform_.rotation_.z}},
-			{"scale", {worldTransform_.scale_.x, worldTransform_.scale_.y, worldTransform_.scale_.z}}
-		}},
-		{"cooldownTime", cooldownTime_},
-		{"elapsedCooldownTime", elapsedCooldownTime_},
-		{"attackMotions", motionData},
-		{"canCombo", canCombo_},
-		{"elapsedComboTime", elapsedComboTime_},
-		{"comboWindow", comboWindow_},
-		{"idleTime", idleTime_},
-		{"attackProgress", attackProgress_},
-		{"isJumpAttack", isJumpAttack_}
-	};
-}
-
-void PlayerWeapon::FromJson(const json& data)
-{
-	state_ = static_cast<WeaponState>(data["currentState"].get<int>());
-
-	worldTransform_.translation_ = {
-		data["worldTransform"]["translation"][0].get<float>(),
-		data["worldTransform"]["translation"][1].get<float>(),
-		data["worldTransform"]["translation"][2].get<float>()
-	};
-	worldTransform_.rotation_ = {
-		data["worldTransform"]["rotation"][0].get<float>(),
-		data["worldTransform"]["rotation"][1].get<float>(),
-		data["worldTransform"]["rotation"][2].get<float>()
-	};
-	worldTransform_.scale_ = {
-		data["worldTransform"]["scale"][0].get<float>(),
-		data["worldTransform"]["scale"][1].get<float>(),
-		data["worldTransform"]["scale"][2].get<float>()
-	};
-
-	cooldownTime_ = data["cooldownTime"].get<float>();
-	elapsedCooldownTime_ = data["elapsedCooldownTime"].get<float>();
-	canCombo_ = data["canCombo"].get<bool>();
-	elapsedComboTime_ = data["elapsedComboTime"].get<float>();
-	comboWindow_ = data["comboWindow"].get<float>();
-	idleTime_ = data["idleTime"].get<float>();
-	attackProgress_ = data["attackProgress"].get<float>();
-	isJumpAttack_ = data["isJumpAttack"].get<bool>();
-
-	attackMotions_.clear();
-	for (const auto& motion : data["attackMotions"]) {
-		AttackMotion newMotion;
-		newMotion.duration = motion["duration"].get<float>();
-		newMotion.hitStartTime = motion["hitStartTime"].get<float>();
-		newMotion.hitEndTime = motion["hitEndTime"].get<float>();
-
-		for (const auto& keyframe : motion["keyframes"]) {
-			newMotion.srtKeyframes.push_back({
-				keyframe["time"].get<float>(),
-				{keyframe["position"][0].get<float>(), keyframe["position"][1].get<float>(), keyframe["position"][2].get<float>()},
-				{keyframe["scale"][0].get<float>(), keyframe["scale"][1].get<float>(), keyframe["scale"][2].get<float>()},
-				{keyframe["rotation"][0].get<float>(), keyframe["rotation"][1].get<float>(), keyframe["rotation"][2].get<float>()}
-				});
-		}
-		attackMotions_.push_back(newMotion);
-	}
-}
-
-/// <summary>
-/// JSONに保存
-/// </summary>
-/// <param name="filename"></param>
-void PlayerWeapon::SaveToFile(const std::string& filename) const
-{
-	std::ofstream file(filename);
-	if (file.is_open()) {
-		file << ToJson().dump(4); // JSONをフォーマット付きで保存
-		file.close();
-	}
-}
-
-/// <summary>
-/// JSONファイル読み込み
-/// </summary>
-/// <param name="filename"></param>
-void PlayerWeapon::LoadFromFile(const std::string& filename)
-{
-	// ファイルを開く
-	std::ifstream file(filename);
-	if (!file) {
-		std::cerr << "Failed to open file: " << filename << std::endl;
-		return;
-	}
-
-	// JSONデータを読み込む
-	json data;
-	file >> data;
-	file.close();
-
-	// JSONデータをPlayerWeaponに適用
-	FromJson(data);
-	std::cout << "File loaded successfully: " << filename << std::endl;
 }
 
 /// <summary>

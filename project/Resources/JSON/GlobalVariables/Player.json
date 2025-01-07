@@ -1,0 +1,28 @@
+{
+    "Player": {
+        "FallSpeedFactor": 1.5,
+        "IsDrawEnabled": true,
+        "JumpDuration": 1.0,
+        "JumpHeight": 5.0,
+        "MoveSpeed": [
+            0.25,
+            0.25,
+            0.25
+        ],
+        "Rotation": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "Scale": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "Translation": [
+            0.0,
+            1.0,
+            0.0
+        ]
+    }
+}

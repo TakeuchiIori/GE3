@@ -32,11 +32,24 @@ void Player::Initialize()
     weapon_->SetParent(worldTransform_);
     
 
-    GlobalVariables* globalvariables = GlobalVariables::GetInstance();
+    GlobalVariables* globalVariables = GlobalVariables::GetInstance();
     const char* groupName = "Player";
     // グループを追加
     GlobalVariables::GetInstance()->CreateGroup(groupName);
-    globalvariables->AddItem(groupName, "Translation", worldTransform_.translation_);
+    globalVariables->AddItem(groupName, "Translation", worldTransform_.translation_);
+    // Transform関連
+    globalVariables->AddItem(groupName, "Translation", worldTransform_.translation_);
+    globalVariables->AddItem(groupName, "Rotation", worldTransform_.rotation_);
+    globalVariables->AddItem(groupName, "Scale", worldTransform_.scale_);
+    // 移動関連
+    globalVariables->AddItem(groupName, "MoveSpeed", moveSpeed_);
+    // ジャンプ関連
+    globalVariables->AddItem(groupName, "JumpHeight", jumpHeight_);
+    globalVariables->AddItem(groupName, "JumpDuration", jumpDuration_);
+    globalVariables->AddItem(groupName, "FallSpeedFactor", fallSpeedFactor_);
+    // 描画関連
+    globalVariables->AddItem(groupName, "IsDrawEnabled", isDrawEnabled_);
+
 
     // TypeIDの設定
     Collider::SetTypeID(static_cast<uint32_t>(CollisionTypeIdDef::kPlayer));
@@ -272,7 +285,7 @@ void Player::ShowCoordinatesImGui()
     ImGui::Begin("Player Editor");
     ImGui::Text("DrawCall");
     ImGui::Checkbox("Enable Draw", &isDrawEnabled_); 
-    ImGui::Checkbox("IsUpdate", &isUpdate_);
+    ImGui::Checkbox("Update", &isUpdate_);
     // スケール
     ImGui::Text("Scale");
     float scale[3] = { worldTransform_.scale_.x, worldTransform_.scale_.y, worldTransform_.scale_.z };
@@ -336,6 +349,21 @@ Matrix4x4 Player::GetWorldMatrix() const
 void Player::ApplyGlobalVariables() {
     GlobalVariables* globalVariables = GlobalVariables::GetInstance();
     const char* groupName = "Player";
+
+    // Transform関連
     worldTransform_.translation_ = globalVariables->GetVector3Value(groupName, "Translation");
+    worldTransform_.rotation_ = globalVariables->GetVector3Value(groupName, "Rotation");
+    worldTransform_.scale_ = globalVariables->GetVector3Value(groupName, "Scale");
+
+    // 移動関連
+    moveSpeed_ = globalVariables->GetVector3Value(groupName, "MoveSpeed");
+
+    // ジャンプ関連
+    jumpHeight_ = globalVariables->GetFloatValue(groupName, "JumpHeight");
+    jumpDuration_ = globalVariables->GetFloatValue(groupName, "JumpDuration");
+    fallSpeedFactor_ = globalVariables->GetFloatValue(groupName, "FallSpeedFactor");
+
+    // 描画関連
+    isDrawEnabled_ = globalVariables->GetBoolValue(groupName, "IsDrawEnabled");
 
 }
