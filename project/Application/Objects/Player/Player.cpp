@@ -18,7 +18,7 @@ void Player::Initialize()
     // OBject3dの初期化
     base_ = std::make_unique<Object3d>();
     base_->Initialize();
-    base_->SetModel("cube.obj");
+    base_->SetModel("player.obj");
 
     weapon_ = std::make_unique<PlayerWeapon>();
     weapon_->Initialize();
