@@ -1,6 +1,8 @@
 #pragma once
 // Engine
 #include "Object3D./Object3d.h"
+#include "Sprite/Sprite.h"
+#include "Systems/Camera/Camera.h"
 #include "Systems/Input./Input.h"
 #include "WorldTransform./WorldTransform.h"
 #include "Collision./Collider.h"
@@ -32,6 +34,9 @@ public: // メンバ関数（公開）
 	/// 描画
 	/// </summary>
 	void Draw();
+
+
+	void DrawSprite();
 
 	/// <summary>
 	/// ImGui
@@ -121,14 +126,18 @@ public: // アクセッサ
 	const Vector3& GetRotation() const { return worldTransform_.rotation_; }
 	PlayerWeapon* GetPlayerWeapon() { return weapon_.get(); }
 
+	void SetCamera(Camera* camera) { sprite_->SetCamera(camera); }
+
 private: // メンバ変数
 
 	WorldTransform worldTransform_;
-
+	WorldTransform WS_;
 	// ポインタ
 	std::unique_ptr<Object3d> base_ = nullptr;
 	Input* input_ = nullptr;
 	std::unique_ptr<PlayerWeapon> weapon_;
+	std::unique_ptr<Object3d> shadow_;
+	std::unique_ptr<Sprite> sprite_;
 
 
 	bool isColliding_ = false;

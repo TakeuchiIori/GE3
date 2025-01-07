@@ -21,7 +21,16 @@ void Enemy::Initialize()
     input_ = Input::GetInstance();
     moveSpeed_ = { 0.25f, 0.25f , 0.25f };
     worldTransform_.Initialize();
-    worldTransform_.translation_.y = 1.0f;
+    worldTransform_.translation_.y = 2.0f;
+
+    shadow_ = std::make_unique<Object3d>();
+    shadow_->Initialize();
+    shadow_->SetModel("Shadow.obj");
+
+    WS_.Initialize();
+
+    WS_.translation_.y = 0.5f;
+
     //GlobalVariables* globalvariables = GlobalVariables::GetInstance();
     const char* groupName = "Enemy";
     // グループを追加
@@ -38,6 +47,8 @@ void Enemy::Update()
     ShowCoordinatesImGui();
 
     worldTransform_.UpdateMatrix();
+
+    WS_.UpdateMatrix();
 }
 
 void Enemy::Draw()
@@ -45,6 +56,7 @@ void Enemy::Draw()
     if (isDrawEnabled_) {
         base_->Draw(worldTransform_);
     }
+    shadow_->Draw(WS_);
 }
 
 void Enemy::ShowCoordinatesImGui()
@@ -123,4 +135,7 @@ void Enemy::Move()
     }
     // 衝突状態をリセット
     isColliding_ = false; // 毎フレーム初期化
+
+    WS_.translation_.x = worldTransform_.translation_.x;
+    WS_.translation_.z = worldTransform_.translation_.z;
 }

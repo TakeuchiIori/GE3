@@ -77,6 +77,8 @@ public: // アクセッサ
 private:
 
 	WorldTransform worldTransform_;
+	WorldTransform WS_;
+	std::unique_ptr<Object3d> shadow_;
 	std::unique_ptr<Object3d> base_ = nullptr;
 	Input* input_ = nullptr;
 

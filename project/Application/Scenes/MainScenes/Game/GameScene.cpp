@@ -48,6 +48,7 @@ void GameScene::Initialize()
     // 各オブジェクトの初期化
     player_ = std::make_unique<Player>();
     player_->Initialize();
+   
 
     // 敵
     enemy_ = std::make_unique<Enemy>();
@@ -149,7 +150,7 @@ void GameScene::Draw()
     /// <summary>
     /// ここから描画可能です
     /// </summary>
-
+   // player_->DrawSprite();
    
 
 #pragma endregion
@@ -163,7 +164,7 @@ void GameScene::Draw()
     CollisionManager::GetInstance()->Draw();
     player_->Draw();
     enemy_->Draw();
-    //ground_->Draw();
+    ground_->Draw();
     //line_->UpdateVertices(start_, end_);
   
     //line_->DrawLine();

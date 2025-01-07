@@ -105,8 +105,8 @@ public: // アクセッサ
 	/*===============================================//
 						  座標
 	//===============================================*/
-	const Vector2& GetPosition()const { return position_; }
-	void SetPosition(const Vector2& position) { position_ = position; }
+	const Vector3& GetPosition()const { return position_; }
+	void SetPosition(const Vector3& position) { position_ = position; }
 
 	/*===============================================//
 						  回転
@@ -206,7 +206,7 @@ private: // メンバ変数
 	Vector2 textureSize_ = { 100.0f,100.0f };
 
 	// スプライト
-	Vector2 position_ = { 0.0f,0.0f };
+	Vector3 position_ = { 0.0f,0.0f ,0.0f};
 	Vector3 rotation_ = { 0.0f,0.0f,0.0f };
 	Vector2 size_ = { 100.0f,100.0f };
 

@@ -36,7 +36,7 @@ void Sprite::Update()
 	
 	// スプライトのSRT
 	CreateVertex();
-	transform_.translate = { position_.x,position_.y,0.0f };
+	transform_.translate = { position_.x,position_.y,position_.z};
 	transform_.rotate = { rotation_.x,rotation_.y,rotation_.z };
 	transform_.scale = { size_.x,size_.y,1.0f };
 	Matrix4x4 worldMatrix = MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.translate);

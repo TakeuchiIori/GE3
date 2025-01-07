@@ -23,7 +23,13 @@ void Player::Initialize()
     weapon_ = std::make_unique<PlayerWeapon>();
     weapon_->Initialize();
 
+    shadow_ = std::make_unique<Object3d>();
+    shadow_->Initialize();
+    shadow_->SetModel("Shadow.obj");
 
+    WS_.Initialize();
+   
+    WS_.translation_.y = 0.5f;
     // その他初期化
     input_ = Input::GetInstance();
     moveSpeed_ = { 0.25f, 0.25f , 0.25f };
@@ -64,6 +70,8 @@ void Player::Update()
     Move();   
 
     ShowCoordinatesImGui();
+    WS_.translation_.x = worldTransform_.translation_.x;
+    WS_.translation_.z = worldTransform_.translation_.z;
 
 
     UpdateWorldTransform();
@@ -75,8 +83,9 @@ void Player::Draw()
 {
     if (isDrawEnabled_) {
         base_->Draw(worldTransform_);
+        
     }
-
+    shadow_->Draw(WS_);
     weapon_->Draw();
 }
 
@@ -84,6 +93,7 @@ void Player::UpdateWorldTransform()
 {
     // ワールドトランスフォームの更新
     worldTransform_.UpdateMatrix();
+    WS_.UpdateMatrix();
     
 }
 
