@@ -85,10 +85,10 @@ void ParticleManager::Update()
 	default:
 		break;
 	}
-
-   #ifdef _DEBUG
 	// ブレンドモードの設定を反映
 	Render(blendDesc_, currentBlendMode_);
+   #ifdef _DEBUG
+	
 	ShowUpdateModeDropdown();
     #endif
 
@@ -185,14 +185,70 @@ void ParticleManager::UpdateParticleMove()
 
 }
 
-void ParticleManager::UpdateParticlePlayer(Vector3& pos)
+void ParticleManager::UpdateParticlePlayer(const Vector3& pos)
 {
 
 }
 
-void ParticleManager::UpdateParticlePlayerWeapon(Vector3& pos)
+void ParticleManager::UpdateParticlePlayerWeapon(const Vector3& pos)
 {
+	for (auto& [groupName, particleGroup] : particleGroups_) {
+		uint32_t numInstance = 0;
 
+		for (auto particleIterator = particleGroup.particles.begin(); particleIterator != particleGroup.particles.end();) {
+			// 寿命が尽きたパーティクルを削除
+			if ((*particleIterator).lifeTime <= (*particleIterator).currentTime) {
+				particleIterator = particleGroup.particles.erase(particleIterator);
+				continue;
+			}
+
+			if (numInstance >= kNumMaxInstance) {
+				break;
+			}
+
+			// パーティクルの動き：`pos` から放射状に発散
+			Vector3 direction = (*particleIterator).transform.translate - pos; // `pos` を基準とした方向
+			direction = Vector3::Normalize(direction) * 0.5f; // 放射状の速度調整
+			(*particleIterator).velocity += direction;
+
+			// 位置の更新
+			(*particleIterator).transform.translate += (*particleIterator).velocity * kDeltaTime;
+
+			// 時間の更新
+			(*particleIterator).currentTime += kDeltaTime;
+
+			// アルファ値の更新（フェードアウト効果）
+			float alpha = 1.0f - ((*particleIterator).currentTime / (*particleIterator).lifeTime);
+
+			// ワールド行列の計算
+			scaleMatrix = ScaleMatrixFromVector3((*particleIterator).transform.scale);
+			translateMatrix = TranslationMatrixFromVector3((*particleIterator).transform.translate);
+			Matrix4x4 worldMatrix = MakeAffineMatrix(
+				(*particleIterator).transform.scale,
+				(*particleIterator).transform.rotate,
+				(*particleIterator).transform.translate
+			);
+			Matrix4x4 worldViewProjectionMatrix = Multiply(worldMatrix, viewProjectionMatrix);
+
+			// GPU用のインスタンシングデータ設定
+			if (numInstance < kNumMaxInstance) {
+				instancingData_[numInstance].WVP = worldViewProjectionMatrix;
+				instancingData_[numInstance].World = worldMatrix;
+				instancingData_[numInstance].color = (*particleIterator).color;
+				instancingData_[numInstance].color.w = alpha;
+				++numInstance;
+			}
+			++particleIterator;
+		}
+
+		// インスタンス数の更新
+		particleGroup.instance = numInstance;
+
+		// GPU メモリにインスタンスデータを書き込む
+		if (particleGroup.instancingData) {
+			std::memcpy(particleGroup.instancingData, instancingData_, sizeof(ParticleForGPU) * numInstance);
+		}
+	}
 }
 
 void ParticleManager::UpdateParticleRadial()

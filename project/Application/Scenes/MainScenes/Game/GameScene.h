@@ -83,11 +83,11 @@ private:
     // サウンド
     Audio::SoundData soundData;
     // パーティクルエミッター
-    std::unique_ptr<ParticleEmitter> particleEmitter_;
+    std::unique_ptr<ParticleEmitter> particleEmitter_[2];
     Vector3 emitterPosition_;
     uint32_t particleCount_;
 
-   
+    Vector3 weaponPos;
    
     // 3Dモデル
     std::unique_ptr<Object3d> test_;

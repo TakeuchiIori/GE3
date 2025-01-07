@@ -146,7 +146,7 @@ public: // メンバ関数
 	/// <param name="position"></param>
 	/// <param name="count"></param>
 	void Emit(const std::string& name, const Vector3& position, uint32_t count);
-
+	void UpdateParticlePlayerWeapon(const Vector3& pos);
 
 
 private: 
@@ -156,9 +156,9 @@ private:
 	/// </summary>
 	void UpdateParticleMove();
 
-	void UpdateParticlePlayer(Vector3& pos);
+	void UpdateParticlePlayer(const Vector3& pos);
 
-	void UpdateParticlePlayerWeapon(Vector3& pos);
+	
 
 	void UpdateParticleRadial();
 

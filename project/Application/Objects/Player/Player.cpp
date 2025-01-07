@@ -35,6 +35,7 @@ void Player::Initialize()
     moveSpeed_ = { 0.25f, 0.25f , 0.25f };
     worldTransform_.Initialize();
     worldTransform_.translation_.y = 1.0f;
+    worldTransform_.translation_.z = -50.0f;
     weapon_->SetParent(worldTransform_);
     
 

@@ -41,33 +41,33 @@ void PlayerWeapon::Initialize()
 	attackMotions_.push_back({
 		0.5f, 0.2f, 0.8f, {
 			{0.0f, {0, 4, 0}, {1.0f, 1.0f, 1.0f}, MakeRotateAxisAngleQuaternion({1, 0, 0}, 0)},   // 初期状態
-			{0.25f, {0, 2, 2}, {1.0f, 1.0f, 1.0f}, MakeRotateAxisAngleQuaternion({1, 0, 0}, 45)}, // 振り下ろし途中
-			{0.5f, {0, 0, 2}, {1.0f, 1.0f, 1.0f}, MakeRotateAxisAngleQuaternion({1, 0, 0}, 90)} // 完了
+			{0.25f, {0, 2, 3}, {1.0f, 1.0f, 1.0f}, MakeRotateAxisAngleQuaternion({1, 0, 0}, 45)}, // 振り下ろし途中
+			{0.5f, {0, 0, 3}, {1.0f, 1.0f, 1.0f}, MakeRotateAxisAngleQuaternion({1, 0, 0}, 90)} // 完了
 		}
 		});
 	// ダッシュ攻撃モーション
 	attackMotions_.push_back({
 		0.5f, 0.2f, 0.8f, {
-			{0.0f, {-4.0f, 6.0f, 2.0f}, {1.0f, 1.0f, 1.0f}, MakeRotateAxisAngleQuaternion({90, 0, 45})},   // スタート
-			{0.25f, {0.0f, 0.0f, 2.0f}, {1.0f, 1.0f, 1.0f}, MakeRotateAxisAngleQuaternion({90, 0, 45})},   // 中央
-			{0.5f, {4.0f, -6.0f, 2.0f}, {1.0f, 1.0f, 1.0f}, MakeRotateAxisAngleQuaternion({90, 0, 45})}    // フィニッシュ
+			{0.0f, {-4.0f, 6.0f, 3.0f}, {1.0f, 1.0f, 1.0f}, MakeRotateAxisAngleQuaternion({90, 0, 45})},   // スタート
+			{0.25f, {0.0f, 0.0f, 3.0f}, {1.0f, 1.0f, 1.0f}, MakeRotateAxisAngleQuaternion({90, 0, 45})},   // 中央
+			{0.5f, {4.0f, -6.0f, 3.0f}, {1.0f, 1.0f, 1.0f}, MakeRotateAxisAngleQuaternion({90, 0, 45})}    // フィニッシュ
 		}
 		});
 
 	attackMotions_.push_back({
 	0.5f, 0.2f, 0.8f, {
-		{0.0f, {4.0f, 6.0f, 2.0f}, {1.0f, 1.0f, 1.0f}, MakeRotateAxisAngleQuaternion({90, 0, -45})},   // スタート
-		{0.25f, {0.0f, 0.0f, 2.0f}, {1.0f, 1.0f, 1.0f}, MakeRotateAxisAngleQuaternion({90, 0, -45})},   // 中央
-		{0.5f, {-4.0f, -6.0f, 2.0f}, {1.0f, 1.0f, 1.0f}, MakeRotateAxisAngleQuaternion({90, 0, -45})}    // フィニッシュ
+		{0.0f, {4.0f, 6.0f, 3.0f}, {1.0f, 1.0f, 1.0f}, MakeRotateAxisAngleQuaternion({90, 0, -45})},   // スタート
+		{0.25f, {0.0f, 0.0f, 3.0f}, {1.0f, 1.0f, 1.0f}, MakeRotateAxisAngleQuaternion({90, 0, -45})},   // 中央
+		{0.5f, {-4.0f, -6.0f, 3.0f}, {1.0f, 1.0f, 1.0f}, MakeRotateAxisAngleQuaternion({90, 0, -45})}    // フィニッシュ
 		}
 		});
 
 	// ジャンプ
 	attackMotions_.push_back({
 		1.0f, 0.2f, 0.8f, {
-		{0.0f, {0.0f, 0.0f, 2.0f}, {1.0f, 1.0f, 1.0f}, MakeRotateAxisAngleQuaternion({90 + 360 * 0.0f , 0, 0})},   // スタート
-		{0.5f, {0.0f, 0.0f, 2.0f}, {1.0f, 1.0f, 1.0f}, MakeRotateAxisAngleQuaternion({90 + 360 * 0.5f, 0, 0})},   // 中央
-		{1.0f, {0.0f, 0.0f, 2.0f}, {1.0f, 1.0f, 1.0f}, MakeRotateAxisAngleQuaternion({90 + 360 * 1.0f, 0, 0})}    // フィニッシュ
+		{0.0f, {0.0f, 0.0f, 3.0f}, {1.0f, 1.0f, 1.0f}, MakeRotateAxisAngleQuaternion({90 + 360 * 0.0f , 0, 0})},   // スタート
+		{0.5f, {0.0f, 0.0f, 3.0f}, {1.0f, 1.0f, 1.0f}, MakeRotateAxisAngleQuaternion({90 + 360 * 0.5f, 0, 0})},   // 中央
+		{1.0f, {0.0f, 0.0f, 3.0f}, {1.0f, 1.0f, 1.0f}, MakeRotateAxisAngleQuaternion({90 + 360 * 1.0f, 0, 0})}    // フィニッシュ
 		}
 		});
 

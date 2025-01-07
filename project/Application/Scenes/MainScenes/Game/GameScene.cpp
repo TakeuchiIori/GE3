@@ -54,9 +54,9 @@ void GameScene::Initialize()
    
 
     // 敵
-    enemy_ = std::make_unique<Enemy>();
-    enemy_->Initialize();
-    enemy_->SetPlayer(player_.get());
+    //enemy_ = std::make_unique<Enemy>();
+    //enemy_->Initialize();
+    //enemy_->SetPlayer(player_.get());
 
     // 地面
     ground_ = std::make_unique<Ground>();
@@ -79,8 +79,12 @@ void GameScene::Initialize()
     ParticleManager::GetInstance()->CreateParticleGroup(particleName, "Resources/images/circle.png");
     emitterPosition_ = Vector3{ 0.0f, 0.0f, 0.0f }; // エミッタの初期位置
     particleCount_ = 1;
-    particleEmitter_ = std::make_unique<ParticleEmitter>(particleName, emitterPosition_, particleCount_);
+    particleEmitter_[0] = std::make_unique<ParticleEmitter>(particleName, emitterPosition_, particleCount_);
 
+    //// パーティクルグループ名を指定
+    //const std::string particleGroupName = "PlayerWeaponEffect";
+    //ParticleManager::GetInstance()->CreateParticleGroup(particleGroupName, "Resources/images/circle.png");
+    //particleEmitter_[1] = std::make_unique<ParticleEmitter>(particleGroupName, weaponPos, 10);
 
 }
 
@@ -110,15 +114,22 @@ void GameScene::Update()
     }
 
     // 各敵を更新
-    for (auto& enemy : enemies_) {
+    for (auto it = enemies_.begin(); it != enemies_.end();) {
+        auto& enemy = *it;
         enemy->Update();
+        if (!enemy->IsActive()) {
+            it = enemies_.erase(it); // Remove and release memory for inactive enemies.
+        }
+        else {
+            ++it;
+        }
     }
 
     // objの更新
     player_->Update();
 
 
-    enemy_->Update();
+   // enemy_->Update();
     ground_->Update();
     test_->UpdateAnimation();
 
@@ -127,10 +138,11 @@ void GameScene::Update()
     UpdateCamera();
 
     // パーティクル更新
-    ParticleManager::GetInstance()->Update();
+   // ParticleManager::GetInstance()->Update();
+   // ParticleManager::GetInstance()->UpdateParticlePlayerWeapon(weaponPos);
     ShowImGui();
-    particleEmitter_->Update();
-   
+   // particleEmitter_[0]->Update();
+   // particleEmitter_[1]->Update();
   
 
     // ワールドトランスフォーム更新
@@ -154,7 +166,7 @@ void GameScene::Update()
 void GameScene::Draw()
 {
 #pragma region 演出描画
-    ParticleManager::GetInstance()->Draw();
+    //ParticleManager::GetInstance()->Draw();
 
 
 #pragma endregion
@@ -280,7 +292,7 @@ void GameScene::ShowImGui()
     ImGui::End();
     ImGui::Begin("Emitter");
     ImGui::DragFloat3("Emitter Position", &emitterPosition_.x, 0.1f);
-    particleEmitter_->SetPosition(emitterPosition_);
+    particleEmitter_[0]->SetPosition(emitterPosition_);
 
     // パーティクル数の表示と調整
     ImGui::Text("Particle Count: %.0d", particleCount_); // 現在のパーティクル数を表示
@@ -292,7 +304,7 @@ void GameScene::ShowImGui()
             particleCount_ -= 1;
         }
     }
-    particleEmitter_->SetCount(particleCount_);
+    particleEmitter_[0]->SetCount(particleCount_);
 
 
     ImGui::End();
@@ -315,7 +327,7 @@ void GameScene::CheckAllCollisions() {
     for (auto& enemy : enemies_) {
         CollisionManager::GetInstance()->AddCollider(enemy.get());
     }
-    CollisionManager::GetInstance()->AddCollider(enemy_.get());
+   // CollisionManager::GetInstance()->AddCollider(enemy_.get());
 
     // 衝突判定と応答
     CollisionManager::GetInstance()->CheckAllCollisions();

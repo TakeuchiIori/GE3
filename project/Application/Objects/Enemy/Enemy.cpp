@@ -30,7 +30,7 @@ void Enemy::Initialize()
     moveSpeed_ = { 0.25f, 0.25f , 0.25f };
     worldTransform_.Initialize();
     worldTransform_.translation_.y = 2.0f;
-
+    worldTransform_.translation_.z = 25.0f;
     shadow_ = std::make_unique<Object3d>();
     shadow_->Initialize();
     shadow_->SetModel("Shadow.obj");
@@ -46,10 +46,15 @@ void Enemy::Initialize()
    // Collider::Initialize();
     // TypeIDの設定
     Collider::SetTypeID(static_cast<uint32_t>(CollisionTypeIdDef::kEnemy));
+
+    isActive_ = true;
 }
 
 void Enemy::Update()
 {
+    if (!isActive_)
+        return;
+
     Move();
 
     ShowCoordinatesImGui();
@@ -61,10 +66,11 @@ void Enemy::Update()
 
 void Enemy::Draw()
 {
-    if (isDrawEnabled_) {
+    if (isActive_) {
         base_->Draw(worldTransform_);
+        shadow_->Draw(WS_);
     }
-    shadow_->Draw(WS_);
+    
 }
 
 void Enemy::ShowCoordinatesImGui()
@@ -112,7 +118,7 @@ void Enemy::OnCollision(Collider* other)
     // 衝突相手が敵なら
     if (typeID == static_cast<uint32_t>(CollisionTypeIdDef::kPlayer) || typeID == static_cast<uint32_t>(CollisionTypeIdDef::kPlayerWeapon)) {
 
-       isColliding_ = true;
+        isActive_ = false;
     }
 
 }

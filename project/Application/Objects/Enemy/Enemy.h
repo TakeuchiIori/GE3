@@ -82,6 +82,7 @@ public: // アクセッサ
 	/// シリアルナンバーの取得
 	/// </summary>
 	uint32_t GetSerialNumber() const { return serialNumber_; }
+	bool IsActive() const { return isActive_; }
 
 private:
 	const Player* player_; // プレイヤーの参照
@@ -96,7 +97,7 @@ private:
 	bool isColliding_ = false;
 	Vector3 moveSpeed_;
 	bool isDrawEnabled_ = true;
-
+	bool isActive_ = true;
 	// シリアルナンバー
 	uint32_t serialNumber_ = 0;
 	// 次のシリアルナンバー

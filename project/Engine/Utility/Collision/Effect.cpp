@@ -10,7 +10,7 @@ void Effect::Initialize() {
     worldTransform_.Initialize();
     obj_ = std::make_unique<Object3d>();
     obj_->Initialize();
-    obj_->SetModel("float_body.obj");
+    obj_->SetModel("ICO.obj");
     rotationAngle_ = 0.0f; // 回転角度初期化
     vibrationAmount_ = 0.0f; // 振動量初期化
 }
