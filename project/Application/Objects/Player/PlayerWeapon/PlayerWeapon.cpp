@@ -46,17 +46,17 @@ void PlayerWeapon::Initialize()
 	// ダッシュ攻撃モーション
 	attackMotions_.push_back({
 		0.5f, 0.2f, 0.8f, {
-			{0.0f, {-4.0f, 6.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, MakeRotateAxisAngleQuaternion({90, 0, 45})},   // スタート
-			{0.25f, {0.0f, 0.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, MakeRotateAxisAngleQuaternion({90, 0, 45})},   // 中央
-			{0.5f, {4.0f, -6.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, MakeRotateAxisAngleQuaternion({90, 0, 45})}    // フィニッシュ
+			{0.0f, {-4.0f, 6.0f, 2.0f}, {1.0f, 1.0f, 1.0f}, MakeRotateAxisAngleQuaternion({90, 0, 45})},   // スタート
+			{0.25f, {0.0f, 0.0f, 2.0f}, {1.0f, 1.0f, 1.0f}, MakeRotateAxisAngleQuaternion({90, 0, 45})},   // 中央
+			{0.5f, {4.0f, -6.0f, 2.0f}, {1.0f, 1.0f, 1.0f}, MakeRotateAxisAngleQuaternion({90, 0, 45})}    // フィニッシュ
 		}
 		});
 
 	attackMotions_.push_back({
 	0.5f, 0.2f, 0.8f, {
-		{0.0f, {4.0f, 6.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, MakeRotateAxisAngleQuaternion({90, 0, -45})},   // スタート
-		{0.25f, {0.0f, 0.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, MakeRotateAxisAngleQuaternion({90, 0, -45})},   // 中央
-		{0.5f, {-4.0f, -6.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, MakeRotateAxisAngleQuaternion({90, 0, -45})}    // フィニッシュ
+		{0.0f, {4.0f, 6.0f, 2.0f}, {1.0f, 1.0f, 1.0f}, MakeRotateAxisAngleQuaternion({90, 0, -45})},   // スタート
+		{0.25f, {0.0f, 0.0f, 2.0f}, {1.0f, 1.0f, 1.0f}, MakeRotateAxisAngleQuaternion({90, 0, -45})},   // 中央
+		{0.5f, {-4.0f, -6.0f, 2.0f}, {1.0f, 1.0f, 1.0f}, MakeRotateAxisAngleQuaternion({90, 0, -45})}    // フィニッシュ
 		}
 		});
 
@@ -73,6 +73,7 @@ void PlayerWeapon::Initialize()
 
 	// グループを追加
 	Collider::Initialize();
+	Collider::SetRadiusFloat(2.0f);
 
 	// TypeIDの設定
 	Collider::SetTypeID(static_cast<uint32_t>(CollisionTypeIdDef::kPlayerWeapon));

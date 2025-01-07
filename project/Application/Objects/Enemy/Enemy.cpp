@@ -90,7 +90,7 @@ void Enemy::OnCollision(Collider* other)
     // 衝突相手の種別IDを取得
     uint32_t typeID = other->GetTypeID();
     // 衝突相手が敵なら
-    if (typeID == static_cast<uint32_t>(CollisionTypeIdDef::kPlayer)) {
+    if (typeID == static_cast<uint32_t>(CollisionTypeIdDef::kPlayer) || typeID == static_cast<uint32_t>(CollisionTypeIdDef::kPlayerWeapon)) {
 
        isColliding_ = true;
     }

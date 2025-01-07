@@ -42,7 +42,7 @@ void CollisionManager::Initialize() {
 void CollisionManager::UpdateWorldTransform() {
 
 	ApplyGlobalVariables();
-	//DebugImGui();
+	DebugImGui();
 	// 非表示なら抜ける
 	if (!isDrawCollider_) {
 		return;
