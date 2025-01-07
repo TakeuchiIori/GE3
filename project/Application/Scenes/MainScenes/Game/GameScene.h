@@ -102,6 +102,8 @@ private:
     // 地面
     std::unique_ptr< Ground> ground_;
 
+    // 2Dスプライト
+    std::vector<std::unique_ptr<Sprite>> sprites;
 
     // コマンドパターン
     std::unique_ptr<InputHandleMove> inputHandler_ = nullptr;

@@ -76,6 +76,30 @@ void GameScene::Initialize()
     particleCount_ = 1;
     particleEmitter_ = std::make_unique<ParticleEmitter>(particleName, emitterPosition_, particleCount_);
 
+    ///============ スプライト初期化 ============///
+    std::string textureFilePath[2] = { "Resources/monsterBall.png" ,"Resources/uvChecker.png" };
+    for (uint32_t i = 0; i < 1; ++i) {
+        auto sprite = std::make_unique<Sprite>();
+        sprite->Initialize(textureFilePath[1]);
+        sprite->SetCamera(currentCamera_.get());
+        // 移動テスト
+        Vector2 position;
+        position.x = i * 200.0f;
+        position.y = 0.0f;
+        sprite->SetPosition(position);
+
+
+        // 初期色の設定
+        Vector4 color = { 1.0f, 1.0f, 1.0f, 1.0f };
+        sprite->SetColor(color);
+        if (i % 2 != 0) {
+            sprite->ChangeTexture(textureFilePath[0]);
+        }
+        else {
+            sprite->ChangeTexture(textureFilePath[1]);
+        }
+        sprites.push_back(std::move(sprite));
+    }
 
 }
 
@@ -95,6 +119,32 @@ void GameScene::Update()
     //    iCommand_->Exec(*player_.get());
     //}
 
+    // 2Dスプライトの更新
+    for (size_t i = 0; i < sprites.size(); ++i) {
+        auto& sprite = sprites[i];
+        sprite->Update();
+        Vector3 rotation = sprite->GetRotation();
+        rotation.x += 0.01f;
+        sprite->SetRotation(rotation);
+        Vector2 size = sprite->GetSize();
+        size.x += 0.01f;
+        size.y += 0.01f;
+        sprite->SetSize(size);
+        Vector4 color = sprite->GetColor();
+        color.x += 0.01f;
+        if (color.x > 1.0f) {
+            color.x -= 1.0f;
+        }
+        sprite->SetColor(color);
+        Vector2 position = sprite->GetPosition();
+
+#ifdef _DEBUG
+        ImGui::Begin("Sprite");
+        ImGui::DragFloat2("position", &position.x, 1.0f);
+        ImGui::End();
+#endif // DEBUG
+        sprite->SetPosition(position);
+    }
     CheckAllCollisions();
     CollisionManager::GetInstance()->UpdateWorldTransform();
 
@@ -138,12 +188,18 @@ void GameScene::Update()
 /// </summary>
 void GameScene::Draw()
 {
+
+    ParticleManager::GetInstance()->Draw();
 #pragma region 2Dスプライト描画
     SpriteCommon::GetInstance()->DrawPreference();
     /// <summary>
     /// ここから描画可能です
     /// </summary>
-    ParticleManager::GetInstance()->Draw();
+        // 2Dスプライト
+    for (auto& sprite : sprites) {
+        sprite->Draw();
+    }
+  
    
 
 #pragma endregion
@@ -157,7 +213,7 @@ void GameScene::Draw()
     CollisionManager::GetInstance()->Draw();
     player_->Draw();
     enemy_->Draw();
-    ground_->Draw();
+    //ground_->Draw();
     //line_->UpdateVertices(start_, end_);
   
     //line_->DrawLine();

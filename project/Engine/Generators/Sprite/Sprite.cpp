@@ -28,14 +28,14 @@ void Sprite::Initialize(const std::string& textureFilePath)
 
 	transform_ = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
 
-	CreateVertex();
+	
 }
 
 void Sprite::Update()
 {
 	
 	// スプライトのSRT
-
+	CreateVertex();
 	transform_.translate = { position_.x,position_.y,0.0f };
 	transform_.rotate = { rotation_.x,rotation_.y,rotation_.z };
 	transform_.scale = { size_.x,size_.y,1.0f };
@@ -46,17 +46,18 @@ void Sprite::Update()
 
 	transformationMatrixData_->WVP = worldProjectionMatrix;
 	transformationMatrixData_->World = worldMatrix;
+	// WVP行列を更新
+	if (camera_) {
+		transformationMatrixData_->WVP = worldProjectionMatrix * camera_->GetViewProjectionMatrix();
+	}
+	else {
+		transformationMatrixData_->WVP = worldProjectionMatrix;
+	}
 }
 
 void Sprite::Draw()
 {
-	// WVP行列を更新
-	if (camera_) {
-		transformationMatrixData_->WVP = camera_->GetViewProjectionMatrix();
-	}
-	else {
-		transformationMatrixData_->WVP = MakeIdentity4x4();
-	}
+
 	// VertexBufferView
 	spriteCommon_->GetDxCommon()->GetCommandList()->IASetVertexBuffers(0, 1, &vertexBufferView_); // VBVを設定
 	// IndexBufferView
@@ -165,7 +166,7 @@ void Sprite::CreateVertex()
 	//// 書き込むためのアドレスを取得
 	//vertexData[0].normal = { 0.0f,0.0f,-1.0f };
 	
-	vertexResource_->Unmap(0, nullptr);
+	//vertexResource_->Unmap(0, nullptr);
 }
 
 void Sprite::IndexResource()
@@ -192,7 +193,7 @@ void Sprite::CreateIndex()
 	indexData[3] = 1;  // 2つ目の三角形
 	indexData[4] = 3;
 	indexData[5] = 2;
-	indexResource_->Unmap(0, nullptr);
+	//indexResource_->Unmap(0, nullptr);
 }
 
 void Sprite::MaterialResource()
