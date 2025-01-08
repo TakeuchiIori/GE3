@@ -6,6 +6,8 @@
 
 // Math
 #include "MathFunc.h"
+#include "Matrix4x4.h"
+#include "Systems/Input/Input.h"
 
 #ifdef _DEBUG
 #include "imgui.h"
@@ -60,14 +62,41 @@ void Camera::DefaultCamera()
 
 void Camera::FollowCamera(Vector3& target)
 {	// カメラの位置を対象の後方に設定
+ // マウスの移動量を取得
+    Input::MouseMove mouseMove = Input::GetInstance()->GetMouseMove();
+
+    // マウス感度（調整可能）
+    const float mouseSensitivity = 0.001f;
+
+    // マウスの移動量に基づいて回転を更新
+    followCameraOffsetRotare_.y += mouseMove.lX * mouseSensitivity; // 左右回転
+   // followCameraOffsetRotare_.x += mouseMove.lY * mouseSensitivity; // 上下回転
+
+    // 上下回転の制限（-89° ～ 89°）
+    //followCameraOffsetRotare_.x = std::clamp(followCameraOffsetRotare_.x, -89.0f, 89.0f);
+
+    // 回転行列を作成
+    Matrix4x4 rotationMatrix = MakeRotateMatrixXYZ(followCameraOffsetRotare_);
+
+    // 初期オフセットを回転
+    Vector3 rotatedOffset = TransformCoordinates(followCameraOffsetPosition_, rotationMatrix);
+
+    // カメラの位置をターゲットの後方に設定
+    transform_.translate = target + rotatedOffset;
+
+    transform_.translate.y -= 2.0f;
+    // カメラの回転を設定
     transform_.rotate = followCameraOffsetRotare_;
-    transform_.translate = target + followCameraOffsetPosition_; 
+
+    // ワールド行列とビュー行列を更新
     worldMatrix_ = MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.translate);
     viewMatrix_ = Inverse(worldMatrix_);
+
 #ifdef _DEBUG
+    // デバッグ用UIでカメラのオフセットを調整可能
     ImGui::Begin("Camera ");
-    ImGui::DragFloat3("Camera Position", &followCameraOffsetPosition_.x, 0.01f);
-    ImGui::DragFloat3("Camera Rotate", &followCameraOffsetRotare_.x, 0.01f);
+    ImGui::DragFloat3("Camera Position Offset", &followCameraOffsetPosition_.x, 0.01f);
+    ImGui::DragFloat3("Camera Rotation", &followCameraOffsetRotare_.x, 0.01f);
     ImGui::End();
 #endif
 }

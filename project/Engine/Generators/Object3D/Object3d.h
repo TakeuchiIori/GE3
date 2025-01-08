@@ -91,6 +91,7 @@ public: // アクセッサ
 	// マテリアル
 	const Vector4& GetMaterialColor() const { return materialData_->color; }
 	void SetMaterialColor(const Vector4& color) { materialData_->color = color; }
+	void SetAlpha(const float& alpha) { materialData_->color.w = alpha; }
 	bool IsLightingEnabled() const { return materialData_->enableLighting != 0; }
 	void SetLightingEnabled(bool enabled) { materialData_->enableLighting = enabled ? 1 : 0; }
 	float GetMaterialShininess() const { return materialData_->shininess; }

@@ -5,6 +5,7 @@
 #include "Collision./GlobalVariables.h"
 #include "Collision/CollisionTypeIdDef.h"
 
+
 #ifdef _DEBUG
 #include "imgui.h" 
 #endif // _DEBUG
@@ -17,51 +18,173 @@ void Player::Initialize()
     // OBject3dの初期化
     base_ = std::make_unique<Object3d>();
     base_->Initialize();
-    base_->SetModel("cube.obj");
+    base_->SetModel("player.obj");
 
+    weapon_ = std::make_unique<PlayerWeapon>();
+    weapon_->Initialize();
+
+    shadow_ = std::make_unique<Object3d>();
+    shadow_->Initialize();
+    shadow_->SetModel("Shadow.obj");
+
+    WS_.Initialize();
+   
+    WS_.translation_.y = 0.5f;
     // その他初期化
     input_ = Input::GetInstance();
     moveSpeed_ = { 0.25f, 0.25f , 0.25f };
     worldTransform_.Initialize();
+    worldTransform_.translation_.y = 1.0f;
+    worldTransform_.translation_.z = -50.0f;
+    weapon_->SetParent(worldTransform_);
+    
 
-    //worldTransform_.scale_ = { 2.0f,2.0f,2.0f };
-
-    //GlobalVariables* globalvariables = GlobalVariables::GetInstance();
+    GlobalVariables* globalVariables = GlobalVariables::GetInstance();
     const char* groupName = "Player";
     // グループを追加
     GlobalVariables::GetInstance()->CreateGroup(groupName);
+    globalVariables->AddItem(groupName, "Translation", worldTransform_.translation_);
+    // Transform関連
+    globalVariables->AddItem(groupName, "Translation", worldTransform_.translation_);
+   // globalVariables->AddItem(groupName, "Rotation", worldTransform_.rotation_);
+    globalVariables->AddItem(groupName, "Scale", worldTransform_.scale_);
+    // 移動関連
+    globalVariables->AddItem(groupName, "MoveSpeed", moveSpeed_);
+    // ジャンプ関連
+    globalVariables->AddItem(groupName, "JumpHeight", jumpHeight_);
+    globalVariables->AddItem(groupName, "JumpDuration", jumpDuration_);
+    globalVariables->AddItem(groupName, "FallSpeedFactor", fallSpeedFactor_);
+    // 描画関連
+    globalVariables->AddItem(groupName, "IsDrawEnabled", isDrawEnabled_);
+
 
     // TypeIDの設定
     Collider::SetTypeID(static_cast<uint32_t>(CollisionTypeIdDef::kPlayer));
+    Collider::SetRadiusFloat(2.0f);
 }
 
 void Player::Update()
 {
-    Move();
+    if (!isUpdate_) {
+        ApplyGlobalVariables();
+    }
+    Move();   
 
     ShowCoordinatesImGui();
+    WS_.translation_.x = worldTransform_.translation_.x;
+    WS_.translation_.z = worldTransform_.translation_.z;
+
 
     UpdateWorldTransform();
+
+    weapon_->Update();
 }
 
 void Player::Draw()
 {
     if (isDrawEnabled_) {
         base_->Draw(worldTransform_);
+        
     }
+    shadow_->Draw(WS_);
+    weapon_->Draw();
 }
 
 void Player::UpdateWorldTransform()
 {
     // ワールドトランスフォームの更新
     worldTransform_.UpdateMatrix();
+    WS_.UpdateMatrix();
+    
 }
 
 void Player::Move()
 {
+    // 衝突中フラグが立っている場合は非表示に
+    if (isColliding_) {
+        isDrawEnabled_ = false; // 描画を無効に
+    }
+    else {
+        isDrawEnabled_ = true; // 描画を有効に
+    }
+    // 衝突状態をリセット
+    isColliding_ = false; // 毎フレーム初期化
+
+    if (!isDash_ && weapon_->GetIsDashAttack()) {
+        isDash_ = true;
+    }
+
     // キーボードで移動
-    MoveKey();
+    if (!isJumping_ && !weapon_->GetIsJumpAttack() || !isDash_) {
+        MoveKey();
+    }
+    MoveController();
+    Jump();
+    //// XInputデバイスの状態を取得
+    //XINPUT_STATE state;
+    //if (!Input::GetInstance()->GetJoystickState(0, state)) {
+    //    return; // コントローラーが接続されていない場合は終了
+    //}
+
+    //// 左スティックの入力を取得
+    //float leftStickX = state.Gamepad.sThumbLX / 32768.0f; // 正規化（-1.0～1.0）
+    //float leftStickY = state.Gamepad.sThumbLY / 32768.0f;
+
+    //// 入力が一定の閾値以上でない場合は無視
+    //if (std::fabs(leftStickX) < 0.1f) leftStickX = 0.0f;
+    //if (std::fabs(leftStickY) < 0.1f) leftStickY = 0.0f;
+
+    //// 移動方向を計算
+    //Vector3 forwardDirection = {
+    //    sinf(worldTransform_.rotation_.y), // Y軸の回転に応じた前方方向
+    //    0.0f,
+    //    cosf(worldTransform_.rotation_.y)
+    //};
+    //Vector3 rightDirection = {
+    //    cosf(worldTransform_.rotation_.y),
+    //    0.0f,
+    //    -sinf(worldTransform_.rotation_.y)
+    //};
+
+    //// 入力に基づく移動
+    //worldTransform_.translation_ += forwardDirection * moveSpeed_.z * leftStickY;
+    //worldTransform_.translation_ += rightDirection * moveSpeed_.x * leftStickX;
+
+    //// Aボタンでジャンプ
+    //if (state.Gamepad.wButtons & XINPUT_GAMEPAD_A) {
+    //    Jump();
+    //}
+    if (isDash_) {
+        Dash();
+    }
 }
+
+void Player::MoveController()
+{
+        // マウスの移動量を取得
+    Input::MouseMove mouseMove = Input::GetInstance()->GetMouseMove();
+
+    // マウス感度（調整可能）
+    const float mouseSensitivity = 0.001f;
+
+    // 水平方向の回転 (左右回転: Y軸)
+    worldTransform_.rotation_.y += mouseMove.lX * mouseSensitivity;
+
+    // 垂直方向の回転 (上下回転: X軸)
+   // worldTransform_.rotation_.x += mouseMove.lY * mouseSensitivity;
+
+    // 上下回転の制限（ピッチ回転を -89° ～ 89° に制限）
+   // worldTransform_.rotation_.x = std::clamp(worldTransform_.rotation_.x, -89.0f, 89.0f);
+
+    // 水平方向の回転を正規化（0° ～ 360°）
+    if (worldTransform_.rotation_.y > 360.0f) {
+        worldTransform_.rotation_.y -= 360.0f;
+    }
+    else if (worldTransform_.rotation_.y < 0.0f) {
+        worldTransform_.rotation_.y += 360.0f;
+    }
+}
+
 
 void Player::MoveKey()
 {
@@ -73,6 +196,19 @@ void Player::MoveKey()
            矢印キーでカメラの回転（FPS視点の時にしか使わないほうが良い）
 
     ===============================================================*/
+
+    // 移動方向を計算（Y軸の回転に基づいて計算）
+    Vector3 forwardDirection = {
+        sinf(worldTransform_.rotation_.y), // Y軸の回転に応じた前方方向
+        0.0f,
+        cosf(worldTransform_.rotation_.y)
+    };
+    Vector3 rightDirection = {
+        cosf(worldTransform_.rotation_.y),
+        0.0f,
+        -sinf(worldTransform_.rotation_.y)
+    };
+
 
     // 上下の回転（ピッチ）の処理
     if (input_->PushKey(DIK_UP)) {
@@ -90,35 +226,105 @@ void Player::MoveKey()
         worldTransform_.rotation_.y += rotationSpeed;  // 右に回転
     }
 
-    // 移動方向を計算（Y軸の回転に基づいて計算）
-    Vector3 forwardDirection = {
-        sinf(worldTransform_.rotation_.y), // Y軸の回転に応じた前方方向
-        0.0f,
-        cosf(worldTransform_.rotation_.y)
-    };
-    Vector3 rightDirection = {
-        cosf(worldTransform_.rotation_.y),
-        0.0f,
-        -sinf(worldTransform_.rotation_.y)
-    };
 
-    //// キーボード入力による移動
-    //if (input_->PushKey(DIK_W)) {
-    //    // 前進（進行方向に沿って前方に移動）
-    //    worldTransform_.translation_ += forwardDirection * moveSpeed_.z;
-    //}
-    //if (input_->PushKey(DIK_S)) {
-    //    // 後退（進行方向に沿って後方に移動）
-    //    worldTransform_.translation_ -= forwardDirection * moveSpeed_.z;
-    //}
-    //if (input_->PushKey(DIK_A)) {
-    //    // 左に移動（進行方向に垂直な左方向に移動）
-    //    worldTransform_.translation_ -= rightDirection * moveSpeed_.y;
-    //}
-    //if (input_->PushKey(DIK_D)) {
-    //    // 右に移動（進行方向に垂直な右方向に移動）
-    //    worldTransform_.translation_ += rightDirection * moveSpeed_.y;
-    //}
+
+
+
+    // キーボード入力による移動
+    if (input_->PushKey(DIK_W)) {
+        // 前進（進行方向に沿って前方に移動）
+        worldTransform_.translation_ += forwardDirection * moveSpeed_.z;
+    }
+    if (input_->PushKey(DIK_S)) {
+        // 後退（進行方向に沿って後方に移動）
+        worldTransform_.translation_ -= forwardDirection * moveSpeed_.z;
+    }
+    if (input_->PushKey(DIK_A)) {
+        // 左に移動（進行方向に垂直な左方向に移動）
+        worldTransform_.translation_ -= rightDirection * moveSpeed_.y;
+    }
+    if (input_->PushKey(DIK_D)) {
+        // 右に移動（進行方向に垂直な右方向に移動）
+        worldTransform_.translation_ += rightDirection * moveSpeed_.y;
+    }
+
+    if (weapon_->GetIsJumpAttack()) {
+        worldTransform_.translation_ += forwardDirection * moveSpeed_.y;
+    }
+
+}
+
+void Player::Jump()
+{
+    // ジャンプ開始
+    if (!isJumping_ && weapon_->GetIsJumpAttack()) {
+        isJumping_ = true;
+        jumpTime_ = 0.0f; // ジャンプ時間をリセット
+    }
+
+    if (isJumping_) {
+        // ジャンプ時間を更新
+        jumpTime_ += 0.016f; // 仮に1フレーム16msと仮定 (60FPS)
+
+        // 正規化した時間 t (0.0f〜1.0f)
+        float t = jumpTime_ / jumpDuration_;
+
+        if (t <= 1.0f) { // ジャンプ期間内
+            // 高さの計算 (EaseInOutQuad)
+            if (t < 0.5f) {
+                // 上昇 (EaseIn)
+                float normalizedT = t * 2.0f; // 0.0〜0.5を0.0〜1.0に変換
+                float height = jumpHeight_ * (normalizedT * normalizedT);
+                worldTransform_.translation_.y = groundY_ + height;
+            }
+            else {
+                // 下降 (EaseOut) + 速度係数
+                float normalizedT = (t - 0.5f) * 2.0f; // 0.5〜1.0を0.0〜1.0に変換
+                float height = jumpHeight_ * (1.0f - (normalizedT * normalizedT) * fallSpeedFactor_);
+                worldTransform_.translation_.y = groundY_ + height;
+            }
+
+            // 強制着地条件
+            if (worldTransform_.translation_.y <= 1.0f) {
+                worldTransform_.translation_.y = 1.0f; // 地面に固定
+                isJumping_ = false;                       // ジャンプ終了
+            }
+        }
+        else {
+            // ジャンプ終了
+            worldTransform_.translation_.y = 1.0f; // 地面に戻す
+            isJumping_ = false;                       // ジャンプ終了
+        }
+    }
+}
+
+void Player::Dash()
+{
+    if (isDash_) {
+        // ダッシュ時間を更新
+        dashTime_ += 0.016f; // 仮に1フレーム16ms (60FPS)
+
+        // 正規化した時間 t (0.0f〜1.0f)
+        float t = dashTime_ / dashDuration_;
+
+        if (t <= 1.0f) {
+            // 移動方向を計算（Y軸の回転に基づいて計算）
+            Vector3 forwardDirection = {
+                sinf(worldTransform_.rotation_.y), // Y軸の回転に応じた前方方向
+                0.0f,
+                cosf(worldTransform_.rotation_.y)
+            };
+
+            // ダッシュ速度に基づいて補間移動 (EaseOutExpo)
+            float dashFactor = (t == 1.0f) ? 1.0f : 1.0f - powf(2.0f, -10.0f * t); // EaseOutExpo
+            worldTransform_.translation_ += forwardDirection * (dashSpeed_ * dashFactor * 0.016f);
+        }
+        else {
+            // ダッシュ終了
+            isDash_ = false;
+            dashTime_ = 0.0f; // ダッシュ時間をリセット
+        }
+    }
 }
 
 void Player::MoveFront()
@@ -187,7 +393,8 @@ void Player::ShowCoordinatesImGui()
     // ImGuiウィンドウを利用してプレイヤーの座標を表示
     ImGui::Begin("Player Editor");
     ImGui::Text("DrawCall");
-    ImGui::Checkbox("Enable Draw", &isDrawEnabled_);
+    ImGui::Checkbox("Enable Draw", &isDrawEnabled_); 
+    ImGui::Checkbox("Update", &isUpdate_);
     // スケール
     ImGui::Text("Scale");
     float scale[3] = { worldTransform_.scale_.x, worldTransform_.scale_.y, worldTransform_.scale_.z };
@@ -229,17 +436,43 @@ void Player::OnCollision(Collider* other)
     uint32_t typeID = other->GetTypeID();
     // 衝突相手が敵なら
     if (typeID == static_cast<uint32_t>(CollisionTypeIdDef::kEnemy)) {
-
         isColliding_ = true;
     }
+
 }
 
 Vector3 Player::GetCenterPosition() const
 {
     // ローカル座標でのオフセット
-    const Vector3 offset = { 0.0f, 0.0f, 0.0f };
+    const Vector3 offset = { 0.0f, 1.5f, 0.0f };
     // ワールド座標に変換
     Vector3 worldPos = TransformCoordinates(offset, worldTransform_.matWorld_);
 
     return worldPos;
+}
+
+Matrix4x4 Player::GetWorldMatrix() const
+{
+    return worldTransform_.matWorld_;
+}
+void Player::ApplyGlobalVariables() {
+    GlobalVariables* globalVariables = GlobalVariables::GetInstance();
+    const char* groupName = "Player";
+
+    // Transform関連
+    worldTransform_.translation_ = globalVariables->GetVector3Value(groupName, "Translation");
+    //worldTransform_.rotation_ = globalVariables->GetVector3Value(groupName, "Rotation");
+    worldTransform_.scale_ = globalVariables->GetVector3Value(groupName, "Scale");
+
+    // 移動関連
+    moveSpeed_ = globalVariables->GetVector3Value(groupName, "MoveSpeed");
+
+    // ジャンプ関連
+    jumpHeight_ = globalVariables->GetFloatValue(groupName, "JumpHeight");
+    jumpDuration_ = globalVariables->GetFloatValue(groupName, "JumpDuration");
+    fallSpeedFactor_ = globalVariables->GetFloatValue(groupName, "FallSpeedFactor");
+
+    // 描画関連
+    isDrawEnabled_ = globalVariables->GetBoolValue(groupName, "IsDrawEnabled");
+
 }

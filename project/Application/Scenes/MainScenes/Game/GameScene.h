@@ -11,11 +11,15 @@
 #include "Systems/Audio/Audio.h"
 #include "Particle/ParticleEmitter.h"
 #include "Object3D/Object3d.h"
+#include "Sprite/Sprite.h"
 #include "Player/Player.h"
+#include "Enemy/Enemy.h"
 #include "WorldTransform./WorldTransform.h"
 #include "Drawer/LineManager/Line.h"
 #include "Player/ICommand/ICommandMove.h"
 #include "Player/InputHandle/InputHandleMove.h"
+#include "Ground/Ground.h"
+
 // Math
 #include "Vector3.h"
 
@@ -68,6 +72,8 @@ private:
     /// </summary>
     void ShowImGui();
 
+    void CheckAllCollisions();
+
 
 private:
     // カメラ
@@ -77,9 +83,11 @@ private:
     // サウンド
     Audio::SoundData soundData;
     // パーティクルエミッター
-    std::unique_ptr<ParticleEmitter> particleEmitter_;
+    std::unique_ptr<ParticleEmitter> particleEmitter_[2];
     Vector3 emitterPosition_;
     uint32_t particleCount_;
+
+    Vector3 weaponPos;
    
     // 3Dモデル
     std::unique_ptr<Object3d> test_;
@@ -87,6 +95,27 @@ private:
 
     // プレイヤー
     std::unique_ptr<Player> player_;
+
+    // 敵
+    std::unique_ptr<Enemy> enemy_;
+
+    // 敵のリスト
+    std::vector<std::unique_ptr<Enemy>> enemies_;
+    // スポーン間隔 (秒)
+    float spawnInterval_ = 3.0f;
+    // スポーン範囲 (プレイヤーの周囲)
+    float spawnRange_ = 50.0f;
+    // スポーンタイマー
+    float spawnTimer_ = 0.0f;
+
+    // 敵をスポーンする関数
+    void SpawnEnemy();
+
+    // 地面
+    std::unique_ptr< Ground> ground_;
+
+    // 2Dスプライト
+    std::vector<std::unique_ptr<Sprite>> sprites;
 
     // コマンドパターン
     std::unique_ptr<InputHandleMove> inputHandler_ = nullptr;

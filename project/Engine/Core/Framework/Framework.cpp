@@ -1,4 +1,5 @@
 #include "Framework.h"
+#include <Collision/GlobalVariables.h>
 
 void Framework::Initialize()
 {
@@ -52,7 +53,7 @@ void Framework::Initialize()
 
 	// コライダーの生成 (未完成)
 	collisionManager_ = CollisionManager::GetInstance();
-	collisionManager_->Initialize();
+	//collisionManager_->Initialize();
 	
 	// LineManagerの生成
 	lineManager_ = LineManager::GetInstance();
@@ -60,6 +61,8 @@ void Framework::Initialize()
 	
 	skinningManager_ = SkinningManager::GetInstance();
 	skinningManager_->Initialize(dxCommon_);
+
+	GlobalVariables::GetInstance()->LoadFiles();
 }
 
 void Framework::Finalize()
@@ -79,17 +82,19 @@ void Framework::Finalize()
 
 void Framework::Update()
 {
+	
 	// ImGui受付開始
 	imguiManager_->Begin();
 	// 入力は初めに更新
 	input_->Update();
-
-	collisionManager_->Reset();
-	collisionManager_->CheckAllCollisions();
+	// グローバル変数の更新
+	GlobalVariables::GetInstance()->Update();
+	//collisionManager_->Reset();
+	//collisionManager_->CheckAllCollisions();
 
 	// コライダーの更新
 #ifdef _DEBUG
-	collisionManager_->UpdateWorldTransform();
+	//collisionManager_->UpdateWorldTransform();
 #endif
 
 	// シーン全体の更新

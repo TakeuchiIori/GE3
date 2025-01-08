@@ -1,0 +1,201 @@
+{
+    "PlayerWeapon": {
+        "AttackMotion_0_Duration": 0.5,
+        "AttackMotion_0_HitEndTime": 0.800000011920929,
+        "AttackMotion_0_HitStartTime": 0.20000000298023224,
+        "AttackMotion_0_Keyframe_0_Position": [
+            0.0,
+            4.0,
+            0.0
+        ],
+        "AttackMotion_0_Keyframe_0_Scale": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "AttackMotion_0_Keyframe_0_Time": 0.0,
+        "AttackMotion_0_Keyframe_1_Position": [
+            0.0,
+            2.0,
+            2.0
+        ],
+        "AttackMotion_0_Keyframe_1_Scale": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "AttackMotion_0_Keyframe_1_Time": 0.25,
+        "AttackMotion_0_Keyframe_2_Position": [
+            0.0,
+            0.0,
+            2.0
+        ],
+        "AttackMotion_0_Keyframe_2_Scale": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "AttackMotion_0_Keyframe_2_Time": 0.5,
+        "AttackMotion_1_Duration": 0.5,
+        "AttackMotion_1_HitEndTime": 0.800000011920929,
+        "AttackMotion_1_HitStartTime": 0.20000000298023224,
+        "AttackMotion_1_Keyframe_0_Position": [
+            -4.0,
+            6.0,
+            2.0
+        ],
+        "AttackMotion_1_Keyframe_0_Scale": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "AttackMotion_1_Keyframe_0_Time": 0.0,
+        "AttackMotion_1_Keyframe_1_Position": [
+            0.0,
+            0.0,
+            2.0
+        ],
+        "AttackMotion_1_Keyframe_1_Scale": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "AttackMotion_1_Keyframe_1_Time": 0.25,
+        "AttackMotion_1_Keyframe_2_Position": [
+            4.0,
+            -6.0,
+            2.0
+        ],
+        "AttackMotion_1_Keyframe_2_Scale": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "AttackMotion_1_Keyframe_2_Time": 0.5,
+        "AttackMotion_2_Duration": 0.5,
+        "AttackMotion_2_HitEndTime": 0.800000011920929,
+        "AttackMotion_2_HitStartTime": 0.20000000298023224,
+        "AttackMotion_2_Keyframe_0_Position": [
+            4.0,
+            6.0,
+            2.0
+        ],
+        "AttackMotion_2_Keyframe_0_Scale": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "AttackMotion_2_Keyframe_0_Time": 0.0,
+        "AttackMotion_2_Keyframe_1_Position": [
+            0.0,
+            0.0,
+            2.0
+        ],
+        "AttackMotion_2_Keyframe_1_Scale": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "AttackMotion_2_Keyframe_1_Time": 0.25,
+        "AttackMotion_2_Keyframe_2_Position": [
+            -4.0,
+            -6.0,
+            2.0
+        ],
+        "AttackMotion_2_Keyframe_2_Scale": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "AttackMotion_2_Keyframe_2_Time": 0.5,
+        "AttackMotion_3_Duration": 1.0,
+        "AttackMotion_3_HitEndTime": 0.800000011920929,
+        "AttackMotion_3_HitStartTime": 0.20000000298023224,
+        "AttackMotion_3_Keyframe_0_Position": [
+            0.0,
+            0.0,
+            2.0
+        ],
+        "AttackMotion_3_Keyframe_0_Scale": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "AttackMotion_3_Keyframe_0_Time": 0.0,
+        "AttackMotion_3_Keyframe_1_Position": [
+            0.0,
+            0.0,
+            2.0
+        ],
+        "AttackMotion_3_Keyframe_1_Scale": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "AttackMotion_3_Keyframe_1_Time": 0.5,
+        "AttackMotion_3_Keyframe_2_Position": [
+            0.0,
+            0.0,
+            2.0
+        ],
+        "AttackMotion_3_Keyframe_2_Scale": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "AttackMotion_3_Keyframe_2_Time": 1.0,
+        "AttackMotion_4_Duration": 0.5,
+        "AttackMotion_4_HitEndTime": 0.800000011920929,
+        "AttackMotion_4_HitStartTime": 0.20000000298023224,
+        "AttackMotion_4_Keyframe_0_Position": [
+            0.0,
+            6.0,
+            2.0
+        ],
+        "AttackMotion_4_Keyframe_0_Scale": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "AttackMotion_4_Keyframe_0_Time": 0.0,
+        "AttackMotion_4_Keyframe_1_Position": [
+            0.0,
+            3.0,
+            2.0
+        ],
+        "AttackMotion_4_Keyframe_1_Scale": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "AttackMotion_4_Keyframe_1_Time": 0.5,
+        "AttackMotion_4_Keyframe_2_Position": [
+            0.0,
+            0.0,
+            2.0
+        ],
+        "AttackMotion_4_Keyframe_2_Scale": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "AttackMotion_4_Keyframe_2_Time": 1.0,
+        "ComboWindow": 0.5,
+        "CooldownTime": 0.5,
+        "Rotation": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "Scale": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "Translation": [
+            0.0,
+            0.0,
+            -2.0
+        ]
+    }
+}

@@ -24,6 +24,8 @@ void Object3d::Initialize()
 	// デフォルトカメラのセット
 	this->camera_ = object3dCommon_->GetDefaultCamera();
 
+
+
 	CreateMaterialResource();
 }
 void Object3d::UpdateAnimation()
@@ -47,6 +49,7 @@ void Object3d::Draw(WorldTransform& worldTransform)
 		else {
 
 			worldViewProjectionMatrix = worldTransform.GetMatWorld();
+			worldMatrix = worldTransform.GetMatWorld(); // 初期化が必要
 		}
 	}
 

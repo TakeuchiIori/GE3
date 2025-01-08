@@ -356,6 +356,11 @@ Matrix4x4 MakeRotateMatrixZ(float radian) {
 	result.m[3][3] = 1;
 
 	return result;
+}
+Matrix4x4 MakeRotateMatrixXYZ(Vector3& rad)
+{
+
+	return Multiply(Multiply(MakeRotateMatrixX(rad.x), MakeRotateMatrixY(rad.y)), MakeRotateMatrixZ(rad.z));
 };
 
 //=============================11. 3次元のアフィン変換行列=============================//

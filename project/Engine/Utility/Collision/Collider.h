@@ -6,6 +6,7 @@
 
 // Math
 #include "Vector3.h"
+#include "Matrix4x4.h"
 
 class Collider {
 public:
@@ -34,7 +35,7 @@ public: // ポリモーフィズム
 	// 中心座標を取得
 	virtual Vector3 GetCenterPosition() const = 0;
 
-
+	virtual Matrix4x4 GetWorldMatrix() const = 0;
 
 
 
@@ -43,12 +44,14 @@ public: // アクセッサ
 	/// <summary>
 	/// ゲッター
 	/// </summary>
-	float Getradius() { return radius_; }
+	float GetRadiusFloat() { return radiusFloat_; }
+
+	Vector3 GetRadiusVector3() { return radiusVector3_; }
 
 	/// <summary>
 	/// セッター
 	/// </summary>
-	void Setradius(const float& radius) { radius_ = radius; }
+	void SetRadiusFloat(const float& radius) { radiusFloat_ = radius; }
 
 	/// <summary>
 	///  種別IDを取得
@@ -65,7 +68,8 @@ private:
 	// ワールドトランスフォーム
 	WorldTransform worldTransform_;
 	// 衝突判定
-	float radius_ = 1.5f;
+	float radiusFloat_ = 1.5f;
+	Vector3 radiusVector3_ = { 1.5f,1.5f,1.5f };
 	// 種別ID
 	uint32_t typeID_ = 0u;
 

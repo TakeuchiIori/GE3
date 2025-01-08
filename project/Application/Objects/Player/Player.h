@@ -1,10 +1,12 @@
 #pragma once
 // Engine
 #include "Object3D./Object3d.h"
+#include "Sprite/Sprite.h"
+#include "Systems/Camera/Camera.h"
 #include "Systems/Input./Input.h"
 #include "WorldTransform./WorldTransform.h"
 #include "Collision./Collider.h"
-
+#include "PlayerWeapon/PlayerWeapon.h"
 // C++
 #include <memory>
 
@@ -12,6 +14,7 @@
 #include "MathFunc.h"
 #include "Vector3.h" 
 
+class PlayerWeapon;
 class Player : public Collider
 {
 
@@ -32,6 +35,9 @@ public: // メンバ関数（公開）
 	/// </summary>
 	void Draw();
 
+
+	void DrawSprite();
+
 	/// <summary>
 	/// ImGui
 	/// </summary>
@@ -50,6 +56,17 @@ public: // ポリモーフィズム
 	/// <returns></returns>
 	Vector3 GetCenterPosition() const override;
 
+	/// <summary>
+	/// 
+	/// </summary>
+	/// <returns></returns>
+	Matrix4x4 GetWorldMatrix() const override;
+
+	/// <summary>
+	/// 調整項目の保存
+	/// </summary>
+	void ApplyGlobalVariables();
+
 
 
 private: // メンバ関数（非公開）
@@ -64,10 +81,22 @@ private: // メンバ関数（非公開）
 	/// </summary>
 	void Move();
 
+	void MoveController();
+
 	/// <summary>
 	/// キーボードで移動処理
 	/// </summary>
 	void MoveKey();
+
+	/// <summary>
+	/// ジャンプ
+	/// </summary>
+	void Jump();
+
+	/// <summary>
+	/// ダッシュ
+	/// </summary>
+	void Dash();
 
 public: // コマンドパターンによる移動関数
 
@@ -96,18 +125,42 @@ public: // コマンドパターンによる移動関数
 public: // アクセッサ
 	// プレイヤーの位置を取得する関数
 	const Vector3& GetPosition() const { return worldTransform_.translation_; }
-
 	const Vector3& GetRotation() const { return worldTransform_.rotation_; }
+	PlayerWeapon* GetPlayerWeapon() { return weapon_.get(); }
+
+	void SetCamera(Camera* camera) { sprite_->SetCamera(camera); }
 
 private: // メンバ変数
 
 	WorldTransform worldTransform_;
+	WorldTransform WS_;
+	// ポインタ
 	std::unique_ptr<Object3d> base_ = nullptr;
 	Input* input_ = nullptr;
+	std::unique_ptr<PlayerWeapon> weapon_;
+	std::unique_ptr<Object3d> shadow_;
+	std::unique_ptr<Sprite> sprite_;
+
 
 	bool isColliding_ = false;
 	Vector3 moveSpeed_;
 	bool isDrawEnabled_ = true;
 
+	bool isUpdate_ = true;
+
+	bool isJumping_ = false;       // ジャンプ中かどうか
+	float jumpVelocity_ = 0.0f;    // ジャンプの上昇速度
+	const float gravity_ = -9.8f;  // 重力加速度
+	const float groundY_ = 2.0f;   // 地面の高さ
+	const float jumpPower_ = 5.0f; // ジャンプ力
+	float jumpHeight_ = jumpPower_;
+	float jumpTime_ = 0.0f;           // ジャンプ開始からの経過時間
+	float jumpDuration_ = 1.0f; // ジャンプの補完時間
+	float fallSpeedFactor_ = 1.5f;
+
+	bool isDash_ = false;
+	float dashTime_ = 0.0f;          // ダッシュの経過時間
+	const float dashDuration_ = 0.4f; // ダッシュの継続時間
+	const float dashSpeed_ = 100.0f;   // ダッシュの速度
 };
 

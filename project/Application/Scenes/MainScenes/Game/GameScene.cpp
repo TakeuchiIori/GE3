@@ -7,6 +7,10 @@
 #include "Object3D/Object3dCommon.h"
 #include "PipelineManager/SkinningManager.h"
 #include "Loaders/Model/Model.h"
+#include "Collision/CollisionManager.h"
+
+#include <cstdlib>
+#include <ctime>
 
 #ifdef _DEBUG
 #include "imgui.h"
@@ -19,10 +23,11 @@
 /// </summary>
 void GameScene::Initialize()
 {
+    srand(static_cast<unsigned int>(time(nullptr))); // 乱数シード設定
     // カメラの生成
     currentCamera_ = cameraManager_.AddCamera();
     Object3dCommon::GetInstance()->SetDefaultCamera(currentCamera_.get());
-   
+    CollisionManager::GetInstance()->Initialize();
     // 線
     line_ = std::make_unique<Line>();
     line_->Initialize();
@@ -33,19 +38,29 @@ void GameScene::Initialize()
     boneLine_->SetCamera(currentCamera_.get());
 
 
-    // コマンドパターン
-    inputHandler_ = std::make_unique<InputHandleMove>();
+    //// コマンドパターン
+    //inputHandler_ = std::make_unique<InputHandleMove>();
 
-    inputHandler_->AssignMoveFrontCommandPressKeyW();
-    inputHandler_->AssignMoveBehindCommandPressKeyS();
-    inputHandler_->AssignMoveRightCommandPressKeyD();
-    inputHandler_->AssignMoveLeftCommandPressKeyA();
+    //inputHandler_->AssignMoveFrontCommandPressKeyW();
+    //inputHandler_->AssignMoveBehindCommandPressKeyS();
+    //inputHandler_->AssignMoveRightCommandPressKeyD();
+    //inputHandler_->AssignMoveLeftCommandPressKeyA();
 
 
 
     // 各オブジェクトの初期化
     player_ = std::make_unique<Player>();
     player_->Initialize();
+   
+
+    // 敵
+    //enemy_ = std::make_unique<Enemy>();
+    //enemy_->Initialize();
+    //enemy_->SetPlayer(player_.get());
+
+    // 地面
+    ground_ = std::make_unique<Ground>();
+    ground_->Initialize();
 
     // test
     test_ = std::make_unique<Object3d>();
@@ -64,9 +79,13 @@ void GameScene::Initialize()
     ParticleManager::GetInstance()->CreateParticleGroup(particleName, "Resources/images/circle.png");
     emitterPosition_ = Vector3{ 0.0f, 0.0f, 0.0f }; // エミッタの初期位置
     particleCount_ = 1;
-    particleEmitter_ = std::make_unique<ParticleEmitter>(particleName, emitterPosition_, particleCount_);
+    particleEmitter_[0] = std::make_unique<ParticleEmitter>(particleName, emitterPosition_, particleCount_);
 
-   
+    //// パーティクルグループ名を指定
+    //const std::string particleGroupName = "PlayerWeaponEffect";
+    //ParticleManager::GetInstance()->CreateParticleGroup(particleGroupName, "Resources/images/circle.png");
+    //particleEmitter_[1] = std::make_unique<ParticleEmitter>(particleGroupName, weaponPos, 10);
+
 }
 
 /// <summary>
@@ -79,14 +98,39 @@ void GameScene::Update()
     //    SceneManager::GetInstance()->ChangeScene("TITLE");
     //}
     
-    iCommand_ = inputHandler_->HandleInput();
+    //iCommand_ = inputHandler_->HandleInput();
 
-    if (this->iCommand_) {
-        iCommand_->Exec(*player_.get());
+    //if (this->iCommand_) {
+    //    iCommand_->Exec(*player_.get());
+    //}
+
+    CheckAllCollisions();
+    CollisionManager::GetInstance()->UpdateWorldTransform();
+    // スポーンタイマーを更新
+    spawnTimer_ += 1.0f / 60.0f; // フレーム時間を加算
+    if (spawnTimer_ >= spawnInterval_) {
+        SpawnEnemy();
+        spawnTimer_ = 0.0f;
     }
 
-    // プレイヤーの更新
+    // 各敵を更新
+    for (auto it = enemies_.begin(); it != enemies_.end();) {
+        auto& enemy = *it;
+        enemy->Update();
+        if (!enemy->IsActive()) {
+            it = enemies_.erase(it); // Remove and release memory for inactive enemies.
+        }
+        else {
+            ++it;
+        }
+    }
+
+    // objの更新
     player_->Update();
+
+
+   // enemy_->Update();
+    ground_->Update();
     test_->UpdateAnimation();
 
     // カメラ更新
@@ -94,10 +138,11 @@ void GameScene::Update()
     UpdateCamera();
 
     // パーティクル更新
-    ParticleManager::GetInstance()->Update();
+   // ParticleManager::GetInstance()->Update();
+   // ParticleManager::GetInstance()->UpdateParticlePlayerWeapon(weaponPos);
     ShowImGui();
-    particleEmitter_->Update();
-   
+   // particleEmitter_[0]->Update();
+   // particleEmitter_[1]->Update();
   
 
     // ワールドトランスフォーム更新
@@ -110,6 +155,8 @@ void GameScene::Update()
    
     // ライティング
     LightManager::GetInstance()->ShowLightingEditor();
+
+   
 }
 
 
@@ -118,14 +165,19 @@ void GameScene::Update()
 /// </summary>
 void GameScene::Draw()
 {
+#pragma region 演出描画
+    //ParticleManager::GetInstance()->Draw();
+
+
+#pragma endregion
+  
 #pragma region 2Dスプライト描画
     SpriteCommon::GetInstance()->DrawPreference();
     /// <summary>
     /// ここから描画可能です
     /// </summary>
-
-    ParticleManager::GetInstance()->Draw();
-
+   // player_->DrawSprite();
+   
 
 #pragma endregion
 
@@ -135,11 +187,18 @@ void GameScene::Draw()
     /// <summary>
     /// ここから描画可能です
     /// </summary>
-    
+    CollisionManager::GetInstance()->Draw();
     player_->Draw();
-    line_->UpdateVertices(start_, end_);
+  //  enemy_->Draw();
+        // その他の描画処理
+    for (auto& enemy : enemies_) {
+        enemy->Draw();
+    }
+    ground_->Draw();
+    //line_->UpdateVertices(start_, end_);
+  
     //line_->DrawLine();
-
+   
 #pragma endregion
 
 #pragma region 骨付きアニメーション描画
@@ -149,14 +208,15 @@ void GameScene::Draw()
     /// ここから描画可能です
     /// </summary>
 
-    test_->Draw(testWorldTransform_);
+   // test_->Draw(testWorldTransform_);
 
     // 骨描画
-    if (test_ && test_->GetModel()->GetSkeleton().joints.size() > 0) {
-        test_->DrawSkeleton(test_->GetModel()->GetSkeleton(), *boneLine_);
-    }
+    //if (test_ && test_->GetModel()->GetSkeleton().joints.size() > 0) {
+    //    test_->DrawSkeleton(test_->GetModel()->GetSkeleton(), *boneLine_);
+    //    boneLine_->DrawLine();
+    //}
 
-    boneLine_->DrawLine();
+   
 
 #pragma endregion
 
@@ -227,9 +287,12 @@ void GameScene::UpdateCamera()
 void GameScene::ShowImGui()
 {
 #ifdef _DEBUG
+    ImGui::Begin("FPS");
+    ImGui::Text("FPS:%.1f", ImGui::GetIO().Framerate);
+    ImGui::End();
     ImGui::Begin("Emitter");
     ImGui::DragFloat3("Emitter Position", &emitterPosition_.x, 0.1f);
-    particleEmitter_->SetPosition(emitterPosition_);
+    particleEmitter_[0]->SetPosition(emitterPosition_);
 
     // パーティクル数の表示と調整
     ImGui::Text("Particle Count: %.0d", particleCount_); // 現在のパーティクル数を表示
@@ -241,12 +304,52 @@ void GameScene::ShowImGui()
             particleCount_ -= 1;
         }
     }
-    particleEmitter_->SetCount(particleCount_);
+    particleEmitter_[0]->SetCount(particleCount_);
 
 
     ImGui::End();
 #endif // _DEBUG
 }
 
+void GameScene::CheckAllCollisions() {
+
+    // 衝突マネージャーのリセット
+    CollisionManager::GetInstance()->Reset();
+
+    // コライダーをリストに登録
+    CollisionManager::GetInstance()->AddCollider(player_.get());
+
+    // コライダーリストに登録
+    CollisionManager::GetInstance()->AddCollider(player_->GetPlayerWeapon());
+
+    // 敵全てについて
+        // その他の描画処理
+    for (auto& enemy : enemies_) {
+        CollisionManager::GetInstance()->AddCollider(enemy.get());
+    }
+   // CollisionManager::GetInstance()->AddCollider(enemy_.get());
+
+    // 衝突判定と応答
+    CollisionManager::GetInstance()->CheckAllCollisions();
+
+}
+
+void GameScene::SpawnEnemy()
+{
+    // ランダムな位置を計算
+    Vector3 playerPos = player_->GetPosition();
+    float offsetX = (rand() % 100 / 100.0f) * spawnRange_ * 2 - spawnRange_;
+    float offsetZ = (rand() % 100 / 100.0f) * spawnRange_ * 2 - spawnRange_;
+    Vector3 spawnPos = playerPos + Vector3{ offsetX, 0.0f, offsetZ };
+
+    // 新しい敵を生成
+    auto newEnemy = std::make_unique<Enemy>();
+    newEnemy->Initialize();
+    newEnemy->SetPlayer(player_.get());
+    newEnemy->SetPosition(spawnPos);
+
+    // リストに追加
+    enemies_.emplace_back(std::move(newEnemy));
+}
 
 

@@ -38,7 +38,7 @@ void MyGame::Draw()
 	// ゲームの描画
 	SceneManager::GetInstance()->Draw();
 #ifdef _DEBUG
-	collisionManager_->Draw();
+	//collisionManager_->Draw();
 #endif
 
 	// ImGui描画
