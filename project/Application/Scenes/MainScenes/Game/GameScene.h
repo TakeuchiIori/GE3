@@ -101,16 +101,6 @@ private:
 
     // 敵のリスト
     std::vector<std::unique_ptr<Enemy>> enemies_;
-    // スポーン間隔 (秒)
-    float spawnInterval_ = 3.0f;
-    // スポーン範囲 (プレイヤーの周囲)
-    float spawnRange_ = 50.0f;
-    // スポーンタイマー
-    float spawnTimer_ = 0.0f;
-
-    // 敵をスポーンする関数
-    void SpawnEnemy();
-
     // 地面
     std::unique_ptr< Ground> ground_;
 
