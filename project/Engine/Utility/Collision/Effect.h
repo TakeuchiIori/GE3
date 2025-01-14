@@ -39,7 +39,7 @@ private:
 	// ワールドトランスフォーム
 	WorldTransform worldTransform_;
 	bool isAlive_ = true;
-	float timer_ = 15.0f;
+	float timer_ = 5.0f;
 
 	// 改良コードで追加したメンバ
 	float rotationAngle_; // 回転角度
