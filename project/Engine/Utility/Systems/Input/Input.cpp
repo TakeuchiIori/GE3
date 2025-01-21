@@ -336,3 +336,22 @@ void Input::CalibrateJoystick(int32_t stickNo)
 	// キャリブレーション処理（例：初期位置の記録などを行う）
 	devJoysticks_[stickNo].statePre_ = devJoysticks_[stickNo].state_;
 }
+
+bool Input::IsPadPressed(int32_t playerIndex, GamePadButton button) const {
+	if (playerIndex < 0 || playerIndex >= devJoysticks_.size()) return false;
+
+	const auto& joystick = devJoysticks_[playerIndex];
+	if (joystick.type_ != PadType::XInput) return false;
+
+	return (joystick.state_.xInput_.Gamepad.wButtons & static_cast<WORD>(button)) != 0;
+}
+
+bool Input::IsPadTriggered(int32_t playerIndex, GamePadButton button) const {
+	if (playerIndex < 0 || playerIndex >= devJoysticks_.size()) return false;
+
+	const auto& joystick = devJoysticks_[playerIndex];
+	if (joystick.type_ != PadType::XInput) return false;
+
+	return ((joystick.state_.xInput_.Gamepad.wButtons & static_cast<WORD>(button)) != 0) &&
+		((joystick.statePre_.xInput_.Gamepad.wButtons & static_cast<WORD>(button)) == 0);
+}

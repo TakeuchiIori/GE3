@@ -118,43 +118,9 @@ void Player::Move()
     // キーボードで移動
     if (!isJumping_ && !weapon_->GetIsJumpAttack() || !isDash_) {
         MoveKey();
+        MoveController();
     }
-    MoveController();
     Jump();
-    //// XInputデバイスの状態を取得
-    //XINPUT_STATE state;
-    //if (!Input::GetInstance()->GetJoystickState(0, state)) {
-    //    return; // コントローラーが接続されていない場合は終了
-    //}
-
-    //// 左スティックの入力を取得
-    //float leftStickX = state.Gamepad.sThumbLX / 32768.0f; // 正規化（-1.0～1.0）
-    //float leftStickY = state.Gamepad.sThumbLY / 32768.0f;
-
-    //// 入力が一定の閾値以上でない場合は無視
-    //if (std::fabs(leftStickX) < 0.1f) leftStickX = 0.0f;
-    //if (std::fabs(leftStickY) < 0.1f) leftStickY = 0.0f;
-
-    //// 移動方向を計算
-    //Vector3 forwardDirection = {
-    //    sinf(worldTransform_.rotation_.y), // Y軸の回転に応じた前方方向
-    //    0.0f,
-    //    cosf(worldTransform_.rotation_.y)
-    //};
-    //Vector3 rightDirection = {
-    //    cosf(worldTransform_.rotation_.y),
-    //    0.0f,
-    //    -sinf(worldTransform_.rotation_.y)
-    //};
-
-    //// 入力に基づく移動
-    //worldTransform_.translation_ += forwardDirection * moveSpeed_.z * leftStickY;
-    //worldTransform_.translation_ += rightDirection * moveSpeed_.x * leftStickX;
-
-    //// Aボタンでジャンプ
-    //if (state.Gamepad.wButtons & XINPUT_GAMEPAD_A) {
-    //    Jump();
-    //}
     if (isDash_) {
         Dash();
     }
@@ -162,6 +128,42 @@ void Player::Move()
 
 void Player::MoveController()
 {
+    // XInputデバイスの状態を取得
+    XINPUT_STATE state;
+    if (!Input::GetInstance()->GetJoystickState(0, state)) {
+        return; // コントローラーが接続されていない場合は終了
+    }
+
+    // 左スティックの入力を取得
+    float leftStickX = state.Gamepad.sThumbLX / 32768.0f; // 正規化（-1.0～1.0）
+    float leftStickY = state.Gamepad.sThumbLY / 32768.0f;
+
+    // 入力が一定の閾値以上でない場合は無視
+    if (std::fabs(leftStickX) < 0.1f) leftStickX = 0.0f;
+    if (std::fabs(leftStickY) < 0.1f) leftStickY = 0.0f;
+
+    // スティックが入力されていない場合は回転や移動をしない
+    if (leftStickX == 0.0f && leftStickY == 0.0f) {
+        return;
+    }
+
+    // スティックの入力から角度を計算（ラジアン）
+    float targetRotationY = atan2f(leftStickX, leftStickY);
+
+    // プレイヤーの回転を更新
+    worldTransform_.rotation_.y = targetRotationY;
+
+    // 移動方向を計算（前方方向）
+    Vector3 forwardDirection = {
+        sinf(worldTransform_.rotation_.y), // Y軸の回転に応じた前方方向
+        0.0f,
+        cosf(worldTransform_.rotation_.y)
+    };
+
+    // 入力に基づく移動
+    worldTransform_.translation_ += forwardDirection * moveSpeed_.z * std::sqrt(leftStickX * leftStickX + leftStickY * leftStickY);
+
+  
 
 }
 
