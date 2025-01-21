@@ -27,9 +27,10 @@ void Player::Initialize()
     shadow_->Initialize();
     shadow_->SetModel("Shadow.obj");
 
+
     WS_.Initialize();
    
-    WS_.translation_.y = 0.5f;
+    WS_.translation_.y = 0.1f;
     // その他初期化
     input_ = Input::GetInstance();
     moveSpeed_ = { 0.25f, 0.25f , 0.25f };
@@ -207,6 +208,8 @@ void Player::MoveKey()
     if (weapon_->GetIsJumpAttack()) {
         worldTransform_.translation_ += direction * moveSpeed_.y;
     }
+
+
 }
 
 
