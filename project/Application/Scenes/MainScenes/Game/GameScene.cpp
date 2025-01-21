@@ -25,17 +25,17 @@ void GameScene::Initialize()
 {
     srand(static_cast<unsigned int>(time(nullptr))); // 乱数シード設定
     // カメラの生成
-    currentCamera_ = cameraManager_.AddCamera();
-    Object3dCommon::GetInstance()->SetDefaultCamera(currentCamera_.get());
+    sceneCamera_ = cameraManager_.AddCamera();
+    Object3dCommon::GetInstance()->SetDefaultCamera(sceneCamera_.get());
     CollisionManager::GetInstance()->Initialize();
     // 線
     line_ = std::make_unique<Line>();
     line_->Initialize();
-    line_->SetCamera(currentCamera_.get());
+    line_->SetCamera(sceneCamera_.get());
 
     boneLine_ = std::make_unique<Line>();
     boneLine_->Initialize();
-    boneLine_->SetCamera(currentCamera_.get());
+    boneLine_->SetCamera(sceneCamera_.get());
 
 
     //// コマンドパターン
@@ -75,7 +75,7 @@ void GameScene::Initialize()
 
     // パーティクル
     std::string particleName = "Circle";
-    ParticleManager::GetInstance()->SetCamera(currentCamera_.get());
+    ParticleManager::GetInstance()->SetCamera(sceneCamera_.get());
     ParticleManager::GetInstance()->CreateParticleGroup(particleName, "Resources/images/circle.png");
     emitterPosition_ = Vector3{ 0.0f, 0.0f, 0.0f }; // エミッタの初期位置
     particleCount_ = 1;
@@ -229,7 +229,7 @@ void GameScene::Draw()
 /// </summary>
 void GameScene::Finalize()
 {
-    cameraManager_.RemoveCamera(currentCamera_);
+    cameraManager_.RemoveCamera(sceneCamera_);
 }
 
 void GameScene::UpdateCameraMode()
@@ -258,25 +258,25 @@ void GameScene::UpdateCamera()
     {
     case CameraMode::DEFAULT:
     {
-        currentCamera_->DefaultCamera();
+        sceneCamera_->DefaultCamera();
     }
     break;
     case CameraMode::FOLLOW:
     {
         Vector3 playerPos = player_->GetPosition();
-        currentCamera_->FollowCamera(playerPos);
+        sceneCamera_->FollowCamera(playerPos);
     }
     break;
     case CameraMode::TOP_DOWN:
     {
         Vector3 topDownPosition = Vector3(0.0f, 100.0f, 0.0f);
-        currentCamera_->SetTopDownCamera(topDownPosition + player_->GetPosition());
+        sceneCamera_->SetTopDownCamera(topDownPosition + player_->GetPosition());
     }
     break;
     case CameraMode::FPS:
     {
         Vector3 playerPos = player_->GetPosition();
-        currentCamera_->SetFPSCamera(playerPos, player_->GetRotation());
+        sceneCamera_->SetFPSCamera(playerPos, player_->GetRotation());
     }
     break;
 

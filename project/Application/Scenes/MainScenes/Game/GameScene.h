@@ -78,7 +78,7 @@ private:
 private:
     // カメラ
     CameraMode cameraMode_;
-    std::shared_ptr<Camera> currentCamera_;
+    std::shared_ptr<Camera> sceneCamera_;
     CameraManager cameraManager_;
     // サウンド
     Audio::SoundData soundData;
