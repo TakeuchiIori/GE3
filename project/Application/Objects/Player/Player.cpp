@@ -161,98 +161,55 @@ void Player::Move()
 
 void Player::MoveController()
 {
-        // マウスの移動量を取得
-    Input::MouseMove mouseMove = Input::GetInstance()->GetMouseMove();
 
-    // マウス感度（調整可能）
-    const float mouseSensitivity = 0.001f;
-
-    // 水平方向の回転 (左右回転: Y軸)
-    worldTransform_.rotation_.y += mouseMove.lX * mouseSensitivity;
-
-    // 垂直方向の回転 (上下回転: X軸)
-   // worldTransform_.rotation_.x += mouseMove.lY * mouseSensitivity;
-
-    // 上下回転の制限（ピッチ回転を -89° ～ 89° に制限）
-   // worldTransform_.rotation_.x = std::clamp(worldTransform_.rotation_.x, -89.0f, 89.0f);
-
-    // 水平方向の回転を正規化（0° ～ 360°）
-    if (worldTransform_.rotation_.y > 360.0f) {
-        worldTransform_.rotation_.y -= 360.0f;
-    }
-    else if (worldTransform_.rotation_.y < 0.0f) {
-        worldTransform_.rotation_.y += 360.0f;
-    }
 }
 
 
 void Player::MoveKey()
 {
-    // 回転のスピード設定（回転速度を適宜設定）
-    const float rotationSpeed = 0.05f;
+    // プレイヤーの移動方向を計算するベクトル
+    Vector3 direction = { 0.0f, 0.0f, 0.0f };
 
-    /*==============================================================
-    
-           矢印キーでカメラの回転（FPS視点の時にしか使わないほうが良い）
-
-    ===============================================================*/
-
-    // 移動方向を計算（Y軸の回転に基づいて計算）
-    Vector3 forwardDirection = {
-        sinf(worldTransform_.rotation_.y), // Y軸の回転に応じた前方方向
-        0.0f,
-        cosf(worldTransform_.rotation_.y)
-    };
-    Vector3 rightDirection = {
-        cosf(worldTransform_.rotation_.y),
-        0.0f,
-        -sinf(worldTransform_.rotation_.y)
-    };
-
-
-    // 上下の回転（ピッチ）の処理
-    if (input_->PushKey(DIK_UP)) {
-        worldTransform_.rotation_.x -= rotationSpeed;  // 上方向に回転
-    }
-    if (input_->PushKey(DIK_DOWN)) {
-        worldTransform_.rotation_.x += rotationSpeed;  // 下方向に回転
-    }
-
-    // 左右回転（ヨー）の処理
-    if (input_->PushKey(DIK_LEFT)) {
-        worldTransform_.rotation_.y -= rotationSpeed;  // 左に回転
-    }
-    if (input_->PushKey(DIK_RIGHT)) {
-        worldTransform_.rotation_.y += rotationSpeed;  // 右に回転
-    }
-
-
-
-
-
-    // キーボード入力による移動
+    // キーボードの入力で移動と方向の決定
     if (input_->PushKey(DIK_W)) {
-        // 前進（進行方向に沿って前方に移動）
-        worldTransform_.translation_ += forwardDirection * moveSpeed_.z;
-    }
-    if (input_->PushKey(DIK_S)) {
-        // 後退（進行方向に沿って後方に移動）
-        worldTransform_.translation_ -= forwardDirection * moveSpeed_.z;
+        worldTransform_.translation_.z += moveSpeed_.z; // 前進
+        direction.z += 1.0f; // Z軸正方向に進む
     }
     if (input_->PushKey(DIK_A)) {
-        // 左に移動（進行方向に垂直な左方向に移動）
-        worldTransform_.translation_ -= rightDirection * moveSpeed_.y;
+        worldTransform_.translation_.x -= moveSpeed_.x; // 左移動
+        direction.x -= 1.0f; // X軸負方向に進む
+    }
+    if (input_->PushKey(DIK_S)) {
+        worldTransform_.translation_.z -= moveSpeed_.z; // 後退
+        direction.z -= 1.0f; // Z軸負方向に進む
     }
     if (input_->PushKey(DIK_D)) {
-        // 右に移動（進行方向に垂直な右方向に移動）
-        worldTransform_.translation_ += rightDirection * moveSpeed_.y;
+        worldTransform_.translation_.x += moveSpeed_.x; // 右移動
+        direction.x += 1.0f; // X軸正方向に進む
+    }
+
+    // ベクトルの長さを計算
+    float length = std::sqrt(direction.x * direction.x + direction.z * direction.z);
+
+    // 移動している場合に方向ベクトルから回転を計算
+    if (length > 0.0f) {
+        // 単位ベクトルに正規化
+        direction.x /= length;
+        direction.z /= length;
+
+        // 向きの回転角度を計算（Z軸が前方と仮定）
+        float angle = atan2(direction.x, direction.z);
+
+        // プレイヤーの回転を設定
+        worldTransform_.rotation_.y = angle;
     }
 
     if (weapon_->GetIsJumpAttack()) {
-        worldTransform_.translation_ += forwardDirection * moveSpeed_.y;
+        worldTransform_.translation_ += direction * moveSpeed_.y;
     }
-
 }
+
+
 
 void Player::Jump()
 {
