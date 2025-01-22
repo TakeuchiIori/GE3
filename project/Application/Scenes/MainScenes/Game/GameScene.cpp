@@ -143,7 +143,7 @@ void GameScene::Update()
    // ParticleManager::GetInstance()->UpdateParticlePlayerWeapon(weaponPos);
     ShowImGui();
     particleEmitter_[0]->Update();
-    particleEmitter_[1]->Update();
+   // particleEmitter_[1]->Update();
   
 
     // ワールドトランスフォーム更新
