@@ -129,24 +129,34 @@ public: // アクセッサ
 
 	void SetCamera(Camera* camera) { sprite_->SetCamera(camera); }
 
-private: // メンバ変数
+private: 
+	/*===============================================================//
+							ワールドトランスフォーム
+	//===============================================================*/
 
 	WorldTransform worldTransform_;
 	WorldTransform WS_;
-	// ポインタ
+	
+	/*===============================================================//
+								ポインタ
+	//===============================================================*/
 	std::unique_ptr<Object3d> base_ = nullptr;
 	Input* input_ = nullptr;
 	std::unique_ptr<PlayerWeapon> weapon_;
 	std::unique_ptr<Object3d> shadow_;
 	std::unique_ptr<Sprite> sprite_;
 
-
+	/*===============================================================//
+								フラグ関連
+	//===============================================================*/
 	bool isColliding_ = false;
 	Vector3 moveSpeed_;
 	bool isDrawEnabled_ = true;
-
 	bool isUpdate_ = true;
 
+	/*===============================================================//
+								ジャンプ関連
+	//===============================================================*/
 	bool isJumping_ = false;       // ジャンプ中かどうか
 	float jumpVelocity_ = 0.0f;    // ジャンプの上昇速度
 	const float gravity_ = -9.8f;  // 重力加速度
@@ -157,9 +167,19 @@ private: // メンバ変数
 	float jumpDuration_ = 1.0f; // ジャンプの補完時間
 	float fallSpeedFactor_ = 1.5f;
 
+	/*===============================================================//
+								ダッシュ関連
+	//===============================================================*/
 	bool isDash_ = false;
 	float dashTime_ = 0.0f;          // ダッシュの経過時間
 	const float dashDuration_ = 0.4f; // ダッシュの継続時間
 	const float dashSpeed_ = 100.0f;   // ダッシュの速度
+
+	/*===============================================================//
+								生存関連
+	//===============================================================*/	
+	uint32_t maxHP_ = 100;
+	uint32_t hp_ = 100;
+	bool isAlive_ = true;
 };
 

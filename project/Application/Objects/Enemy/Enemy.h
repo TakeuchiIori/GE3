@@ -102,5 +102,9 @@ private:
 	uint32_t serialNumber_ = 0;
 	// 次のシリアルナンバー
 	static uint32_t nextSerialNumber_;
+
+
+	uint32_t hp_ = 100;
+	bool isAlive_ = true;
 };
 
