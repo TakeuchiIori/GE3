@@ -74,7 +74,7 @@ void GameScene::Initialize()
     cameraMode_ = CameraMode::FOLLOW;
 
     // パーティクル
-    std::string particleName = "Circle";
+    const std::string particleName = "Circle";
     ParticleManager::GetInstance()->SetCamera(sceneCamera_.get());
     ParticleManager::GetInstance()->CreateParticleGroup(particleName, "Resources/images/circle.png");
     emitterPosition_ = Vector3{ 0.0f, 0.0f, 0.0f }; // エミッタの初期位置
@@ -83,8 +83,9 @@ void GameScene::Initialize()
 
     //// パーティクルグループ名を指定
     //const std::string particleGroupName = "PlayerWeaponEffect";
+    //weaponPos = player_->GetPosition();
     //ParticleManager::GetInstance()->CreateParticleGroup(particleGroupName, "Resources/images/circle.png");
-    //particleEmitter_[1] = std::make_unique<ParticleEmitter>(particleGroupName, weaponPos, 10);
+    //particleEmitter_[1] = std::make_unique<ParticleEmitter>(particleGroupName, weaponPos, 5);
 
 }
 
@@ -138,11 +139,11 @@ void GameScene::Update()
     UpdateCamera();
 
     // パーティクル更新
-   // ParticleManager::GetInstance()->Update();
+    ParticleManager::GetInstance()->Update();
    // ParticleManager::GetInstance()->UpdateParticlePlayerWeapon(weaponPos);
     ShowImGui();
-   // particleEmitter_[0]->Update();
-   // particleEmitter_[1]->Update();
+    particleEmitter_[0]->Update();
+    particleEmitter_[1]->Update();
   
 
     // ワールドトランスフォーム更新
@@ -166,7 +167,7 @@ void GameScene::Update()
 void GameScene::Draw()
 {
 #pragma region 演出描画
-    //ParticleManager::GetInstance()->Draw();
+    ParticleManager::GetInstance()->Draw();
 
 
 
@@ -195,7 +196,7 @@ void GameScene::Draw()
     for (auto& enemy : enemies_) {
         enemy->Draw();
     }
-    ground_->Draw();
+    //ground_->Draw();
     //line_->UpdateVertices(start_, end_);
   
     //line_->DrawLine();
