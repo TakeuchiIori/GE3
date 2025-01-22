@@ -19,6 +19,7 @@
 #include "Player/ICommand/ICommandMove.h"
 #include "Player/InputHandle/InputHandleMove.h"
 #include "Ground/Ground.h"
+#include "../Transitions/Fade/Fade.h"
 
 // Math
 #include "Vector3.h"
@@ -31,6 +32,14 @@ enum class CameraMode
     FPS
 
 };
+
+enum class Phase {
+    kFadeIn,   //フェードイン
+    kPlay,	   // ゲームプレイ
+    kDeath,	   // デス演出
+    kFadeOut,  // フェードアウト
+};
+
 
 class GameScene : public BaseScene
 {
@@ -56,6 +65,12 @@ public:
     void Draw() override;
 
 private:
+
+    /// <summary>
+    /// フェースの切り替え
+    /// </summary>
+    void ChangePahse();
+
 
     /// <summary>
     /// カメラモードを更新する
@@ -88,7 +103,13 @@ private:
     uint32_t particleCount_;
 
     Vector3 weaponPos;
-   
+
+    //  フェード
+    std::unique_ptr<Fade> fade_;
+    Phase phase_;
+    bool finished_ = false;
+
+
     // 3Dモデル
     std::unique_ptr<Object3d> test_;
     WorldTransform testWorldTransform_;

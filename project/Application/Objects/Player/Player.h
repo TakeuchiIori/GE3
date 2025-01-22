@@ -36,7 +36,6 @@ public: // メンバ関数（公開）
 	void Draw();
 
 
-	void DrawSprite();
 
 	/// <summary>
 	/// ImGui
