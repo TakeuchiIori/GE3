@@ -30,22 +30,22 @@ void TitleScene::Initialize()
     player_->Initialize();
 
     // test
-    test_ = std::make_unique<Object3d>();
-    test_->Initialize();
-    test_->SetModel("sneakWalk.gltf", true);
-    testWorldTransform_.Initialize();
+    //test_ = std::make_unique<Object3d>();
+    //test_->Initialize();
+    //test_->SetModel("sneakWalk.gltf", true);
+    //testWorldTransform_.Initialize();
     //test_->SetLine(line_.get());
 
     // 初期カメラモード設定
     cameraMode_ = CameraMode::FOLLOW;
 
     // パーティクル
-    std::string particleName = "Circle";
-    ParticleManager::GetInstance()->SetCamera(currentCamera_.get());
-    ParticleManager::GetInstance()->CreateParticleGroup(particleName, "Resources/images/circle.png");
-    emitterPosition_ = Vector3{ 0.0f, 0.0f, 0.0f }; // エミッタの初期位置
-    particleCount_ = 1;
-    particleEmitter_ = std::make_unique<ParticleEmitter>(particleName, emitterPosition_, particleCount_);
+    //std::string particleName = "Circle";
+    //ParticleManager::GetInstance()->SetCamera(currentCamera_.get());
+    //ParticleManager::GetInstance()->CreateParticleGroup(particleName, "Resources/images/circle.png");
+    //emitterPosition_ = Vector3{ 0.0f, 0.0f, 0.0f }; // エミッタの初期位置
+    //particleCount_ = 1;
+    //particleEmitter_ = std::make_unique<ParticleEmitter>(particleName, emitterPosition_, particleCount_);
 
 
 }
@@ -56,22 +56,22 @@ void TitleScene::Initialize()
 void TitleScene::Update()
 {
 
-    //if (Input::GetInstance()->TriggerKey(DIK_RETURN)) {
-    //    SceneManager::GetInstance()->ChangeScene("TITLE");
-    //}
+    if (Input::GetInstance()->TriggerKey(DIK_RETURN)) {
+        SceneManager::GetInstance()->ChangeScene("GAME");
+    }
 
     // プレイヤーの更新
     player_->Update();
-    test_->UpdateAnimation();
+    //test_->UpdateAnimation();
 
     // カメラ更新
     UpdateCameraMode();
     UpdateCamera();
 
     // パーティクル更新
-    ParticleManager::GetInstance()->Update();
+    //ParticleManager::GetInstance()->Update();
     ShowImGui();
-    particleEmitter_->Update();
+    //particleEmitter_->Update();
 
 
 
@@ -93,13 +93,19 @@ void TitleScene::Update()
 /// </summary>
 void TitleScene::Draw()
 {
+#pragma region 演出描画
+    ParticleManager::GetInstance()->Draw();
+
+
+
+#pragma endregion
 #pragma region 2Dスプライト描画
     SpriteCommon::GetInstance()->DrawPreference();
     /// <summary>
     /// ここから描画可能です
     /// </summary>
 
-    ParticleManager::GetInstance()->Draw();
+   
 
 
 #pragma endregion
@@ -112,7 +118,7 @@ void TitleScene::Draw()
     /// </summary>
 
     player_->Draw();
-    test_->Draw(testWorldTransform_);
+    //test_->Draw(testWorldTransform_);
 
 
 

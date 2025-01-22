@@ -95,9 +95,9 @@ void GameScene::Initialize()
 void GameScene::Update()
 {
     
-    //if (Input::GetInstance()->TriggerKey(DIK_RETURN)) {
-    //    SceneManager::GetInstance()->ChangeScene("TITLE");
-    //}
+    if (Input::GetInstance()->TriggerKey(DIK_RETURN)) {
+        SceneManager::GetInstance()->ChangeScene("TITLE");
+    }
     
     //iCommand_ = inputHandler_->HandleInput();
 
