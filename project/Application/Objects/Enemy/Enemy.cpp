@@ -29,7 +29,7 @@ void Enemy::Initialize()
     input_ = Input::GetInstance();
     moveSpeed_ = { 0.25f, 0.25f , 0.25f };
     worldTransform_.Initialize();
-    worldTransform_.translation_.y = 2.0f;
+    worldTransform_.translation_.y = 1.0f;
     worldTransform_.translation_.z = 25.0f;
     shadow_ = std::make_unique<Object3d>();
     shadow_->Initialize();
@@ -37,7 +37,7 @@ void Enemy::Initialize()
 
     WS_.Initialize();
 
-    WS_.translation_.y = 0.5f;
+    WS_.translation_.y = 0.1f;
 
     //GlobalVariables* globalvariables = GlobalVariables::GetInstance();
     const char* groupName = "Enemy";
