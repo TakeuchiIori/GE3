@@ -83,7 +83,7 @@ void Player::Update()
 
 void Player::Draw()
 {
-    if (isDrawEnabled_) {
+    if (isAlive_) {
         base_->Draw(worldTransform_);
         
     }
@@ -101,15 +101,15 @@ void Player::UpdateWorldTransform()
 
 void Player::Move()
 {
-    // 衝突中フラグが立っている場合は非表示に
-    if (isColliding_) {
-        isDrawEnabled_ = false; // 描画を無効に
-    }
-    else {
-        isDrawEnabled_ = true; // 描画を有効に
-    }
-    // 衝突状態をリセット
-    isColliding_ = false; // 毎フレーム初期化
+    //// 衝突中フラグが立っている場合は非表示に
+    //if (isColliding_) {
+    //    isDrawEnabled_ = false; // 描画を無効に
+    //}
+    //else {
+    //    isDrawEnabled_ = true; // 描画を有効に
+    //}
+    //// 衝突状態をリセット
+    //isColliding_ = false; // 毎フレーム初期化
 
     if (!isDash_ && weapon_->GetIsDashAttack()) {
         isDash_ = true;
@@ -398,7 +398,12 @@ void Player::OnCollision(Collider* other)
     uint32_t typeID = other->GetTypeID();
     // 衝突相手が敵なら
     if (typeID == static_cast<uint32_t>(CollisionTypeIdDef::kEnemy)) {
-        isColliding_ = true;
+        //isColliding_ = true;
+
+        hp_--;
+        if (hp_ <= 0) {
+            isAlive_ = false;
+        }
     }
 
 }

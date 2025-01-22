@@ -29,7 +29,7 @@ void Enemy::Initialize()
     input_ = Input::GetInstance();
     moveSpeed_ = { 0.25f, 0.25f , 0.25f };
     worldTransform_.Initialize();
-    worldTransform_.translation_.y = 2.0f;
+    worldTransform_.translation_.y = 1.0f;
     worldTransform_.translation_.z = 25.0f;
     shadow_ = std::make_unique<Object3d>();
     shadow_->Initialize();
@@ -37,7 +37,7 @@ void Enemy::Initialize()
 
     WS_.Initialize();
 
-    WS_.translation_.y = 0.5f;
+    WS_.translation_.y = 0.1f;
 
     //GlobalVariables* globalvariables = GlobalVariables::GetInstance();
     const char* groupName = "Enemy";
@@ -66,7 +66,7 @@ void Enemy::Update()
 
 void Enemy::Draw()
 {
-    if (isActive_) {
+    if (isAlive_) {
         base_->Draw(worldTransform_);
         shadow_->Draw(WS_);
     }
@@ -115,10 +115,15 @@ void Enemy::OnCollision(Collider* other)
 {
     // 衝突相手の種別IDを取得
     uint32_t typeID = other->GetTypeID();
-    // 衝突相手が敵なら
+    // 衝突相手が武器かプレイヤーなら
     if (typeID == static_cast<uint32_t>(CollisionTypeIdDef::kPlayer) || typeID == static_cast<uint32_t>(CollisionTypeIdDef::kPlayerWeapon)) {
 
-        isActive_ = false;
+        //isActive_ = false;
+
+        hp_ -= 2;
+        if (hp_ <= 0) {
+            isAlive_ = false;
+        }
     }
 
 }

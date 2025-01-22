@@ -78,11 +78,17 @@ public: // アクセッサ
 	const Vector3& GetRotation() const { return worldTransform_.rotation_; }
 	void SetPosition(const Vector3& pos) { worldTransform_.translation_ = pos; }
 	void SetPlayer(const Player* player) { player_ = player; }; // プレイヤーをセットする関数
+
+
 	/// <summary>
 	/// シリアルナンバーの取得
 	/// </summary>
 	uint32_t GetSerialNumber() const { return serialNumber_; }
 	bool IsActive() const { return isActive_; }
+
+
+	void SetHP(uint32_t hp) { hp_ = hp; }
+	uint32_t GetHP() { return hp_; }
 
 private:
 	const Player* player_; // プレイヤーの参照
@@ -102,5 +108,9 @@ private:
 	uint32_t serialNumber_ = 0;
 	// 次のシリアルナンバー
 	static uint32_t nextSerialNumber_;
+
+
+	uint32_t hp_ = 100;
+	bool isAlive_ = true;
 };
 
