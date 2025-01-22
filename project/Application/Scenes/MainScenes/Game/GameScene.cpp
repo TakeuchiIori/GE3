@@ -254,67 +254,66 @@ void GameScene::ChangePahse()
     case Phase::kFadeIn:
 
 
-        ////if (Input::GetInstance()->TriggerKey(DIK_RETURN)) {
-        ////    SceneManager::GetInstance()->ChangeScene("TITLE");
-        ////}
-
-        ////iCommand_ = inputHandler_->HandleInput();
-
-        ////if (this->iCommand_) {
-        ////    iCommand_->Exec(*player_.get());
-        ////}
-
-        ////CheckAllCollisions();
-        ////CollisionManager::GetInstance()->UpdateWorldTransform();
-        //// スポーンタイマーを更新
-        //spawnTimer_ += 1.0f / 60.0f; // フレーム時間を加算
-        //if (spawnTimer_ >= spawnInterval_) {
-        //    SpawnEnemy();
-        //    spawnTimer_ = 0.0f;
+        //if (Input::GetInstance()->TriggerKey(DIK_RETURN)) {
+        //    SceneManager::GetInstance()->ChangeScene("TITLE");
         //}
 
-        //// 各敵を更新
-        //for (auto it = enemies_.begin(); it != enemies_.end();) {
-        //    auto& enemy = *it;
-        //    enemy->Update();
-        //    if (!enemy->IsActive()) {
-        //        it = enemies_.erase(it); // Remove and release memory for inactive enemies.
-        //    }
-        //    else {
-        //        ++it;
-        //    }
+        //iCommand_ = inputHandler_->HandleInput();
+
+        //if (this->iCommand_) {
+        //    iCommand_->Exec(*player_.get());
         //}
 
-        //// objの更新
-        //player_->Update();
+        //CheckAllCollisions();
+        //CollisionManager::GetInstance()->UpdateWorldTransform();
+        // スポーンタイマーを更新
+        spawnTimer_ += 1.0f / 60.0f; // フレーム時間を加算
+        if (spawnTimer_ >= spawnInterval_) {
+            SpawnEnemy();
+            spawnTimer_ = 0.0f;
+        }
+
+        // 各敵を更新
+        for (auto it = enemies_.begin(); it != enemies_.end();) {
+            auto& enemy = *it;
+            enemy->Update();
+            if (!enemy->IsActive()) {
+                it = enemies_.erase(it); // Remove and release memory for inactive enemies.
+            }
+            else {
+                ++it;
+            }
+        }
+
+        // objの更新
+        player_->Update();
 
 
-        //// enemy_->Update();
-        //ground_->Update();
-        //test_->UpdateAnimation();
+        ground_->Update();
+        test_->UpdateAnimation();
 
-        //// カメラ更新
-        //UpdateCameraMode();
-        //UpdateCamera();
+        // カメラ更新
+        UpdateCameraMode();
+        UpdateCamera();
 
-        //// パーティクル更新
-        ////ParticleManager::GetInstance()->Update();
-        //// ParticleManager::GetInstance()->UpdateParticlePlayerWeapon(weaponPos);
-        //ShowImGui();
-        ////particleEmitter_[0]->Update();
-        //// particleEmitter_[1]->Update();
+        // パーティクル更新
+        //ParticleManager::GetInstance()->Update();
+        // ParticleManager::GetInstance()->UpdateParticlePlayerWeapon(weaponPos);
+        ShowImGui();
+        //particleEmitter_[0]->Update();
+        // particleEmitter_[1]->Update();
 
 
-        // // ワールドトランスフォーム更新
-        //testWorldTransform_.UpdateMatrix();
-        //cameraManager_.UpdateAllCameras();
+         // ワールドトランスフォーム更新
+        testWorldTransform_.UpdateMatrix();
+        cameraManager_.UpdateAllCameras();
 
-        ////=====================================================//
-        ///*                  これより下は触るな危険　　　　　　　   　*/
-        ////=====================================================//
+        //=====================================================//
+        /*                  これより下は触るな危険　　　　　　　   　*/
+        //=====================================================//
 
-        //// ライティング
-        //LightManager::GetInstance()->ShowLightingEditor();
+        // ライティング
+        LightManager::GetInstance()->ShowLightingEditor();
 
 
 

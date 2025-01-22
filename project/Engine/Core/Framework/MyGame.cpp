@@ -9,7 +9,7 @@ void MyGame::Initialize()
 	// シーンファクトリを生成し、 シーンマネージャに最初のシーンをセット
 	sceneFactory_ = std::make_unique<SceneFactory>();
 	SceneManager::GetInstance()->SetSceneFactory(sceneFactory_.get());
-	SceneManager::GetInstance()->ChangeScene("GAME");
+	SceneManager::GetInstance()->ChangeScene("TITLE");
 	// パーティクルマネージャ生成
 	ParticleManager::GetInstance()->Initialize(srvManager_);
 	

@@ -42,7 +42,7 @@ void Fade::FadeIn()
 		counter_ = duration_;
 	}
 	// 1.0fから0.0fの間で、経過時間がフェード継続時間に近づくほどアルファ値を小さくする
-	sprite_->SetColor(Vector4{ 0,0,0,std::clamp(counter_ / duration_, 0.0f, 1.0f) });
+	sprite_->SetColor(Vector4{ 0,0,0,std::clamp(1.0f - counter_ / duration_, 0.0f, 1.0f) });
 	sprite_->Update();
 
 }
