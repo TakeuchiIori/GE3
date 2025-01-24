@@ -64,8 +64,8 @@ void GameScene::Initialize()
     // test
     test_ = std::make_unique<Object3d>();
     test_->Initialize();
-    test_->SetModel("walk.gltf",true);
-    //test_->SetModel("sneakWalk.gltf", true);
+    //test_->SetModel("Animation_Node_00.gltf",true);
+    test_->SetModel("sneakWalk.gltf", true);
     testWorldTransform_.Initialize();
     //test_->SetLine(line_.get());
 
