@@ -70,7 +70,7 @@ void GameScene::Initialize()
     //test_->SetLine(line_.get());
 
     // 初期カメラモード設定
-    cameraMode_ = CameraMode::FOLLOW;
+    cameraMode_ = CameraMode::DEFAULT;
 
     // パーティクル
     std::string particleName = "Circle";
@@ -163,11 +163,11 @@ void GameScene::Draw()
     /// ここから描画可能です
     /// </summary>
     CollisionManager::GetInstance()->Draw();
-    player_->Draw();
+    //player_->Draw();
     //enemy_->Draw();
     // その他の描画処理
 
-    ground_->Draw();
+    //ground_->Draw();
     //line_->UpdateVertices(start_, end_);
   
     //line_->DrawLine();
@@ -181,12 +181,12 @@ void GameScene::Draw()
     /// ここから描画可能です
     /// </summary>
 
-    // test_->Draw(testWorldTransform_);
+     test_->Draw(testWorldTransform_);
     // 骨描画
-    //if (test_ && test_->GetModel()->GetSkeleton().joints.size() > 0) {
-    //    test_->DrawSkeleton(test_->GetModel()->GetSkeleton(), *boneLine_);
-    //    boneLine_->DrawLine();
-    //}
+    if (test_ && test_->GetModel()->GetSkeleton().joints.size() > 0) {
+        test_->DrawSkeleton(test_->GetModel()->GetSkeleton(), *boneLine_);
+        boneLine_->DrawLine();
+    }
 
    
 
@@ -235,7 +235,7 @@ void GameScene::UpdateCamera()
     case CameraMode::FOLLOW:
     {
         Vector3 playerPos = player_->GetPosition();
-        currentCamera_->FollowCamera(playerPos);
+        //currentCamera_->FollowCamera(playerPos);
     }
     break;
     case CameraMode::TOP_DOWN:
