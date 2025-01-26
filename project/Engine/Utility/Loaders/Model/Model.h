@@ -117,6 +117,8 @@ public: // 構造体
 	struct Keyframe {
 		float time;
 		tValue value;
+		tValue inTangent;  // 入力接線
+		tValue outTangent; // 出力接線
 	};
 	using KeyframeVector3 = Keyframe<Vector3>;
 	using KeyframeQuaternion = Keyframe<Quaternion>;
@@ -245,6 +247,12 @@ private:
 	SkinCluster CreateSkinCluster(const Skeleton& skeleton, const
 		ModelData& modelData);
 
+	Vector3 CalculateValueNew(const std::vector<KeyframeVector3>& keyframes, float time, InterpolationType interpolationType);
+	Quaternion CalculateValueNew(const std::vector<KeyframeQuaternion>& keyframes, float time, InterpolationType interpolationType);
+
+
+	std::string GetGLTFInterpolation(const aiScene* scene, uint32_t channelIndex);
+
 	std::vector<Vector3> GetConnectionPositions();
 
 	uint32_t GetConnectionCount();
@@ -290,6 +298,8 @@ private:
 	/// アニメーション解析
 	/// </summary>
 	Animation LoadAnimationFile(const std::string& directoryPath, const std::string& filename);
+
+	std::string GetGLTFInterpolation(const aiScene* scene, const std::string& gltfFilePath, uint32_t samplerIndex);
 
 	static bool HasBones(const aiScene* scene);
 
@@ -339,4 +349,4 @@ private: // Skinning
 	SkinCluster skinCluster_;
 };
 
-
+std::string ParseGLTFInterpolation(const std::string& gltfFilePath, uint32_t samplerIndex);
