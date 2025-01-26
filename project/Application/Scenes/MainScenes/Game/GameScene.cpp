@@ -178,7 +178,7 @@ void GameScene::Draw()
     //enemy_->Draw();
     // その他の描画処理
 
-   // ground_->Draw();
+    ground_->Draw();
     //line_->UpdateVertices(start_, end_);
   
     //line_->DrawLine();
@@ -257,7 +257,7 @@ void GameScene::UpdateCamera()
     break;
     case CameraMode::TOP_DOWN:
     {
-        Vector3 topDownPosition = Vector3(0.0f, 10.0f, 0.0f);
+        Vector3 topDownPosition = Vector3(0.0f, 50.0f, 0.0f);
         currentCamera_->SetTopDownCamera(topDownPosition + Vector3{0.0f,0.0f,0.0f});
     }
     break;
