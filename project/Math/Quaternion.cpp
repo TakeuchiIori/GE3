@@ -322,11 +322,11 @@ Quaternion CubicSplineQuaternionInterpolation(const std::vector<float>& keyTimes
 
 
 std::vector<Quaternion> CubicSplineQuaternionInterpolation(
-    const std::vector<double>& xData,
+    const std::vector<float>& xData,
     const std::vector<Quaternion>& yData,
     const std::vector<Quaternion>& inTangents,
     const std::vector<Quaternion>& outTangents,
-    const std::vector<double>& xQuery
+    const std::vector<float>& xQuery
 ) {
     // xData, yData, inTangents, outTangents が妥当かチェック
     if (xData.size() != yData.size() || xData.size() != inTangents.size() || xData.size() != outTangents.size()) {
@@ -343,11 +343,11 @@ std::vector<Quaternion> CubicSplineQuaternionInterpolation(
         }
     }
 
-    const size_t n = xData.size();
+   // const size_t n = xData.size();
     std::vector<Quaternion> result;
     result.reserve(xQuery.size());
 
-    for (double x : xQuery) {
+    for (float x : xQuery) {
         // x が xData の範囲外にある場合の扱い（今回は外挿せずに端点近辺を使う）
         if (x <= xData.front()) {
             result.push_back(yData.front());
@@ -363,7 +363,7 @@ std::vector<Quaternion> CubicSplineQuaternionInterpolation(
         size_t i = static_cast<size_t>(std::distance(xData.begin(), it) - 1);
 
         // i番目の区間 [xData[i], xData[i+1]) に x は属する
-        double t = (x - xData[i]) / (xData[i + 1] - xData[i]); // 正規化された時間
+        float t = (x - xData[i]) / (xData[i + 1] - xData[i]); // 正規化された時間
 
         // Cubic Spline 補間を計算
         Quaternion h00 = yData[i] * (2 * t * t * t - 3 * t * t + 1);

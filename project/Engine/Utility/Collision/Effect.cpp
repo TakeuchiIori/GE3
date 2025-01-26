@@ -35,7 +35,7 @@ void Effect::Update() {
     worldTransform_.translation_ = { vibrationAmount_, vibrationAmount_, 0.0f };
 
     // 透明度の変更（コメントアウト部分を復元）
-    float alpha = 1.0f - Lerp(1.0f, 0.0f, timer_ / 10.0f);
+   // float alpha = 1.0f - Lerp(1.0f, 0.0f, timer_ / 10.0f);
     // obj_->SetAlpha(alpha);
 
     // 行列の更新
