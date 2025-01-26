@@ -357,6 +357,28 @@ void GameScene::ChamgeLoadAnimation()
         animation_->SetModel(currentAnimationFile.c_str(), true);
     }
 
+
+    if (ImGui::Button("Animation_NodeMisc_00")) {
+        currentAnimationFile = "Animation_NodeMisc_00.gltf";
+        animation_->SetModel(currentAnimationFile.c_str(), true);
+    }
+
+    if (ImGui::Button("Animation_NodeMisc_01")) {
+        currentAnimationFile = "Animation_NodeMisc_01.gltf";
+        animation_->SetModel(currentAnimationFile.c_str(), true);
+    }
+
+    if (ImGui::Button("Animation_NodeMisc_02")) {
+        currentAnimationFile = "Animation_NodeMisc_02.gltf";
+        animation_->SetModel(currentAnimationFile.c_str(), true);
+    }
+
+    if (ImGui::Button("Animation_NodeMisc_03")) {
+        currentAnimationFile = "Animation_NodeMisc_03.gltf";
+        animation_->SetModel(currentAnimationFile.c_str(), true);
+    }
+
+
     // 現在のアニメーションファイル名を表示
     ImGui::Text("Now Playing: %s", currentAnimationFile.c_str());
 
