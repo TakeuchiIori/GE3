@@ -34,6 +34,38 @@ Vector3 Lerp(const Vector3& a, const Vector3& b, float t)
     return a * (1.0f - t) + b * t;
 }
 
+Vector3 CubicSplineInterpolate(const Vector3& p0, const Vector3& p1, const Vector3& p2, const Vector3& p3, float t) {
+    // t の二乗および三乗を計算
+    float t2 = t * t;
+    float t3 = t2 * t;
+
+    // 各成分の Catmull-Rom スプラインの計算
+    float x = 0.5f * (
+        (2 * p1.x) +
+        (-p0.x + p2.x) * t +
+        (2 * p0.x - 5 * p1.x + 4 * p2.x - p3.x) * t2 +
+        (-p0.x + 3 * p1.x - 3 * p2.x + p3.x) * t3
+        );
+
+    float y = 0.5f * (
+        (2 * p1.y) +
+        (-p0.y + p2.y) * t +
+        (2 * p0.y - 5 * p1.y + 4 * p2.y - p3.y) * t2 +
+        (-p0.y + 3 * p1.y - 3 * p2.y + p3.y) * t3
+        );
+
+    float z = 0.5f * (
+        (2 * p1.z) +
+        (-p0.z + p2.z) * t +
+        (2 * p0.z - 5 * p1.z + 4 * p2.z - p3.z) * t2 +
+        (-p0.z + 3 * p1.z - 3 * p2.z + p3.z) * t3
+        );
+
+    // 補間された Vector3 を返す
+    return Vector3(x, y, z);
+}
+
+
 Vector3 Multiply(const Vector3& v, float scalar) {
     return { v.x * scalar, v.y * scalar, v.z * scalar };
 }

@@ -32,6 +32,14 @@ class ModelCommon;
 class Model
 {
 public: // 構造体
+
+	enum class InterpolationType {
+		Linear,
+		Step,
+		CubicSpline
+	};
+
+
 	// 頂点データ
 	struct VertexData {
 		Vector4 position;
@@ -122,6 +130,7 @@ public: // 構造体
 		AnimationCurve<Vector3> translate;
 		AnimationCurve<Quaternion> rotate;
 		AnimationCurve<Vector3> scale;
+		InterpolationType interpolationType;
 	};
 
 	struct Animation {
@@ -146,6 +155,8 @@ public: // 構造体
 		std::vector<Joint> joints; // 所属しているジョイント
 		std::vector<std::pair<int32_t, int32_t>> connections; // 接続情報: 親 -> 子のペア
 	};
+
+
 
 public: // メンバ関数
 	/// <summary>
@@ -268,6 +279,12 @@ private:
 	static ModelData LoadModelIndexFile(const std::string& directoryPath, const std::string& filename);
 
 
+	/// <summary>
+	/// 補間の設定
+	/// </summary>
+	/// <param name="behaviour"></param>
+	/// <returns></returns>
+	InterpolationType MapAssimpBehaviourToInterpolation(aiAnimBehaviour preState, aiAnimBehaviour postState);
 
 	/// <summary>
 	/// アニメーション解析
@@ -311,6 +328,10 @@ private: // メンバ変数
 	Skeleton skeleton_;
 
 	bool isAnimation_;
+
+	// アニメーションの補間方法
+	InterpolationType interpolationType_ = InterpolationType::Linear;
+
 private: // Skinning
 
 	SrvManager* srvManager_ = nullptr;

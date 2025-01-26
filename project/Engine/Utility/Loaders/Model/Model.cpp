@@ -387,6 +387,8 @@ Model::SkinCluster Model::CreateSkinCluster(const Skeleton& skeleton, const Mode
 	return skinCluster;
 }
 
+//================================
+
 
 
 
@@ -662,6 +664,22 @@ Model::ModelData Model::LoadModelIndexFile(const std::string& directoryPath, con
 	return modelData;
 }
 
+
+Model::InterpolationType Model::MapAssimpBehaviourToInterpolation(aiAnimBehaviour preState, aiAnimBehaviour postState)
+{
+	if (preState == aiAnimBehaviour_CONSTANT || postState == aiAnimBehaviour_CONSTANT) {
+		return InterpolationType::Step;
+	}
+	else if (preState == aiAnimBehaviour_LINEAR || postState == aiAnimBehaviour_LINEAR) {
+		return InterpolationType::Linear;
+	}
+	else if (preState == aiAnimBehaviour_REPEAT || postState == aiAnimBehaviour_REPEAT) {
+		return InterpolationType::CubicSpline;
+	}
+
+	return InterpolationType::Linear; // デフォルト
+}
+
 Model::Animation Model::LoadAnimationFile(const std::string& directoryPath, const std::string& filename)
 {
 	Animation animation; // 今回作るアニメーション
@@ -676,6 +694,18 @@ Model::Animation Model::LoadAnimationFile(const std::string& directoryPath, cons
 	for (uint32_t channelIndex = 0; channelIndex < animationAssimp->mNumChannels; ++channelIndex) {
 		aiNodeAnim* nodeAnimationAssimp = animationAssimp->mChannels[channelIndex];
 		NodeAnimation& nodeAnimation = animation.nodeAnimations[nodeAnimationAssimp->mNodeName.C_Str()];
+
+		///// デフォルトの補間タイプをLinearに設定
+		//nodeAnimation.interpolationType = InterpolationType::Linear;
+
+		/// ------
+		/// 補間の種類を取得
+		/// ------
+		nodeAnimation.interpolationType =
+		MapAssimpBehaviourToInterpolation(nodeAnimationAssimp->mPreState, nodeAnimationAssimp->mPostState);
+
+
+
 
 		// Position
 		for (uint32_t keyIndex = 0; keyIndex < nodeAnimationAssimp->mNumPositionKeys; ++keyIndex) {

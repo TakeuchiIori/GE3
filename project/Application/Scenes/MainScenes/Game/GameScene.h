@@ -74,6 +74,10 @@ private:
 
     void CheckAllCollisions();
 
+    /// <summary>
+    /// アニメーションの再生を変更
+    /// </summary>
+    void ChamgeLoadAnimation();
 
 private:
     // カメラ

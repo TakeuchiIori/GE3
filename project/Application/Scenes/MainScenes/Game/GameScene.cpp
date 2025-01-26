@@ -125,7 +125,8 @@ void GameScene::Update()
     // パーティクル更新
     ParticleManager::GetInstance()->Update();
 
-    ShowImGui();
+    ChamgeLoadAnimation();
+    // ShowImGui();
     particleEmitter_[0]->Update();
 
     // ワールドトランスフォーム更新
@@ -252,7 +253,7 @@ void GameScene::UpdateCamera()
     break;
     case CameraMode::TOP_DOWN:
     {
-        Vector3 topDownPosition = Vector3(0.0f, 50.0f, 0.0f);
+        Vector3 topDownPosition = Vector3(0.0f, 10.0f, 0.0f);
         currentCamera_->SetTopDownCamera(topDownPosition + Vector3{0.0f,0.0f,0.0f});
     }
     break;
@@ -312,6 +313,42 @@ void GameScene::CheckAllCollisions() {
     // 衝突判定と応答
     CollisionManager::GetInstance()->CheckAllCollisions();
 
+}
+
+void GameScene::ChamgeLoadAnimation()
+{
+	ImGui::Begin("Animation");
+
+	ImGui::Text("Animation_Node");
+
+    if (ImGui::Button("Animation_Node_00")) {
+        animation_->SetModel("Animation_Node_00.gltf", true);
+    }
+
+	if (ImGui::Button("Animation_Node_01")) {
+		animation_->SetModel("Animation_Node_01.gltf", true);
+	}
+
+    if (ImGui::Button("Animation_Node_02")) {
+        animation_->SetModel("Animation_Node_02.gltf", true);
+    }
+
+    if (ImGui::Button("Animation_Node_03")) {
+        animation_->SetModel("Animation_Node_03.gltf", true);
+    }
+
+    if (ImGui::Button("Animation_Node_04")) {
+        animation_->SetModel("Animation_Node_04.gltf", true);
+    }
+
+    if (ImGui::Button("Animation_Node_05")) {
+        animation_->SetModel("Animation_Node_05.gltf", true);
+    }
+
+
+
+
+    ImGui::End();
 }
 
 
