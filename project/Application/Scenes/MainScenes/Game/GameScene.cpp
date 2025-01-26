@@ -210,15 +210,15 @@ void GameScene::UpdateCameraMode()
     if (ImGui::Button("DEFAULT Camera")) {
         cameraMode_ = CameraMode::DEFAULT;
     }
-    if (ImGui::Button("Follow Camera")) {
-        cameraMode_ = CameraMode::FOLLOW;
-    }
+    //if (ImGui::Button("Follow Camera")) {
+    //    cameraMode_ = CameraMode::FOLLOW;
+    //}
     if (ImGui::Button("Top-Down Camera")) {
         cameraMode_ = CameraMode::TOP_DOWN;
     }
-    if (ImGui::Button("FPS Camera")) {
-        cameraMode_ = CameraMode::FPS;
-    }
+    //if (ImGui::Button("FPS Camera")) {
+    //    cameraMode_ = CameraMode::FPS;
+    //}
     ImGui::End();
 #endif
 }
