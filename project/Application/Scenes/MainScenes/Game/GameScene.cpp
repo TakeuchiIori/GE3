@@ -65,7 +65,7 @@ void GameScene::Initialize()
     test_ = std::make_unique<Object3d>();
     test_->Initialize();
     //test_->SetModel("Animation_Node_00.gltf",true);
-    test_->SetModel("sneakWalk.gltf", true);
+    test_->SetModel("ICo.obj");
     testWorldTransform_.Initialize();
     //test_->SetLine(line_.get());
 
@@ -107,7 +107,7 @@ void GameScene::Update()
 
    // enemy_->Update();
     ground_->Update();
-    test_->UpdateAnimation();
+    //test_->UpdateAnimation();
 
     // カメラ更新
     UpdateCameraMode();
@@ -167,11 +167,11 @@ void GameScene::Draw()
     //enemy_->Draw();
     // その他の描画処理
 
-    //ground_->Draw();
+    ground_->Draw();
     //line_->UpdateVertices(start_, end_);
   
     //line_->DrawLine();
-   
+    test_->Draw(testWorldTransform_);
 #pragma endregion
 
 #pragma region 骨付きアニメーション描画
@@ -181,12 +181,12 @@ void GameScene::Draw()
     /// ここから描画可能です
     /// </summary>
 
-     test_->Draw(testWorldTransform_);
+     //test_->Draw(testWorldTransform_);
     // 骨描画
-    if (test_ && test_->GetModel()->GetSkeleton().joints.size() > 0) {
-        test_->DrawSkeleton(test_->GetModel()->GetSkeleton(), *boneLine_);
-        boneLine_->DrawLine();
-    }
+    //if (test_ && test_->GetModel()->GetSkeleton().joints.size() > 0) {
+    //    test_->DrawSkeleton(test_->GetModel()->GetSkeleton(), *boneLine_);
+    //    boneLine_->DrawLine();
+    //}
 
    
 
@@ -240,8 +240,8 @@ void GameScene::UpdateCamera()
     break;
     case CameraMode::TOP_DOWN:
     {
-        Vector3 topDownPosition = Vector3(0.0f, 100.0f, 0.0f);
-        currentCamera_->SetTopDownCamera(topDownPosition + player_->GetPosition());
+        Vector3 topDownPosition = Vector3(0.0f, 50.0f, 0.0f);
+        currentCamera_->SetTopDownCamera(topDownPosition + Vector3{0.0f,0.0f,0.0f});
     }
     break;
     case CameraMode::FPS:

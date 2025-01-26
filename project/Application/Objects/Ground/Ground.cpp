@@ -5,7 +5,7 @@ void Ground::Initialize()
 	// Object3dの生成
 	obj_ = std::make_unique<Object3d>();
 	obj_->Initialize();
-	obj_->SetModel("Ground.obj");
+	obj_->SetModel("terrain.obj");
 
 	worldTransform_.Initialize();
 }
