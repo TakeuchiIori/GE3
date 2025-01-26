@@ -67,6 +67,14 @@ void GameScene::Initialize()
     //test_->SetModel("Animation_Node_00.gltf",true);
     test_->SetModel("ICo.obj");
     testWorldTransform_.Initialize();
+
+    // アニメーション確認用
+	animation_ = std::make_unique<Object3d>();
+	animation_->Initialize();
+	animation_->SetModel("Animation_Node_00.gltf", true);
+	animationTransform_.Initialize();
+
+
     //test_->SetLine(line_.get());
 
     // 初期カメラモード設定
@@ -108,6 +116,7 @@ void GameScene::Update()
    // enemy_->Update();
     ground_->Update();
     //test_->UpdateAnimation();
+	animation_->UpdateAnimation();
 
     // カメラ更新
     UpdateCameraMode();
@@ -121,6 +130,7 @@ void GameScene::Update()
 
     // ワールドトランスフォーム更新
     testWorldTransform_.UpdateMatrix();
+    animationTransform_.UpdateMatrix();
     cameraManager_.UpdateAllCameras();
 
     //=====================================================//
@@ -167,11 +177,12 @@ void GameScene::Draw()
     //enemy_->Draw();
     // その他の描画処理
 
-    ground_->Draw();
+   // ground_->Draw();
     //line_->UpdateVertices(start_, end_);
   
     //line_->DrawLine();
-    test_->Draw(testWorldTransform_);
+   // test_->Draw(testWorldTransform_);
+    animation_->Draw(animationTransform_);
 #pragma endregion
 
 #pragma region 骨付きアニメーション描画
@@ -181,10 +192,11 @@ void GameScene::Draw()
     /// ここから描画可能です
     /// </summary>
 
-     //test_->Draw(testWorldTransform_);
+	
+
     // 骨描画
-    //if (test_ && test_->GetModel()->GetSkeleton().joints.size() > 0) {
-    //    test_->DrawSkeleton(test_->GetModel()->GetSkeleton(), *boneLine_);
+    //if (animation_&& animation_->GetModel()->GetSkeleton().joints.size() > 0) {
+    //    animation_->DrawSkeleton(animation_->GetModel()->GetSkeleton(), *boneLine_);
     //    boneLine_->DrawLine();
     //}
 

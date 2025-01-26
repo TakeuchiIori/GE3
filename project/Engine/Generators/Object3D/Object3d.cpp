@@ -43,8 +43,16 @@ void Object3d::Draw(WorldTransform& worldTransform)
 	if (model_) {
 		if (camera_) {
 			const Matrix4x4& viewProjectionMatrix = camera_->GetViewProjectionMatrix();
-			worldViewProjectionMatrix = worldTransform.GetMatWorld() * viewProjectionMatrix;
-			worldMatrix = worldTransform.GetMatWorld();
+
+			// 
+			if (!model_->GetModelData().hasBones) {
+				worldViewProjectionMatrix = worldTransform.GetMatWorld() * model_->GetModelData().rootNode.localMatrix * viewProjectionMatrix;
+				worldMatrix = worldTransform.GetMatWorld() * model_->GetModelData().rootNode.localMatrix;
+			}
+			else {
+				worldViewProjectionMatrix = worldTransform.GetMatWorld() * viewProjectionMatrix;
+				worldMatrix = worldTransform.GetMatWorld();
+			}
 		}
 		else {
 

@@ -174,7 +174,7 @@ public: // メンバ関数
 	/// <summary>
 	/// アニメーション再生
 	/// </summary>
-	void PlayAnimation();
+	void PlayAnimation(float animationTime);
 
 	/// <summary>
 	/// スキンクラスターの更新

@@ -91,6 +91,10 @@ private:
    
     // 3Dモデル
     std::unique_ptr<Object3d> test_;
+    // アニメーション確認用
+	std::unique_ptr<Object3d> animation_;
+
+    WorldTransform animationTransform_;
     WorldTransform testWorldTransform_;
 
     // プレイヤー

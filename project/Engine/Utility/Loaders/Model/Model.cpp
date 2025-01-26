@@ -196,19 +196,17 @@ void Model::UpdateAnimation()
 		UpdateSkinCluster(skinCluster_, skeleton_);
 	}
 	else {
-		PlayAnimation();
+		PlayAnimation(animationTime_);
 	}
 }
 
 
-void Model::PlayAnimation()
+void Model::PlayAnimation(float animationTime)
 {
-	animationTime_ += 1.0f / 60.0f;
-	animationTime_ = std::fmod(animationTime_, animation_.duration); // 最後まで再生したら最初からリピート再生
 	NodeAnimation& rootNodeAnimation = animation_.nodeAnimations[modelData_.rootNode.name]; // rootNodeのAnimationを取得
-	Vector3 translate = CalculateValue(rootNodeAnimation.translate.keyframes, animationTime_); // 指定時刻の値を取得
-	Quaternion rotate= CalculateValue(rootNodeAnimation.rotate.keyframes, animationTime_);
-	Vector3 scale = CalculateValue(rootNodeAnimation.scale.keyframes, animationTime_);
+	Vector3 translate = CalculateValue(rootNodeAnimation.translate.keyframes, animationTime); // 指定時刻の値を取得
+	Quaternion rotate= CalculateValue(rootNodeAnimation.rotate.keyframes, animationTime);
+	Vector3 scale = CalculateValue(rootNodeAnimation.scale.keyframes, animationTime);
 
 	modelData_.rootNode.localMatrix = MakeAffineMatrix(scale, rotate, translate);
 }
@@ -710,6 +708,8 @@ Model::Animation Model::LoadAnimationFile(const std::string& directoryPath, cons
 
 	return animation;
 }
+
+
 
 bool Model::HasBones(const aiScene* scene)
 {
