@@ -95,8 +95,10 @@ private:
    
     // 3Dモデル
     std::unique_ptr<Object3d> test_;
+    bool isTestDraw_ = true;
     // アニメーション確認用
 	std::unique_ptr<Object3d> animation_;
+    bool isAnimationDraw_ = false;
 
     WorldTransform animationTransform_;
     WorldTransform testWorldTransform_;

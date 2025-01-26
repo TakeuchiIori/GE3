@@ -182,8 +182,12 @@ void GameScene::Draw()
     //line_->UpdateVertices(start_, end_);
   
     //line_->DrawLine();
-   // test_->Draw(testWorldTransform_);
-    animation_->Draw(animationTransform_);
+    if (isTestDraw_) {
+        test_->Draw(testWorldTransform_);
+    }
+    if (isAnimationDraw_) {
+        animation_->Draw(animationTransform_);
+    }
 #pragma endregion
 
 #pragma region 骨付きアニメーション描画
@@ -317,38 +321,49 @@ void GameScene::CheckAllCollisions() {
 
 void GameScene::ChamgeLoadAnimation()
 {
-	ImGui::Begin("Animation");
+    static std::string currentAnimationFile = "None"; // 現在のアニメーションファイル名を保持
 
-	ImGui::Text("Animation_Node");
+    ImGui::Begin("Animation");
+
+    ImGui::Text("Animation_Node");
 
     if (ImGui::Button("Animation_Node_00")) {
-        animation_->SetModel("Animation_Node_00.gltf", true);
+        currentAnimationFile = "Animation_Node_00.gltf";
+        animation_->SetModel(currentAnimationFile.c_str(), true);
     }
 
-	if (ImGui::Button("Animation_Node_01")) {
-		animation_->SetModel("Animation_Node_01.gltf", true);
-	}
+    if (ImGui::Button("Animation_Node_01")) {
+        currentAnimationFile = "Animation_Node_01.gltf";
+        animation_->SetModel(currentAnimationFile.c_str(), true);
+    }
 
     if (ImGui::Button("Animation_Node_02")) {
-        animation_->SetModel("Animation_Node_02.gltf", true);
+        currentAnimationFile = "Animation_Node_02.gltf";
+        animation_->SetModel(currentAnimationFile.c_str(), true);
     }
 
     if (ImGui::Button("Animation_Node_03")) {
-        animation_->SetModel("Animation_Node_03.gltf", true);
+        currentAnimationFile = "Animation_Node_03.gltf";
+        animation_->SetModel(currentAnimationFile.c_str(), true);
     }
 
     if (ImGui::Button("Animation_Node_04")) {
-        animation_->SetModel("Animation_Node_04.gltf", true);
+        currentAnimationFile = "Animation_Node_04.gltf";
+        animation_->SetModel(currentAnimationFile.c_str(), true);
     }
 
     if (ImGui::Button("Animation_Node_05")) {
-        animation_->SetModel("Animation_Node_05.gltf", true);
+        currentAnimationFile = "Animation_Node_05.gltf";
+        animation_->SetModel(currentAnimationFile.c_str(), true);
     }
 
+    // 現在のアニメーションファイル名を表示
+    ImGui::Text("Now Playing: %s", currentAnimationFile.c_str());
 
-
-
+    ImGui::Checkbox("AnimationDraw", &isAnimationDraw_);
+    ImGui::Checkbox("TestDraw", &isTestDraw_);
     ImGui::End();
+
 }
 
 
