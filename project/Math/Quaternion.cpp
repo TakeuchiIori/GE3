@@ -16,6 +16,7 @@ Matrix4x4 MakeAffineMatrix(const Vector3& scale, const Quaternion& rotate, const
 
 
 
+
 Quaternion IdentityQuaternion()
 {
     return { 0, 0, 0, 1 };

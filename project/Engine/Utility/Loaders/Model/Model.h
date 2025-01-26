@@ -117,8 +117,6 @@ public: // 構造体
 	struct Keyframe {
 		float time;
 		tValue value;
-		tValue inTangent;  // 入力接線
-		tValue outTangent; // 出力接線
 	};
 	using KeyframeVector3 = Keyframe<Vector3>;
 	using KeyframeQuaternion = Keyframe<Quaternion>;

@@ -455,21 +455,7 @@ Quaternion Model::CalculateValueNew(const std::vector<KeyframeQuaternion>& keyfr
 				return keyframes[index].value;
 
 			case InterpolationType::CubicSpline: {
-				// データを準備
-				std::vector<float> keyTimes;
-				std::vector<Quaternion> keyValues;
-				std::vector<Quaternion> keyInTangents;
-				std::vector<Quaternion> keyOutTangents;
 
-				for (const auto& keyframe : keyframes) {
-					keyTimes.push_back(keyframe.time);
-					keyValues.push_back(keyframe.value);
-					keyInTangents.push_back(keyframe.inTangent);
-					keyOutTangents.push_back(keyframe.outTangent);
-				}
-
-				// CubicSplineQuaternionInterpolation を使用して補間
-				return CubicSplineQuaternionInterpolation(keyTimes, keyValues, keyInTangents, keyOutTangents, time);
 			}
 
 			default:
@@ -834,11 +820,6 @@ Model::Animation Model::LoadAnimationFile(const std::string& directoryPath, cons
 			KeyframeQuaternion keyframe;
 			keyframe.time = float(keyAssimp.mTime / animationAssimp->mTicksPerSecond); // ここも秒に変換
 			keyframe.value = { keyAssimp.mValue.x, -keyAssimp.mValue.y , -keyAssimp.mValue.z ,keyAssimp.mValue.w };
-
-
-
-
-
 			nodeAnimation.rotate.keyframes.push_back(keyframe);
 		}
 

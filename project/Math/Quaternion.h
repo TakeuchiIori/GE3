@@ -71,6 +71,7 @@ struct Quaternion
     // スカラー乗算（左辺）を友達関数として定義
     friend Quaternion operator*(float scalar, const Quaternion& q) {
         return Quaternion(q.w * scalar, q.x * scalar, q.y * scalar, q.z * scalar);
+       
     }
 };
 

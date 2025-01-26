@@ -71,7 +71,7 @@ void GameScene::Initialize()
     // アニメーション確認用
 	animation_ = std::make_unique<Object3d>();
 	animation_->Initialize();
-	animation_->SetModel("Animation_Node_00.gltf", true);
+	animation_->SetModel("AnimatedCube.gltf", true);
 	animationTransform_.Initialize();
 
 
