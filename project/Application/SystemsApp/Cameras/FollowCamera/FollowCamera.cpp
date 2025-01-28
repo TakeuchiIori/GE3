@@ -3,6 +3,7 @@
 #include "Matrix4x4.h"
 #include <imgui.h>
 #include <Systems/Input/Input.h>
+#include <DirectXMath.h>
 
 void FollowCamera::Initialize()
 {
@@ -35,7 +36,7 @@ void FollowCamera::UpdateInput()
 
 		XINPUT_STATE joyState;
 		if (Input::GetInstance()->GetJoystickState(0, joyState)) {
-			const float kRotateSpeed = 0.05f;
+			const float kRotateSpeed = 0.07f;
 
 			Vector3 move{};
 			move.x = 0;
@@ -62,7 +63,8 @@ void FollowCamera::FollowProsess()
 	{
 		return;
 	}
-	Vector3 offset = { 0.0f, 6.0f, -30.0f };
+	Vector3 offset = { 0.0f, 6.0f, -40.0f };
+
 
 	Matrix4x4 rotate = MakeRotateMatrixXYZ(rotate_);
 
