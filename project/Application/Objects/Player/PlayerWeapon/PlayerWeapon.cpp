@@ -432,7 +432,7 @@ void PlayerWeapon::UpdateState()
 void PlayerWeapon::IdleMotion(float deltaTime)
 {
 	// スペースキーまたはAボタンを押されたら攻撃
-	if (input_->PushKey(DIK_SPACE) || input_->IsPadTriggered(0, GamePadButton::A)) {
+	if (input_->PushKey(DIK_SPACE) || input_->IsPadTriggered(0, GamePadButton::RB)) {
 		stateRequest_ = WeaponState::Attacking;
 		return;
 	}
@@ -480,7 +480,7 @@ void PlayerWeapon::UpdateAttackMotion(float deltaTime)
 
 	// コンボ開始
 	if (attackProgress_ >= 0.5f) {
-		if (IsComboAvailable() && input_->PushKey(DIK_SPACE) || input_->IsPadTriggered(0, GamePadButton::A)) {
+		if (IsComboAvailable() && input_->PushKey(DIK_SPACE) || input_->IsPadTriggered(0, GamePadButton::RB)) {
 			stateRequest_ = WeaponState::LSwing;
 			currentMotion_ = LSwing_;
 			attackProgress_ = 0.0f;
@@ -519,7 +519,7 @@ void PlayerWeapon::UpdateLeftHorizontalSwing(float deltaTime)
 
 	// コンボ開始
 	if (attackProgress_ >= 0.5f) {
-		if (IsComboAvailable() && input_->PushKey(DIK_SPACE) || input_->IsPadTriggered(0, GamePadButton::A)) {
+		if (IsComboAvailable() && input_->PushKey(DIK_SPACE) || input_->IsPadTriggered(0, GamePadButton::RB)) {
 			stateRequest_ = WeaponState::RSwing;
 			currentMotion_ = RSwing_; // ダッシュ攻撃モーション
 			attackProgress_ = 0.0f;
@@ -556,7 +556,7 @@ void PlayerWeapon::UpdateRightHorizontalSwiwng(float deltaTime)
 
 	// コンボ開始
 	if (attackProgress_ >= 0.5f) {
-		if (IsComboAvailable() && input_->PushKey(DIK_SPACE) || input_->IsPadTriggered(0, GamePadButton::A)) {
+		if (IsComboAvailable() && input_->PushKey(DIK_SPACE) || input_->IsPadTriggered(0, GamePadButton::RB)) {
 			stateRequest_ = WeaponState::JumpAttack;
 			currentMotion_ = jumpAttack_; // ダッシュ攻撃モーション
 			attackProgress_ = 0.0f;
@@ -597,7 +597,7 @@ void PlayerWeapon::UpdateJumpAttack(float deltaTime)
 
 	// コンボ開始
 	if (attackProgress_ >= 1.0f) {
-		if (IsComboAvailable() && input_->PushKey(DIK_SPACE) || input_->IsPadTriggered(0, GamePadButton::A)) {
+		if (IsComboAvailable() && input_->PushKey(DIK_SPACE) || input_->IsPadTriggered(0, GamePadButton::RB)) {
 			stateRequest_ = WeaponState::Dashing;
 			currentMotion_ = dashMotion_; // ダッシュ攻撃モーション
 			attackProgress_ = 0.0f;
@@ -638,7 +638,7 @@ void PlayerWeapon::UpdateDashMotion(float deltaTime)
 
 	// コンボ開始
 	if (attackProgress_ >= 0.5f) {
-		if (IsComboAvailable() && input_->PushKey(DIK_SPACE) || input_->IsPadTriggered(0, GamePadButton::A)) {
+		if (IsComboAvailable() && input_->PushKey(DIK_SPACE) || input_->IsPadTriggered(0, GamePadButton::RB)) {
 			//stateRequest_ = WeaponState::Dashing;
 			//currentMotion_ = dashMotion_; // ダッシュ攻撃モーション
 			//attackProgress_ = 0.0f;

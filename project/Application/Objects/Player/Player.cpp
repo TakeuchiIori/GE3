@@ -128,29 +128,29 @@ void Player::Move()
     if (isDash_) {
         Dash();
     }
-
-    Rotate();
 }
 
 void Player::Rotate()
 {
-    // カメラの回転行列を抽出
-    Matrix4x4 cameraRotationMatrix = MakeRotateMatrixXYZ(camera_->transform_.rotate);
-    Vector3 cameraDirection = Vector3(
-        cameraRotationMatrix.m[2][0], // カメラのZ軸方向のX成分
-        cameraRotationMatrix.m[2][1], // カメラのZ軸方向のY成分
-        cameraRotationMatrix.m[2][2]  // カメラのZ軸方向のZ成分
-    );
-    // カメラの向いている方向ベクトルのXZ平面内の角度を計算
-    float angle = std::atan2(cameraDirection.x, cameraDirection.z);
-    // プレイヤーの回転を設定（Y軸周りのみ）
-    worldTransform_.rotation_ = Vector3(0.0f, angle, 0.0f);
+    
+        // カメラの回転行列を抽出
+        Matrix4x4 cameraRotationMatrix = MakeRotateMatrixXYZ(camera_->transform_.rotate);
+        Vector3 cameraDirection = Vector3(
+            cameraRotationMatrix.m[2][0], // カメラのZ軸方向のX成分
+            cameraRotationMatrix.m[2][1], // カメラのZ軸方向のY成分
+            cameraRotationMatrix.m[2][2]  // カメラのZ軸方向のZ成分
+        );
+        // カメラの向いている方向ベクトルのXZ平面内の角度を計算
+        float angle = std::atan2(cameraDirection.x, cameraDirection.z);
+        // プレイヤーの回転を設定（Y軸周りのみ）
+        worldTransform_.rotation_ = Vector3(0.0f, angle, 0.0f);
 
-
+    
 }
 
 void Player::MoveController()
 {
+   
     // XInputデバイスの状態を取得
     XINPUT_STATE state;
     if (!Input::GetInstance()->GetJoystickState(0, state)) {
@@ -171,9 +171,13 @@ void Player::MoveController()
     }
 
 
+    // スティックの入力から角度を計算（ラジアン）
+    float targetRotationY = atan2f(leftStickX, leftStickY);
 
+    // プレイヤーの回転を更新
+    worldTransform_.rotation_.y = targetRotationY;
 
-
+    Rotate();
 
     // 移動方向を計算（前方方向）
     Vector3 forwardDirection = {
@@ -186,7 +190,7 @@ void Player::MoveController()
     worldTransform_.translation_ += forwardDirection * moveSpeed_.z * std::sqrt(leftStickX * leftStickX + leftStickY * leftStickY);
 
   
-
+   
 }
 
 
