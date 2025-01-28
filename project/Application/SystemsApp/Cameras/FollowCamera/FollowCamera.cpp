@@ -1,0 +1,81 @@
+#include "FollowCamera.h"
+#include "MathFunc.h"
+#include "Matrix4x4.h"
+#include <imgui.h>
+#include <Systems/Input/Input.h>
+
+void FollowCamera::Initialize()
+{
+}
+
+void FollowCamera::Update()
+{
+	FollowProsess();
+
+	UpdateInput();
+
+#ifdef _DEBUG
+	ImGui();
+#endif // _DEBUG
+
+}
+
+void FollowCamera::UpdateInput()
+{
+	if (Input::GetInstance()->IsControllerConnected())
+	{
+
+		XINPUT_STATE joyState;
+		if (Input::GetInstance()->GetJoystickState(0, joyState)) {
+			const float kRotateSpeed = 0.05f;
+
+			Vector3 move{};
+			move.x = 0;
+			move.y += static_cast<float>(joyState.Gamepad.sThumbRX);
+			move.z = 0;
+
+			// 移動量に速さを反映
+			if (Length(move) > 0.0f) {
+				move = Normalize(move) * kRotateSpeed;
+			}
+			else {
+				move = { 0.0f, 0.0f, 0.0f };
+			}
+
+			rotate_ += move;
+		}
+	}
+}
+
+void FollowCamera::FollowProsess()
+{
+	// ターゲットがない場合は処理しない
+	if (target_ == nullptr)
+	{
+		return;
+	}
+
+	//Matrix4x4 rotate = MakeRotateMatrixXYZ(rotate_);
+
+	//offset_ = TransformCoordinates(offset_, rotate);
+
+	translate_ = target_->translation_ + offset_;
+
+	matView_ = Inverse(MakeAffineMatrix(scale_, rotate_, translate_));
+}
+
+void FollowCamera::ImGui()
+{
+	ImGui::Begin("FollowCamera Info");
+	ImGui::DragFloat3("OffSet", &offset_.x);
+
+	ImGui::DragFloat3("Translate", &translate_.x);
+
+	ImGui::DragFloat3("Rotation", &rotate_.x);
+
+	ImGui::DragFloat3("Scale", &scale_.x);
+
+	ImGui::End();
+}
+
+

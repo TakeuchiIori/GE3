@@ -21,8 +21,11 @@
 #include "Ground/Ground.h"
 #include "../Transitions/Fade/Fade.h"
 
+
 // Math
 #include "Vector3.h"
+#include "../../../SystemsApp/Cameras/FollowCamera/FollowCamera.h"
+#include "../../../SystemsApp/Cameras/TopDownCamera/TopDownCamera.h"
 
 enum class CameraMode
 {
@@ -95,6 +98,8 @@ private:
     CameraMode cameraMode_;
     std::shared_ptr<Camera> sceneCamera_;
     CameraManager cameraManager_;
+	FollowCamera followCamera_;
+    TopDownCamera topDownCamera_;
     // サウンド
     Audio::SoundData soundData;
     // パーティクルエミッター

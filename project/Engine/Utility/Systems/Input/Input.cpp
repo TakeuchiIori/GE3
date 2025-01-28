@@ -355,3 +355,35 @@ bool Input::IsPadTriggered(int32_t playerIndex, GamePadButton button) const {
 	return ((joystick.state_.xInput_.Gamepad.wButtons & static_cast<WORD>(button)) != 0) &&
 		((joystick.statePre_.xInput_.Gamepad.wButtons & static_cast<WORD>(button)) == 0);
 }
+
+Vector2 Input::GetLeftStickInput(int32_t stickNo) const
+{
+	if (stickNo < 0 || stickNo >= devJoysticks_.size()) {
+		return { 0.0f, 0.0f };
+	}
+	const auto& joystick = devJoysticks_[stickNo];
+	if (joystick.type_ != PadType::XInput) {
+		return { 0.0f, 0.0f };
+	}
+	const auto& gamepad = joystick.state_.xInput_.Gamepad;
+	return {
+		static_cast<float>(gamepad.sThumbLX) / 32768.0f,
+		static_cast<float>(gamepad.sThumbLY) / 32768.0f
+	};
+}
+
+Vector2 Input::GetRightStickInput(int32_t stickNo) const
+{
+	if (stickNo < 0 || stickNo >= devJoysticks_.size()) {
+		return { 0.0f, 0.0f };
+	}
+	const auto& joystick = devJoysticks_[stickNo];
+	if (joystick.type_ != PadType::XInput) {
+		return { 0.0f, 0.0f };
+	}
+	const auto& gamepad = joystick.state_.xInput_.Gamepad;
+	return {
+		static_cast<float>(gamepad.sThumbRX) / 32768.0f,
+		static_cast<float>(gamepad.sThumbRY) / 32768.0f
+	};
+}

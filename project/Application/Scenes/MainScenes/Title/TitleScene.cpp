@@ -187,20 +187,17 @@ void TitleScene::UpdateCamera()
     break;
     case CameraMode::FOLLOW:
     {
-        Vector3 playerPos = player_->GetPosition();
-        currentCamera_->FollowCamera(playerPos);
+
     }
     break;
     case CameraMode::TOP_DOWN:
     {
-        Vector3 topDownPosition = Vector3(0.0f, 100.0f, 0.0f);
-        currentCamera_->SetTopDownCamera(topDownPosition + player_->GetPosition());
+
     }
     break;
     case CameraMode::FPS:
     {
-        Vector3 playerPos = player_->GetPosition();
-        currentCamera_->SetFPSCamera(playerPos, player_->GetRotation());
+
     }
     break;
 

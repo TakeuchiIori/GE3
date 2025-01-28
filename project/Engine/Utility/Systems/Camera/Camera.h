@@ -18,6 +18,12 @@ public: // メンバ関数
 	void Update();
 
 	/// <summary>
+	/// 行列の更新
+	/// </summary>
+	void UpdateMatrix();
+
+
+	/// <summary>
 	/// ImGui
 	/// </summary>
 	void ShowImGui();
@@ -28,24 +34,6 @@ public: // カメラ
     /// カメラの位置を原点にリセットする
     /// </summary>
 	void DefaultCamera();
-
-	/// <summary>
-	/// 追従カメラ
-	/// </summary>
-	void FollowCamera(Vector3& target );
-
-	/// <summary>
-   /// 神視点カメラを設定する
-   /// </summary>
-	void SetTopDownCamera(const Vector3& position);
-
-
-	/// <summary>
-	/// FPS視点
-	/// </summary>
-	/// <param name="position"></param>
-	/// <param name="rotation"></param>
-	void SetFPSCamera(const Vector3& position, const Vector3& rotation);
 
 
 public: // アクセッサ
@@ -66,7 +54,7 @@ public: // アクセッサ
 	Vector3 GetTranslate() const { return transform_.translate; }
 	Vector3 GetScale() const { return transform_.scale; }
 
-private: // メンバ変数
+public: // メンバ変数
 	EulerTransform transform_;	   
 	Matrix4x4 worldMatrix_;	   
 	Matrix4x4 viewMatrix_;	   

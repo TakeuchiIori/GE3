@@ -27,8 +27,13 @@ Camera::Camera()
 
 void Camera::Update()
 {
-	// transformからアフィン変換行列を計算
-	worldMatrix_ = MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.translate);
+
+}
+
+void Camera::UpdateMatrix()
+{
+    // transformからアフィン変換行列を計算
+    worldMatrix_ = MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.translate);
     // worldMatrixの逆行列
     viewMatrix_ = Inverse(worldMatrix_);
     // プロジェクション行列の更新
@@ -58,49 +63,4 @@ void Camera::DefaultCamera()
     viewMatrix_ = Inverse(worldMatrix_);
     viewProjectionMatrix_ = Multiply(viewMatrix_, projectionMatrix_);
 
-}
-
-void Camera::FollowCamera(Vector3& target)
-{	
-
-    transform_.rotate = followCameraOffsetRotare_;
-    transform_.translate = target + followCameraOffsetPosition_;
-
-    // ワールド行列とビュー行列を更新
-    worldMatrix_ = MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.translate);
-    viewMatrix_ = Inverse(worldMatrix_);
-
-#ifdef _DEBUG
-    // デバッグ用UIでカメラのオフセットを調整可能
-    ImGui::Begin("Camera ");
-    ImGui::DragFloat3("Camera Position Offset", &followCameraOffsetPosition_.x, 0.01f);
-    ImGui::DragFloat3("Camera Rotation", &followCameraOffsetRotare_.x, 0.01f);
-    ImGui::End();
-#endif
-}
-
-void Camera::SetTopDownCamera(const Vector3& position)
-{
-    transform_.translate = position;
-    transform_.rotate = Vector3(1.57f, 0.0f, 0.0f); // 真上から見下ろすように設定
-    worldMatrix_ = MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.translate);
-    viewMatrix_ = Inverse(worldMatrix_);
-}
-
-
-void Camera::SetFPSCamera(const Vector3& position, const Vector3& rotation)
-{
-    // カメラ位置をプレイヤーの位置に合わせ、目の高さに調整
-    transform_.translate = position;
-    transform_.translate.y += 1.5f;
-    transform_.translate.z += 1.2f; // 目の高さを設定
-
-    // 回転はプレイヤーの回転のみを反映し、位置の移動とは独立させる
-    transform_.rotate = rotation;
-
-    // アフィン変換行列を再計算
-    worldMatrix_ = MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.translate);
-    viewMatrix_ = Inverse(worldMatrix_);
-    //viewProjectionMatrix_ = Multiply(viewMatrix_, projectionMatrix_);
-  
 }

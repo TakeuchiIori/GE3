@@ -47,14 +47,14 @@ void GameScene::Initialize()
     //inputHandler_->AssignMoveLeftCommandPressKeyA();
 
 
-    // 各スプライトの初期化
-
+    
+	followCamera_.Initialize();
 
     // 各オブジェクトの初期化
     player_ = std::make_unique<Player>();
     player_->Initialize();
-   
-
+	
+    followCamera_.SetTarget(player_.get()->GetWorldTransform());
     // 敵
     //enemy_ = std::make_unique<Enemy>();
     //enemy_->Initialize();
@@ -63,7 +63,7 @@ void GameScene::Initialize()
     // 地面
     ground_ = std::make_unique<Ground>();
     ground_->Initialize();
-
+    
     // test
     test_ = std::make_unique<Object3d>();
     test_->Initialize();
@@ -210,7 +210,7 @@ void GameScene::Draw()
     for (auto& enemy : enemies_) {
         enemy->Draw();
     }
-    //ground_->Draw();
+    ground_->Draw();
     //line_->UpdateVertices(start_, end_);
   
     //line_->DrawLine();
@@ -443,20 +443,32 @@ void GameScene::UpdateCamera()
     break;
     case CameraMode::FOLLOW:
     {
-        Vector3 playerPos = player_->GetPosition();
-        sceneCamera_->FollowCamera(playerPos);
+       
+		followCamera_.Update();
+		sceneCamera_->viewMatrix_ = followCamera_.matView_;
+		sceneCamera_->transform_.translate = followCamera_.translate_;
+		sceneCamera_->transform_.rotate = followCamera_.rotate_;
+
+		sceneCamera_->UpdateMatrix();
     }
     break;
     case CameraMode::TOP_DOWN:
     {
-        Vector3 topDownPosition = Vector3(0.0f, 100.0f, 0.0f);
-        sceneCamera_->SetTopDownCamera(topDownPosition + player_->GetPosition());
+        //Vector3 topDownPosition = Vector3(0.0f, 100.0f, 0.0f);
+        //sceneCamera_->SetTopDownCamera(topDownPosition + player_->GetPosition());
+        
+        topDownCamera_.SetTarget(player_.get()->GetWorldTransform());
+        topDownCamera_.Update();
+		sceneCamera_->viewMatrix_ = topDownCamera_.matView_;
+		sceneCamera_->transform_.translate = topDownCamera_.translate_;
+		sceneCamera_->transform_.rotate = topDownCamera_.rotate_;
+
+		sceneCamera_->UpdateMatrix();
     }
     break;
     case CameraMode::FPS:
     {
-        Vector3 playerPos = player_->GetPosition();
-        sceneCamera_->SetFPSCamera(playerPos, player_->GetRotation());
+
     }
     break;
 

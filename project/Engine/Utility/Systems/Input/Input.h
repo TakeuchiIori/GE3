@@ -245,6 +245,35 @@ public:
     bool IsPadTriggered(int32_t playerIndex, GamePadButton button) const;
 
 
+
+    /// <summary>
+    /// 左スティックの入力を取得する
+    /// </summary>
+    /// <param name="stickNo">ジョイスティック番号</param>
+    /// <returns>スティック入力のベクトル</returns>
+    Vector2 GetLeftStickInput(int32_t stickNo) const;
+
+    /// <summary>
+    /// 右スティックの入力を取得する
+    /// </summary>
+    /// <param name="stickNo">ジョイスティック番号</param>
+    /// <returns>スティック入力のベクトル</returns>
+    Vector2 GetRightStickInput(int32_t stickNo) const;
+
+
+    /// <summary>
+    /// コントローラーの接続確認
+    /// </summary>
+    /// <returns></returns>
+    bool IsControllerConnected() {
+        XINPUT_STATE state; ZeroMemory(&state, sizeof(XINPUT_STATE));
+        // コントローラの状態を取得
+        DWORD result = XInputGetState(0, &state);
+        // コントローラが接続されている場合は true を返す
+        return (result == ERROR_SUCCESS);
+    }
+
+
 private:
 
     static Input* instance;

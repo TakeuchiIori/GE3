@@ -125,6 +125,8 @@ public: // アクセッサ
 	// プレイヤーの位置を取得する関数
 	const Vector3& GetPosition() const { return worldTransform_.translation_; }
 	const Vector3& GetRotation() const { return worldTransform_.rotation_; }
+	const WorldTransform& GetWorldTransform() { return worldTransform_; }
+
 	PlayerWeapon* GetPlayerWeapon() { return weapon_.get(); }
 
 	void SetCamera(Camera* camera) { sprite_->SetCamera(camera); }
