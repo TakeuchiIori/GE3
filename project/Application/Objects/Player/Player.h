@@ -80,6 +80,11 @@ private: // メンバ関数（非公開）
 	/// </summary>
 	void Move();
 
+	/// <summary>
+	/// 回転
+	/// </summary>
+	void Rotate();
+
 	void MoveController();
 
 	/// <summary>
@@ -129,7 +134,8 @@ public: // アクセッサ
 
 	PlayerWeapon* GetPlayerWeapon() { return weapon_.get(); }
 
-	void SetCamera(Camera* camera) { sprite_->SetCamera(camera); }
+	void SetCameraSprite(Camera* camera) { sprite_->SetCamera(camera); }
+	void SetCamera(Camera* camera) { camera_ = camera; }
 
 private: 
 	/*===============================================================//
@@ -138,7 +144,7 @@ private:
 
 	WorldTransform worldTransform_;
 	WorldTransform WS_;
-	
+	Camera* camera_;
 	/*===============================================================//
 								ポインタ
 	//===============================================================*/

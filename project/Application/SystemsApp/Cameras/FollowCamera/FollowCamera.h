@@ -27,7 +27,6 @@ private:
 
     void ImGui();
     Vector3 rotation_;
-    Vector3 offset_ = { 0.0f, 6.0f, -30.0f };
     float kDeadZoneL_ = 100.0f;
     // 追従対象
     const WorldTransform* target_;

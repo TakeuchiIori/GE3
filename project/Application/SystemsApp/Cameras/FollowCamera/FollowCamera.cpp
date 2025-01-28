@@ -10,10 +10,18 @@ void FollowCamera::Initialize()
 
 void FollowCamera::Update()
 {
-	FollowProsess();
 
 	UpdateInput();
 
+	FollowProsess();
+
+	
+
+	
+
+	
+
+	
 #ifdef _DEBUG
 	ImGui();
 #endif // _DEBUG
@@ -54,12 +62,13 @@ void FollowCamera::FollowProsess()
 	{
 		return;
 	}
+	Vector3 offset = { 0.0f, 6.0f, -30.0f };
 
-	//Matrix4x4 rotate = MakeRotateMatrixXYZ(rotate_);
+	Matrix4x4 rotate = MakeRotateMatrixXYZ(rotate_);
 
-	//offset_ = TransformCoordinates(offset_, rotate);
+	offset = TransformNormal(offset, rotate);
 
-	translate_ = target_->translation_ + offset_;
+	translate_ = target_->translation_ + offset;
 
 	matView_ = Inverse(MakeAffineMatrix(scale_, rotate_, translate_));
 }
@@ -67,7 +76,6 @@ void FollowCamera::FollowProsess()
 void FollowCamera::ImGui()
 {
 	ImGui::Begin("FollowCamera Info");
-	ImGui::DragFloat3("OffSet", &offset_.x);
 
 	ImGui::DragFloat3("Translate", &translate_.x);
 

@@ -49,12 +49,12 @@ void GameScene::Initialize()
 
     
 	followCamera_.Initialize();
-
     // 各オブジェクトの初期化
     player_ = std::make_unique<Player>();
     player_->Initialize();
-	
     followCamera_.SetTarget(player_.get()->GetWorldTransform());
+    player_->SetCamera(sceneCamera_.get());
+    
     // 敵
     //enemy_ = std::make_unique<Enemy>();
     //enemy_->Initialize();
@@ -361,7 +361,7 @@ void GameScene::ChangePahse()
 
         // objの更新
         player_->Update();
-
+        
 
         // enemy_->Update();
         ground_->Update();
@@ -443,8 +443,8 @@ void GameScene::UpdateCamera()
     break;
     case CameraMode::FOLLOW:
     {
-       
-		followCamera_.Update();
+        
+        followCamera_.Update();
 		sceneCamera_->viewMatrix_ = followCamera_.matView_;
 		sceneCamera_->transform_.translate = followCamera_.translate_;
 		sceneCamera_->transform_.rotate = followCamera_.rotate_;
