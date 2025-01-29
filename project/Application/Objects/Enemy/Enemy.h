@@ -112,5 +112,6 @@ private:
 
 	uint32_t hp_ = 100;
 	bool isAlive_ = true;
+	bool isHit_ = false;
 };
 

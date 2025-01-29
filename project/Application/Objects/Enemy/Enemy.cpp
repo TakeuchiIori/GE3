@@ -57,7 +57,18 @@ void Enemy::Update()
 
     Move();
 
+    if (isHit_) {
+        base_->SetMaterialColor({ 1.0f, 0.0f, 0.0f, 1.0f });
+    }
+    else {
+        base_->SetMaterialColor({ 1.0f, 1.0f, 1.0f, 1.0f });
+    }
+	isHit_ = false;
+
+#ifdef _DEBUG
     ShowCoordinatesImGui();
+
+#endif // _DEBUG
 
     worldTransform_.UpdateMatrix();
 
@@ -116,15 +127,17 @@ void Enemy::OnCollision(Collider* other)
     // 衝突相手の種別IDを取得
     uint32_t typeID = other->GetTypeID();
     // 衝突相手が武器かプレイヤーなら
-    if (typeID == static_cast<uint32_t>(CollisionTypeIdDef::kPlayer) || typeID == static_cast<uint32_t>(CollisionTypeIdDef::kPlayerWeapon)) {
+    if (typeID == static_cast<uint32_t>(CollisionTypeIdDef::kPlayerWeapon)) {
 
-        //isActive_ = false;
-
+        isHit_ = true;
+		base_->SetMaterialColor({ 1.0f, 0.0f, 0.0f, 1.0f });
         hp_ -= 2;
         if (hp_ <= 0) {
             isAlive_ = false;
         }
     }
+
+    
 
 }
 
@@ -145,6 +158,7 @@ Matrix4x4 Enemy::GetWorldMatrix() const
 
 void Enemy::Move()
 {
+   
     Vector3 playerPos = player_->GetPosition();
     playerPos = playerPos - Vector3{ 0,1.0f,0 };
     Vector3 pos = { playerPos - worldTransform_.translation_ };

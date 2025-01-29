@@ -87,10 +87,7 @@ void Player::Update()
 
 void Player::Draw()
 {
-    if (isAlive_) {
-        base_->Draw(worldTransform_);
-        
-    }
+    base_->Draw(worldTransform_);
     shadow_->Draw(WS_);
     weapon_->Draw();
 }
