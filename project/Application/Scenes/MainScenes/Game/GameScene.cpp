@@ -332,10 +332,10 @@ void GameScene::ChangePahse()
         particleEmitter_[0]->SetPosition(player_->GetPosition());
         particleEmitter_[0]->Emit();
        
-        if (Input::GetInstance()->TriggerKey(DIK_RETURN)) {
-            phase_ = Phase::kFadeOut;
-            fade_->Start(Fade::Status::FadeOut, 2.0f);
-        }
+        //if (Input::GetInstance()->TriggerKey(DIK_RETURN)) {
+        //    phase_ = Phase::kFadeOut;
+        //    fade_->Start(Fade::Status::FadeOut, 2.0f);
+        //}
 
         //iCommand_ = inputHandler_->HandleInput();
 
@@ -387,7 +387,7 @@ void GameScene::ChangePahse()
 		
         // particleEmitter_[1]->Update();
 
-
+        JsonManager::ImGuiManager();
          // ワールドトランスフォーム更新
         testWorldTransform_.UpdateMatrix();
         cameraManager_.UpdateAllCameras();

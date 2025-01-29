@@ -18,7 +18,7 @@ void FollowCamera::Update()
 	FollowProsess();
 	
 	
-
+	//jsonManager_->ImGui("FollowCamera");
 }
 
 void FollowCamera::UpdateInput()
@@ -76,7 +76,7 @@ void FollowCamera::InitJson()
 
 void FollowCamera::JsonImGui()
 {
-	jsonManager_->ImGui();
+	
 }
 
 void FollowCamera::ImGui()

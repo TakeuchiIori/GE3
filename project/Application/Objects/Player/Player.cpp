@@ -417,10 +417,10 @@ void Player::ShowCoordinatesImGui()
 	ImGui::DragFloat("JumpHeight", &jumpHeight_);
 
 
-	if (ImGui::Button("Save"))
-	{
-		jsonManager_->Save();
-	}
+	//if (ImGui::Button("Save"))
+	//{
+	//	jsonManager_->Save();
+	//}
 
 	// スケール
 	ImGui::Text("Scale");
@@ -467,7 +467,7 @@ void Player::InitJson()
 
 void Player::JsonImGui()
 {
-	jsonManager_->ImGui();
+	
 }
 
 void Player::OnCollision(Collider* other)

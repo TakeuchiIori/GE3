@@ -22,7 +22,7 @@ public:
 		: fileName_(fileName), folderPath_(folderPath)
 	{
 		// マネージャ生成時に自動でロードを実行
-		LoadAll();
+		//LoadAll();
 		if (instances.find(fileName) == instances.end()) // 重複チェック
 		{
 			instances[fileName] = this; // 一意のインスタンスのみ登録
@@ -149,33 +149,108 @@ public:
 		}
 	}
 
-	void ImGui()
+	static void ImGui(const std::string& className)
 	{
 #ifdef _DEBUG
-		ImGui::Begin("JsonManager Variables");
 
+
+		auto it = instances.find(className);
+		if (it == instances.end()) return; // クラスが存在しない場合は何もしない
+
+		JsonManager* instance = it->second;
+
+		std::string windowTitle = "JsonManager - " + className;
+		ImGui::Begin(windowTitle.c_str());
+
+		// クラス名を強調
+		ImGui::TextColored(ImVec4(1.0f, 0.6f, 0.2f, 1.0f), "[ %s ]", className.c_str());
+		ImGui::Separator();
+
+		ImGui::PushID(className.c_str()); // クラスごとにIDを設定
+
+		for (auto& pair : instance->variables_)
+		{
+			pair.second->ShowImGui(pair.first, className);
+		}
+
+		ImGui::Separator();
+
+		// ボタンをセンタリング
+		float buttonWidth = 120.0f;
+		float windowWidth = ImGui::GetWindowWidth();
+		float buttonPosX = (windowWidth - buttonWidth * 2) * 0.5f;
+
+		ImGui::SetCursorPosX(buttonPosX);
+		if (ImGui::Button(("Reset " + className).c_str(), ImVec2(buttonWidth, 0)))
+		{
+			instance->Reset();
+		}
+		ImGui::SameLine();
+		if (ImGui::Button(("Clear All " + className).c_str(), ImVec2(buttonWidth, 0)))
+		{
+			instance->Reset(true);
+		}
+
+		ImGui::PopID();
+		ImGui::End();
+
+#endif // _DEBUG
+	}
+
+
+
+	static void ImGuiManager()
+	{
+#ifdef _DEBUG
+		ImGui::Begin("JsonManager"); // 親ウィンドウ
+
+		ImGui::Text("Select Class:");
+		ImGui::Separator();
+
+		// クラス一覧ボタンを表示
 		for (auto& instance : instances)
 		{
-			if (ImGui::CollapsingHeader(instance.first.c_str()))
+			if (ImGui::Button(instance.first.c_str(), ImVec2(150, 30))) // ボタンの幅を統一
 			{
-				ImGui::PushID(instance.first.c_str()); // クラス名ごとにIDを設定
-				for (auto& pair : instance.second->variables_)
-				{
-					pair.second->ShowImGui(pair.first, instance.first); // クラス名を一意のIDにする
+				selectedClass = instance.first; // 選択したクラスを更新
+			}
+			ImGui::SameLine();
+		}
+		ImGui::NewLine(); // 次の行へ
 
+		ImGui::Separator(); // 区切り線
+
+		// 選択されたクラスのみ表示
+		if (!selectedClass.empty())
+		{
+			auto it = instances.find(selectedClass);
+			if (it != instances.end())
+			{
+				JsonManager* instance = it->second;
+
+				std::string windowTitle = "JsonManager - " + selectedClass;
+				ImGui::TextColored(ImVec4(1.0f, 0.6f, 0.2f, 1.0f), "[ %s ]", selectedClass.c_str());
+				ImGui::Separator();
+
+				ImGui::PushID(selectedClass.c_str()); // クラスごとにIDを設定
+
+				for (auto& pair : instance->variables_)
+				{
+					pair.second->ShowImGui(pair.first, selectedClass);
+				}
+
+
+				if (ImGui::Button(("Save_ " + selectedClass).c_str()))
+				{
+					instance->Save();
 				}
 				ImGui::PopID();
-
 			}
 		}
 
-
-
 		ImGui::End();
-#endif // _DEBUG
-
+#endif
 	}
-
 
 private:
 	/// <summary>
@@ -222,4 +297,5 @@ private:
 	// 登録名 -> 変数オブジェクト
 	std::unordered_map<std::string, std::unique_ptr<IVariableJson>> variables_;
 	static inline std::unordered_map<std::string, JsonManager*> instances; // クラス名ごとに管理
+	static inline std::string selectedClass; // 現在選択されているクラス
 };

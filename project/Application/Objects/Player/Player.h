@@ -166,7 +166,7 @@ private:
 	std::unique_ptr<Sprite> sprite_;
 	std::unique_ptr<ParticleEmitter> particleEmitter_;
 
-	std::unique_ptr < JsonManager> jsonManager_;
+	std::unique_ptr <JsonManager> jsonManager_;
 
 	/*===============================================================//
 								フラグ関連
