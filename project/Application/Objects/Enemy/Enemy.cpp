@@ -49,7 +49,7 @@ void Enemy::Initialize()
     Collider::SetTypeID(static_cast<uint32_t>(CollisionTypeIdDef::kEnemy));
 
 
-  
+    particleEmitter_ = std::make_unique<ParticleEmitter>("Enemy", worldTransform_.translation_, 1);
     
 	
 }
@@ -142,8 +142,9 @@ void Enemy::OnCollision(Collider* other)
         if (hp_ <= 0) {
             isAlive_ = false;
         }
-        ParticleEmitter* particleEmitter = new ParticleEmitter("Enemy",worldTransform_.translation_, 10);
-        particleEmitter->UpdateEmit("Enemy", worldTransform_.translation_, 10);
+       
+        particleEmitter_->UpdateEmit("Enemy", worldTransform_.translation_, 5);
+       // ParticleManager::GetInstance()->Emit("Enemy", worldTransform_.translation_, 5);
         //particleEmitter_ = std::make_unique<ParticleEmitter>("Enemy", worldTransform_.translation_, 10);
         //particleEmitter_->SetPosition(worldTransform_.translation_);
         //particleEmitter_->Update();

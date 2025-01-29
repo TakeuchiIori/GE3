@@ -14,6 +14,7 @@ void MyGame::Initialize()
 	ParticleManager::GetInstance()->Initialize(srvManager_);
 	ParticleManager::GetInstance()->CreateParticleGroup("Enemy", "Resources/images/circle.png");
 	ParticleManager::GetInstance()->CreateParticleGroup("Circle", "Resources/images/circle.png");
+	ParticleManager::GetInstance()->CreateParticleGroup("Player", "Resources/images/circle.png");
 }
 
 void MyGame::Finalize()

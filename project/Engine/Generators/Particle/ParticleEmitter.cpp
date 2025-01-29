@@ -3,7 +3,7 @@
 #include "imgui.h"
 #endif
 ParticleEmitter::ParticleEmitter(const std::string& name, const Vector3& transform, uint32_t count)
-    : emitter_{ name, Vector3{transform}, count,2.0f,0.0f }{}
+    : emitter_{ name, EulerTransform{transform}, count,0.0025f,0.0f }{}
 
 void ParticleEmitter::Update()
 {
@@ -23,7 +23,7 @@ void ParticleEmitter::UpdateEmit(const std::string& name, const Vector3& transfo
 
 void ParticleEmitter::Emit()
 {
-	ParticleManager::GetInstance()->Emit(emitter_.name, emitter_.transform, emitter_.count);
+	ParticleManager::GetInstance()->Emit(emitter_.name, emitter_.transform.translate, emitter_.count);
 }
 
 void ParticleEmitter::ShowImGui()

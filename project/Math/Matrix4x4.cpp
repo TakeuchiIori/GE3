@@ -267,6 +267,10 @@ Matrix4x4 MakeTranslateMatrix(const Vector3& translate) {
 	return result;
 }
 
+
+
+
+
 //=====================================9.座標変換===============================================//
 Vector3 TransformCoordinates(const Vector3& vector, const Matrix4x4& matrix) {
 	Vector3 result;

@@ -7,6 +7,10 @@
 #include "WorldTransform./WorldTransform.h"
 #include "Collision./Collider.h"
 #include "PlayerWeapon/PlayerWeapon.h"
+
+#include <Particle/ParticleManager.h>
+#include <Particle/ParticleEmitter.h>
+
 // C++
 #include <memory>
 
@@ -153,6 +157,7 @@ private:
 	std::unique_ptr<PlayerWeapon> weapon_;
 	std::unique_ptr<Object3d> shadow_;
 	std::unique_ptr<Sprite> sprite_;
+	std::unique_ptr<ParticleEmitter> particleEmitter_;
 
 	/*===============================================================//
 								フラグ関連

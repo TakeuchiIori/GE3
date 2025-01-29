@@ -13,6 +13,7 @@
 
 
 
+
 void Player::Initialize()
 {
 	// OBject3dの初期化
@@ -62,6 +63,8 @@ void Player::Initialize()
 	// TypeIDの設定
 	Collider::SetTypeID(static_cast<uint32_t>(CollisionTypeIdDef::kPlayer));
 	Collider::SetRadiusFloat(2.0f);
+
+	particleEmitter_ = std::make_unique<ParticleEmitter>("Player", worldTransform_.translation_, 5);
 }
 
 void Player::Update()
@@ -78,10 +81,12 @@ void Player::Update()
 	WS_.translation_.z = worldTransform_.translation_.z;
 
 
-
-
+	
+	particleEmitter_->UpdateEmit("Player", worldTransform_.translation_, 5);
+	//ParticleManager::GetInstance()->Emit("Player", worldTransform_.translation_, 10);
 	UpdateWorldTransform();
 
+	
 	weapon_->Update();
 }
 

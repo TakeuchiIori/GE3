@@ -107,7 +107,6 @@ void GameScene::Update()
 
 
     ChangePahse();
-    
    // if (Input::GetInstance()->TriggerKey(DIK_RETURN)) {
    //     SceneManager::GetInstance()->ChangeScene("TITLE");
    // }
@@ -276,19 +275,19 @@ void GameScene::ChangePahse()
         }
 
         // 各敵を更新
-        for (auto it = enemies_.begin(); it != enemies_.end();) {
-            auto& enemy = *it;
-            enemy->Update();
-            if (!enemy->IsActive()) {
-                it = enemies_.erase(it); // Remove and release memory for inactive enemies.
-            }
-            else {
-                ++it;
-            }
-        }
+        //for (auto it = enemies_.begin(); it != enemies_.end();) {
+        //    auto& enemy = *it;
+        //    enemy->Update();
+        //    if (!enemy->IsActive()) {
+        //        it = enemies_.erase(it); // Remove and release memory for inactive enemies.
+        //    }
+        //    else {
+        //        ++it;
+        //    }
+        //}
 
         // objの更新
-        player_->Update();
+       // player_->Update();
 
 
         ground_->Update();
@@ -299,7 +298,7 @@ void GameScene::ChangePahse()
         UpdateCamera();
 
         // パーティクル更新
-        //ParticleManager::GetInstance()->Update();
+        ParticleManager::GetInstance()->Update();
         // ParticleManager::GetInstance()->UpdateParticlePlayerWeapon(weaponPos);
 //        ShowImGui();
         //particleEmitter_[0]->Update();
@@ -328,7 +327,11 @@ void GameScene::ChangePahse()
         break;
     case Phase::kPlay:
 
-
+        // パーティクル更新
+        ParticleManager::GetInstance()->Update();
+        particleEmitter_[0]->SetPosition(player_->GetPosition());
+        particleEmitter_[0]->Emit();
+       
         if (Input::GetInstance()->TriggerKey(DIK_RETURN)) {
             phase_ = Phase::kFadeOut;
             fade_->Start(Fade::Status::FadeOut, 2.0f);
@@ -370,10 +373,7 @@ void GameScene::ChangePahse()
         test_->UpdateAnimation();
 
 
-        particleEmitter_[0]->SetPosition(player_->GetPosition());
-        particleEmitter_[0]->Emit();
-        // パーティクル更新
-        ParticleManager::GetInstance()->Update();
+
 
         // カメラ更新
         UpdateCameraMode();
@@ -549,7 +549,7 @@ void GameScene::SpawnEnemy()
     newEnemy->SetPosition(spawnPos);
 
     // リストに追加
-    enemies_.emplace_back(std::move(newEnemy));
+    enemies_.push_back(std::move(newEnemy));
 }
 
 

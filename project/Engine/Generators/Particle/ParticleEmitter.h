@@ -49,7 +49,7 @@ private:
 	void ShowImGui();
 public:
 
-	void SetPosition(const Vector3& position) { emitter_.transform = position; };
+	void SetPosition(const Vector3& position) { emitter_.transform.translate = position; };
 	void SetCount(uint32_t& setcount) { emitter_.count= setcount; };
 
 private:
@@ -59,7 +59,7 @@ private:
 	/// </summary>
 	struct Emitter {
 		std::string name; 
-		Vector3 transform; 
+		EulerTransform transform;
 		uint32_t count; 
 		float frequency;
 		float frequencyTime ;

@@ -40,7 +40,7 @@ void ParticleManager::Finalize()
 	instance.reset();
 }
 
-void ParticleManager::Initialize( SrvManager* srvManager)
+void ParticleManager::Initialize(SrvManager* srvManager)
 {
 	// ポインタを渡す
 	this->dxCommon_ = DirectXCommon::GetInstance();
@@ -77,7 +77,7 @@ void ParticleManager::Update()
 
 		break;
 	case kUpdateModeRadial:
-		UpdateParticleRadial();
+		UpdateParticlePlayer();
 
 		break;
 	case kUpdateModeSpiral:
@@ -91,12 +91,12 @@ void ParticleManager::Update()
 	UpadateMatrix();
 	// ブレンドモードの設定を反映
 	Render(blendDesc_, currentBlendMode_);
-   #ifdef _DEBUG
-	
-	ShowUpdateModeDropdown();
-    #endif
+#ifdef _DEBUG
 
-    
+	ShowUpdateModeDropdown();
+#endif
+
+
 }
 
 
@@ -116,12 +116,12 @@ void ParticleManager::Draw()
 			// マテリアルCBufferの場所を指定
 			dxCommon_->GetCommandList()->SetGraphicsRootConstantBufferView(0, materialResource_->GetGPUVirtualAddress());
 			// SRVのDescriptorTableを設定
-			dxCommon_->GetCommandList()->SetGraphicsRootDescriptorTable(1, srvHandleGPU);
+			srvManager_->SetGraphicsRootDescriptorTable(1, particleGroup.srvIndex);
 			// テクスチャのSRVのDescriptorTableを設定
 			D3D12_GPU_DESCRIPTOR_HANDLE textureHandle = TextureManager::GetInstance()->GetsrvHandleGPU(particleGroup.materialData.textureFilePath);
-			dxCommon_->GetCommandList()->SetGraphicsRootDescriptorTable(2, textureHandle);
+			srvManager_->SetGraphicsRootDescriptorTable(2, particleGroup.materialData.textureIndexSRV);
 			// 描画
-			dxCommon_->GetCommandList()->DrawInstanced(UINT(modelData_.vertices.size()),particleGroup.instance, 0, 0);
+			dxCommon_->GetCommandList()->DrawInstanced(UINT(modelData_.vertices.size()), particleGroup.instance, 0, 0);
 
 		}
 	}
@@ -139,8 +139,8 @@ void ParticleManager::UpdateParticleMove()
 	Matrix4x4 projectionMatrix = MakePerspectiveFovMatrix(0.45f, WinApp::kClientWidth / WinApp::kClientHeight, 0.1f, 100.0f);
 	Matrix4x4 backToFrontMatrix = MakeRotateMatrixY(std::numbers::pi_v<float>);
 	Matrix4x4 billboardMatrix;
-Matrix4x4 viewProjectionMatrix;
-	
+	Matrix4x4 viewProjectionMatrix;
+
 	// ビルボード用の行列
 	billboardMatrix = Multiply(backToFrontMatrix, cameraMatrix);
 	billboardMatrix.m[3][0] = 0.0f;
@@ -150,7 +150,7 @@ Matrix4x4 viewProjectionMatrix;
 	// ビュー・プロジェクション行列を生成
 	viewProjectionMatrix = Multiply(viewMatrix, projectionMatrix);
 
-		// パーティクルの更新処理
+	// パーティクルの更新処理
 	for (auto& [groupName, particleGroup] : particleGroups_) {
 
 		uint32_t numInstance = 0;
@@ -178,8 +178,8 @@ Matrix4x4 viewProjectionMatrix;
 			translateMatrix = TranslationMatrixFromVector3((*particleIterator).transform.translate);
 			Matrix4x4 worldMatrix{};
 			if (useBillboard) {
-				worldMatrix = Multiply(Multiply(billboardMatrix, scaleMatrix), translateMatrix);
-			
+				worldMatrix = scaleMatrix * billboardMatrix * translateMatrix;
+
 			}
 			else {
 				worldMatrix = MakeAffineMatrix((*particleIterator).transform.scale, (*particleIterator).transform.rotate, (*particleIterator).transform.translate);
@@ -195,7 +195,7 @@ Matrix4x4 viewProjectionMatrix;
 			}
 			++particleIterator;
 		}
-	
+
 		// インスタンス数の更新
 		particleGroup.instance = numInstance;
 
@@ -207,25 +207,98 @@ Matrix4x4 viewProjectionMatrix;
 
 }
 
-void ParticleManager::UpdateParticlePlayer(const Vector3& pos)
+void ParticleManager::UpdateParticlePlayer()
 {
+
+	// カメラの行列を取得
+	Matrix4x4 cameraMatrix = MakeAffineMatrix(camera_->GetScale(), camera_->GetRotate(), camera_->GetTranslate());
+	Matrix4x4 viewMatrix = Inverse(cameraMatrix);
+	Matrix4x4 projectionMatrix = MakePerspectiveFovMatrix(0.45f, WinApp::kClientWidth / WinApp::kClientHeight, 0.1f, 100.0f);
+	Matrix4x4 backToFrontMatrix = MakeRotateMatrixY(std::numbers::pi_v<float>);
+	Matrix4x4 billboardMatrix;
+	Matrix4x4 viewProjectionMatrix;
+
+	// ビルボード用の行列
+	billboardMatrix = Multiply(backToFrontMatrix, cameraMatrix);
+	billboardMatrix.m[3][0] = 0.0f;
+	billboardMatrix.m[3][1] = 0.0f;
+	billboardMatrix.m[3][2] = 0.0f;
+
+	// ビュー・プロジェクション行列を生成
+	viewProjectionMatrix = Multiply(viewMatrix, projectionMatrix);
+
+	// パーティクルの更新処理
+	for (auto& [groupName, particleGroup] : particleGroups_) {
+
+		uint32_t numInstance = 0;
+
+		for (auto particleIterator = particleGroup.particles.begin(); particleIterator != particleGroup.particles.end();) {
+			if ((*particleIterator).lifeTime <= (*particleIterator).currentTime) {
+				// パーティクルが生存時間を超えたら削除
+				particleIterator = particleGroup.particles.erase(particleIterator);
+				continue;
+			}
+			if (numInstance >= kNumMaxInstance) {
+				break;
+			}
+
+			(*particleIterator).currentTime += kDeltaTime;
+			// パーティクルの更新処理
+			float alpha = 1.0f - ((*particleIterator).currentTime / (*particleIterator).lifeTime);
+
+			// ワールド行列の計算
+			scaleMatrix = ScaleMatrixFromVector3((*particleIterator).transform.scale);
+			translateMatrix = TranslationMatrixFromVector3((*particleIterator).transform.translate);
+			Matrix4x4 worldMatrix{};
+			if (useBillboard) {
+				worldMatrix = scaleMatrix * billboardMatrix * translateMatrix;
+
+			}
+			else {
+				worldMatrix = MakeAffineMatrix((*particleIterator).transform.scale, (*particleIterator).transform.rotate, (*particleIterator).transform.translate);
+			}
+			Matrix4x4 worldViewProjectionMatrix = Multiply(worldMatrix, viewProjectionMatrix);
+			// インスタンシングデータの設定
+			if (numInstance < kNumMaxInstance) {
+				instancingData_[numInstance].WVP = worldViewProjectionMatrix;
+				instancingData_[numInstance].World = worldMatrix;
+				instancingData_[numInstance].color = (*particleIterator).color;
+				instancingData_[numInstance].color.w = alpha;
+				++numInstance;
+			}
+			++particleIterator;
+		}
+
+		// インスタンス数の更新
+		particleGroup.instance = numInstance;
+
+		// GPU メモリにインスタンスデータを書き込む
+		if (particleGroup.instancingData) {
+			std::memcpy(particleGroup.instancingData, instancingData_, sizeof(ParticleForGPU) * numInstance);
+		}
+	}
+
 
 }
 
 void ParticleManager::UpdateParticlePlayerWeapon(const Vector3& pos)
 {
-	// ビュー射影行列の計算
-	Matrix4x4 viewProjectionMatrix = camera_->viewMatrix_ * camera_->viewProjectionMatrix_;
+	// カメラの行列を取得
+	Matrix4x4 cameraMatrix = MakeAffineMatrix(camera_->GetScale(), camera_->GetRotate(), camera_->GetTranslate());
+	Matrix4x4 viewMatrix = Inverse(cameraMatrix);
+	Matrix4x4 projectionMatrix = MakePerspectiveFovMatrix(0.45f, WinApp::kClientWidth / WinApp::kClientHeight, 0.1f, 100.0f);
+	Matrix4x4 backToFrontMatrix = MakeRotateMatrixY(std::numbers::pi_v<float>);
+	Matrix4x4 billboardMatrix;
+	Matrix4x4 viewProjectionMatrix;
 
-	// カメラの回転成分のみを抽出してビルボード行列を作成
-	Matrix4x4 billboardMatrix = camera_->viewMatrix_;
+	// ビルボード用の行列
+	billboardMatrix = Multiply(backToFrontMatrix, cameraMatrix);
 	billboardMatrix.m[3][0] = 0.0f;
 	billboardMatrix.m[3][1] = 0.0f;
 	billboardMatrix.m[3][2] = 0.0f;
-	billboardMatrix.m[3][3] = 1.0f;
 
-	// ビルボード行列を逆行列にすることで、カメラに対して正しい向きにする
-	billboardMatrix = Inverse(billboardMatrix);
+	// ビュー・プロジェクション行列を生成
+	viewProjectionMatrix = Multiply(viewMatrix, projectionMatrix);
 
 	for (auto& [groupName, particleGroup] : particleGroups_) {
 		uint32_t numInstance = 0;
@@ -279,28 +352,31 @@ void ParticleManager::UpdateParticlePlayerWeapon(const Vector3& pos)
 		// インスタンス数の更新
 		particleGroup.instance = numInstance;
 
-		// GPU メモリにインスタンスデータを書き込む
-		if (particleGroup.instancingData) {
-			std::memcpy(particleGroup.instancingData, instancingData_, sizeof(ParticleForGPU) * numInstance);
-		}
+		//// GPU メモリにインスタンスデータを書き込む
+		//if (particleGroup.instancingData) {
+		//	std::memcpy(particleGroup.instancingData, instancingData_, sizeof(ParticleForGPU) * numInstance);
+		//}
 	}
 }
 
 void ParticleManager::UpdateParticleRadial()
 {
-	// ビュー射影行列の計算
-	Matrix4x4 viewProjectionMatrix = camera_->viewMatrix_ * camera_->viewProjectionMatrix_;
+	// カメラの行列を取得
+	Matrix4x4 cameraMatrix = MakeAffineMatrix(camera_->GetScale(), camera_->GetRotate(), camera_->GetTranslate());
+	Matrix4x4 viewMatrix = Inverse(cameraMatrix);
+	Matrix4x4 projectionMatrix = MakePerspectiveFovMatrix(0.45f, WinApp::kClientWidth / WinApp::kClientHeight, 0.1f, 100.0f);
+	Matrix4x4 backToFrontMatrix = MakeRotateMatrixY(std::numbers::pi_v<float>);
+	Matrix4x4 billboardMatrix;
+	Matrix4x4 viewProjectionMatrix;
 
-	// カメラの回転成分のみを抽出してビルボード行列を作成
-	Matrix4x4 billboardMatrix = camera_->viewMatrix_;
+	// ビルボード用の行列
+	billboardMatrix = Multiply(backToFrontMatrix, cameraMatrix);
 	billboardMatrix.m[3][0] = 0.0f;
 	billboardMatrix.m[3][1] = 0.0f;
 	billboardMatrix.m[3][2] = 0.0f;
-	billboardMatrix.m[3][3] = 1.0f;
 
-	// ビルボード行列を逆行列にすることで、カメラに対して正しい向きにする
-	billboardMatrix = Inverse(billboardMatrix);
-
+	// ビュー・プロジェクション行列を生成
+	viewProjectionMatrix = Multiply(viewMatrix, projectionMatrix);
 	for (auto& [groupName, particleGroup] : particleGroups_) {
 		uint32_t numInstance = 0;
 
@@ -344,16 +420,17 @@ void ParticleManager::UpdateParticleRadial()
 			// アルファ値の更新
 			float alpha = 1.0f - ((*particleIterator).currentTime / (*particleIterator).lifeTime);
 
-			// ワールド行列の計算
 			scaleMatrix = ScaleMatrixFromVector3((*particleIterator).transform.scale);
 			translateMatrix = TranslationMatrixFromVector3((*particleIterator).transform.translate);
-			Matrix4x4 worldMatrix = MakeAffineMatrix(
-				(*particleIterator).transform.scale,
-				(*particleIterator).transform.rotate,
-				(*particleIterator).transform.translate
-			);
-			Matrix4x4 worldViewProjectionMatrix = Multiply(worldMatrix, viewProjectionMatrix);
+			Matrix4x4 worldMatrix{};
+			if (useBillboard) {
+				worldMatrix = scaleMatrix * billboardMatrix * translateMatrix;
 
+			}
+			else {
+				worldMatrix = MakeAffineMatrix((*particleIterator).transform.scale, (*particleIterator).transform.rotate, (*particleIterator).transform.translate);
+			}
+			Matrix4x4 worldViewProjectionMatrix = Multiply(worldMatrix, viewProjectionMatrix);
 			// インスタンシングデータの設定
 			if (numInstance < kNumMaxInstance) {
 				instancingData_[numInstance].WVP = worldViewProjectionMatrix;
@@ -376,18 +453,22 @@ void ParticleManager::UpdateParticleRadial()
 
 void ParticleManager::UpdateParticleSpiral()
 {
-	// ビュー射影行列の計算
-	Matrix4x4 viewProjectionMatrix = camera_->viewMatrix_ * camera_->viewProjectionMatrix_;
+	// カメラの行列を取得
+	Matrix4x4 cameraMatrix = MakeAffineMatrix(camera_->GetScale(), camera_->GetRotate(), camera_->GetTranslate());
+	Matrix4x4 viewMatrix = Inverse(cameraMatrix);
+	Matrix4x4 projectionMatrix = MakePerspectiveFovMatrix(0.45f, WinApp::kClientWidth / WinApp::kClientHeight, 0.1f, 100.0f);
+	Matrix4x4 backToFrontMatrix = MakeRotateMatrixY(std::numbers::pi_v<float>);
+	Matrix4x4 billboardMatrix;
+	Matrix4x4 viewProjectionMatrix;
 
-	// カメラの回転成分のみを抽出してビルボード行列を作成
-	Matrix4x4 billboardMatrix = camera_->viewMatrix_;
+	// ビルボード用の行列
+	billboardMatrix = Multiply(backToFrontMatrix, cameraMatrix);
 	billboardMatrix.m[3][0] = 0.0f;
 	billboardMatrix.m[3][1] = 0.0f;
 	billboardMatrix.m[3][2] = 0.0f;
-	billboardMatrix.m[3][3] = 1.0f;
 
-	// ビルボード行列を逆行列にすることで、カメラに対して正しい向きにする
-	billboardMatrix = Inverse(billboardMatrix);
+	// ビュー・プロジェクション行列を生成
+	viewProjectionMatrix = Multiply(viewMatrix, projectionMatrix);
 
 	for (auto& [groupName, particleGroup] : particleGroups_) {
 		uint32_t numInstance = 0;
@@ -492,7 +573,7 @@ void ParticleManager::CreateRootSignature()
 	rootParameters_[2].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;				// PixelShaderで使う
 	rootParameters_[2].DescriptorTable.pDescriptorRanges = descriptorRange;				// Tableの中身の配列を指定
 	rootParameters_[2].DescriptorTable.NumDescriptorRanges = _countof(descriptorRange);	// Tableで利用する数
-	
+
 	rootParameters_[3].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;					// CBVを使う
 	rootParameters_[3].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;					// VertexShaderで使う
 	rootParameters_[3].Descriptor.ShaderRegister = 1;									// レジスタ番号1を使う
@@ -545,7 +626,7 @@ void ParticleManager::CreateRootSignature()
 	inputElementDescs_[0].SemanticIndex = 0;
 	inputElementDescs_[0].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
 	inputElementDescs_[0].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
-	
+
 	inputElementDescs_[1].SemanticName = "TEXCOORD";
 	inputElementDescs_[1].SemanticIndex = 0;
 	inputElementDescs_[1].Format = DXGI_FORMAT_R32G32_FLOAT;
@@ -625,6 +706,21 @@ void ParticleManager::CreateVertexResource()
 	CreateVertexVBV();
 }
 
+
+void ParticleManager::CreateVertexVBV()
+{
+	//頂点リソース
+	vertexResource_ = dxCommon_->CreateBufferResource(sizeof(VertexData) * modelData_.vertices.size());
+	// 頂点バッファービュー
+	vertexBufferView_.BufferLocation = vertexResource_->GetGPUVirtualAddress();// リソースデータの先頭アドレスから使う
+	vertexBufferView_.SizeInBytes = UINT(sizeof(VertexData) * modelData_.vertices.size());// 使用するリソースのサイズは1頂点のサイズ
+	vertexBufferView_.StrideInBytes = sizeof(VertexData);// 1頂点のサイズ
+	//　データ書き込み
+	vertexResource_->Map(0, nullptr, reinterpret_cast<void**>(&vertexData_));
+	memcpy(vertexData_, modelData_.vertices.data(), sizeof(VertexData) * modelData_.vertices.size());
+	vertexResource_->Unmap(0, nullptr);
+}
+
 void ParticleManager::CreateMaterialResource()
 {
 	// リソース作成
@@ -638,18 +734,6 @@ void ParticleManager::CreateMaterialResource()
 
 }
 
-void ParticleManager::CreateVertexVBV()
-{
-	//頂点リソース
-	vertexResource_ = dxCommon_->CreateBufferResource(sizeof(VertexData) * modelData_.vertices.size());
-	// 頂点バッファービュー
-	vertexBufferView_.BufferLocation = vertexResource_->GetGPUVirtualAddress();// リソースデータの先頭アドレスから使う
-	vertexBufferView_.SizeInBytes = UINT(sizeof(VertexData) * modelData_.vertices.size());// 使用するリソースのサイズは1頂点のサイズ
-	vertexBufferView_.StrideInBytes = sizeof(VertexData);// 1頂点のサイズ
-	//　データ書き込み
-	vertexResource_->Map(0, nullptr, reinterpret_cast<void**>(&vertexData_));
-	memcpy(vertexData_, modelData_.vertices.data(), sizeof(VertexData) * modelData_.vertices.size());
-}
 
 
 void ParticleManager::InitRandomEngine()
@@ -691,7 +775,7 @@ ParticleManager::Particle ParticleManager::CreateParticle(std::mt19937& randomEn
 {
 	std::uniform_real_distribution<float> distribution(-1.0f, 1.0f);
 	std::uniform_real_distribution<float> distColor(0.0f, 1.0f);
-	std::uniform_real_distribution<float> distTime(1.0f, 5.0f);
+	std::uniform_real_distribution<float> distTime(1.0f, 1.0f);
 	Particle particle;
 	particle.transform.scale = { 2.0f, 2.0f, 2.0f };
 	particle.transform.rotate = { 0.0f, 0.0f, 0.0f };
@@ -729,20 +813,7 @@ void ParticleManager::CreateParticleGroup(const std::string name, const std::str
 	particleGroup.instancingResource->Map(0, nullptr, reinterpret_cast<void**>(&particleGroup.instancingData));
 
 
-	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc{};
-	srvDesc.Format = DXGI_FORMAT_UNKNOWN;
-	srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_BUFFER;
-	srvDesc.Buffer.FirstElement = 0;
-	srvDesc.Buffer.Flags = D3D12_BUFFER_SRV_FLAG_NONE;
-	srvDesc.Buffer.NumElements = kNumMaxInstance;
-	srvDesc.Buffer.StructureByteStride = sizeof(ParticleForGPU);
-
-	srvHandleCPU = srvManager_->GetCPUSRVDescriptorHandle(particleGroup.srvIndex);
-	srvHandleGPU = srvManager_->GetGPUSRVDescriptorHandle(particleGroup.srvIndex);
-
-	// 3 Particle
-	dxCommon_->GetDevice()->CreateShaderResourceView(particleGroup.instancingResource.Get(), &srvDesc, srvHandleCPU);
+	srvManager_->CreateSRVforStructuredBuffer(particleGroup.srvIndex, particleGroup.instancingResource.Get(), kNumMaxInstance, sizeof(ParticleForGPU));
 	// インスタンス数を初期化
 	particleGroup.instance = 0;
 
@@ -764,14 +835,24 @@ void ParticleManager::CreateParticleGroup(const std::string name, const std::str
 
 std::list<ParticleManager::Particle> ParticleManager::Emit(const std::string& name, const Vector3& position, uint32_t count)
 {
-	ParticleGroup& particleGroup = particleGroups_[name];
-	std::list<Particle> newParticles;
-	for (uint32_t nowCount = 0; nowCount < count; ++nowCount) {
-		Particle particle = CreateParticle(randomEngine_, position);
-		newParticles.push_back(particle);
+	// 登録済みのパーティクルグループ名かチェック
+	auto it = particleGroups_.find(name);
+	assert(it != particleGroups_.end());
+
+	// 指定されたパーティクルグループにパーティクルを追加
+	ParticleGroup& group = particleGroups_[name];
+
+	// 生成したパーティクルを格納するリスト
+	std::list<ParticleManager::Particle> emittedParticles;
+
+	// 各パーティクルを生成し追加
+	for (uint32_t i = 0; i < count; ++i) {
+		Particle newParticle = CreateParticle(randomEngine_, position);
+		
+		emittedParticles.push_back(newParticle);
 	}
-	particleGroup.particles.splice(particleGroup.particles.end(), newParticles);
-	return newParticles;
+	group.particles.splice(group.particles.end(), emittedParticles);
+	return emittedParticles;
 }
 void ParticleManager::SetBlendMode(D3D12_BLEND_DESC& blendDesc, BlendMode blendMode)
 {

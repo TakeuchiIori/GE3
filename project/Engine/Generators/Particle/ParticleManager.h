@@ -159,7 +159,7 @@ private:
 	/// </summary>
 	void UpdateParticleMove();
 
-	void UpdateParticlePlayer(const Vector3& pos);
+	void UpdateParticlePlayer();
 
 	
 
@@ -306,6 +306,6 @@ private: // メンバ変数
 	};
 
 	// パーティクル更新モードの選択
-	ParticleUpdateMode currentUpdateMode_ = kUpdateModeMove;
+	ParticleUpdateMode currentUpdateMode_ = kUpdateModeRadial;
 
 };
