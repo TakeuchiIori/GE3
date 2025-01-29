@@ -429,15 +429,6 @@
     <ClCompile Include="Application\SystemsApp\Cameras\TopDownCamera\TopDownCamera.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\Utility\Loaders\Json\IVariableReference.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Engine\Utility\Loaders\Json\VariableReference.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Engine\Utility\Loaders\Json\CustomTypes.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="Engine\Utility\Loaders\Json\JsonManager.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
@@ -632,16 +623,13 @@
     <ClInclude Include="Application\SystemsApp\Cameras\TopDownCamera\TopDownCamera.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\Utility\Loaders\Json\IVariableReference.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\Utility\Loaders\Json\VariableReference.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\Utility\Loaders\Json\CustomTypes.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="Engine\Utility\Loaders\Json\JsonManager.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Utility\Loaders\Json\ConversionJson.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Utility\Loaders\Json\VariableJson.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>

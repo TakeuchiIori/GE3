@@ -1,132 +1,11 @@
 #pragma once
 #include <string>
 #include <unordered_map>
-#include <memory>
 #include <fstream>
 #include <iostream>
 #include <json.hpp>
-#include <vector>
-#include <list>
-#include "Vector2.h"
-#include "Vector3.h"
-#include "Quaternion.h"
-
-/// <summary>
-///  Vector2 を JSON に変換するときの処理
-/// </summary>
-inline void to_json(nlohmann::json& j, const Vector2& v)
-{
-    j = nlohmann::json{ {"x", v.x}, {"y", v.y} };
-}
-
-/// <summary>
-///  JSON から Vector2 を復元するときの処理
-/// </summary>
-inline void from_json(const nlohmann::json& j, Vector2& v)
-{
-    j.at("x").get_to(v.x);
-    j.at("y").get_to(v.y);
-}
-
-/// <summary>
-///  Vector3 を JSON に変換するときの処理
-/// </summary>
-inline void to_json(nlohmann::json& j, const Vector3& v)
-{
-    j = nlohmann::json{ {"x", v.x}, {"y", v.y}, {"z", v.z} };
-}
-
-/// <summary>
-///  JSON から Vector3 を復元するときの処理
-/// </summary>
-inline void from_json(const nlohmann::json& j, Vector3& v)
-{
-    j.at("x").get_to(v.x);
-    j.at("y").get_to(v.y);
-    j.at("z").get_to(v.z);
-}
-
-/// <summary>
-///  Quaternion を JSON に変換するときの処理
-/// </summary>
-inline void to_json(nlohmann::json& j, const Quaternion& q)
-{
-    j = nlohmann::json{ {"x", q.x}, {"y", q.y}, {"z", q.z}, {"w", q.w} };
-}
-
-/// <summary>
-///  JSON から Quaternion を復元するときの処理
-/// </summary>
-inline void from_json(const nlohmann::json& j, Quaternion& q)
-{
-    j.at("x").get_to(q.x);
-    j.at("y").get_to(q.y);
-    j.at("z").get_to(q.z);
-    j.at("w").get_to(q.w);
-}
-
-/// <summary>
-///  登録変数を抽象化するインターフェース
-/// </summary>
-class IVariable
-{
-public:
-    virtual ~IVariable() = default;
-
-    /// <summary>
-    ///  JSON への保存処理
-    /// </summary>
-    /// <param name="j">書き込み先 JSON オブジェクト</param>
-    virtual void SaveToJson(nlohmann::json& j) const = 0;
-
-    /// <summary>
-    ///  JSON からの読み込み処理
-    /// </summary>
-    /// <param name="j">読み込み元 JSON オブジェクト</param>
-    virtual void LoadFromJson(const nlohmann::json& j) = 0;
-};
-
-/// <summary>
-///  具体的な型 T に対する登録変数クラス
-/// </summary>
-/// <typeparam name="T">変数の型</typeparam>
-template <typename T>
-class Variable : public IVariable
-{
-public:
-    /// <summary>
-    ///  コンストラクタ
-    /// </summary>
-    /// <param name="ptr">登録対象の変数ポインタ</param>
-    Variable(T* ptr)
-        : ptr_(ptr)
-    {
-    }
-
-    /// <summary>
-    ///  JSON への保存処理
-    /// </summary>
-    /// <param name="j">書き込み先 JSON オブジェクト</param>
-    void SaveToJson(nlohmann::json& j) const override
-    {
-        j = *ptr_;
-    }
-
-    /// <summary>
-    ///  JSON からの読み込み処理
-    /// </summary>
-    /// <param name="j">読み込み元 JSON オブジェクト</param>
-    void LoadFromJson(const nlohmann::json& j) override
-    {
-        if (!j.is_null())
-        {
-            *ptr_ = j.get<T>();
-        }
-    }
-
-private:
-    T* ptr_;
-};
+#include "ConversionJson.h"
+#include "VariableJson.h"
 
 /// <summary>
 ///  JSON を使って登録した変数を一括管理するクラス
@@ -160,7 +39,7 @@ public:
     template <typename T>
     void Register(const std::string& name, T* ptr)
     {
-        variables_[name] = std::make_unique<Variable<T>>(ptr);
+        variables_[name] = std::make_unique<VariableJson<T>>(ptr);
         LoadAll();
     }
 
@@ -282,5 +161,5 @@ private:
     std::string folderPath_;
 
     // 登録名 -> 変数オブジェクト
-    std::unordered_map<std::string, std::unique_ptr<IVariable>> variables_;
+    std::unordered_map<std::string, std::unique_ptr<IVariableJson>> variables_;
 };
