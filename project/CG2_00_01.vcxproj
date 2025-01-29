@@ -112,6 +112,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
   <ItemGroup>
     <ClCompile Include="Application\Objects\Enemy\Enemy.cpp" />
     <ClCompile Include="Application\Objects\Enemy\EnemeyManager.cpp" />
+    <ClCompile Include="Engine\Utility\Loaders\Json\CustomTypes.cpp" />
     <ClCompile Include="Engine\Utility\Loaders\Model\Animation.cpp" />
     <ClCompile Include="Application\Scenes\CoreScenes\Base\BaseScene.cpp" />
     <ClCompile Include="Application\Scenes\MainScenes\Game\GameScene.cpp" />
@@ -141,6 +142,8 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Application\Scenes\MainScenes\Transitions\Fade\Fade.cpp" />
     <ClCompile Include="Engine\Utility\Systems\HitStop\HitStop.cpp" />
     <ClCompile Include="Application\SystemsApp\Cameras\FollowCamera\FollowCamera.cpp" />
+    <ClCompile Include="Engine\Utility\Loaders\Json\IVariableReference.cpp" />
+    <ClCompile Include="Engine\Utility\Loaders\Json\JsonManager.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Math\Matrix4x4.cpp" />
     <ClCompile Include="Engine\Utility\Loaders\Model\Model.cpp" />
@@ -169,10 +172,12 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Engine\Utility\Loaders\Model\SkinCluster.cpp" />
     <ClCompile Include="Application\Objects\Player\PlayerWeapon\PlayerWeapon.cpp" />
     <ClCompile Include="Application\SystemsApp\Cameras\TopDownCamera\TopDownCamera.cpp" />
+    <ClCompile Include="Engine\Utility\Loaders\Json\VariableReference.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application\Objects\Enemy\Enemy.h" />
     <ClInclude Include="Application\Objects\Enemy\EnemeyManager.h" />
+    <ClInclude Include="Engine\Utility\Loaders\Json\CustomTypes.h" />
     <ClInclude Include="Engine\Utility\Loaders\Model\Animation.h" />
     <ClInclude Include="Application\Scenes\CoreScenes\Base\BaseScene.h" />
     <ClInclude Include="Application\Scenes\MainScenes\Game\GameScene.h" />
@@ -198,6 +203,8 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="Application\Scenes\MainScenes\Transitions\Fade\Fade.h" />
     <ClInclude Include="Engine\Utility\Systems\HitStop\HitStop.h" />
     <ClInclude Include="Application\SystemsApp\Cameras\FollowCamera\FollowCamera.h" />
+    <ClInclude Include="Engine\Utility\Loaders\Json\IVariableReference.h" />
+    <ClInclude Include="Engine\Utility\Loaders\Json\JsonManager.h" />
     <ClInclude Include="Math\MathFunc.h" />
     <ClInclude Include="Math\Matrix3x3.h" />
     <ClInclude Include="Math\Matrix4x4.h" />
@@ -234,6 +241,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="Engine\Utility\Loaders\Model\SkinCluster.h" />
     <ClInclude Include="Application\Objects\Player\PlayerWeapon\PlayerWeapon.h" />
     <ClInclude Include="Application\SystemsApp\Cameras\TopDownCamera\TopDownCamera.h" />
+    <ClInclude Include="Engine\Utility\Loaders\Json\VariableReference.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="externals\DirectXTex\DirectXTex_Desktop_2022_Win10.vcxproj">

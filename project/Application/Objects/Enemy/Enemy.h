@@ -5,6 +5,7 @@
 #include "Systems/Input./Input.h"
 #include "WorldTransform./WorldTransform.h"
 #include "Collision./Collider.h"
+#include "Loaders/Json/JsonManager.h"
 
 // C++
 #include <memory>
@@ -67,7 +68,7 @@ private:
 	void Move();
 
 
-
+	void InitJson();
 
 public: // アクセッサ
 	/// <summary>
@@ -88,12 +89,13 @@ public: // アクセッサ
 	bool IsActive() const { return isActive_; }
 
 
-	void SetHP(uint32_t hp) { hp_ = hp; }
-	uint32_t GetHP() { return hp_; }
+	void SetHP(int hp) { hp_ = hp; }
+	int GetHP() { return hp_; }
 
 private:
 	Input* input_ = nullptr;
 	const Player* player_; 
+	JsonManager* jsonManager_ = nullptr;
 	std::unique_ptr<ParticleEmitter> particleEmitter_;
 	std::unique_ptr<Object3d> shadow_;
 	std::unique_ptr<Object3d> base_ = nullptr;
@@ -115,7 +117,7 @@ private:
 	static uint32_t nextSerialNumber_;
 
 
-	uint32_t hp_ = 100;
+	int hp_ = 100;
 	bool isAlive_ = true;
 	bool isHit_ = false;
 };

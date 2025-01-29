@@ -11,6 +11,7 @@
 #include <Particle/ParticleManager.h>
 #include <Particle/ParticleEmitter.h>
 
+#include "Loaders/Json/JsonManager.h"
 // C++
 #include <memory>
 
@@ -45,6 +46,9 @@ public: // メンバ関数（公開）
 	/// ImGui
 	/// </summary>
 	void ShowCoordinatesImGui();
+
+
+	void InitJson();
 
 public: // ポリモーフィズム
 
@@ -158,6 +162,8 @@ private:
 	std::unique_ptr<Object3d> shadow_;
 	std::unique_ptr<Sprite> sprite_;
 	std::unique_ptr<ParticleEmitter> particleEmitter_;
+
+	JsonManager* jsonManager_;
 
 	/*===============================================================//
 								フラグ関連

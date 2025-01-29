@@ -106,6 +106,9 @@ void Enemy::ShowCoordinatesImGui()
     //    worldTransform_.scale_.z = std::max(0.1f, scale[2]);
     //}
 
+
+
+
     // 回転
     ImGui::Text("Rotation");
     float rotation[3] = { worldTransform_.rotation_.x, worldTransform_.rotation_.y, worldTransform_.rotation_.z };
@@ -194,4 +197,11 @@ void Enemy::Move()
 
     WS_.translation_.x = worldTransform_.translation_.x;
     WS_.translation_.z = worldTransform_.translation_.z;
+}
+
+void Enemy::InitJson()
+{
+	jsonManager_ = new JsonManager("Enemy", "Resources./JSON");
+	jsonManager_->Register("HP", &hp_);
+
 }

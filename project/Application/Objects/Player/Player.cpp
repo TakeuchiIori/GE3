@@ -65,6 +65,9 @@ void Player::Initialize()
 	Collider::SetRadiusFloat(2.0f);
 
 	particleEmitter_ = std::make_unique<ParticleEmitter>("Player", worldTransform_.translation_, 5);
+
+
+	InitJson();
 }
 
 void Player::Update()
@@ -406,6 +409,17 @@ void Player::ShowCoordinatesImGui()
 	ImGui::Text("DrawCall");
 	ImGui::Checkbox("Enable Draw", &isDrawEnabled_);
 	ImGui::Checkbox("Update", &isUpdate_);
+
+	ImGui::DragFloat3("worldtransform", &worldTransform_.translation_.x);
+	ImGui::DragFloat3("Speed", &moveSpeed_.x);
+	ImGui::DragFloat("JumpHeight", &jumpHeight_);
+
+
+	if (ImGui::Button("Save"))
+	{
+		jsonManager_->Save();
+	}
+
 	// スケール
 	ImGui::Text("Scale");
 	float scale[3] = { worldTransform_.scale_.x, worldTransform_.scale_.y, worldTransform_.scale_.z };
@@ -439,6 +453,14 @@ void Player::ShowCoordinatesImGui()
 	ImGui::End();
 #endif
 
+}
+
+void Player::InitJson()
+{
+	jsonManager_ = new JsonManager("Player","Resources./JSON");
+	jsonManager_->Register("World Translation", &worldTransform_.translation_);
+	jsonManager_->Register("Speed", &moveSpeed_);
+	jsonManager_->Register("JumpHeight", &jumpHeight_);
 }
 
 void Player::OnCollision(Collider* other)
