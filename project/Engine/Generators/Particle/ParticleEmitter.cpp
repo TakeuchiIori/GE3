@@ -14,8 +14,11 @@ void ParticleEmitter::Update()
 		emitter_.frequencyTime -= emitter_.frequency;
 	}
 
-	ShowImGui();
+}
 
+void ParticleEmitter::UpdateEmit(const std::string& name, const Vector3& transform, uint32_t count)
+{
+	ParticleManager::GetInstance()->Emit(name,transform,count);
 }
 
 void ParticleEmitter::Emit()

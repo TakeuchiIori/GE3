@@ -31,12 +31,17 @@ public: // メンバ関数
 	/// </summary>
 	void Update();
 
-private:
+
+	void UpdateEmit(const std::string& name, const Vector3& transform, uint32_t count);
 
 	/// <summary>
 	/// パーティクルを発生
 	/// </summary>
 	void Emit();
+
+private:
+
+
 
 	/// <summary>
 	/// ImGui
@@ -44,7 +49,7 @@ private:
 	void ShowImGui();
 public:
 
-	void SetPosition(Vector3& position) { emitter_.transform = position; };
+	void SetPosition(const Vector3& position) { emitter_.transform = position; };
 	void SetCount(uint32_t& setcount) { emitter_.count= setcount; };
 
 private:

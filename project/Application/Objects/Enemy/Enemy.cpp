@@ -6,6 +6,7 @@
 #include "Collision./GlobalVariables.h"
 #include "Collision/CollisionTypeIdDef.h"
 #include "Player/Player.h"
+#include "Particle/ParticleManager.h"
 
 #ifdef _DEBUG
 #include "imgui.h" 
@@ -47,7 +48,10 @@ void Enemy::Initialize()
     // TypeIDの設定
     Collider::SetTypeID(static_cast<uint32_t>(CollisionTypeIdDef::kEnemy));
 
-    isActive_ = true;
+
+  
+    
+	
 }
 
 void Enemy::Update()
@@ -71,6 +75,9 @@ void Enemy::Update()
 #endif // _DEBUG
 
     worldTransform_.UpdateMatrix();
+
+    //ParticleManager::GetInstance()->Update();
+
 
     WS_.UpdateMatrix();
 }
@@ -135,6 +142,11 @@ void Enemy::OnCollision(Collider* other)
         if (hp_ <= 0) {
             isAlive_ = false;
         }
+        ParticleEmitter* particleEmitter = new ParticleEmitter("Enemy",worldTransform_.translation_, 10);
+        particleEmitter->UpdateEmit("Enemy", worldTransform_.translation_, 10);
+        //particleEmitter_ = std::make_unique<ParticleEmitter>("Enemy", worldTransform_.translation_, 10);
+        //particleEmitter_->SetPosition(worldTransform_.translation_);
+        //particleEmitter_->Update();
     }
 
     

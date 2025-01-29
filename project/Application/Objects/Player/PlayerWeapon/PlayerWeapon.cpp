@@ -690,6 +690,8 @@ void PlayerWeapon::OnCollision(Collider* other)
 		effect->SetWorldTransform(enemy->GetWorldTransform());
 		effect->Update();
 		effects_.push_back(effect);
+
+
 	}
 
 }

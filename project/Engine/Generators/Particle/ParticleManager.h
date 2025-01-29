@@ -145,7 +145,10 @@ public: // メンバ関数
 	/// <param name="name"></param>
 	/// <param name="position"></param>
 	/// <param name="count"></param>
-	void Emit(const std::string& name, const Vector3& position, uint32_t count);
+	/*void Emit(const std::string& name, const Vector3& position, uint32_t count);*/
+
+	std::list<Particle> Emit(const std::string& name, const Vector3& position, uint32_t count);
+
 	void UpdateParticlePlayerWeapon(const Vector3& pos);
 
 
@@ -270,7 +273,7 @@ private: // メンバ変数
 	// SRV切り替え
 	bool useTexture = true;
 	bool particleUpdate = false;
-	bool useBillboard = false;
+	bool useBillboard = true;
 
 	AccelerationField accelerationField;
 
@@ -292,8 +295,8 @@ private: // メンバ変数
 	Matrix4x4 scaleMatrix;
 	Matrix4x4 translateMatrix;
 
-	Matrix4x4 billboardMatrix;
-	Matrix4x4 viewProjectionMatrix;
+	//Matrix4x4 billboardMatrix;
+	//Matrix4x4 viewProjectionMatrix;
 
 	// パーティクル更新モード
 	enum ParticleUpdateMode {

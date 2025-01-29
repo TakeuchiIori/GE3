@@ -12,7 +12,8 @@ void MyGame::Initialize()
 	SceneManager::GetInstance()->ChangeScene("GAME");
 	// パーティクルマネージャ生成
 	ParticleManager::GetInstance()->Initialize(srvManager_);
-	
+	ParticleManager::GetInstance()->CreateParticleGroup("Enemy", "Resources/images/circle.png");
+	ParticleManager::GetInstance()->CreateParticleGroup("Circle", "Resources/images/circle.png");
 }
 
 void MyGame::Finalize()

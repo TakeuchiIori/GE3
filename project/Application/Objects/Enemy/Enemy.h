@@ -12,6 +12,7 @@
 // Math
 #include "MathFunc.h"
 #include "Vector3.h" 
+#include "Particle/ParticleEmitter.h"
 
 class Player;
 class Enemy : public Collider
@@ -91,12 +92,16 @@ public: // アクセッサ
 	uint32_t GetHP() { return hp_; }
 
 private:
-	const Player* player_; // プレイヤーの参照
-	WorldTransform worldTransform_;
-	WorldTransform WS_;
+	Input* input_ = nullptr;
+	const Player* player_; 
+	std::unique_ptr<ParticleEmitter> particleEmitter_;
 	std::unique_ptr<Object3d> shadow_;
 	std::unique_ptr<Object3d> base_ = nullptr;
-	Input* input_ = nullptr;
+
+	WorldTransform worldTransform_;
+	WorldTransform WS_;
+
+
 
 	float radius_ = 2.0f;
 	float speed_ = 0.25f;
@@ -104,9 +109,9 @@ private:
 	Vector3 moveSpeed_;
 	bool isDrawEnabled_ = true;
 	bool isActive_ = true;
-	// シリアルナンバー
+
+
 	uint32_t serialNumber_ = 0;
-	// 次のシリアルナンバー
 	static uint32_t nextSerialNumber_;
 
 

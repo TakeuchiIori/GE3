@@ -27,6 +27,9 @@ void GameScene::Initialize()
     // カメラの生成
     sceneCamera_ = cameraManager_.AddCamera();
     Object3dCommon::GetInstance()->SetDefaultCamera(sceneCamera_.get());
+
+    ParticleManager::GetInstance()->SetCamera(sceneCamera_.get());
+
     CollisionManager::GetInstance()->Initialize();
     // 線
     line_ = std::make_unique<Line>();
@@ -76,18 +79,17 @@ void GameScene::Initialize()
     cameraMode_ = CameraMode::FOLLOW;
 
     // パーティクル
-    const std::string particleName = "Circle";
-    ParticleManager::GetInstance()->SetCamera(sceneCamera_.get());
-    ParticleManager::GetInstance()->CreateParticleGroup(particleName, "Resources/images/circle.png");
+   
+  
     emitterPosition_ = Vector3{ 0.0f, 0.0f, 0.0f }; // エミッタの初期位置
     particleCount_ = 1;
-    particleEmitter_[0] = std::make_unique<ParticleEmitter>(particleName, emitterPosition_, particleCount_);
+    particleEmitter_[0] = std::make_unique<ParticleEmitter>("Circle", emitterPosition_, particleCount_);
 
     //// パーティクルグループ名を指定
     //const std::string particleGroupName = "PlayerWeaponEffect";
     //weaponPos = player_->GetPosition();
     //ParticleManager::GetInstance()->CreateParticleGroup(particleGroupName, "Resources/images/circle.png");
-    //particleEmitter_[1] = std::make_unique<ParticleEmitter>(particleGroupName, weaponPos, 5);
+   // particleEmitter_[1] = std::make_unique<ParticleEmitter>(particleGroupName, weaponPos, 5);
 
 
 
@@ -178,12 +180,11 @@ void GameScene::Update()
 void GameScene::Draw()
 {
 #pragma region 演出描画
-    //ParticleManager::GetInstance()->Draw();
+    ParticleManager::GetInstance()->Draw();
 
 
 
 #pragma endregion
-  
 #pragma region 2Dスプライト描画
     SpriteCommon::GetInstance()->DrawPreference();
     /// <summary>
@@ -210,7 +211,7 @@ void GameScene::Draw()
     for (auto& enemy : enemies_) {
         enemy->Draw();
     }
-    ground_->Draw();
+   // ground_->Draw();
     //line_->UpdateVertices(start_, end_);
   
     //line_->DrawLine();
@@ -235,6 +236,7 @@ void GameScene::Draw()
    
 
 #pragma endregion
+
 
 
 }
@@ -299,7 +301,7 @@ void GameScene::ChangePahse()
         // パーティクル更新
         //ParticleManager::GetInstance()->Update();
         // ParticleManager::GetInstance()->UpdateParticlePlayerWeapon(weaponPos);
-        ShowImGui();
+//        ShowImGui();
         //particleEmitter_[0]->Update();
         // particleEmitter_[1]->Update();
 
@@ -367,15 +369,20 @@ void GameScene::ChangePahse()
         ground_->Update();
         test_->UpdateAnimation();
 
+
+        particleEmitter_[0]->SetPosition(player_->GetPosition());
+        particleEmitter_[0]->Emit();
+        // パーティクル更新
+        ParticleManager::GetInstance()->Update();
+
         // カメラ更新
         UpdateCameraMode();
         UpdateCamera();
 
-        // パーティクル更新
-        ParticleManager::GetInstance()->Update();
         // ParticleManager::GetInstance()->UpdateParticlePlayerWeapon(weaponPos);
         ShowImGui();
-        particleEmitter_[0]->Update();
+
+		
         // particleEmitter_[1]->Update();
 
 
@@ -485,7 +492,7 @@ void GameScene::ShowImGui()
     ImGui::End();
     ImGui::Begin("Emitter");
     ImGui::DragFloat3("Emitter Position", &emitterPosition_.x, 0.1f);
-    particleEmitter_[0]->SetPosition(emitterPosition_);
+   // particleEmitter_[0]->SetPosition(emitterPosition_);
 
     // パーティクル数の表示と調整
     ImGui::Text("Particle Count: %.0d", particleCount_); // 現在のパーティクル数を表示
@@ -497,7 +504,7 @@ void GameScene::ShowImGui()
             particleCount_ -= 1;
         }
     }
-    particleEmitter_[0]->SetCount(particleCount_);
+    //particleEmitter_[0]->SetCount(particleCount_);
 
 
     ImGui::End();
