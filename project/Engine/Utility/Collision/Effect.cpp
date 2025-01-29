@@ -36,7 +36,7 @@ void Effect::Update() {
 
     // 透明度の変更（コメントアウト部分を復元）
     float alpha = 1.0f - Lerp(1.0f, 0.0f, timer_ / 10.0f);
-    // obj_->SetAlpha(alpha);
+    obj_->SetAlpha(alpha);
 
     // 行列の更新
     worldTransform_.UpdateMatrix();

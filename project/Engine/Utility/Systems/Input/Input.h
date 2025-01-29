@@ -265,14 +265,19 @@ public:
     /// コントローラーの接続確認
     /// </summary>
     /// <returns></returns>
-    bool IsControllerConnected() {
-        XINPUT_STATE state; ZeroMemory(&state, sizeof(XINPUT_STATE));
-        // コントローラの状態を取得
-        DWORD result = XInputGetState(0, &state);
-        // コントローラが接続されている場合は true を返す
-        return (result == ERROR_SUCCESS);
-    }
+    static bool IsControllerConnected();
 
+    /// <summary>
+    /// 左スティックの入力があるか
+    /// </summary>
+    /// <returns></returns>
+    bool IsLeftStickMoving();
+
+    /// <summary>
+    /// 右スティックの入力があるか
+    /// </summary>
+    /// <returns></returns>
+    bool IsRightStickMoving();
 
 private:
 
