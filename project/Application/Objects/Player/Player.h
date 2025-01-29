@@ -50,6 +50,9 @@ public: // メンバ関数（公開）
 
 	void InitJson();
 
+
+	void JsonImGui();
+
 public: // ポリモーフィズム
 
 	/// <summary>
@@ -163,7 +166,7 @@ private:
 	std::unique_ptr<Sprite> sprite_;
 	std::unique_ptr<ParticleEmitter> particleEmitter_;
 
-	JsonManager* jsonManager_;
+	std::unique_ptr < JsonManager> jsonManager_;
 
 	/*===============================================================//
 								フラグ関連

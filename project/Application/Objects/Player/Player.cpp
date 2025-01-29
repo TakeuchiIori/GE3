@@ -91,6 +91,8 @@ void Player::Update()
 
 	
 	weapon_->Update();
+
+	
 }
 
 void Player::Draw()
@@ -457,10 +459,15 @@ void Player::ShowCoordinatesImGui()
 
 void Player::InitJson()
 {
-	jsonManager_ = new JsonManager("Player","Resources./JSON");
+	jsonManager_ = std::make_unique<JsonManager>("Player","Resources./JSON");
 	jsonManager_->Register("World Translation", &worldTransform_.translation_);
 	jsonManager_->Register("Speed", &moveSpeed_);
 	jsonManager_->Register("JumpHeight", &jumpHeight_);
+}
+
+void Player::JsonImGui()
+{
+	jsonManager_->ImGui();
 }
 
 void Player::OnCollision(Collider* other)

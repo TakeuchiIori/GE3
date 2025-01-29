@@ -7,6 +7,7 @@
 
 void FollowCamera::Initialize()
 {
+	InitJson();
 }
 
 void FollowCamera::Update()
@@ -15,17 +16,8 @@ void FollowCamera::Update()
 	UpdateInput();
 
 	FollowProsess();
-
 	
-
 	
-
-	
-
-	
-#ifdef _DEBUG
-	ImGui();
-#endif // _DEBUG
 
 }
 
@@ -63,8 +55,9 @@ void FollowCamera::FollowProsess()
 	{
 		return;
 	}
-	Vector3 offset = { 0.0f, 6.0f, -40.0f };
+	Vector3 offset = offset_;
 
+	
 
 	Matrix4x4 rotate = MakeRotateMatrixXYZ(rotate_);
 
@@ -73,6 +66,17 @@ void FollowCamera::FollowProsess()
 	translate_ = target_->translation_ + offset;
 
 	matView_ = Inverse(MakeAffineMatrix(scale_, rotate_, translate_));
+}
+
+void FollowCamera::InitJson()
+{
+	jsonManager_ = std::make_unique<JsonManager>("FollowCamera", "Resources/JSON");
+	jsonManager_->Register("OffSet Translate", &offset_);
+}
+
+void FollowCamera::JsonImGui()
+{
+	jsonManager_->ImGui();
 }
 
 void FollowCamera::ImGui()

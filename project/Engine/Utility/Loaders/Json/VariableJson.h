@@ -1,6 +1,9 @@
 #pragma once
 #include <json.hpp>
 #include <memory>
+#include <string>
+#include <imgui.h>
+#include "ConversionJson.h"
 
 /// <summary>
 ///  登録変数を抽象化するインターフェース
@@ -12,6 +15,8 @@ public:
 
     virtual void SaveToJson(nlohmann::json& j) const = 0;
     virtual void LoadFromJson(const nlohmann::json& j) = 0;
+    virtual void ShowImGui(const std::string& name, const std::string& uniqueID) = 0;
+    virtual void ResetValue() = 0;  // 追加：値をリセットする
 };
 
 template <typename T>
@@ -48,6 +53,54 @@ public:
         }
     }
 
+    void ShowImGui(const std::string& name, const std::string& uniqueID) override
+    {
+        std::string label = name + "##" + uniqueID;  // ユニークなIDを付ける
+
+        if constexpr (std::is_same_v<T, int>)
+        {
+            ImGui::InputInt(label.c_str(), ptr_);
+        }
+        else if constexpr (std::is_same_v<T, float>)
+        {
+            ImGui::InputFloat(label.c_str(), ptr_);
+        }
+        else if constexpr (std::is_same_v<T, bool>)
+        {
+            ImGui::Checkbox(label.c_str(), ptr_);
+        }
+        else if constexpr (std::is_same_v<T, std::string>)
+        {
+            char buffer[256];
+            strncpy(buffer, ptr_->c_str(), sizeof(buffer));
+            buffer[sizeof(buffer) - 1] = '\0';
+            if (ImGui::InputText(label.c_str(), buffer, sizeof(buffer)))
+            {
+                *ptr_ = std::string(buffer);
+            }
+        }
+        else if constexpr (std::is_same_v<T, Vector2>)
+        {
+            ImGui::InputFloat2(label.c_str(), reinterpret_cast<float*>(ptr_));
+        }
+        else if constexpr (std::is_same_v<T, Vector3>)
+        {
+            ImGui::InputFloat3(label.c_str(), reinterpret_cast<float*>(ptr_));
+        }
+        else if constexpr (std::is_same_v<T, Quaternion>)
+        {
+            ImGui::InputFloat4(label.c_str(), reinterpret_cast<float*>(ptr_));
+        }
+    }
+
+
+    void ResetValue() override
+    {
+        *ptr_ = defaultValue_;  // 初期値にリセット
+    }
+
+
 private:
     T* ptr_;
+    T defaultValue_;  // 初期値を保存
 };

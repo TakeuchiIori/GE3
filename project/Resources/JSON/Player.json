@@ -1,13 +1,1 @@
-{
-    "JumpHeight": 5.0,
-    "Speed": {
-        "x": 0.25,
-        "y": 0.25,
-        "z": 0.25
-    },
-    "World Translation": {
-        "x": 0.0,
-        "y": 1.0,
-        "z": -35.0
-    }
-}
+null

@@ -366,7 +366,9 @@ void GameScene::ChangePahse()
 
         // objの更新
         player_->Update();
-        
+		player_->JsonImGui();
+
+		//followCamera_.JsonImGui();
 
         // enemy_->Update();
         ground_->Update();
