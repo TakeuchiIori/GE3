@@ -11,7 +11,7 @@
 #include <random>
 #include <list>
 #include <unordered_map >
-
+#include "Loaders/Json/JsonManager.h"
 // Engine
 #include "Systems./Camera/Camera.h"
 
@@ -92,12 +92,12 @@ public:
 	};
 
 public: // シングルトン
-    static ParticleManager* GetInstance();
+	static ParticleManager* GetInstance();
 	void Finalize();
-    ParticleManager() = default;
-    ~ParticleManager() = default;
-    ParticleManager(const ParticleManager&) = delete;
-    ParticleManager& operator=(const ParticleManager&) = delete;
+	ParticleManager() = default;
+	~ParticleManager() = default;
+	ParticleManager(const ParticleManager&) = delete;
+	ParticleManager& operator=(const ParticleManager&) = delete;
 
 public: // メンバ関数
 	/// <summary>
@@ -152,7 +152,10 @@ public: // メンバ関数
 	void UpdateParticlePlayerWeapon(const Vector3& pos);
 
 
-private: 
+private:
+
+
+	void InitJson();
 
 	/// <summary>
 	/// 横に移動
@@ -161,7 +164,7 @@ private:
 
 	void UpdateParticlePlayer();
 
-	
+
 
 	void UpdateParticleRadial();
 
@@ -202,7 +205,7 @@ private:
 	/// ランダムエンジン
 	/// </summary>
 	void InitRandomEngine();
-	
+
 	/// <summary>
 	/// パイプラインの設定
 	/// </summary>
@@ -218,7 +221,7 @@ private:
 	/// </summary>
 	void ShowUpdateModeDropdown();
 
-	
+
 public:
 	void SetCamera(Camera* camera) { camera_ = camera; }
 
@@ -235,6 +238,7 @@ private: // メンバ変数
 	Material* materialData_ = nullptr;
 	Camera* camera_ = nullptr;
 	ParticleForGPU* instancingData_ = nullptr;
+	JsonManager* jsonManager_ = nullptr;
 
 	// ルートシグネチャ
 	D3D12_ROOT_SIGNATURE_DESC descriptionRootSignature_{};

@@ -130,6 +130,12 @@ void ParticleManager::Draw()
 }
 
 
+void ParticleManager::InitJson()
+{
+	jsonManager_ = new JsonManager("Particle", "Resources./JSON");
+	
+}
+
 void ParticleManager::UpdateParticleMove()
 {
 
