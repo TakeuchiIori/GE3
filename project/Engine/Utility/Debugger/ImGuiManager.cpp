@@ -132,11 +132,6 @@ void ImGuiManager::CustomizeEditor()
 	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 
 
-	// メインDockSpaceの設定
-	//ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse |
-	//	ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove |
-	//	ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
-
 	// ウィンドウ全体をカバーするDockSpaceの作成
 	ImGui::SetNextWindowPos(ImVec2(0.0f, 0.0f)); // ウィンドウ位置を(0,0)に設定
 	ImGui::SetNextWindowSize(io.DisplaySize);    // ウィンドウサイズを全画面に設定
@@ -162,18 +157,6 @@ void ImGuiManager::CustomizeEditor()
 	colors[ImGuiCol_DockingEmptyBg] = ImVec4(0.0f, 0.0f, 0.0f, 0.0f); // 完全に透明
 	// パディングとスペーシングの調整
 	style.WindowPadding = ImVec2(0.0f, 0.0f); // ウィンドウ内の余白をゼロに
-
-	//style.FramePadding = ImVec2(0.0f, 0.0f);  // フレーム内の余白をゼロに
-	//style.ItemSpacing = ImVec2(0.0f, 0.0f);   // アイテム間のスペースをゼロに
-	//style.CellPadding = ImVec2(0.0f, 0.0f);   // テーブルセル内の余白をゼロに
-	//style.WindowBorderSize = 0.0f;            // ウィンドウの境界線幅をゼロに
-	//style.ChildBorderSize = 0.0f;             // 子ウィンドウの境界線幅をゼロに
-	//style.PopupBorderSize = 0.0f;             // ポップアップの境界線幅をゼロに
-	//style.FrameBorderSize = 0.0f;             // フレームの境界線幅をゼロに
-	//// DockNodeのスペーシングを調整
-	//style.TabBorderSize = 0.0f;               // タブの境界線幅をゼロに
-	////style.TabRounding = 0.0f;                 // タブの角丸をゼロに
-
 
 	/*========================================================
 							ImGui
@@ -206,16 +189,10 @@ void ImGuiManager::CustomizeEditor()
 	colors[ImGuiCol_Border] = ImVec4(0.2f, 0.2f, 0.25f, 1.0f);    // 境界線
 	colors[ImGuiCol_BorderShadow] = ImVec4(0.0f, 0.0f, 0.0f, 0.0f);     // 境界線の影
 
-
-
 	// スタイルの変更
 	style.WindowRounding = 15.0f;      // ウィンドウの角丸
 	style.FrameRounding = 4.0f;        // フレームの角丸
 	style.ScrollbarSize = 15.0f;       // スクロールバーのサイズ
-	//style.FramePadding = ImVec2(10, 10); // フレーム内のパディング
-
-	// ImGuiのスタイルを設定
-	//ImGui::StyleColorsClassic();
 
 #endif;
 }
