@@ -6,7 +6,10 @@
 #include "imgui.h"
 #include <imgui_impl_win32.h>
 #include <imgui_impl_dx12.h>
+#include "imgui_internal.h"        
+#include <imgui_impl_dx12.cpp>
 #endif
+
 
 ImGuiManager* ImGuiManager::instance = nullptr;
 ImGuiManager* ImGuiManager::GetInstance()
@@ -25,6 +28,9 @@ void ImGuiManager::Initialize(WinApp* winApp, DirectXCommon* dxCommon)
 
 	// ImGuiのコンテキストを生成
 	ImGui::CreateContext();
+
+
+
 	//ImGuiのスタイルを設定
 	ImGui::StyleColorsDark();
 
@@ -47,28 +53,36 @@ void ImGuiManager::Initialize(WinApp* winApp, DirectXCommon* dxCommon)
 void ImGuiManager::Begin()
 {
 #ifdef _DEBUG
+	// DockSpaceの設定
+	ImGuiIO& io = ImGui::GetIO();
+
+
+	io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable; // 追加
+
 	// ImGuiフレーム開始
 	ImGui_ImplDX12_NewFrame();
 	ImGui_ImplWin32_NewFrame();
+
 	ImGui::NewFrame();
 
 	// DockSpaceの設定
 
-	ImGuiIO& io = ImGui::GetIO();
-	ImGui::SetNextWindowPos(ImVec2(0.0f, 0.0f)); // ウィンドウ全体をカバーする
+	
 
-	ImGui::SetNextWindowSize(io.DisplaySize);
+	//io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable; // 追加
+
 	ImGui::SetNextWindowBgAlpha(0.0f); // 背景を透明にする
 	ImGuiWindowFlags dockspace_flags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse |
 		ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove |
 		ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus |
 		ImGuiWindowFlags_NoBackground;
 
-	ImGui::Begin("MainDockSpace", nullptr, dockspace_flags);
-
-	// DockSpaceの作成
-	ImGui::DockSpace(ImGui::GetID("MainDockSpace"), ImVec2(0.0f, 0.0f), ImGuiDockNodeFlags_None);
+	
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f); // ウィンドウの角丸を無効にする
+	ImGui::Begin("MainDockSpace", nullptr, ImGuiWindowFlags_NoCollapse);
+	ImGui::DockSpace(ImGui::GetID("MainDockSpace"), ImVec2(0.0f, 0.0f),0);
 	ImGui::End();
+
 #endif
 
 }
@@ -78,6 +92,15 @@ void ImGuiManager::End()
 #ifdef _DEBUG
 	// 描画前準備
 	ImGui::Render();
+	ID3D12GraphicsCommandList* commandList = dxCommon_->GetCommandList().Get();
+	ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), commandList);
+
+	ImGuiIO& io = ImGui::GetIO();
+	if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+	{
+		ImGui::UpdatePlatformWindows();
+		ImGui::RenderPlatformWindowsDefault(nullptr, (void*)commandList);
+	}
 #endif
 }
 
@@ -114,13 +137,26 @@ void ImGuiManager::CreateDescriptorHeap()
 void ImGuiManager::InitialzeDX12()
 {
 #ifdef _DEBUG
-	ImGui_ImplDX12_Init(
+	HRESULT hr = ImGui_ImplDX12_Init(
 		dxCommon_->GetDevice().Get(),
 		static_cast<int> (dxCommon_->GetBackBufferCount()),
-		DXGI_FORMAT_R8G8B8A8_UNORM_SRGB, srvHeap_.Get(),
+		DXGI_FORMAT_R8G8B8A8_UNORM, srvHeap_.Get(),
 		srvHeap_->GetCPUDescriptorHandleForHeapStart(),
 		srvHeap_->GetGPUDescriptorHandleForHeapStart()
-	); 
+	);
+
+	if (FAILED(hr)) {
+		printf("ImGui_ImplDX12_Init failed! HRESULT: 0x%08X\n", hr);
+		assert(SUCCEEDED(hr)); // ここで停止してエラー内容を確認
+	}
+
+	if (!srvHeap_) {
+		printf("srvHeap_ is NULL! Check CreateDescriptorHeap!\n");
+		assert(srvHeap_);
+	}
+
+	ImGui_ImplDX12_InitPlatformInterface();
+
 #endif // DEBUG
 }
 
@@ -130,7 +166,7 @@ void ImGuiManager::CustomizeEditor()
 	// エディター同士をドッキング
 	ImGuiIO& io = ImGui::GetIO();
 	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
-
+	
 
 	// ウィンドウ全体をカバーするDockSpaceの作成
 	ImGui::SetNextWindowPos(ImVec2(0.0f, 0.0f)); // ウィンドウ位置を(0,0)に設定
@@ -139,7 +175,7 @@ void ImGuiManager::CustomizeEditor()
 
 	// フォントファイルのパスとサイズを指定してフォントをロードする
 	io.Fonts->AddFontFromFileTTF(
-		"Resources/Fonts/FiraMono-Regular.ttf", 14.0f // フォントファイルのパスとフォントサイズ
+		"Resources/Fonts/FiraMono-Regular.ttf", 17.0f // フォントファイルのパスとフォントサイズ
 	);
 	// 標準フォントを追加する
 	io.Fonts->AddFontDefault();
