@@ -96,11 +96,11 @@ void GameScene::Initialize()
 
     phase_ = Phase::kFadeIn;
     fade_ = std::make_unique<Fade>();
-    fade_->Initialize("Resources/white.png");
+    fade_->Initialize("Resources/Textures./white.png");
     fade_->Start(Fade::Status::FadeIn,2.0f);
 
     // オーディオファイルのロード（例: MP3）
-    soundData = Audio::GetInstance()->LoadAudio(L"Resources./harpohikunezumi.mp3");
+    soundData = Audio::GetInstance()->LoadAudio(L"Resources./images./harpohikunezumi.mp3");
 
     // オーディオの再生
     sourceVoice = Audio::GetInstance()->SoundPlayAudio(soundData);

@@ -102,7 +102,7 @@ void Object3d::SetModel(const std::string& filePath, bool isAnimation)
 	}
 
 	// .obj 読み込み (第一引数には拡張子なしのパス)
-	ModelManager::GetInstance()->LoadModel("Resources./" + basePath, fileName, isAnimation);
+	ModelManager::GetInstance()->LoadModel("Resources./Models./" + basePath, fileName, isAnimation);
 
 	// モデルを検索してセットする
 	model_ = ModelManager::GetInstance()->FindModel(fileName);
