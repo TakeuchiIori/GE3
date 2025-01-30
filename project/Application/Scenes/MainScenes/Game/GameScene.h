@@ -102,6 +102,7 @@ private:
     TopDownCamera topDownCamera_;
     // サウンド
     Audio::SoundData soundData;
+    IXAudio2SourceVoice* sourceVoice;
     // パーティクルエミッター
     std::unique_ptr<ParticleEmitter> particleEmitter_[2];
     Vector3 emitterPosition_;

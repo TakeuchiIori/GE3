@@ -2,6 +2,7 @@
 // Engine
 #include "CoreScenes./Manager./SceneManager.h"
 #include "Systems./Input./Input.h"
+#include "Systems/Audio/Audio.h"
 #include "Loaders./Texture./TextureManager.h"
 #include "Particle./ParticleManager.h"
 #include "Object3D/Object3dCommon.h"
@@ -97,6 +98,17 @@ void GameScene::Initialize()
     fade_ = std::make_unique<Fade>();
     fade_->Initialize("Resources/white.png");
     fade_->Start(Fade::Status::FadeIn,2.0f);
+
+    // オーディオファイルのロード（例: MP3）
+    soundData = Audio::GetInstance()->LoadAudio(L"Resources./harpohikunezumi.mp3");
+
+    // オーディオの再生
+    sourceVoice = Audio::GetInstance()->SoundPlayAudio(soundData);
+
+    // 音量の設定（0.0f ～ 1.0f）
+    Audio::GetInstance()->SetVolume(sourceVoice, 0.8f); // 80%の音量に設定
+
+    
 }
 
 /// <summary>
@@ -104,7 +116,6 @@ void GameScene::Initialize()
 /// </summary>
 void GameScene::Update()
 {
-
 
     ChangePahse();
    // if (Input::GetInstance()->TriggerKey(DIK_RETURN)) {
