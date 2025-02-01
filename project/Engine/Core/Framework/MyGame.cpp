@@ -39,12 +39,7 @@ void MyGame::Draw()
 
 	// ゲームの描画
 	SceneManager::GetInstance()->Draw();
-#ifdef _DEBUG
-	//collisionManager_->Draw();
-#endif
 
-	// ImGui描画
-	imguiManager_->Draw();
 	// DirectXの描画終了
 	dxCommon_->PostDraw();
 }

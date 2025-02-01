@@ -34,9 +34,6 @@ void ImGuiManager::Initialize(WinApp* winApp, DirectXCommon* dxCommon)
 	// 変更したエディター呼び出し
 	CustomizeEditor();
 
-	// Win32用初期化
-	ImGui_ImplWin32_Init(winApp->GetHwnd());
-
 	// デスクリプタヒープ生成
 	CreateDescriptorHeap();
 
@@ -69,28 +66,18 @@ void ImGuiManager::Begin()
 	ImGui::Begin("MainDockSpace", nullptr, ImGuiWindowFlags_NoCollapse);
 	ImGui::DockSpace(ImGui::GetID("MainDockSpace"), ImVec2(0.0f, 0.0f), ImGuiDockNodeFlags_PassthruCentralNode);
 	ImGui::End();
+
+
 #endif
 }
 
 void ImGuiManager::End()
 {
 #ifdef _DEBUG
+	ImGui::EndFrame();
 	// 描画前準備
 	ImGui::Render();
 	ID3D12GraphicsCommandList* commandList = dxCommon_->GetCommandList().Get();
-	if (commandList == nullptr)
-	{
-		printf("Error: commandList is NULL in ImGuiManager::End()\n");
-		return;
-	}
-
-	if (ImGui::GetDrawData()->TotalVtxCount == 0) {
-		printf("Warning: No vertices to render!\n");
-		return;
-	}
-
-
-	ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), commandList);
 
 	ImGuiIO& io = ImGui::GetIO();
 	if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
@@ -98,19 +85,22 @@ void ImGuiManager::End()
 		ImGui::UpdatePlatformWindows();
 		ImGui::RenderPlatformWindowsDefault(nullptr, (void*)commandList);
 	}
+	Draw();
 #endif
 }
 
 void ImGuiManager::Draw()
 {
 #ifdef _DEBUG
-	ID3D12GraphicsCommandList* commandList = dxCommon_->GetCommandList().Get();
-
 	// デスクリプターヒープの配列をセットするコマンド
 	ID3D12DescriptorHeap* ppHeaps[] = { srvHeap_.Get()};
-	commandList->SetDescriptorHeaps(_countof(ppHeaps), ppHeaps);
+	dxCommon_->GetCommandList()->SetDescriptorHeaps(_countof(ppHeaps), ppHeaps);
+	if (ImGui::GetDrawData()->TotalVtxCount == 0) {
+		printf("Warning: No vertices to render!\n");
+		return;
+	}
 	// 描画コマンドを発行
-	ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), commandList);
+	ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), dxCommon_->GetCommandList().Get());
 	
 #endif
 }
@@ -140,9 +130,13 @@ void ImGuiManager::InitialzeDX12()
 	}
 
 	// DirectX12の初期化
+	IMGUI_CHECKVERSION();
+	// Win32用初期化
+	ImGui_ImplWin32_Init(winApp_->GetHwnd());
+
 	HRESULT hr = ImGui_ImplDX12_Init(
 		dxCommon_->GetDevice().Get(),
-		static_cast<int> (dxCommon_->GetBackBufferCount()),
+		dxCommon_->GetBackBufferCount(),
 		DXGI_FORMAT_R8G8B8A8_UNORM, srvHeap_.Get(),
 		srvHeap_->GetCPUDescriptorHandleForHeapStart(),
 		srvHeap_->GetGPUDescriptorHandleForHeapStart()
