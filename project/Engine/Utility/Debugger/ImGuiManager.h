@@ -62,7 +62,6 @@ private:
 	/// </summary>
 	void CustomizeEditor();
 
-	void CheckWindowFocus();
 
 
 

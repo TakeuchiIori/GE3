@@ -31,11 +31,6 @@ void ImGuiManager::Initialize(WinApp* winApp, DirectXCommon* dxCommon)
 	// ImGuiのコンテキストを生成
 	ImGui::CreateContext();
 
-
-
-	//ImGuiのスタイルを設定
-	//ImGui::StyleColorsDark();
-
 	// 変更したエディター呼び出し
 	CustomizeEditor();
 
@@ -72,9 +67,8 @@ void ImGuiManager::Begin()
 		ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus |
 		ImGuiWindowFlags_NoBackground;
 	ImGui::Begin("MainDockSpace", nullptr, ImGuiWindowFlags_NoCollapse);
-	ImGui::DockSpace(ImGui::GetID("MainDockSpace"), ImVec2(0.0f, 0.0f),0);
+	ImGui::DockSpace(ImGui::GetID("MainDockSpace"), ImVec2(0.0f, 0.0f), ImGuiDockNodeFlags_PassthruCentralNode);
 	ImGui::End();
-	//CheckWindowFocus();
 #endif
 }
 
@@ -84,6 +78,18 @@ void ImGuiManager::End()
 	// 描画前準備
 	ImGui::Render();
 	ID3D12GraphicsCommandList* commandList = dxCommon_->GetCommandList().Get();
+	if (commandList == nullptr)
+	{
+		printf("Error: commandList is NULL in ImGuiManager::End()\n");
+		return;
+	}
+
+	if (ImGui::GetDrawData()->TotalVtxCount == 0) {
+		printf("Warning: No vertices to render!\n");
+		return;
+	}
+
+
 	ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), commandList);
 
 	ImGuiIO& io = ImGui::GetIO();
@@ -101,7 +107,7 @@ void ImGuiManager::Draw()
 	ID3D12GraphicsCommandList* commandList = dxCommon_->GetCommandList().Get();
 
 	// デスクリプターヒープの配列をセットするコマンド
-	ID3D12DescriptorHeap* ppHeaps[] = { srvHeap_.Get() };
+	ID3D12DescriptorHeap* ppHeaps[] = { srvHeap_.Get()};
 	commandList->SetDescriptorHeaps(_countof(ppHeaps), ppHeaps);
 	// 描画コマンドを発行
 	ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), commandList);
@@ -128,6 +134,12 @@ void ImGuiManager::CreateDescriptorHeap()
 void ImGuiManager::InitialzeDX12()
 {
 #ifdef _DEBUG
+	if (!srvHeap_) {
+		printf("srvHeap_ is NULL! Check CreateDescriptorHeap!\n");
+		assert(srvHeap_);
+	}
+
+	// DirectX12の初期化
 	HRESULT hr = ImGui_ImplDX12_Init(
 		dxCommon_->GetDevice().Get(),
 		static_cast<int> (dxCommon_->GetBackBufferCount()),
@@ -141,10 +153,6 @@ void ImGuiManager::InitialzeDX12()
 		assert(SUCCEEDED(hr)); // ここで停止してエラー内容を確認
 	}
 
-	if (!srvHeap_) {
-		printf("srvHeap_ is NULL! Check CreateDescriptorHeap!\n");
-		assert(srvHeap_);
-	}
 
 	ImGui_ImplDX12_InitPlatformInterface();
 
@@ -164,10 +172,6 @@ void ImGuiManager::CustomizeColor()
 		// パディングとスペーシングの調整
 		style.WindowPadding = ImVec2(0.0f, 0.0f); // ウィンドウ内の余白をゼロに
 
-		// カラースキームのカスタマイズ
-		//ImVec4* colors = style.Colors;
-		// 外部ウィンドウに対してカラー設定を適用
-		//ImGui::SetNextWindowBgAlpha(0.0f); // 背景を透明にする
 		// ここでカラーやスタイル設定を変更
 		colors[ImGuiCol_WindowBg] = ImVec4(0.3f, 0.3f, 0.3f, 1.0f);    // 背景色 (ダークグレー)
 		colors[ImGuiCol_TitleBg] = ImVec4(0.45f, 0.45f, 0.48f, 1.0f);  // タイトルバー (暗い灰色)
@@ -234,37 +238,6 @@ void ImGuiManager::CustomizeEditor()
 #endif;
 }
 
-void ImGuiManager::CheckWindowFocus()
-{
-#ifdef _DEBUG
-	ImGuiIO& io = ImGui::GetIO();
-
-	// ImGuiウィンドウをクリックしたら、ゲームウィンドウを背面にする
-	if (io.WantCaptureMouse || io.WantCaptureKeyboard)
-	{
-		SetWindowPos(winApp_->GetHwnd(), HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
-	}
-
-	// ゲームウィンドウがアクティブなら、ゲームウィンドウを最前面にする
-	if (GetForegroundWindow() == winApp_->GetHwnd())
-	{
-		SetWindowPos(winApp_->GetHwnd(), HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
-
-		// 【追加】ImGuiのウィンドウを背面にする
-		if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
-		{
-			for (int i = 0; i < ImGui::GetPlatformIO().Viewports.Size; i++)
-			{
-				ImGuiViewport* viewport = ImGui::GetPlatformIO().Viewports[i];
-				HWND hwnd = (HWND)viewport->PlatformHandle;
-				SetWindowPos(hwnd, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
-			}
-		}
-	}
-#endif
-}
-
-
 void ImGuiManager::Finalize()
 {
 #ifdef _DEBUG
@@ -274,7 +247,9 @@ void ImGuiManager::Finalize()
 	ImGui::DestroyContext();
 
 	// デスクリプターヒープを解放
-	srvHeap_.Reset();
+	if (srvHeap_) {
+		srvHeap_.Reset();
+	}
 
 	delete instance;
 	instance = nullptr;
