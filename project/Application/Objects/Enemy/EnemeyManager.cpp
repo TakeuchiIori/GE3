@@ -13,21 +13,17 @@ void EnemeyManager::Update() {
         spawnTimer_ = 0.0f;
     }
 
-    // 安全な敵の更新
-    if (!enemies_.empty()) {  // 空チェックを追加
-        for (auto it = enemies_.begin(); it != enemies_.end();) {
-            if (it != enemies_.end()) {  // 追加のチェック
-                auto& enemy = *it;
-                enemy->Update();
+    // 敵の更新
+    for (auto it = enemies_.begin(); it != enemies_.end();) {
+        auto& enemy = *it;
+        enemy->Update();
 
-                // 敵が死んでいたら削除
-                if (!enemy->IsActive()) {
-                    it = enemies_.erase(it);
-                }
-                else {
-                    ++it;
-                }
-            }
+        // 敵が死んでいたら削除
+        if (!enemy->IsActive()) {
+            it = enemies_.erase(it);  // eraseは次の有効なイテレータを返す
+        }
+        else {
+            ++it;
         }
     }
 }
@@ -56,8 +52,7 @@ void EnemeyManager::SpawnEnemy() {
 
     // 新しい敵を生成
     auto newEnemy = std::make_unique<Enemy>();
-    newEnemy->Initialize(camera_);
-    newEnemy->SetPosition(spawnPos);
+    newEnemy->Initialize(camera_, { -30.0f, 0.0f, 20.0f });
     newEnemy->SetPlayer(player_);
 
     // リストに追加

@@ -29,13 +29,13 @@ void TitleScene::Initialize()
     player_->Initialize(currentCamera_.get());
 
     sprite_ = std::make_unique<Sprite>();
-    sprite_->Initialize("Resources/white.png");
+    sprite_->Initialize("Resources/Textures/KoboTitle.png");
     sprite_->SetSize(Vector2{ 1280.0f,720.0f });
     sprite_->SetTextureSize(Vector2{ 1280,720 });
 
 
     fade_ = std::make_unique<Fade>();
-    fade_->Initialize("Resources/white.png");
+    fade_->Initialize("Resources/images/white.png");
     fade_->Start(Fade::Status::FadeIn, 2.0f);
 
 }
@@ -136,7 +136,7 @@ void TitleScene::GhangePhase()
         break;
     case TitleScene::Phase::kFadeOut:
         if (fade_->IsFinished()) {
-            SceneManager::GetInstance()->ChangeScene("GAME");
+            SceneManager::GetInstance()->ChangeScene("Game");
         }
 
 

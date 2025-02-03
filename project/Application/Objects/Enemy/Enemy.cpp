@@ -19,7 +19,7 @@ Enemy::Enemy() {
     // 番号の追加
     ++nextSerialNumber_;
 }
-void Enemy::Initialize(Camera* camera)
+void Enemy::Initialize(Camera* camera, const Vector3& pos)
 {
     camera_ = camera;
 
@@ -30,8 +30,9 @@ void Enemy::Initialize(Camera* camera)
     //needle_Body
     // その他初期化
     input_ = Input::GetInstance();
-    moveSpeed_ = { 0.25f, 0.25f , 0.25f };
+    //moveSpeed_ = { 0.25f, 0.25f , 0.25f };
     worldTransform_.Initialize();
+	worldTransform_.translation_ = pos;
     worldTransform_.translation_.y = 1.0f;
    // worldTransform_.translation_.z = 25.0f;
     shadow_ = std::make_unique<Object3d>();
@@ -51,19 +52,27 @@ void Enemy::Initialize(Camera* camera)
     Collider::SetTypeID(static_cast<uint32_t>(CollisionTypeIdDef::kEnemy));
 
 
-    //particleEmitter_ = std::make_unique<ParticleEmitter>("Enemy", worldTransform_.translation_, 1);
-    //particleEmitter_->Initialize();
+    particleEmitter_ = std::make_unique<ParticleEmitter>("Enemy", worldTransform_.translation_, 5);
+    particleEmitter_->Initialize();
 	
 }
 
 void Enemy::Update()
 {
-    if (!isActive_)
+    // 死亡時は更新処理をスキップ
+    if (!isActive_ || !isAlive_) {
         return;
+    }
+
 
     CameraShake();
 
+   
     Move();
+
+
+    particleEmitter_->UpdateEmit("Enemy", worldTransform_.translation_, 5);
+    
 
     if (isHit_) {
         base_->SetMaterialColor({ 1.0f, 0.0f, 0.0f, 1.0f });
@@ -74,24 +83,22 @@ void Enemy::Update()
 	isHit_ = false;
 
 #ifdef _DEBUG
-   //ShowCoordinatesImGui();
+   ShowCoordinatesImGui();
 
 #endif // _DEBUG
 
     worldTransform_.UpdateMatrix();
-
-    //ParticleManager::GetInstance()->Update();
-
-
     WS_.UpdateMatrix();
 }
 
 void Enemy::Draw()
 {
-    if (isAlive_) {
+    if (!isActive_ || !isAlive_) {
+        return;
+    }
         base_->Draw(camera_,worldTransform_);
         shadow_->Draw(camera_,WS_);
-    }
+  
     
 }
 
@@ -148,8 +155,15 @@ void Enemy::OnCollision(Collider* other)
         hp_ -= 2;
         if (hp_ <= 0) {
             isAlive_ = false;
+            isActive_ = false;  // 完全に無効化
         }
 		isShake_ = true;
+
+
+
+       
+
+
     }
 
     
@@ -171,31 +185,34 @@ Matrix4x4 Enemy::GetWorldMatrix() const
     return worldTransform_.matWorld_;
 }
 
-void Enemy::Move()
-{
-   
+void Enemy::Move() {
+
+    // プレイヤーの位置を取得
     Vector3 playerPos = player_->GetPosition();
-    playerPos = playerPos - Vector3{ 0,1.0f,0 };
-    Vector3 pos = { playerPos - worldTransform_.translation_ };
-    float weponRadius = 4.0f;
-    if (Length(pos) > weponRadius + radius_)// プレイヤーの半径 + エネミー半径 - 0.1fくらい？
-    {
+    // プレイヤーへの方向ベクトルを計算
+    Vector3 pos = playerPos - worldTransform_.translation_;
+    float weaponRadius = 4.0f;
+
+    // プレイヤーとの距離が一定以上なら近づく
+    if (Length(pos) > weaponRadius + radius_) {
+        // 方向の正規化
         pos = Normalize(pos);
+        // プレイヤーの方向に移動
         worldTransform_.translation_ += pos * speed_;
     }
 
-    // 衝突中フラグが立っている場合は非表示に
-    if (isColliding_) {
-        isDrawEnabled_ = false; // 描画を無効に
-    }
-    else {
-        isDrawEnabled_ = true; // 描画を有効に
-    }
-    // 衝突状態をリセット
-    isColliding_ = false; // 毎フレーム初期化
+    // 高さは固定
+    worldTransform_.translation_.y = 1.0f;
 
+    // 影の位置更新
     WS_.translation_.x = worldTransform_.translation_.x;
     WS_.translation_.z = worldTransform_.translation_.z;
+    WS_.translation_.y = 0.1f;
+
+    // プレイヤーの方向を向く
+    Vector3 lockOnPos = player_->GetPosition();
+    Vector3 sub = lockOnPos - worldTransform_.translation_;
+    worldTransform_.rotation_.y = std::atan2(sub.x, sub.z);
 }
 
 void Enemy::CameraShake()

@@ -676,7 +676,6 @@ void PlayerWeapon::OnCollision(Collider* other)
 
 		Enemy* enemy = static_cast<Enemy*>(other);
 		uint32_t serialNumber = enemy->GetSerialNumber();
-		ParticleManager::GetInstance()->Emit("Enemy", enemy->GetWorldTransform().translation_, 2);
 		// 接触履歴があれば何もせずに抜ける
 		if (contactRecord_.CheckHistory(serialNumber)) {
 			return;
@@ -690,6 +689,8 @@ void PlayerWeapon::OnCollision(Collider* other)
 		effect->SetWorldTransform(enemy->GetWorldTransform());
 		effect->Update();
 		effects_.push_back(effect);
+
+		ParticleManager::GetInstance()->Emit("W", enemy->GetWorldTransform().translation_, 3);
 		
 	}
 

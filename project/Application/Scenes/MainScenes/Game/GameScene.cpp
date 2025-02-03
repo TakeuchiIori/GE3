@@ -83,8 +83,8 @@ void GameScene::Initialize()
   
     emitterPosition_ = Vector3{ 0.0f, 0.0f, 0.0f }; // エミッタの初期位置
     particleCount_ = 1;
-    particleEmitter_[0] = std::make_unique<ParticleEmitter>("Circle", emitterPosition_, particleCount_);
-    particleEmitter_[0]->Initialize();
+    //particleEmitter_[0] = std::make_unique<ParticleEmitter>("Circle", emitterPosition_, particleCount_);
+    //particleEmitter_[0]->Initialize();
     //// パーティクルグループ名を指定
     //const std::string particleGroupName = "PlayerWeaponEffect";
     //weaponPos = player_->GetPosition();
@@ -95,7 +95,7 @@ void GameScene::Initialize()
 
     phase_ = Phase::kFadeIn;
     fade_ = std::make_unique<Fade>();
-    fade_->Initialize("Resources/Textures./white.png");
+    fade_->Initialize("Resources/images./white.png");
     fade_->Start(Fade::Status::FadeIn,2.0f);
 
     // オーディオファイルのロード（例: MP3）
@@ -291,7 +291,7 @@ void GameScene::ChangePahse()
         //}
 
         // objの更新
-       // player_->Update();
+       player_->Update();
 
                 // パーティクル更新
        // ParticleManager::GetInstance()->Update();
@@ -336,10 +336,10 @@ void GameScene::ChangePahse()
         //particleEmitter_[0]->SetPosition(player_->GetPosition());
        
        
-        //if (Input::GetInstance()->TriggerKey(DIK_RETURN)) {
-        //    phase_ = Phase::kFadeOut;
-        //    fade_->Start(Fade::Status::FadeOut, 2.0f);
-        //}
+        if (Input::GetInstance()->TriggerKey(DIK_RETURN)) {
+            phase_ = Phase::kFadeOut;
+            fade_->Start(Fade::Status::FadeOut, 2.0f);
+        }
 
         //iCommand_ = inputHandler_->HandleInput();
 
@@ -347,16 +347,20 @@ void GameScene::ChangePahse()
         //    iCommand_->Exec(*player_.get());
         //}
 
+               // パーティクル更新
+        ParticleManager::GetInstance()->Update();
         CheckAllCollisions();
         CollisionManager::GetInstance()->UpdateWorldTransform();
         // スポーンタイマーを更新
 
+        // objの更新
+        player_->Update();
+        player_->JsonImGui();
+
         // 各敵を更新
         enemyManager_->Update();
 
-        // objの更新
-        player_->Update();
-		player_->JsonImGui();
+
 
 		//followCamera_.JsonImGui();
 
@@ -364,8 +368,7 @@ void GameScene::ChangePahse()
         ground_->Update();
         test_->UpdateAnimation();
 
-        // パーティクル更新
-        ParticleManager::GetInstance()->Update();
+ 
         //particleEmitter_[0]->Emit();
 
         // カメラ更新
@@ -402,7 +405,7 @@ void GameScene::ChangePahse()
     case Phase::kFadeOut:
         fade_->Update();
         if (fade_->IsFinished()) {
-            finished_ = true;
+            SceneManager::GetInstance()->ChangeScene("Clear");
         }
         break;
     default:
@@ -517,8 +520,12 @@ void GameScene::CheckAllCollisions() {
 
     // 敵全てについて
         // その他の描画処理
-    for (int i = 0; i < 10; i++) {
-        CollisionManager::GetInstance()->AddCollider(enemyManager_->GetEnemy(i));
+    // 敵全てについて
+    size_t enemyCount = enemyManager_->GetEnemyCount(); // 現在の敵の数を取得
+    for (size_t i = 0; i < enemyCount; i++) {
+        if (auto enemy = enemyManager_->GetEnemy(i)) {  // nullチェックを追加
+            CollisionManager::GetInstance()->AddCollider(enemy);
+        }
     }
    // CollisionManager::GetInstance()->AddCollider(enemy_.get());
 

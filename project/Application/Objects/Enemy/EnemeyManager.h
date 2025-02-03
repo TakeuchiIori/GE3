@@ -31,7 +31,8 @@ public:
     // プレイヤーの設定
     void SetPlayer(const Player* player) { player_ = player; }
     Enemy* GetEnemy(int i) { return enemies_[i].get(); }
-
+    size_t GetEnemyCount() const { return enemies_.size(); }
+    
 private:
     // 各種パラメータ
     float spawnTimer_ = 0.0f;

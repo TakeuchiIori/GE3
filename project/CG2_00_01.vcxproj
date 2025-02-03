@@ -112,6 +112,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
   <ItemGroup>
     <ClCompile Include="Application\Objects\Enemy\Enemy.cpp" />
     <ClCompile Include="Application\Objects\Enemy\EnemeyManager.cpp" />
+    <ClCompile Include="Application\Scenes\MainScenes\Clear\ClearScene.cpp" />
     <ClCompile Include="Engine\Utility\Loaders\Model\Animation.cpp" />
     <ClCompile Include="Application\Scenes\CoreScenes\Base\BaseScene.cpp" />
     <ClCompile Include="Application\Scenes\MainScenes\Game\GameScene.cpp" />
@@ -176,6 +177,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
   <ItemGroup>
     <ClInclude Include="Application\Objects\Enemy\Enemy.h" />
     <ClInclude Include="Application\Objects\Enemy\EnemeyManager.h" />
+    <ClInclude Include="Application\Scenes\MainScenes\Clear\ClearScene.h" />
     <ClInclude Include="Engine\Utility\Loaders\Json\ConversionJson.h" />
     <ClInclude Include="Engine\Utility\Loaders\Json\VariableJson.h" />
     <ClInclude Include="Engine\Utility\Loaders\Model\Animation.h" />

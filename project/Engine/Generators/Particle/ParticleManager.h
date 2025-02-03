@@ -333,7 +333,7 @@ private: // メンバ変数
 	std::unordered_map<std::string, ParticleParameters> particleParameters_;
 	const float kDeltaTime = 1.0f / 60.0f;
 	// インスタンシング用リソース作成
-	const uint32_t kNumMaxInstance = 1000; // インスタンス数
+	const uint32_t kNumMaxInstance = 10000; // インスタンス数
 	// ブレンドモードごとのPSOを保持するマップ
 	std::unordered_map<BlendMode, Microsoft::WRL::ComPtr<ID3D12PipelineState>> pipelineStates_;
 
