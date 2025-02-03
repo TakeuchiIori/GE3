@@ -319,3 +319,4 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+/project/Resources/JSON/ParticleParameter/ParticleParameter 
