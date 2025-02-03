@@ -28,7 +28,7 @@ public: // メンバ関数（公開）
 	/// <summary>
 	/// 初期化
 	/// </summary>
-	void Initialize();
+	void Initialize(Camera* camera);
 
 	/// <summary>
 	/// 更新
@@ -96,6 +96,9 @@ private: // メンバ関数（非公開）
 	/// </summary>
 	void Rotate();
 
+	/// <summary>
+	/// コントローラー移動
+	/// </summary>
 	void MoveController();
 
 	/// <summary>
@@ -112,6 +115,11 @@ private: // メンバ関数（非公開）
 	/// ダッシュ
 	/// </summary>
 	void Dash();
+
+	/// <summary>
+	/// カメラシェイク
+	/// </summary>
+	void CameraShake();
 
 public: // コマンドパターンによる移動関数
 
@@ -172,10 +180,10 @@ private:
 								フラグ関連
 	//===============================================================*/
 	bool isColliding_ = false;
-	Vector3 moveSpeed_;
+	float moveSpeed_;
 	bool isDrawEnabled_ = true;
 	bool isUpdate_ = true;
-
+	bool isShake_ = false;
 	/*===============================================================//
 								ジャンプ関連
 	//===============================================================*/
@@ -203,5 +211,12 @@ private:
 	uint32_t maxHP_ = 100;
 	uint32_t hp_ = 100;
 	bool isAlive_ = true;
+
+	/*===============================================================//
+							コントローラー関連
+	//===============================================================*/
+
+
+	float rotrateSpeed_ = 0.25f;
 };
 

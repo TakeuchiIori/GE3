@@ -48,6 +48,6 @@ void Effect::Update() {
     }
 }
 
-void Effect::Draw() {
-    obj_->Draw(worldTransform_);
+void Effect::Draw(Camera* camera) {
+    obj_->Draw(camera,worldTransform_);
 }

@@ -27,13 +27,15 @@ Camera::Camera()
 
 void Camera::Update()
 {
-
+	if (cameraShake_.isShaking_) {
+		UpdateShake();
+	}
 }
 
 void Camera::UpdateMatrix()
 {
     // transformからアフィン変換行列を計算
-    worldMatrix_ = MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.translate);
+    worldMatrix_ = MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.translate + shakeOffset_);
     // worldMatrixの逆行列
     viewMatrix_ = Inverse(worldMatrix_);
     // プロジェクション行列の更新
@@ -63,4 +65,43 @@ void Camera::DefaultCamera()
     viewMatrix_ = Inverse(worldMatrix_);
     viewProjectionMatrix_ = Multiply(viewMatrix_, projectionMatrix_);
 
+}
+
+void Camera::Shake(float time, const Vector2 min, const Vector2 max)
+{
+     cameraShake_.isShaking_ = true;
+     cameraShake_.shakeTimer_ = 0.0f;
+     cameraShake_.shakeDuration_ = time;
+     cameraShake_.shakeMinRange_ = min;
+     cameraShake_.shakeMaxRange_ = max;
+     cameraShake_.originalPosition_ = transform_.translate;
+}
+
+void Camera::UpdateShake()
+{
+    if (cameraShake_.isShaking_) {
+        float deltaTime = ImGui::GetIO().DeltaTime;
+        cameraShake_.shakeTimer_ += deltaTime;
+
+        if (cameraShake_.shakeTimer_ >= cameraShake_.shakeDuration_) {
+            // シェイク終了
+            cameraShake_.isShaking_ = false;
+            transform_.translate = cameraShake_.originalPosition_;
+        }
+        else {
+            // シェイクの強さを計算（X方向とY方向で別々に）
+            float progressRatio = cameraShake_.shakeTimer_ / cameraShake_.shakeDuration_;
+            Vector2 shakePower = {
+                std::lerp(cameraShake_.shakeMaxRange_.x, cameraShake_.shakeMinRange_.x, progressRatio),
+                std::lerp(cameraShake_.shakeMaxRange_.y, cameraShake_.shakeMinRange_.y, progressRatio)
+            };
+
+            // ランダムなシェイクオフセットを計算
+            shakeOffset_ = {
+                (float)(rand() % 20 - 10) / 10.0f * shakePower.x,
+                (float)(rand() % 20 - 10) / 10.0f * shakePower.y,
+                0.0f
+            };
+        }
+    }
 }

@@ -7,6 +7,15 @@
 class Camera
 {
 public: // メンバ関数
+
+	struct CameraShake {
+		float shakeTimer_ = 0.0f;
+		float shakeDuration_ = 0.0f;
+		Vector2 shakeMinRange_;
+		Vector2 shakeMaxRange_;
+		Vector3 originalPosition_;
+		bool isShaking_ = false;
+	};
 	/// <summary>
 	/// コンストラクタ
 	/// </summary>
@@ -36,6 +45,14 @@ public: // カメラ
 	void DefaultCamera();
 
 
+public: // シェイク
+
+	void Shake(float time, const Vector2 min, const Vector2 max);
+
+private:
+
+	void UpdateShake();
+
 public: // アクセッサ
     // Setter
     void SetRotate(const Vector3& rotate) {transform_.rotate = rotate;}
@@ -54,7 +71,7 @@ public: // アクセッサ
 	Vector3 GetTranslate() const { return transform_.translate; }
 	Vector3 GetScale() const { return transform_.scale; }
 
-public: // メンバ変数
+public: 
 	EulerTransform transform_;	   
 	Matrix4x4 worldMatrix_;	   
 	Matrix4x4 viewMatrix_;	   
@@ -65,9 +82,11 @@ public: // メンバ変数
 	float nearClip_;			 // ニアクリップ距離
 	float farClip_;				 // ファークリップ距離
 
-	Vector3 followCameraOffsetPosition_ = Vector3(0.0f, 15.0f, -50.0f);
+	/*===============================================================//
+								シェイク
+	//===============================================================*/
 
-	Vector3 followCameraOffsetRotare_ = Vector3(0.2f, 0.0f, 0.0f);
-
+	CameraShake cameraShake_;
+	Vector3 shakeOffset_;
 };
 

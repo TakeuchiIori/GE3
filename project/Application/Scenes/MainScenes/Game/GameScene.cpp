@@ -27,7 +27,7 @@ void GameScene::Initialize()
     srand(static_cast<unsigned int>(time(nullptr))); // 乱数シード設定
     // カメラの生成
     sceneCamera_ = cameraManager_.AddCamera();
-    Object3dCommon::GetInstance()->SetDefaultCamera(sceneCamera_.get());
+    //Object3dCommon::GetInstance()->SetDefaultCamera(sceneCamera_.get());
 
     ParticleManager::GetInstance()->SetCamera(sceneCamera_.get());
 
@@ -55,9 +55,8 @@ void GameScene::Initialize()
 	followCamera_.Initialize();
     // 各オブジェクトの初期化
     player_ = std::make_unique<Player>();
-    player_->Initialize();
+    player_->Initialize(sceneCamera_.get());
     followCamera_.SetTarget(player_.get()->GetWorldTransform());
-    player_->SetCamera(sceneCamera_.get());
     
     // 敵
     //enemy_ = std::make_unique<Enemy>();
@@ -66,7 +65,7 @@ void GameScene::Initialize()
 
     // 地面
     ground_ = std::make_unique<Ground>();
-    ground_->Initialize();
+    ground_->Initialize(sceneCamera_.get());
     
     // test
     test_ = std::make_unique<Object3d>();
@@ -557,7 +556,7 @@ void GameScene::SpawnEnemy()
 
     // 新しい敵を生成
     auto newEnemy = std::make_unique<Enemy>();
-    newEnemy->Initialize();
+    newEnemy->Initialize(sceneCamera_.get());
     newEnemy->SetPlayer(player_.get());
     newEnemy->SetPosition(spawnPos);
 

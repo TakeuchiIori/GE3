@@ -6,6 +6,7 @@
 #include "Loaders./Model./Model.h"
 #include "WorldTransform./WorldTransform.h"
 #include "Object3D./Object3d.h"
+#include "Systems/Camera/Camera.h"
 
 class Effect {
 public:
@@ -24,7 +25,7 @@ public:
 	/// <summary>
 	/// 描画
 	/// </summary>
-	void Draw();
+	void Draw(Camera* camera);
 
 	/// <summary>
 	/// ワールドトランスフォーム

@@ -6,6 +6,7 @@
 #include "WorldTransform./WorldTransform.h"
 #include "Collision./Collider.h"
 #include "Loaders/Json/JsonManager.h"
+#include "Systems/Camera/Camera.h"
 
 // C++
 #include <memory>
@@ -24,7 +25,7 @@ public:
 	/// <summary>
 	/// 初期化
 	/// </summary>
-	void Initialize();
+	void Initialize(Camera* camera);
 
 	/// <summary>
 	/// 更新
@@ -67,6 +68,11 @@ private:
 	/// </summary>
 	void Move();
 
+	/// <summary>
+	/// カメラシェイク
+	/// </summary>
+	void CameraShake();
+
 
 	void InitJson();
 
@@ -94,6 +100,7 @@ public: // アクセッサ
 
 private:
 	Input* input_ = nullptr;
+	Camera* camera_ = nullptr;
 	const Player* player_; 
 	JsonManager* jsonManager_ = nullptr;
 	std::unique_ptr<ParticleEmitter> particleEmitter_;
@@ -111,7 +118,7 @@ private:
 	Vector3 moveSpeed_;
 	bool isDrawEnabled_ = true;
 	bool isActive_ = true;
-
+	bool isShake_ = false;
 
 	uint32_t serialNumber_ = 0;
 	static uint32_t nextSerialNumber_;

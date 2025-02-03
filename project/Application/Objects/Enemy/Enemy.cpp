@@ -19,8 +19,10 @@ Enemy::Enemy() {
     // 番号の追加
     ++nextSerialNumber_;
 }
-void Enemy::Initialize()
+void Enemy::Initialize(Camera* camera)
 {
+    camera_ = camera;
+
     // OBject3dの初期化
     base_ = std::make_unique<Object3d>();
     base_->Initialize();
@@ -59,6 +61,8 @@ void Enemy::Update()
     if (!isActive_)
         return;
 
+    CameraShake();
+
     Move();
 
     if (isHit_) {
@@ -70,7 +74,7 @@ void Enemy::Update()
 	isHit_ = false;
 
 #ifdef _DEBUG
-    ShowCoordinatesImGui();
+   //ShowCoordinatesImGui();
 
 #endif // _DEBUG
 
@@ -85,8 +89,8 @@ void Enemy::Update()
 void Enemy::Draw()
 {
     if (isAlive_) {
-        base_->Draw(worldTransform_);
-        shadow_->Draw(WS_);
+        base_->Draw(camera_,worldTransform_);
+        shadow_->Draw(camera_,WS_);
     }
     
 }
@@ -145,7 +149,7 @@ void Enemy::OnCollision(Collider* other)
         if (hp_ <= 0) {
             isAlive_ = false;
         }
-       
+		isShake_ = true;
         particleEmitter_->UpdateEmit("Enemy", worldTransform_.translation_, 5);
        // ParticleManager::GetInstance()->Emit("Enemy", worldTransform_.translation_, 5);
         //particleEmitter_ = std::make_unique<ParticleEmitter>("Enemy", worldTransform_.translation_, 10);
@@ -197,6 +201,14 @@ void Enemy::Move()
 
     WS_.translation_.x = worldTransform_.translation_.x;
     WS_.translation_.z = worldTransform_.translation_.z;
+}
+
+void Enemy::CameraShake()
+{
+    if (isShake_) {
+        camera_->Shake(0.2f, Vector2{ -0.1f, -0.1f },Vector2{0.1f,0.1f});
+		isShake_ = false;
+    }
 }
 
 void Enemy::InitJson()

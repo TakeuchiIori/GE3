@@ -39,7 +39,7 @@ public: // メンバ関数
 	/// <summary>
 	/// 描画
 	/// </summary>
-	void Draw(WorldTransform& worldTransform);
+	void Draw(Camera* camera,WorldTransform& worldTransform);
 
 	/// <summary>
 	/// スケルトン描画
@@ -85,7 +85,7 @@ public: // アクセッサ
 	//===============================================*/
 
 	
-	void SetCamera(Camera* camera) { this->camera_ = camera; }
+	//void SetCamera(Camera* camera) { this->camera_ = camera; }
 	//void SetLine(Line* line) { this->line_ = line; }
 
 	// マテリアル
@@ -117,7 +117,7 @@ private:
 	// 外部からのポインタ
 	Object3dCommon* object3dCommon_ = nullptr;
 	Model* model_ = nullptr;
-	Camera* camera_ = nullptr;
+	//Camera* camera_ = nullptr;
 
 	// テクスチャ左上座標
 	Vector2 textureLeftTop_ = { 0.0f,0.0f };

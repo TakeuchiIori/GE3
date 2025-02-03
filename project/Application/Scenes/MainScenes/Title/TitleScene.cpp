@@ -26,7 +26,7 @@ void TitleScene::Initialize()
 
     // 各オブジェクトの初期化
     player_ = std::make_unique<Player>();
-    player_->Initialize();
+    player_->Initialize(currentCamera_.get());
 
     sprite_ = std::make_unique<Sprite>();
     sprite_->Initialize("Resources/white.png");

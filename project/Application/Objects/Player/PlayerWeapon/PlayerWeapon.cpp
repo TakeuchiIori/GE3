@@ -184,12 +184,12 @@ void PlayerWeapon::Update()
 /// <summary>
 /// 描画
 /// </summary>
-void PlayerWeapon::Draw()
+void PlayerWeapon::Draw(Camera* camera)
 {
 	for (Effect* effect : effects_) {
-		effect->Draw();
+		effect->Draw(camera);
 	}
-	weapon_->Draw(worldTransform_);
+	weapon_->Draw(camera,worldTransform_);
 }
 
 /// <summary>
