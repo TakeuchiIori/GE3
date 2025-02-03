@@ -1,9 +1,12 @@
 #include "FollowCamera.h"
 #include "MathFunc.h"
 #include "Matrix4x4.h"
-#include <imgui.h>
 #include <Systems/Input/Input.h>
 #include <DirectXMath.h>
+
+#ifdef _DEBUG
+#include <imgui.h>
+#endif // _DEBUG
 
 void FollowCamera::Initialize()
 {
@@ -81,15 +84,15 @@ void FollowCamera::JsonImGui()
 
 void FollowCamera::ImGui()
 {
-	ImGui::Begin("FollowCamera Info");
+	//ImGui::Begin("FollowCamera Info");
 
-	ImGui::DragFloat3("Translate", &translate_.x);
+	//ImGui::DragFloat3("Translate", &translate_.x);
 
-	ImGui::DragFloat3("Rotation", &rotate_.x);
+	//ImGui::DragFloat3("Rotation", &rotate_.x);
 
-	ImGui::DragFloat3("Scale", &scale_.x);
+	//ImGui::DragFloat3("Scale", &scale_.x);
 
-	ImGui::End();
+	//ImGui::End();
 }
 
 

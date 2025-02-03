@@ -154,6 +154,8 @@ void ImGuiManager::InitialzeDX12()
 
 void ImGuiManager::CustomizeColor()
 {
+#ifdef _DEBUG
+
 	ImGuiIO& io = ImGui::GetIO();
 	if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
 	{
@@ -197,7 +199,7 @@ void ImGuiManager::CustomizeColor()
 		ImVec4 inactiveTabActiveColor = ImVec4(0.5f, 0.5f, 0.5f, 1.0f); // 選択していないがアクティブなタブの色
 		ImVec4 activeTabColor = ImVec4(0.6f, 0.6f, 0.6f, 1.0f); // 選択されたタブの色
 		colors[ImGuiCol_TabUnfocused] = inactiveTabColor;         // 非アクティブなタブの色
-		colors[ImGuiCol_TabUnfocusedActive] = inactiveTabActiveColor; 
+		colors[ImGuiCol_TabUnfocusedActive] = inactiveTabActiveColor;
 		// スタイルの変更
 		style.WindowRounding = 15.0f;      // ウィンドウの角丸
 		style.FrameRounding = 4.0f;        // フレームの角丸
@@ -206,6 +208,7 @@ void ImGuiManager::CustomizeColor()
 
 
 	}
+#endif // _DEBUG
 }
 
 void ImGuiManager::CustomizeEditor()

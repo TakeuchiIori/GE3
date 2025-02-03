@@ -1,8 +1,11 @@
 #include "TopDownCamera.h"
 #include "MathFunc.h"
 #include "Matrix4x4.h"
-#include <imgui.h>
 #include <DirectXMath.h>
+
+#ifdef _DEBUG
+#include <imgui.h>
+#endif // _DEBUG
 
 void TopDownCamera::Initialize()
 {
@@ -34,16 +37,16 @@ void TopDownCamera::TopDownProsess()
 
 void TopDownCamera::ImGui()
 {
-	ImGui::Begin("TopDownCamera Info");
-	ImGui::DragFloat3("OffSet", &offset_.x);
+	//ImGui::Begin("TopDownCamera Info");
+	//ImGui::DragFloat3("OffSet", &offset_.x);
 
-	ImGui::DragFloat3("Translate", &translate_.x);
+	//ImGui::DragFloat3("Translate", &translate_.x);
 
-	ImGui::DragFloat3("Rotation", &rotate_.x);
+	//ImGui::DragFloat3("Rotation", &rotate_.x);
 
-	ImGui::DragFloat3("Scale", &scale_.x);
+	//ImGui::DragFloat3("Scale", &scale_.x);
 
-	ImGui::End();
+	//ImGui::End();
 }
 
 

@@ -2,8 +2,11 @@
 #include <json.hpp>
 #include <memory>
 #include <string>
-#include <imgui.h>
 #include "ConversionJson.h"
+
+#ifdef _DEBUG
+#include <imgui.h>
+#endif // _DEBUG
 
 /// <summary>
 ///  登録変数を抽象化するインターフェース
@@ -55,6 +58,7 @@ public:
 
     void ShowImGui(const std::string& name, const std::string& uniqueID) override
     {
+#ifdef _DEBUG
         std::string label = name + "##" + uniqueID;  // ユニークなIDを付ける
 
         if constexpr (std::is_same_v<T, int>)
@@ -91,6 +95,8 @@ public:
         {
             ImGui::DragFloat4(label.c_str(), reinterpret_cast<float*>(ptr_));
         }
+#endif // _DEBUG
+
     }
 
 

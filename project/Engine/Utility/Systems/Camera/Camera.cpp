@@ -80,7 +80,7 @@ void Camera::Shake(float time, const Vector2 min, const Vector2 max)
 void Camera::UpdateShake()
 {
     if (cameraShake_.isShaking_) {
-        float deltaTime = ImGui::GetIO().DeltaTime;
+		float deltaTime = 1.0f / 60.0f;
         cameraShake_.shakeTimer_ += deltaTime;
 
         if (cameraShake_.shakeTimer_ >= cameraShake_.shakeDuration_) {
