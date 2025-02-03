@@ -84,7 +84,7 @@ void ImGuiManager::End()
 		ImGui::UpdatePlatformWindows();
 		ImGui::RenderPlatformWindowsDefault(nullptr, (void*)commandList);
 	}
-	//Draw();
+	Draw();
 #endif
 }
 
