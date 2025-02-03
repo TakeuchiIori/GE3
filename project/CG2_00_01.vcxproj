@@ -139,9 +139,10 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Application\Objects\Player\InputHandle\InputHandleMove.cpp" />
     <ClCompile Include="Application\Objects\Ground\Ground.cpp" />
     <ClCompile Include="Application\Scenes\MainScenes\Transitions\Fade\Fade.cpp" />
-    <ClCompile Include="Engine\Utility\Systems\HitStop\HitStop.cpp" />
+    <ClCompile Include="Engine\Utility\Systems\GameTime\HitStop.cpp" />
     <ClCompile Include="Application\SystemsApp\Cameras\FollowCamera\FollowCamera.cpp" />
     <ClCompile Include="Engine\Utility\Loaders\Json\JsonManager.cpp" />
+    <ClCompile Include="Engine\Utility\Systems\GameTime\GameTIme.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Math\Matrix4x4.cpp" />
     <ClCompile Include="Engine\Utility\Loaders\Model\Model.cpp" />
@@ -199,9 +200,10 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="Application\Objects\Player\InputHandle\InputHandleMove.h" />
     <ClInclude Include="Application\Objects\Ground\Ground.h" />
     <ClInclude Include="Application\Scenes\MainScenes\Transitions\Fade\Fade.h" />
-    <ClInclude Include="Engine\Utility\Systems\HitStop\HitStop.h" />
+    <ClInclude Include="Engine\Utility\Systems\GameTime\HitStop.h" />
     <ClInclude Include="Application\SystemsApp\Cameras\FollowCamera\FollowCamera.h" />
     <ClInclude Include="Engine\Utility\Loaders\Json\JsonManager.h" />
+    <ClInclude Include="Engine\Utility\Systems\GameTime\GameTIme.h" />
     <ClInclude Include="Math\MathFunc.h" />
     <ClInclude Include="Math\Matrix3x3.h" />
     <ClInclude Include="Math\Matrix4x4.h" />
@@ -248,6 +250,10 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include=".clang-format">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </None>
     <None Include="Resources\shaders\Particle.hlsli">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>

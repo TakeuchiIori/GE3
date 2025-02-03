@@ -420,7 +420,7 @@
     <ClCompile Include="Application\Scenes\MainScenes\Transitions\Fade\Fade.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\Utility\Systems\HitStop\HitStop.cpp">
+    <ClCompile Include="Engine\Utility\Systems\GameTime\HitStop.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="Application\SystemsApp\Cameras\FollowCamera\FollowCamera.cpp">
@@ -430,6 +430,9 @@
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="Engine\Utility\Loaders\Json\JsonManager.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Utility\Systems\GameTime\GameTIme.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
@@ -614,7 +617,7 @@
     <ClInclude Include="Application\Scenes\MainScenes\Transitions\Fade\Fade.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\Utility\Systems\HitStop\HitStop.h">
+    <ClInclude Include="Engine\Utility\Systems\GameTime\HitStop.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Application\SystemsApp\Cameras\FollowCamera\FollowCamera.h">
@@ -632,12 +635,16 @@
     <ClInclude Include="Engine\Utility\Loaders\Json\VariableJson.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="Engine\Utility\Systems\GameTime\GameTIme.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\shaders\Particle.hlsli" />
     <None Include="Resources\shaders\Skinning.hlsli" />
     <None Include="Resources\shaders\Skinning.PS.hlsl" />
     <None Include="Resources\shaders\Sprite.hlsli" />
+    <None Include=".clang-format" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Resources\shaders\Particle.PS.hlsl" />
