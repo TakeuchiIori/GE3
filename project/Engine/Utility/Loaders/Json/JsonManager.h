@@ -3,7 +3,9 @@
 #include <unordered_map>
 #include <fstream>
 #include <iostream>
+#include <format>
 #include <json.hpp>
+#include "Windows.h"
 #include "ConversionJson.h"
 #include "VariableJson.h"
 
@@ -247,6 +249,8 @@ static void ImGuiManager() {
               ImGui::EndChild(); // End child window for variables
 
               if (ImGui::Button(("Save " + selectedClass).c_str())) {
+				std::string message = format("{}.json Saved!!.", selectedClass);
+				MessageBoxA(nullptr, message.c_str(), "JsonManager", 0);
                 instance->Save();
               }
               ImGui::PopID();

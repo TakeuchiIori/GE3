@@ -125,13 +125,6 @@ void ParticleManager::Draw()
 
 }
 
-
-void ParticleManager::InitJson()
-{
-	jsonManager_ = new JsonManager("Particle", "Resources./JSON");
-	
-}
-
 void ParticleManager::UpdateParticleMove()
 {
 
@@ -528,8 +521,6 @@ ParticleManager::Particle ParticleManager::MakeNewParticle(const std::string& na
 							ランダムの値を定義
 
 	//===============================================================*/
-
-	std::mt19937 randomEngine = randomEngine;
 	Particle particle;
 	ParticleParameters& prm = particleParameters_[name];
 
@@ -608,6 +599,8 @@ void ParticleManager::CreateParticleGroup(const std::string name, const std::str
 	particleGroups_[name] = ParticleGroup();
 	ParticleGroup& particleGroup = particleGroups_[name];
 
+	//InitJson(name);
+
 	// マテリアルデータにテクスチャファイルパスを設定
 	particleGroup.materialData.textureFilePath = textureFilePath;
 	// テクスチャ読み込み
@@ -625,6 +618,39 @@ void ParticleManager::CreateParticleGroup(const std::string name, const std::str
 	// インスタンス数を初期化
 	particleGroup.instance = 0;
 
+	if (particleParameters_.find(name) == particleParameters_.end()) {
+		ParticleParameters& params = particleParameters_[name];
+
+		// スケールのデフォルト値
+		params.baseTransform.scaleX = { 1.0f, 1.0f };
+		params.baseTransform.scaleY = { 1.0f, 1.0f };
+		params.baseTransform.scaleZ = { 1.0f, 1.0f };
+
+		// 位置のデフォルト値
+		params.baseTransform.translateX = { 0.0f, 0.0f };
+		params.baseTransform.translateY = { 0.0f, 0.0f };
+		params.baseTransform.translateZ = { 0.0f, 0.0f };
+
+		// 回転のデフォルト値
+		params.baseTransform.rotateX = { 0.0f, 0.0f };
+		params.baseTransform.rotateY = { 0.0f, 0.0f };
+		params.baseTransform.rotateZ = { 0.0f, 0.0f };
+
+		// 速度のデフォルト値
+		params.baseVelocity.velocityX = { -1.0f, 1.0f };
+		params.baseVelocity.velocityY = { -1.0f, 1.0f };
+		params.baseVelocity.velocityZ = { -1.0f, 1.0f };
+
+		// 色のデフォルト値
+		params.baseColor.minColor = { 0.8f, 0.8f, 0.8f };
+		params.baseColor.maxColor = { 1.0f, 1.0f, 1.0f };
+		params.baseColor.alpha = 1.0f;
+
+		// 寿命のデフォルト値
+		params.baseLife.lifeTime = { 1.0f, 2.0f };
+	}
+
+	InitJson(name);
 
 }
 //void ParticleManager::Emit(const std::string& name, const Vector3& position, uint32_t count)
@@ -706,6 +732,35 @@ void ParticleManager::SetBlendMode(D3D12_BLEND_DESC& blendDesc, BlendMode blendM
 		}
 		break;
 	}
+}
+
+void ParticleManager::InitJson(const std::string& name)
+{
+	const std::string base = name + " : "; // 名前空間を分けるためのプレフィックス
+	jsonManager_ = new JsonManager("ParticleParameter : " + name, "Resources./JSON./ParticleParameter");
+	// Transform設定の登録
+	jsonManager_->Register("Scale.X", &particleParameters_[name].baseTransform.scaleX);
+	jsonManager_->Register("Scale.Y", &particleParameters_[name].baseTransform.scaleY);
+	jsonManager_->Register("Scale.Z", &particleParameters_[name].baseTransform.scaleZ);
+	jsonManager_->Register("Translate.X", &particleParameters_[name].baseTransform.translateX);
+	jsonManager_->Register("Translate.Y", &particleParameters_[name].baseTransform.translateY);
+	jsonManager_->Register("Translate.Z", &particleParameters_[name].baseTransform.translateZ);
+	jsonManager_->Register("Rotate.X", &particleParameters_[name].baseTransform.rotateX);
+	jsonManager_->Register("Rotate.Y", &particleParameters_[name].baseTransform.rotateY);
+	jsonManager_->Register("Rotate.Z", &particleParameters_[name].baseTransform.rotateZ);
+
+	// Velocity設定の登録
+	jsonManager_->Register("Velocity.X", &particleParameters_[name].baseVelocity.velocityX);
+	jsonManager_->Register("Velocity.Y", &particleParameters_[name].baseVelocity.velocityY);
+	jsonManager_->Register("Velocity.Z", &particleParameters_[name].baseVelocity.velocityZ);
+
+	// Color設定の登録
+	jsonManager_->Register("Color.Min", &particleParameters_[name].baseColor.minColor);
+	jsonManager_->Register("Color.Max", &particleParameters_[name].baseColor.maxColor);
+	jsonManager_->Register("Color.Alpha", &particleParameters_[name].baseColor.alpha);
+
+	// Life設定の登録
+	jsonManager_->Register(base + "Life/Time", &particleParameters_[name].baseLife.lifeTime);
 }
 
 void ParticleManager::ShowBlendModeDropdown(BlendMode& currentBlendMode)

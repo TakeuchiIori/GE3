@@ -126,11 +126,6 @@ public:
 		float alpha;           // Alpha;
 	};
 
-	struct ParticleColorSettings {
-		Vector3 minColor;      // Min Color
-		Vector3 maxColor;      // Max Color
-		float alpha;           // Alpha;
-	};
 
 	struct ParticleLifeSettings {
 		Vector2 lifeTime;      // Life Time Min : Max
@@ -206,7 +201,7 @@ public: // メンバ関数
 private:
 
 
-	void InitJson();
+	void InitJson(const std::string& name);
 
 	/// <summary>
 	/// 横に移動
