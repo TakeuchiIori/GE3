@@ -46,7 +46,7 @@ void Player::Initialize(Camera* camera)
 	Collider::SetRadiusFloat(2.0f);
 
 	particleEmitter_ = std::make_unique<ParticleEmitter>("Player", worldTransform_.translation_, 5);
-
+    particleEmitter_->Initialize();
 
 	InitJson();
 }
@@ -67,7 +67,11 @@ void Player::Update()
 
 
 	
-	particleEmitter_->UpdateEmit("Player", worldTransform_.translation_, 5);
+	// パーティクルの位置を常にプレイヤーの位置に更新
+    Vector3 emitPosition = worldTransform_.translation_;
+    emitPosition.y += 0.5f; // 必要に応じて高さオフセットを調整
+    particleEmitter_->UpdateEmit("Player", emitPosition, 5);
+
 	//ParticleManager::GetInstance()->Emit("Player", worldTransform_.translation_, 10);
 	UpdateWorldTransform();
 

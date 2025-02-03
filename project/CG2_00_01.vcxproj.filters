@@ -650,7 +650,6 @@
     <None Include="Resources\shaders\Skinning.hlsli" />
     <None Include="Resources\shaders\Skinning.PS.hlsl" />
     <None Include="Resources\shaders\Sprite.hlsli" />
-    <None Include=".clang-format" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Resources\shaders\Particle.PS.hlsl" />

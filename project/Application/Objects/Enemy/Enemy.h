@@ -103,7 +103,7 @@ private:
 	Camera* camera_ = nullptr;
 	const Player* player_; 
 	JsonManager* jsonManager_ = nullptr;
-	std::unique_ptr<ParticleEmitter> particleEmitter_;
+	/*std::unique_ptr<ParticleEmitter> particleEmitter_;*/
 	std::unique_ptr<Object3d> shadow_;
 	std::unique_ptr<Object3d> base_ = nullptr;
 

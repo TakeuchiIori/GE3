@@ -3,7 +3,12 @@
 #include "imgui.h"
 #endif
 ParticleEmitter::ParticleEmitter(const std::string& name, const Vector3& transform, uint32_t count)
-    : emitter_{ name, EulerTransform{transform}, count,0.0025f,0.0f }{}
+    : emitter_{name, EulerTransform{transform}, count, 0.0025f, 0.0f} {}
+
+void ParticleEmitter::Initialize() {
+
+	InitJson();
+}
 
 void ParticleEmitter::Update()
 {
@@ -72,4 +77,12 @@ void ParticleEmitter::ShowImGui()
 	ImGui::End();
 #endif // _DEBUG
 
+}
+
+void ParticleEmitter::InitJson() { 
+	//jsonManager_ = new JsonManager("パーティクル : " + emitter_.name, "Resources/JSON");
+	//jsonManager_->Register("Frequency", &emitter_.frequency);
+ //   jsonManager_->Register("FrequencyTime", &emitter_.frequencyTime);
+ //   jsonManager_->Register("Count", &emitter_.count);
+ //   jsonManager_->Register("Position", &emitter_.transform.translate);
 }

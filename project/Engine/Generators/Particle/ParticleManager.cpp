@@ -58,9 +58,6 @@ void ParticleManager::Initialize(SrvManager* srvManager)
 
 	// マテリアルリソース作成
 	CreateMaterialResource();
-
-	// ランダムエンジン初期化
-	InitRandomEngine();
 }
 
 /// <summary>
@@ -77,11 +74,10 @@ void ParticleManager::Update()
 
 		break;
 	case kUpdateModeRadial:
-		UpdateParticlePlayer();
-
+		UpdateParticles();
 		break;
 	case kUpdateModeSpiral:
-		UpdateParticleSpiral();
+		
 
 		break;
 	default:
@@ -213,9 +209,9 @@ void ParticleManager::UpdateParticleMove()
 
 }
 
-void ParticleManager::UpdateParticlePlayer()
-{
 
+void ParticleManager::UpdateParticles()
+{
 	// カメラの行列を取得
 	Matrix4x4 cameraMatrix = MakeAffineMatrix(camera_->GetScale(), camera_->GetRotate(), camera_->GetTranslate());
 	Matrix4x4 viewMatrix = Inverse(cameraMatrix);
@@ -244,12 +240,14 @@ void ParticleManager::UpdateParticlePlayer()
 				particleIterator = particleGroup.particles.erase(particleIterator);
 				continue;
 			}
+
 			if (numInstance >= kNumMaxInstance) {
 				break;
 			}
-
+			// パーティクルの更新
 			(*particleIterator).currentTime += kDeltaTime;
-			// パーティクルの更新処理
+
+			// アルファ値の更新（フェードアウト）
 			float alpha = 1.0f - ((*particleIterator).currentTime / (*particleIterator).lifeTime);
 
 			// ワールド行列の計算
@@ -264,255 +262,6 @@ void ParticleManager::UpdateParticlePlayer()
 				worldMatrix = MakeAffineMatrix((*particleIterator).transform.scale, (*particleIterator).transform.rotate, (*particleIterator).transform.translate);
 			}
 			Matrix4x4 worldViewProjectionMatrix = Multiply(worldMatrix, viewProjectionMatrix);
-			// インスタンシングデータの設定
-			if (numInstance < kNumMaxInstance) {
-				instancingData_[numInstance].WVP = worldViewProjectionMatrix;
-				instancingData_[numInstance].World = worldMatrix;
-				instancingData_[numInstance].color = (*particleIterator).color;
-				instancingData_[numInstance].color.w = alpha;
-				++numInstance;
-			}
-			++particleIterator;
-		}
-
-		// インスタンス数の更新
-		particleGroup.instance = numInstance;
-
-		// GPU メモリにインスタンスデータを書き込む
-		if (particleGroup.instancingData) {
-			std::memcpy(particleGroup.instancingData, instancingData_, sizeof(ParticleForGPU) * numInstance);
-		}
-	}
-
-
-}
-
-void ParticleManager::UpdateParticlePlayerWeapon(const Vector3& pos)
-{
-	// カメラの行列を取得
-	Matrix4x4 cameraMatrix = MakeAffineMatrix(camera_->GetScale(), camera_->GetRotate(), camera_->GetTranslate());
-	Matrix4x4 viewMatrix = Inverse(cameraMatrix);
-	Matrix4x4 projectionMatrix = MakePerspectiveFovMatrix(0.45f, WinApp::kClientWidth / WinApp::kClientHeight, 0.1f, 100.0f);
-	Matrix4x4 backToFrontMatrix = MakeRotateMatrixY(std::numbers::pi_v<float>);
-	Matrix4x4 billboardMatrix;
-	Matrix4x4 viewProjectionMatrix;
-
-	// ビルボード用の行列
-	billboardMatrix = Multiply(backToFrontMatrix, cameraMatrix);
-	billboardMatrix.m[3][0] = 0.0f;
-	billboardMatrix.m[3][1] = 0.0f;
-	billboardMatrix.m[3][2] = 0.0f;
-
-	// ビュー・プロジェクション行列を生成
-	viewProjectionMatrix = Multiply(viewMatrix, projectionMatrix);
-
-	for (auto& [groupName, particleGroup] : particleGroups_) {
-		uint32_t numInstance = 0;
-
-		for (auto particleIterator = particleGroup.particles.begin(); particleIterator != particleGroup.particles.end();) {
-			// 寿命が尽きたパーティクルを削除
-			if ((*particleIterator).lifeTime <= (*particleIterator).currentTime) {
-				particleIterator = particleGroup.particles.erase(particleIterator);
-				continue;
-			}
-
-			if (numInstance >= kNumMaxInstance) {
-				break;
-			}
-
-			// パーティクルの動き：`pos` から放射状に発散
-			Vector3 direction = (*particleIterator).transform.translate - pos; // `pos` を基準とした方向
-			direction = Vector3::Normalize(direction) * 0.5f; // 放射状の速度調整
-			(*particleIterator).velocity += direction;
-
-			// 位置の更新
-			(*particleIterator).transform.translate += (*particleIterator).velocity * kDeltaTime;
-
-			// 時間の更新
-			(*particleIterator).currentTime += kDeltaTime;
-
-			// アルファ値の更新（フェードアウト効果）
-			float alpha = 1.0f - ((*particleIterator).currentTime / (*particleIterator).lifeTime);
-
-			// ワールド行列の計算
-			scaleMatrix = ScaleMatrixFromVector3((*particleIterator).transform.scale);
-			translateMatrix = TranslationMatrixFromVector3((*particleIterator).transform.translate);
-			Matrix4x4 worldMatrix = MakeAffineMatrix(
-				(*particleIterator).transform.scale,
-				(*particleIterator).transform.rotate,
-				(*particleIterator).transform.translate
-			);
-			Matrix4x4 worldViewProjectionMatrix = Multiply(worldMatrix, viewProjectionMatrix);
-
-			// GPU用のインスタンシングデータ設定
-			if (numInstance < kNumMaxInstance) {
-				instancingData_[numInstance].WVP = worldViewProjectionMatrix;
-				instancingData_[numInstance].World = worldMatrix;
-				instancingData_[numInstance].color = (*particleIterator).color;
-				instancingData_[numInstance].color.w = alpha;
-				++numInstance;
-			}
-			++particleIterator;
-		}
-
-		// インスタンス数の更新
-		particleGroup.instance = numInstance;
-
-		//// GPU メモリにインスタンスデータを書き込む
-		//if (particleGroup.instancingData) {
-		//	std::memcpy(particleGroup.instancingData, instancingData_, sizeof(ParticleForGPU) * numInstance);
-		//}
-	}
-}
-
-void ParticleManager::UpdateParticleRadial()
-{
-	// カメラの行列を取得
-	Matrix4x4 cameraMatrix = MakeAffineMatrix(camera_->GetScale(), camera_->GetRotate(), camera_->GetTranslate());
-	Matrix4x4 viewMatrix = Inverse(cameraMatrix);
-	Matrix4x4 projectionMatrix = MakePerspectiveFovMatrix(0.45f, WinApp::kClientWidth / WinApp::kClientHeight, 0.1f, 100.0f);
-	Matrix4x4 backToFrontMatrix = MakeRotateMatrixY(std::numbers::pi_v<float>);
-	Matrix4x4 billboardMatrix;
-	Matrix4x4 viewProjectionMatrix;
-
-	// ビルボード用の行列
-	billboardMatrix = Multiply(backToFrontMatrix, cameraMatrix);
-	billboardMatrix.m[3][0] = 0.0f;
-	billboardMatrix.m[3][1] = 0.0f;
-	billboardMatrix.m[3][2] = 0.0f;
-
-	// ビュー・プロジェクション行列を生成
-	viewProjectionMatrix = Multiply(viewMatrix, projectionMatrix);
-	for (auto& [groupName, particleGroup] : particleGroups_) {
-		uint32_t numInstance = 0;
-
-		for (auto particleIterator = particleGroup.particles.begin(); particleIterator != particleGroup.particles.end();) {
-			if ((*particleIterator).lifeTime <= (*particleIterator).currentTime) {
-				particleIterator = particleGroup.particles.erase(particleIterator);
-				continue;
-			}
-
-			if (numInstance >= kNumMaxInstance) {
-				break;
-			}
-
-			// ランダム方向の正規化
-			Vector3 randomDirection = {
-				(rand() % 200 - 100) / 100.0f,
-				(rand() % 200 - 100) / 100.0f,
-				(rand() % 200 - 100) / 100.0f
-			};
-			Vector3 normalizedDirection = Vector3::Normalize(randomDirection);
-
-			// 加速度の大きさを計算
-			float acceleration = Vector3::Length(accelerationField.acceleration);
-
-			// 手動で x, y, z にスカラーを掛け算
-			normalizedDirection.x *= acceleration * kDeltaTime;
-			normalizedDirection.y *= acceleration * kDeltaTime;
-			normalizedDirection.z *= acceleration * kDeltaTime;
-
-			// 更新処理
-			(*particleIterator).velocity.x += normalizedDirection.x;
-			(*particleIterator).velocity.y += normalizedDirection.y;
-			(*particleIterator).velocity.z += normalizedDirection.z;
-
-			(*particleIterator).transform.translate.x += (*particleIterator).velocity.x * kDeltaTime;
-			(*particleIterator).transform.translate.y += (*particleIterator).velocity.y * kDeltaTime;
-			(*particleIterator).transform.translate.z += (*particleIterator).velocity.z * kDeltaTime;
-
-			(*particleIterator).currentTime += kDeltaTime;
-
-			// アルファ値の更新
-			float alpha = 1.0f - ((*particleIterator).currentTime / (*particleIterator).lifeTime);
-
-			scaleMatrix = ScaleMatrixFromVector3((*particleIterator).transform.scale);
-			translateMatrix = TranslationMatrixFromVector3((*particleIterator).transform.translate);
-			Matrix4x4 worldMatrix{};
-			if (useBillboard) {
-				worldMatrix = scaleMatrix * billboardMatrix * translateMatrix;
-
-			}
-			else {
-				worldMatrix = MakeAffineMatrix((*particleIterator).transform.scale, (*particleIterator).transform.rotate, (*particleIterator).transform.translate);
-			}
-			Matrix4x4 worldViewProjectionMatrix = Multiply(worldMatrix, viewProjectionMatrix);
-			// インスタンシングデータの設定
-			if (numInstance < kNumMaxInstance) {
-				instancingData_[numInstance].WVP = worldViewProjectionMatrix;
-				instancingData_[numInstance].World = worldMatrix;
-				instancingData_[numInstance].color = (*particleIterator).color;
-				instancingData_[numInstance].color.w = alpha;
-				++numInstance;
-			}
-			++particleIterator;
-		}
-
-		// インスタンス数の更新
-		particleGroup.instance = numInstance;
-
-		//if (particleGroup.instancingData) {
-		//	std::memcpy(particleGroup.instancingData, instancingData_, sizeof(ParticleForGPU) * numInstance);
-		//}
-	}
-}
-
-void ParticleManager::UpdateParticleSpiral()
-{
-	// カメラの行列を取得
-	Matrix4x4 cameraMatrix = MakeAffineMatrix(camera_->GetScale(), camera_->GetRotate(), camera_->GetTranslate());
-	Matrix4x4 viewMatrix = Inverse(cameraMatrix);
-	Matrix4x4 projectionMatrix = MakePerspectiveFovMatrix(0.45f, WinApp::kClientWidth / WinApp::kClientHeight, 0.1f, 100.0f);
-	Matrix4x4 backToFrontMatrix = MakeRotateMatrixY(std::numbers::pi_v<float>);
-	Matrix4x4 billboardMatrix;
-	Matrix4x4 viewProjectionMatrix;
-
-	// ビルボード用の行列
-	billboardMatrix = Multiply(backToFrontMatrix, cameraMatrix);
-	billboardMatrix.m[3][0] = 0.0f;
-	billboardMatrix.m[3][1] = 0.0f;
-	billboardMatrix.m[3][2] = 0.0f;
-
-	// ビュー・プロジェクション行列を生成
-	viewProjectionMatrix = Multiply(viewMatrix, projectionMatrix);
-
-	for (auto& [groupName, particleGroup] : particleGroups_) {
-		uint32_t numInstance = 0;
-
-		for (auto particleIterator = particleGroup.particles.begin(); particleIterator != particleGroup.particles.end();) {
-			if ((*particleIterator).lifeTime <= (*particleIterator).currentTime) {
-				particleIterator = particleGroup.particles.erase(particleIterator);
-				continue;
-			}
-
-			if (numInstance >= kNumMaxInstance) {
-				break;
-			}
-
-			// 時間に応じて回転角度を計算
-			float angle = (*particleIterator).currentTime * 10.0f; // 角度は時間に比例
-			float radius = 1.0f + (*particleIterator).currentTime * 2.0f; // 半径は徐々に広がる
-
-			// 螺旋状の位置更新 (XZ 平面)
-			(*particleIterator).transform.translate.x = radius * cos(angle);
-			(*particleIterator).transform.translate.z = radius * sin(angle);
-			(*particleIterator).transform.translate.y += (*particleIterator).velocity.y * kDeltaTime;
-
-			(*particleIterator).currentTime += kDeltaTime;
-
-			// アルファ値の更新 (フェードアウト)
-			float alpha = 1.0f - ((*particleIterator).currentTime / (*particleIterator).lifeTime);
-
-			// ワールド行列の計算
-			scaleMatrix = ScaleMatrixFromVector3((*particleIterator).transform.scale);
-			translateMatrix = TranslationMatrixFromVector3((*particleIterator).transform.translate);
-			Matrix4x4 worldMatrix = MakeAffineMatrix(
-				(*particleIterator).transform.scale,
-				(*particleIterator).transform.rotate,
-				(*particleIterator).transform.translate
-			);
-			Matrix4x4 worldViewProjectionMatrix = Multiply(worldMatrix, viewProjectionMatrix);
-
 			// インスタンシングデータの設定
 			if (numInstance < kNumMaxInstance) {
 				instancingData_[numInstance].WVP = worldViewProjectionMatrix;
@@ -742,12 +491,6 @@ void ParticleManager::CreateMaterialResource()
 
 
 
-void ParticleManager::InitRandomEngine()
-{
-	// ランダムエンジンの初期化
-	randomEngine_ = std::mt19937(seedGenerator_());
-}
-
 void ParticleManager::SetGraphicsPipeline()
 {
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC graphicsPipelineStateDesc{};//graphicsPipelineState_
@@ -777,20 +520,79 @@ void ParticleManager::SetGraphicsPipeline()
 	assert(SUCCEEDED(hr));
 }
 
-ParticleManager::Particle ParticleManager::CreateParticle(std::mt19937& randomEngine, const Vector3& position)
+ParticleManager::Particle ParticleManager::MakeNewParticle(const std::string& name, std::mt19937& randomEngine, const Vector3& position)
 {
-	std::uniform_real_distribution<float> distribution(-1.0f, 1.0f);
-	std::uniform_real_distribution<float> distColor(0.0f, 1.0f);
-	std::uniform_real_distribution<float> distTime(1.0f, 1.0f);
+
+	/*===============================================================//
+
+							ランダムの値を定義
+
+	//===============================================================*/
+
+	std::mt19937 randomEngine = randomEngine;
 	Particle particle;
-	particle.transform.scale = { 2.0f, 2.0f, 2.0f };
-	particle.transform.rotate = { 0.0f, 0.0f, 0.0f };
-	Vector3 randomTranslate = { distribution(randomEngine), distribution(randomEngine), distribution(randomEngine) };
-	particle.transform.translate = position /*+ randomTranslate*/;
-	particle.velocity = { distribution(randomEngine), distribution(randomEngine), distribution(randomEngine) };
-	particle.color = { distColor(randomEngine) , distColor(randomEngine) , distColor(randomEngine) , 1.0f };
-	particle.lifeTime = distTime(randomEngine);
+	ParticleParameters& prm = particleParameters_[name];
+
+	/*----------------------------------------
+				   Scale
+	----------------------------------------*/
+	std::uniform_real_distribution<float> randScaleX(prm.baseTransform.scaleX.x, prm.baseTransform.scaleX.y);
+	std::uniform_real_distribution<float> randScaleY(prm.baseTransform.scaleY.x, prm.baseTransform.scaleY.y);
+	std::uniform_real_distribution<float> randScaleZ(prm.baseTransform.scaleZ.x, prm.baseTransform.scaleZ.y);
+
+	/*----------------------------------------
+					Rotate
+	----------------------------------------*/
+	std::uniform_real_distribution<float> randRotateX(prm.baseTransform.rotateX.x, prm.baseTransform.rotateX.y);
+	std::uniform_real_distribution<float> randRotateY(prm.baseTransform.rotateY.x, prm.baseTransform.rotateY.y);
+	std::uniform_real_distribution<float> randRotateZ(prm.baseTransform.rotateZ.x, prm.baseTransform.rotateZ.y);
+
+	/*----------------------------------------
+					Translate
+	----------------------------------------*/
+	std::uniform_real_distribution<float> randTranslateX(prm.baseTransform.translateX.x, prm.baseTransform.translateX.y);
+	std::uniform_real_distribution<float> randTranslateY(prm.baseTransform.translateY.x, prm.baseTransform.translateY.y);
+	std::uniform_real_distribution<float> randTranslateZ(prm.baseTransform.translateZ.x, prm.baseTransform.translateZ.y);
+
+	/*----------------------------------------
+					Velocity
+	----------------------------------------*/
+	std::uniform_real_distribution<float> randVelocityX(prm.baseVelocity.velocityX.x, prm.baseVelocity.velocityX.y);
+	std::uniform_real_distribution<float> randVelocityY(prm.baseVelocity.velocityY.x, prm.baseVelocity.velocityY.y);
+	std::uniform_real_distribution<float> randVelocityZ(prm.baseVelocity.velocityZ.x, prm.baseVelocity.velocityZ.y);
+
+	/*----------------------------------------
+					Color
+	----------------------------------------*/
+	std::uniform_real_distribution<float> randRed(prm.baseColor.minColor.x, prm.baseColor.maxColor.x);
+	std::uniform_real_distribution<float> randGreen(prm.baseColor.minColor.y, prm.baseColor.maxColor.y);
+	std::uniform_real_distribution<float> randBlue(prm.baseColor.minColor.z, prm.baseColor.maxColor.z);
+	/// ※Alpha値はランダムにしない
+
+	/*----------------------------------------
+					LifeTime
+	----------------------------------------*/
+	std::uniform_real_distribution<float> randLifeTime(prm.baseLife.lifeTime.x, prm.baseLife.lifeTime.y);
+
+
+	/*===============================================================//
+	* 
+							ランダムの値を代入
+
+	//===============================================================*/
+
+	particle.transform.scale = { randScaleX(randomEngine), randScaleY(randomEngine), randScaleZ(randomEngine) };
+	particle.transform.rotate = { randRotateX(randomEngine), randRotateY(randomEngine), randRotateZ(randomEngine)};
+	particle.transform.translate = position + Vector3{ randTranslateX(randomEngine), randTranslateY(randomEngine), randTranslateZ(randomEngine) };
+
+	particle.velocity = { randVelocityX(randomEngine), randVelocityY(randomEngine), randVelocityZ(randomEngine) };
+
+	particle.color = { randRed(randomEngine), randGreen(randomEngine), randBlue(randomEngine), 1.0f };
+
+	particle.lifeTime = randLifeTime(randomEngine);
+
 	particle.currentTime = 0.0f;
+
 	return particle;
 }
 
@@ -841,24 +643,24 @@ void ParticleManager::CreateParticleGroup(const std::string name, const std::str
 
 std::list<ParticleManager::Particle> ParticleManager::Emit(const std::string& name, const Vector3& position, uint32_t count)
 {
-	// 登録済みのパーティクルグループ名かチェック
-	auto it = particleGroups_.find(name);
-	assert(it != particleGroups_.end());
+  auto it = particleGroups_.find(name);
+  assert(it != particleGroups_.end());
 
-	// 指定されたパーティクルグループにパーティクルを追加
-	ParticleGroup& group = particleGroups_[name];
+  ParticleGroup &group = it->second;
+  std::list<Particle> emittedParticles;
 
-	// 生成したパーティクルを格納するリスト
-	std::list<ParticleManager::Particle> emittedParticles;
+  std::mt19937 randomEngine = std::mt19937(seedGenerator_());
+  // 各パーティクルを生成し追加
+  for (uint32_t i = 0; i < count; ++i) {
+    Particle newParticle = MakeNewParticle(name,randomEngine, position);
+    // 生成したパーティクルをリストに追加
+    emittedParticles.push_back(newParticle);
+  }
 
-	// 各パーティクルを生成し追加
-	for (uint32_t i = 0; i < count; ++i) {
-		Particle newParticle = CreateParticle(randomEngine_, position);
-		
-		emittedParticles.push_back(newParticle);
-	}
-	group.particles.splice(group.particles.end(), emittedParticles);
-	return emittedParticles;
+  // 既存のパーティクルリストに新しいパーティクルを追加
+  group.particles.splice(group.particles.end(), emittedParticles);
+
+  return emittedParticles;
 }
 void ParticleManager::SetBlendMode(D3D12_BLEND_DESC& blendDesc, BlendMode blendMode)
 {

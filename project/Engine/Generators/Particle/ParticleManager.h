@@ -45,6 +45,8 @@ public:
 		// 利用してはいけない
 		kCount0fBlendMode,
 	};
+
+	
 	struct VertexData {
 		Vector4 position;
 		Vector2 texcoord;
@@ -54,17 +56,33 @@ public:
 		std::string textureFilePath;
 		uint32_t textureIndexSRV = 0;
 	};
+
 	struct ModelData {
 		std::vector<VertexData> vertices;
 		MaterialData material;
 	};
-	// マテリアルデータ
+
 	struct Material {
 		Vector4 color;
 		int32_t enableLighting;
 		float padding[3];
 		Matrix4x4 uvTransform;
 	};
+
+	struct ParticleForGPU {
+		Matrix4x4 WVP;
+		Matrix4x4 World;
+		Vector4 color;
+	};
+
+
+
+	struct AccelerationField {
+		Vector3 acceleration; // 加速度
+		AABB area;			  // 範囲
+	};
+
+
 	struct Particle {
 		EulerTransform transform;
 		Vector3 velocity;
@@ -72,11 +90,8 @@ public:
 		float lifeTime;
 		float currentTime;
 	};
-	struct ParticleForGPU {
-		Matrix4x4 WVP;
-		Matrix4x4 World;
-		Vector4 color;
-	};
+
+
 	struct ParticleGroup {
 		MaterialData materialData;										// マテリアルデータ
 		std::list<Particle> particles;									// パーティクルリスト
@@ -86,9 +101,48 @@ public:
 		ParticleForGPU* instancingData;									// インスタンシングデータを書き込むためのポインタ
 	};
 
-	struct AccelerationField {
-		Vector3 acceleration; // 加速度
-		AABB area;			  // 範囲
+
+	struct ParticleTransformSettings {
+		Vector2 scaleX;        // Scale X Min : Max
+		Vector2 scaleY;        // Scale Y Min : Max
+		Vector2 scaleZ;        // Scale Z Min : Max
+		Vector2 translateX;    // Position X Min : Max
+		Vector2 translateY;    // Position Y Min : Max
+		Vector2 translateZ;    // Position Z Min : Max
+		Vector2 rotateX;       // Rotation X Min : Max
+		Vector2 rotateY;       // Rotation Y Min : Max
+		Vector2 rotateZ;       // Rotation Z Min : Max
+	};
+
+	struct ParticleVelocitySettings {
+		Vector2 velocityX;     // Velocity X Min : Max
+		Vector2 velocityY;     // Velocity Y Min : Max
+		Vector2 velocityZ;     // Velocity Z Min : Max
+	};
+
+	struct ParticleColorSettings {
+		Vector3 minColor;      // Min Color
+		Vector3 maxColor;      // Max Color
+		float alpha;           // Alpha;
+	};
+
+	struct ParticleColorSettings {
+		Vector3 minColor;      // Min Color
+		Vector3 maxColor;      // Max Color
+		float alpha;           // Alpha;
+	};
+
+	struct ParticleLifeSettings {
+		Vector2 lifeTime;      // Life Time Min : Max
+	};
+
+
+	// 全体のパーティクル構造体の設定
+	struct ParticleParameters{
+		ParticleTransformSettings baseTransform;
+		ParticleVelocitySettings baseVelocity;
+		ParticleColorSettings baseColor;
+		ParticleLifeSettings baseLife;
 	};
 
 public: // シングルトン
@@ -149,9 +203,6 @@ public: // メンバ関数
 
 	std::list<Particle> Emit(const std::string& name, const Vector3& position, uint32_t count);
 
-	void UpdateParticlePlayerWeapon(const Vector3& pos);
-
-
 private:
 
 
@@ -162,13 +213,11 @@ private:
 	/// </summary>
 	void UpdateParticleMove();
 
-	void UpdateParticlePlayer();
 
-
-
-	void UpdateParticleRadial();
-
-	void UpdateParticleSpiral();
+	/// <summary>
+	/// 
+	/// </summary>
+	void UpdateParticles();
 
 
 	/// <summary>
@@ -202,11 +251,6 @@ private:
 	void CreateVertexVBV();
 
 	/// <summary>
-	/// ランダムエンジン
-	/// </summary>
-	void InitRandomEngine();
-
-	/// <summary>
 	/// パイプラインの設定
 	/// </summary>
 	void SetGraphicsPipeline();
@@ -214,7 +258,7 @@ private:
 	/// <summary>
 	/// パーティクルの生成
 	/// </summary>
-	Particle CreateParticle(std::mt19937& randomEngine, const Vector3& position);
+	Particle MakeNewParticle(const std::string& name, std::mt19937& randomEngine, const Vector3& position);
 
 	/// <summary>
 	/// ImGui
@@ -285,22 +329,21 @@ private: // メンバ変数
 	ModelData modelData_;
 	// 乱数生成器
 	std::random_device seedGenerator_;
-	std::mt19937 randomEngine_;
+
 	// 最初のブレンドモード
 	BlendMode currentBlendMode_;
 	// パーティクルグループコンテナ
 	std::unordered_map<std::string, ParticleGroup> particleGroups_;
+	// パラメーター用のコンテナ
+	std::unordered_map<std::string, ParticleParameters> particleParameters_;
 	const float kDeltaTime = 1.0f / 60.0f;
 	// インスタンシング用リソース作成
-	const uint32_t kNumMaxInstance = 16; // インスタンス数
+	const uint32_t kNumMaxInstance = 1000; // インスタンス数
 	// ブレンドモードごとのPSOを保持するマップ
 	std::unordered_map<BlendMode, Microsoft::WRL::ComPtr<ID3D12PipelineState>> pipelineStates_;
 
 	Matrix4x4 scaleMatrix;
 	Matrix4x4 translateMatrix;
-
-	//Matrix4x4 billboardMatrix;
-	//Matrix4x4 viewProjectionMatrix;
 
 	// パーティクル更新モード
 	enum ParticleUpdateMode {
@@ -312,4 +355,5 @@ private: // メンバ変数
 	// パーティクル更新モードの選択
 	ParticleUpdateMode currentUpdateMode_ = kUpdateModeRadial;
 
+	
 };

@@ -51,8 +51,8 @@ void Enemy::Initialize(Camera* camera)
     Collider::SetTypeID(static_cast<uint32_t>(CollisionTypeIdDef::kEnemy));
 
 
-    particleEmitter_ = std::make_unique<ParticleEmitter>("Enemy", worldTransform_.translation_, 1);
-    
+    //particleEmitter_ = std::make_unique<ParticleEmitter>("Enemy", worldTransform_.translation_, 1);
+    //particleEmitter_->Initialize();
 	
 }
 
@@ -150,11 +150,8 @@ void Enemy::OnCollision(Collider* other)
             isAlive_ = false;
         }
 		isShake_ = true;
-        particleEmitter_->UpdateEmit("Enemy", worldTransform_.translation_, 5);
-       // ParticleManager::GetInstance()->Emit("Enemy", worldTransform_.translation_, 5);
-        //particleEmitter_ = std::make_unique<ParticleEmitter>("Enemy", worldTransform_.translation_, 10);
-        //particleEmitter_->SetPosition(worldTransform_.translation_);
-        //particleEmitter_->Update();
+
+        ParticleManager::GetInstance()->Emit("Enemy", worldTransform_.translation_, 5);
     }
 
     
@@ -206,7 +203,7 @@ void Enemy::Move()
 void Enemy::CameraShake()
 {
     if (isShake_) {
-        camera_->Shake(0.2f, Vector2{ -0.1f, -0.1f },Vector2{0.1f,0.1f});
+        camera_->Shake(0.1f, Vector2{ -0.1f, -0.1f },Vector2{0.1f,0.1f});
 		isShake_ = false;
     }
 }

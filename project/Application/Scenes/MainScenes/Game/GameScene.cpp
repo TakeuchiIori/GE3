@@ -84,7 +84,7 @@ void GameScene::Initialize()
     emitterPosition_ = Vector3{ 0.0f, 0.0f, 0.0f }; // エミッタの初期位置
     particleCount_ = 1;
     particleEmitter_[0] = std::make_unique<ParticleEmitter>("Circle", emitterPosition_, particleCount_);
-
+    particleEmitter_[0]->Initialize();
     //// パーティクルグループ名を指定
     //const std::string particleGroupName = "PlayerWeaponEffect";
     //weaponPos = player_->GetPosition();
@@ -299,6 +299,8 @@ void GameScene::ChangePahse()
         // objの更新
        // player_->Update();
 
+                // パーティクル更新
+       // ParticleManager::GetInstance()->Update();
 
         ground_->Update();
         test_->UpdateAnimation();
@@ -307,8 +309,7 @@ void GameScene::ChangePahse()
         UpdateCameraMode();
         UpdateCamera();
 
-        // パーティクル更新
-        ParticleManager::GetInstance()->Update();
+
         // ParticleManager::GetInstance()->UpdateParticlePlayerWeapon(weaponPos);
 //        ShowImGui();
         //particleEmitter_[0]->Update();
@@ -337,10 +338,9 @@ void GameScene::ChangePahse()
         break;
     case Phase::kPlay:
 
-        // パーティクル更新
-        ParticleManager::GetInstance()->Update();
-        particleEmitter_[0]->SetPosition(player_->GetPosition());
-        particleEmitter_[0]->Emit();
+       
+        //particleEmitter_[0]->SetPosition(player_->GetPosition());
+       
        
         //if (Input::GetInstance()->TriggerKey(DIK_RETURN)) {
         //    phase_ = Phase::kFadeOut;
@@ -384,8 +384,9 @@ void GameScene::ChangePahse()
         ground_->Update();
         test_->UpdateAnimation();
 
-
-
+        // パーティクル更新
+        ParticleManager::GetInstance()->Update();
+        particleEmitter_[0]->Emit();
 
         // カメラ更新
         UpdateCameraMode();

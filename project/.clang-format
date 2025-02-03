@@ -1,5 +1,0 @@
----
-BasedOnStyle: LLVM
-BreakBeforeBraces: Attach
-AlwaysBreakBeforeMultilineStrings: true
-AllowShortIfStatementsOnASingleLine: false

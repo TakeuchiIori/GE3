@@ -5,6 +5,7 @@
 // Engine
 #include "ParticleManager.h"
 #include "WorldTransform./WorldTransform.h"
+#include "Loaders/Json/JsonManager.h"
 
 // Math
 #include  "Vector3.h"
@@ -27,6 +28,11 @@ public: // メンバ関数
 	ParticleEmitter(const std::string& name, const Vector3& transform, uint32_t count);
 
 	/// <summary>
+	/// 初期化
+	/// </summary>
+	void Initialize();
+
+	/// <summary>
 	/// 更新
 	/// </summary>
 	void Update();
@@ -47,7 +53,14 @@ private:
 	/// ImGui
 	/// </summary>
 	void ShowImGui();
-public:
+
+	/// <summary>
+	/// Json
+	/// </summary>
+	void InitJson();
+
+
+    public:
 
 	void SetPosition(const Vector3& position) { emitter_.transform.translate = position; };
 	void SetCount(uint32_t& setcount) { emitter_.count= setcount; };
@@ -61,14 +74,15 @@ private:
 		std::string name; 
 		EulerTransform transform;
 		uint32_t count; 
-		float frequency;
-		float frequencyTime ;
+		float frequency;			// 頻度
+		float frequencyTime;		// 頻度時間
 	};
-
+		
 	// エミッター
 	Emitter emitter_{};
-
 	float deltaTime_ = 1.0f / 60.0f;
+
+	//JsonManager *jsonManager_; 
 
 };
 

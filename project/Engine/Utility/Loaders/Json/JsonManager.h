@@ -199,58 +199,64 @@ public:
 
 
 
-	static void ImGuiManager()
-	{
+static void ImGuiManager() {
 #ifdef _DEBUG
-		ImGui::Begin("JsonManager"); // 親ウィンドウ
+          ImGui::Begin("JsonManager"); // Parent window
 
-		ImGui::Text("Select Class:");
-		ImGui::Separator();
+          ImGui::Text("Select Class:");
+          ImGui::Separator();
 
-		// クラス一覧ボタンを表示
-		for (auto& instance : instances)
-		{
-			if (ImGui::Button(instance.first.c_str(), ImVec2(150, 30))) // ボタンの幅を統一
-			{
-				selectedClass = instance.first; // 選択したクラスを更新
-			}
-			ImGui::SameLine();
-		}
-		ImGui::NewLine(); // 次の行へ
+          // Start child window with scrollbar
+          ImGui::BeginChild("ClassList", ImVec2(0, 150), true);
 
-		ImGui::Separator(); // 区切り線
+          // Display class name buttons vertically
+          for (auto &instance : instances) {
+            ImGui::PushTextWrapPos(ImGui::GetWindowWidth() - 20.0f);
+            if (ImGui::Button(instance.first.c_str(),
+                              ImVec2(250, 30))) // Unified button width
+            {
+              selectedClass = instance.first; // Update selected class
+            }
+            ImGui::PopTextWrapPos();
+          }
 
-		// 選択されたクラスのみ表示
-		if (!selectedClass.empty())
-		{
-			auto it = instances.find(selectedClass);
-			if (it != instances.end())
-			{
-				JsonManager* instance = it->second;
+          ImGui::EndChild();  // End child window
+          ImGui::Separator(); // Separator line
 
-				std::string windowTitle = "JsonManager - " + selectedClass;
-				ImGui::TextColored(ImVec4(1.0f, 0.6f, 0.2f, 1.0f), "[ %s ]", selectedClass.c_str());
-				ImGui::Separator();
+          // Display only the selected class
+          if (!selectedClass.empty()) {
+            auto it = instances.find(selectedClass);
+            if (it != instances.end()) {
+              JsonManager *instance = it->second;
 
-				ImGui::PushID(selectedClass.c_str()); // クラスごとにIDを設定
+              std::string windowTitle = "JsonManager - " + selectedClass;
+              ImGui::TextColored(ImVec4(1.0f, 0.6f, 0.2f, 1.0f), "[ %s ]",
+                                 selectedClass.c_str());
 
-				for (auto& pair : instance->variables_)
-				{
-					pair.second->ShowImGui(pair.first, selectedClass);
-				}
+              ImGui::Separator();
 
+              ImGui::PushID(selectedClass.c_str()); // Set ID for each class
 
-				if (ImGui::Button(("Save_ " + selectedClass).c_str()))
-				{
-					instance->Save();
-				}
-				ImGui::PopID();
-			}
-		}
+              // Start child window with scrollbar for variables
+              ImGui::BeginChild("VariableList", ImVec2(0, 200), true);
 
-		ImGui::End();
+              for (auto &pair : instance->variables_) {
+                pair.second->ShowImGui(pair.first, selectedClass);
+              }
+
+              ImGui::EndChild(); // End child window for variables
+
+              if (ImGui::Button(("Save " + selectedClass).c_str())) {
+                instance->Save();
+              }
+              ImGui::PopID();
+            }
+          }
+
+          ImGui::End();
 #endif
-	}
+        }
+
 
 private:
 	/// <summary>
