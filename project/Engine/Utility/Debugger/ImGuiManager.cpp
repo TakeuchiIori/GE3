@@ -31,8 +31,14 @@ void ImGuiManager::Initialize(WinApp* winApp, DirectXCommon* dxCommon)
 	// ImGuiのコンテキストを生成
 	ImGui::CreateContext();
 
-	// 変更したエディター呼び出し
+	ImGuiIO& io = ImGui::GetIO();
+	io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable; // 追加
+
+	// Editorの設定
 	CustomizeEditor();
+
+	// DockSpaceの設定
+	CustomizeColor();
 
 	// デスクリプタヒープ生成
 	CreateDescriptorHeap();
@@ -49,16 +55,11 @@ void ImGuiManager::Initialize(WinApp* winApp, DirectXCommon* dxCommon)
 void ImGuiManager::Begin()
 {
 #ifdef _DEBUG
-	ImGuiIO& io = ImGui::GetIO();
-	io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable; // 追加
 	// ImGuiフレーム開始
 	ImGui_ImplDX12_NewFrame();
 	ImGui_ImplWin32_NewFrame();
 	ImGui::NewFrame();
 
-	// DockSpaceの設定
-	CustomizeColor();
-	
 	ImGuiWindowFlags dockspace_flags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse |
 		ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove |
 		ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus |
@@ -66,8 +67,6 @@ void ImGuiManager::Begin()
 	ImGui::Begin("MainDockSpace", nullptr, ImGuiWindowFlags_NoCollapse);
 	ImGui::DockSpace(ImGui::GetID("MainDockSpace"), ImVec2(0.0f, 0.0f), ImGuiDockNodeFlags_PassthruCentralNode);
 	ImGui::End();
-
-
 #endif
 }
 
@@ -85,7 +84,7 @@ void ImGuiManager::End()
 		ImGui::UpdatePlatformWindows();
 		ImGui::RenderPlatformWindowsDefault(nullptr, (void*)commandList);
 	}
-	Draw();
+	//Draw();
 #endif
 }
 
@@ -215,12 +214,6 @@ void ImGuiManager::CustomizeEditor()
 	// エディター同士をドッキング
 	ImGuiIO& io = ImGui::GetIO();
 	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
-	
-
-	// ウィンドウ全体をカバーするDockSpaceの作成
-	ImGui::SetNextWindowPos(ImVec2(0.0f, 0.0f)); // ウィンドウ位置を(0,0)に設定
-	ImGui::SetNextWindowSize(io.DisplaySize);    // ウィンドウサイズを全画面に設定
-
 
 	// フォントファイルのパスとサイズを指定してフォントをロードする
 	io.Fonts->AddFontFromFileTTF(
