@@ -107,7 +107,12 @@ void GameScene::Initialize()
     // 音量の設定（0.0f ～ 1.0f）
     Audio::GetInstance()->SetVolume(sourceVoice, 0.8f); // 80%の音量に設定
 
-    
+
+    sprite_ = std::make_unique<Sprite>();
+    sprite_->Initialize("Resources/Textures/KoboRB.png");
+    sprite_->SetSize(Vector2{ 1280.0f,720.0f });
+    sprite_->SetTextureSize(Vector2{ 1280,720 });
+
 }
 
 /// <summary>
@@ -117,6 +122,8 @@ void GameScene::Update()
 {
 
     ChangePahse();
+	sprite_->Update();
+    
    // if (Input::GetInstance()->TriggerKey(DIK_RETURN)) {
    //     SceneManager::GetInstance()->ChangeScene("TITLE");
    // }
@@ -188,24 +195,6 @@ void GameScene::Update()
 /// </summary>
 void GameScene::Draw()
 {
-#pragma region 演出描画
-   
-
-
-
-#pragma endregion
-#pragma region 2Dスプライト描画
-    SpriteCommon::GetInstance()->DrawPreference();
-    /// <summary>
-    /// ここから描画可能です
-    /// </summary>
-    
-    // フェードイン&&フェードアウト中はフェードの描画
-    if (phase_ == Phase::kFadeIn || phase_ == Phase::kFadeOut) {
-        fade_->Draw();
-    }
-
-#pragma endregion
 
 #pragma region 3Dオブジェクト描画
     Object3dCommon::GetInstance()->DrawPreference();
@@ -244,8 +233,29 @@ void GameScene::Draw()
 
 #pragma endregion
 
+#pragma region 演出描画
+   
+ParticleManager::GetInstance()->Draw();
 
-    ParticleManager::GetInstance()->Draw();
+
+#pragma endregion
+
+
+#pragma region 2Dスプライト描画
+    SpriteCommon::GetInstance()->DrawPreference();
+    /// <summary>
+    /// ここから描画可能です
+    /// </summary>
+    sprite_->Draw();
+    // フェードイン&&フェードアウト中はフェードの描画
+    if (phase_ == Phase::kFadeIn || phase_ == Phase::kFadeOut) {
+        fade_->Draw();
+    }
+
+#pragma endregion
+
+
+    
 }
 
 /// <summary>
@@ -336,7 +346,7 @@ void GameScene::ChangePahse()
         //particleEmitter_[0]->SetPosition(player_->GetPosition());
        
        
-        if (Input::GetInstance()->TriggerKey(DIK_RETURN)) {
+        if (isClear_) {
             phase_ = Phase::kFadeOut;
             fade_->Start(Fade::Status::FadeOut, 2.0f);
         }
@@ -359,6 +369,9 @@ void GameScene::ChangePahse()
 
         // 各敵を更新
         enemyManager_->Update();
+        if (enemyManager_->IsAllEnemiesDefeated()) {
+            isClear_ = true;
+        }
 
 
 
@@ -405,6 +418,7 @@ void GameScene::ChangePahse()
     case Phase::kFadeOut:
         fade_->Update();
         if (fade_->IsFinished()) {
+            isClear_ = false;
             SceneManager::GetInstance()->ChangeScene("Clear");
         }
         break;

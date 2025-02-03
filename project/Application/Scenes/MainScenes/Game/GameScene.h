@@ -115,7 +115,7 @@ private:
     std::unique_ptr<Fade> fade_;
     Phase phase_;
     bool finished_ = false;
-
+    std::unique_ptr<Sprite> sprite_;
 
     // 3Dモデル
     std::unique_ptr<Object3d> test_;
@@ -143,5 +143,7 @@ private:
     std::unique_ptr<Line> boneLine_;
     Vector3 start_ = { 0.0f,0.0f,0.0f };
     Vector3 end_ = { 10.0f,0.0f,10.0f };
+
+     bool isClear_ = false;
  
 };

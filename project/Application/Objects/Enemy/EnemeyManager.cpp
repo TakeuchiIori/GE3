@@ -3,6 +3,7 @@
 
 void EnemeyManager::Initialize(Camera* camera) {
     camera_ = camera;
+    deadNum_ = 0;
 }
 
 void EnemeyManager::Update() {
@@ -20,6 +21,7 @@ void EnemeyManager::Update() {
 
         // 敵が死んでいたら削除
         if (!enemy->IsActive()) {
+            deadNum_++;
             it = enemies_.erase(it);  // eraseは次の有効なイテレータを返す
         }
         else {

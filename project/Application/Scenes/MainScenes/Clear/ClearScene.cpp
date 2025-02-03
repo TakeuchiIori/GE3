@@ -78,7 +78,7 @@ void ClearScene::GhangePhase()
 
         break;
     case ClearScene::Phase::kMain:
-        if (Input::GetInstance()->TriggerKey(DIK_RETURN)) {
+        if (Input::GetInstance()->IsPadPressed(0, GamePadButton::A)) {
             phase_ = Phase::kFadeOut;
             fade_->Start(Fade::Status::FadeOut, 2.0f);
         }
