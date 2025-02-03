@@ -67,10 +67,7 @@ void Player::Update()
 
 
 	
-	// パーティクルの位置を常にプレイヤーの位置に更新
-    Vector3 emitPosition = worldTransform_.translation_;
-    emitPosition.y += 0.5f; // 必要に応じて高さオフセットを調整
-    particleEmitter_->UpdateEmit("Player", emitPosition, 5);
+    particleEmitter_->UpdateEmit("Player", worldTransform_.translation_, 3);
 
 	//ParticleManager::GetInstance()->Emit("Player", worldTransform_.translation_, 10);
 	UpdateWorldTransform();

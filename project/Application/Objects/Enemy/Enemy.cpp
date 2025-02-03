@@ -33,7 +33,7 @@ void Enemy::Initialize(Camera* camera)
     moveSpeed_ = { 0.25f, 0.25f , 0.25f };
     worldTransform_.Initialize();
     worldTransform_.translation_.y = 1.0f;
-    worldTransform_.translation_.z = 25.0f;
+   // worldTransform_.translation_.z = 25.0f;
     shadow_ = std::make_unique<Object3d>();
     shadow_->Initialize();
     shadow_->SetModel("Shadow.obj");
@@ -150,8 +150,6 @@ void Enemy::OnCollision(Collider* other)
             isAlive_ = false;
         }
 		isShake_ = true;
-
-        ParticleManager::GetInstance()->Emit("Enemy", worldTransform_.translation_, 5);
     }
 
     

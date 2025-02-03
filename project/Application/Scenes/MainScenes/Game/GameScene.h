@@ -26,6 +26,7 @@
 #include "Vector3.h"
 #include "../../../SystemsApp/Cameras/FollowCamera/FollowCamera.h"
 #include "../../../SystemsApp/Cameras/TopDownCamera/TopDownCamera.h"
+#include <Enemy/EnemeyManager.h>
 
 enum class CameraMode
 {
@@ -124,19 +125,8 @@ private:
     std::unique_ptr<Player> player_;
 
     // 敵
-    std::unique_ptr<Enemy> enemy_;
+    std::unique_ptr<EnemeyManager> enemyManager_;
 
-    // 敵のリスト
-    std::vector<std::unique_ptr<Enemy>> enemies_;
-    // スポーン間隔 (秒)
-    float spawnInterval_ = 3.0f;
-    // スポーン範囲 (プレイヤーの周囲)
-    float spawnRange_ = 50.0f;
-    // スポーンタイマー
-    float spawnTimer_ = 0.0f;
-
-    // 敵をスポーンする関数
-    void SpawnEnemy();
 
     // 地面
     std::unique_ptr< Ground> ground_;
