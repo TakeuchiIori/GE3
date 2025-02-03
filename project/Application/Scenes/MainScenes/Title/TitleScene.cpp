@@ -38,6 +38,17 @@ void TitleScene::Initialize()
     fade_->Initialize("Resources/images/white.png");
     fade_->Start(Fade::Status::FadeIn, 2.0f);
 
+
+    // オーディオファイルのロード（例: MP3）
+    soundData = Audio::GetInstance()->LoadAudio(L"Resources./images./harpohikunezumi.mp3");
+
+    //// オーディオの再生
+    //sourceVoice = Audio::GetInstance()->SoundPlayAudio(soundData);
+
+    //// 音量の設定（0.0f ～ 1.0f）
+    //Audio::GetInstance()->SetVolume(sourceVoice, 0.05f); // 80%の音量に設定
+
+
 }
 
 /// <summary>

@@ -33,7 +33,7 @@ void PlayerWeapon::Initialize()
 	input_ = Input::GetInstance();
 
 	worldTransform_.Initialize();
-	worldTransform_.translation_.y = 0.0f;
+	worldTransform_.translation_.y = -1.0f;
 	worldTransform_.translation_.z = -2.0f;
 
 #pragma region 各モーションの初期化

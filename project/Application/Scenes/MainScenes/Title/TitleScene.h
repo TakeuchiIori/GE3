@@ -87,7 +87,7 @@ private:
 	CameraManager cameraManager_;
 	// サウンド
 	Audio::SoundData soundData;
-
+	IXAudio2SourceVoice* sourceVoice;
 
 	// プレイヤー
 	std::unique_ptr<Player> player_;
