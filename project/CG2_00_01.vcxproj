@@ -171,6 +171,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Engine\Utility\Loaders\Model\SkinCluster.cpp" />
     <ClCompile Include="Application\Objects\Player\PlayerWeapon\PlayerWeapon.cpp" />
     <ClCompile Include="Application\SystemsApp\Cameras\TopDownCamera\TopDownCamera.cpp" />
+    <ClCompile Include="Engine\Utility\Systems\GameTime\ObjectTime.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application\Objects\Enemy\Enemy.h" />
@@ -240,6 +241,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="Engine\Utility\Loaders\Model\SkinCluster.h" />
     <ClInclude Include="Application\Objects\Player\PlayerWeapon\PlayerWeapon.h" />
     <ClInclude Include="Application\SystemsApp\Cameras\TopDownCamera\TopDownCamera.h" />
+    <ClInclude Include="Engine\Utility\Systems\GameTime\ObjectTime.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="externals\DirectXTex\DirectXTex_Desktop_2022_Win10.vcxproj">
