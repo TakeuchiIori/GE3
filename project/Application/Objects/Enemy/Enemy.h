@@ -83,6 +83,8 @@ private:
 
 	void InitJson();
 
+	Vector3 GetWorldPosition();
+
 public: // アクセッサ
 	/// <summary>
 	/// ワールド変換データを取得

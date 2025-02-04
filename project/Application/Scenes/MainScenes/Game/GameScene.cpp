@@ -364,7 +364,7 @@ void GameScene::ChangePahse()
         //}
 
                // パーティクル更新
-        ParticleManager::GetInstance()->Update();
+       
         CheckAllCollisions();
         CollisionManager::GetInstance()->UpdateWorldTransform();
         // スポーンタイマーを更新
@@ -372,30 +372,27 @@ void GameScene::ChangePahse()
         // objの更新
         player_->Update();
         player_->JsonImGui();
-
-    
-
-
-
 		//followCamera_.JsonImGui();
 
         // enemy_->Update();
         ground_->Update();
         test_->UpdateAnimation();
-
- 
-        //particleEmitter_[0]->Emit();
-
-        // カメラ更新
-        UpdateCameraMode();
-        UpdateCamera();
-
         // 各敵を更新
         enemyManager_->Update();
         if (enemyManager_->IsAllEnemiesDefeated()) {
             isClear_ = true;
         }
+ 
+        //particleEmitter_[0]->Emit();
 
+        ParticleManager::GetInstance()->Update();
+        // カメラ更新
+        UpdateCameraMode();
+        UpdateCamera();
+
+
+
+       
         // ParticleManager::GetInstance()->UpdateParticlePlayerWeapon(weaponPos);
         ShowImGui();
 

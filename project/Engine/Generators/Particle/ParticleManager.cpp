@@ -243,11 +243,12 @@ void ParticleManager::UpdateParticles()
 			// アルファ値の更新（フェードアウト）
 			float alpha = 1.0f - ((*particleIterator).currentTime / (*particleIterator).lifeTime);
 
-			// ワールド行列の計算
-			scaleMatrix = ScaleMatrixFromVector3((*particleIterator).transform.scale);
-			translateMatrix = TranslationMatrixFromVector3((*particleIterator).transform.translate);
+			
 			Matrix4x4 worldMatrix{};
 			if (useBillboard) {
+				// ワールド行列の計算
+				scaleMatrix = MakeScaleMatrix((*particleIterator).transform.scale);
+				translateMatrix = MakeTranslateMatrix((*particleIterator).transform.translate);
 				worldMatrix = scaleMatrix * billboardMatrix * translateMatrix;
 
 			}
@@ -737,7 +738,7 @@ void ParticleManager::SetBlendMode(D3D12_BLEND_DESC& blendDesc, BlendMode blendM
 void ParticleManager::InitJson(const std::string& name)
 {
 	const std::string base = name + " : "; // 名前空間を分けるためのプレフィックス
-	jsonManager_ = new JsonManager("ParticleParameter : " + name, "Resources./JSON./ParticleParameter");
+	jsonManager_ = new JsonManager("ParticleParameter_"+name, "Resources./JSON./ParticleParameter");
 	// Transform設定の登録
 	jsonManager_->Register("Scale.X", &particleParameters_[name].baseTransform.scaleX);
 	jsonManager_->Register("Scale.Y", &particleParameters_[name].baseTransform.scaleY);

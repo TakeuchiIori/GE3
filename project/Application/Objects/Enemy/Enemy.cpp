@@ -73,7 +73,10 @@ void Enemy::Update()
 
     CameraShake();
 
-   
+    Vector3 worldPos = GetWorldPosition();
+    particleEmitter_->UpdateEmit("Enemy", worldPos, 5);
+    particleEmitter_->UpdateEmit("Enemy", worldTransform_.translation_, 5);
+
     Move();
 
 
@@ -92,7 +95,9 @@ void Enemy::Update()
    ShowCoordinatesImGui();
 
 #endif // _DEBUG
-   particleEmitter_->UpdateEmit("Enemy", worldTransform_.translation_, 3);
+ 
+
+
     worldTransform_.UpdateMatrix();
     WS_.UpdateMatrix();
 
@@ -194,7 +199,7 @@ void Enemy::Move() {
     }
 
     // プレイヤーへの方向ベクトルを計算
-    Vector3 toPlayer = player_->GetWorldPosition() - worldTransform_.translation_;
+    Vector3 toPlayer = player_->GetPosition() - worldTransform_.translation_;
     float distanceToPlayer = Length(toPlayer);
 
     // プレイヤーとの最小/最大距離
@@ -214,7 +219,7 @@ void Enemy::Move() {
         // プレイヤーとの最小距離を保持
         if (distanceToPlayer < minDistance) {
             Vector3 pushBackDir = Normalize(toPlayer);
-            worldTransform_.translation_ = player_->GetWorldPosition() - (pushBackDir * minDistance);
+            worldTransform_.translation_ = player_->GetPosition() - (pushBackDir * minDistance);
         }
     }
 
@@ -255,4 +260,12 @@ void Enemy::InitJson()
 	jsonManager_ = new JsonManager("Enemy", "Resources./JSON");
 	jsonManager_->Register("HP", &hp_);
 
+}
+
+Vector3 Enemy::GetWorldPosition() {
+    Vector3 worldPos;
+    worldPos.x = worldTransform_.matWorld_.m[3][0];
+    worldPos.y = worldTransform_.matWorld_.m[3][1];
+    worldPos.z = worldTransform_.matWorld_.m[3][2];
+    return worldPos;
 }
