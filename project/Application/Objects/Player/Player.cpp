@@ -168,12 +168,12 @@ void Player::Rotate()
 
 void Player::MoveController()
 {
-	deltaTime_ = gameTime_->GetObjectTime(timeID_);
+	deltaTime_ = gameTime_->GetDeltaTime(timeID_);
 
-	// deltaTimeの上限設定
-	const float maxDeltaTime = 1.0f / 30.0f;
-	deltaTime_ = (std::max)(deltaTime_, maxDeltaTime);
-
+	// ヒットストップ中は動きを停止
+	if (deltaTime_ <= 0.001f) {
+		return;
+	}
 	XINPUT_STATE state;
 	if (!Input::GetInstance()->GetJoystickState(0, state)) {
 		// 速度減衰
@@ -433,6 +433,8 @@ void Player::ShowCoordinatesImGui()
 	ImGui::Text("DrawCall");
 	ImGui::Checkbox("Enable Draw", &isDrawEnabled_);
 	ImGui::Checkbox("Update", &isUpdate_);
+
+	ImGui::DragFloat("deltaTime_", &deltaTime_, 0.01f, 0.0f, 10.0f);
 	ImGui::End();
 #endif
 

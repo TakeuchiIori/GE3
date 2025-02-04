@@ -7,7 +7,7 @@
 #include "Collision/CollisionTypeIdDef.h"
 #include "Player/Player.h"
 #include "Particle/ParticleManager.h"
-
+#include <Systems/GameTime/HitStop.h>
 #ifdef _DEBUG
 #include "imgui.h" 
 #endif // _DEBUG
@@ -114,16 +114,6 @@ void Enemy::ShowCoordinatesImGui()
 #ifdef _DEBUG
     ImGui::Begin("Enemy");
     ImGui::Checkbox("Enable Draw", &isDrawEnabled_);
-
-    // スケール
-    //ImGui::Text("Scale");
-    //float scale[3] = { worldTransform_.scale_.x, worldTransform_.scale_.y, worldTransform_.scale_.z };
-    //if (ImGui::SliderFloat3("Scale", scale, 0.1f, 10.0f, "%.2f")) {
-    //    worldTransform_.scale_.x = std::max(0.1f, scale[0]);
-    //    worldTransform_.scale_.y = std::max(0.1f, scale[1]);
-    //    worldTransform_.scale_.z = std::max(0.1f, scale[2]);
-    //}
-
 	ImGui::DragFloat("deltaTime_", &deltaTime_, 0.01f, 0.0f, 10.0f);
 
 
@@ -167,10 +157,10 @@ void Enemy::OnCollision(Collider* other)
 		isShake_ = true;
 
 
-
-       
-
-
+        
+        HitStop::GetInstance()->Start(timeID_, HitStop::HitStopType::Heavy);
+        HitStop::GetInstance()->Start("Player", HitStop::HitStopType::Heavy);
+        //HitStop::GetInstance()->Start(timeID_, 0.1f);
     }
 
     
@@ -194,12 +184,10 @@ Matrix4x4 Enemy::GetWorldMatrix() const
 
 void Enemy::Move() {
     // デルタタイムの取得と制限
-    deltaTime_ = gameTime_->GetObjectTime(timeID_);
-    const float maxDeltaTime = 1.0f / 30.0f;
-    deltaTime_ = std::min(deltaTime_, maxDeltaTime);
-
-    if (deltaTime_ <= 0.0f) {
-        return;  // デルタタイムが0以下の場合は移動しない
+    deltaTime_ = gameTime_->GetDeltaTime(timeID_);
+    // ヒットストップ中は動きを停止
+    if (deltaTime_ <= 0.001f) {
+        return;
     }
 
     // プレイヤーへの方向ベクトルを計算

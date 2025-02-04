@@ -9,7 +9,7 @@
 #include "PipelineManager/SkinningManager.h"
 #include "Loaders/Model/Model.h"
 #include "Collision/CollisionManager.h"
-
+#include <Systems/GameTime/HitStop.h>
 #include <cstdlib>
 #include <ctime>
 
@@ -305,7 +305,7 @@ void GameScene::ChangePahse()
         //}
 
         // objの更新
-        player_->Update();
+        //player_->Update();
 
                 // パーティクル更新
        // ParticleManager::GetInstance()->Update();
@@ -353,7 +353,7 @@ void GameScene::ChangePahse()
 
      
 		GameTime::GetInstance()->GameUpdate(dt);
-
+        HitStop::GetInstance()->Update(dt);
         //iCommand_ = inputHandler_->HandleInput();
 
         //if (this->iCommand_) {

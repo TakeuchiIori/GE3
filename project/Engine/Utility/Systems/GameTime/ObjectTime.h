@@ -1,22 +1,25 @@
 #pragma once
-#include <string>
 
 class ObjectTime {
 public:
-  ObjectTime();
+    ObjectTime() : time_(0.0f), timeScale_(1.0f), isPaused_(false) {}
 
-  /// <summary>
-  /// 時間の更新
-  /// </summary>
-  /// <param name="deltaTime"></param>
-  void Update(float deltaTime);
+    void Update(float deltaTime) {
+        if (!isPaused_) {
+            time_ += deltaTime * timeScale_;
+        }
+    }
 
-  /// <summary>
-  /// オブジェクトの時間を取得
-  /// </summary>
-  /// <returns></returns>
-  float GetTime() const { return time_; }
+    float GetTime() const { return time_; }
+    float GetTimeScale() const { return timeScale_; }
+    bool IsPaused() const { return isPaused_; }
+
+    void SetTimeScale(float scale) { timeScale_ = scale; }
+    void SetPaused(bool paused) { isPaused_ = paused; }
+    void Reset() { time_ = 0.0f; }
 
 private:
-  float time_; // オブジェクト固有の時間
+    float time_;      // オブジェクトの経過時間
+    float timeScale_; // 時間スケール（1.0が通常速度）
+    bool isPaused_;   // 一時停止フラグ
 };
