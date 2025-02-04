@@ -69,11 +69,11 @@ void GameScene::Initialize()
     ground_->Initialize(sceneCamera_.get());
     
     // test
-    test_ = std::make_unique<Object3d>();
-    test_->Initialize();
-    test_->SetModel("walk.gltf",true);
-    //test_->SetModel("sneakWalk.gltf", true);
-    testWorldTransform_.Initialize();
+    //test_ = std::make_unique<Object3d>();
+    //test_->Initialize();
+    //test_->SetModel("walk.gltf",true);
+    ////test_->SetModel("sneakWalk.gltf", true);
+    //testWorldTransform_.Initialize();
     //test_->SetLine(line_.get());
 
     // 初期カメラモード設定
@@ -314,7 +314,7 @@ void GameScene::ChangePahse()
        // ParticleManager::GetInstance()->Update();
 
         ground_->Update();
-        test_->UpdateAnimation();
+       // test_->UpdateAnimation();
 
         // カメラ更新
         UpdateCameraMode();
@@ -376,7 +376,7 @@ void GameScene::ChangePahse()
 
         // enemy_->Update();
         ground_->Update();
-        test_->UpdateAnimation();
+        //test_->UpdateAnimation();
         // 各敵を更新
         enemyManager_->Update();
         if (enemyManager_->IsAllEnemiesDefeated()) {
