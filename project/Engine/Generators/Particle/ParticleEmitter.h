@@ -62,7 +62,7 @@ private:
 
     public:
 
-	void SetPosition(const Vector3& position) { emitter_.transform.translate = position; };
+	void SetPosition(const Vector3& position) { emitter_.transform = position; };
 	void SetCount(uint32_t& setcount) { emitter_.count= setcount; };
 
 private:
@@ -72,7 +72,7 @@ private:
 	/// </summary>
 	struct Emitter {
 		std::string name; 
-		EulerTransform transform;
+		Vector3 transform;
 		uint32_t count; 
 		float frequency;			// 頻度
 		float frequencyTime;		// 頻度時間

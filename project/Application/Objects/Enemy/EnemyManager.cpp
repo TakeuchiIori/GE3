@@ -55,6 +55,7 @@ void EnemyManager::SpawnEnemy() {
     // 新しい敵を生成
     auto newEnemy = std::make_unique<Enemy>();
     newEnemy->Initialize(camera_, { -30.0f, 0.0f, 20.0f });
+	newEnemy->SetPosition(spawnPos);
     newEnemy->SetEnemyManager(this);
     newEnemy->SetPlayer(player_);
 

@@ -75,7 +75,7 @@ void Enemy::Update()
  
     Move();
 
-    /*particleEmitter_->UpdateEmit("Enemy", worldTransform_.translation_, 5);*/
+   
 
 
 
@@ -96,7 +96,7 @@ void Enemy::Update()
 
 #endif // _DEBUG
  
-
+   //particleEmitter_->UpdateEmit("Enemy", WS_.translation_, 5);
 
     worldTransform_.UpdateMatrix();
     WS_.UpdateMatrix();
@@ -245,6 +245,8 @@ void Enemy::Move() {
 
     // 滑らかな回転
     worldTransform_.rotation_.y += rotationDiff * rotationSpeed_ * deltaTime_;
+
+    
 }
 
 void Enemy::CameraShake()
