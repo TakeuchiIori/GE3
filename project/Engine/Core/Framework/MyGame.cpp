@@ -9,7 +9,11 @@ void MyGame::Initialize()
 	// シーンファクトリを生成し、 シーンマネージャに最初のシーンをセット
 	sceneFactory_ = std::make_unique<SceneFactory>();
 	SceneManager::GetInstance()->SetSceneFactory(sceneFactory_.get());
+#ifdef _DEBUG
+	SceneManager::GetInstance()->ChangeScene("Game");
+#else
 	SceneManager::GetInstance()->ChangeScene("Title");
+#endif
 	// パーティクルマネージャ生成
 	ParticleManager::GetInstance()->Initialize(srvManager_);
 	ParticleManager::GetInstance()->CreateParticleGroup("Enemy", "Resources/images/circle.png");

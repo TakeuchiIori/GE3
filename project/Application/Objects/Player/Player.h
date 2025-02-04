@@ -7,7 +7,7 @@
 #include "WorldTransform./WorldTransform.h"
 #include "Collision./Collider.h"
 #include "PlayerWeapon/PlayerWeapon.h"
-
+#include <Systems/GameTime/GameTIme.h>
 #include <Particle/ParticleManager.h>
 #include <Particle/ParticleEmitter.h>
 
@@ -148,6 +148,7 @@ public: // コマンドパターンによる移動関数
 public: // アクセッサ
 	// プレイヤーの位置を取得する関数
 	const Vector3& GetPosition() const { return worldTransform_.translation_; }
+	Vector3 GetWorldPosition();
 	const Vector3& GetRotation() const { return worldTransform_.rotation_; }
 	const WorldTransform& GetWorldTransform() { return worldTransform_; }
 
@@ -180,7 +181,7 @@ private:
 								フラグ関連
 	//===============================================================*/
 	bool isColliding_ = false;
-	float moveSpeed_;
+
 	bool isDrawEnabled_ = true;
 	bool isUpdate_ = true;
 	bool isShake_ = false;
@@ -218,5 +219,15 @@ private:
 
 
 	float rotrateSpeed_ = 0.25f;
+	float moveSpeed_ = 0.25f;
+	float maxMoveSpeed_ = 0.25f;  // 最大移動速度
+	Vector3 velocity_ = { 0.0f, 0.0f, 0.0f };  // 現在の速度ベクトル
+	//float acceleration_ = 0.0f;  // 加速度
+	//float deceleration_ = 0.0f;  // 減速度
+	
+
+	std::string timeID_;
+	GameTime* gameTime_ = nullptr;
+	float deltaTime_;
 };
 

@@ -63,6 +63,11 @@ private:
 	/// </summary>
 	void CreateMaterialResource();
 
+	/// <summary>
+	/// マテリアルリソース作成
+	/// </summary>
+	void CreateCameraResource();
+
 public: // アクセッサ
 	Model* GetModel() { return model_; }
 
@@ -93,6 +98,9 @@ public: // アクセッサ
 	void SetMaterialColor(const Vector4& color) { materialData_->color = color; }
 	void SetAlpha(const float& alpha) { materialData_->color.w = alpha; }
 	bool IsLightingEnabled() const { return materialData_->enableLighting != 0; }
+	bool IsSpecularEnabled() const { return materialData_->enableSpecular; }
+	bool IsHalfVectorEnabled() const { return materialData_->isHalfVector; }
+	
 	void SetLightingEnabled(bool enabled) { materialData_->enableLighting = enabled ? 1 : 0; }
 	float GetMaterialShininess() const { return materialData_->shininess; }
 	void SetMaterialShininess(float shininess) { materialData_->shininess = shininess; }
@@ -100,7 +108,8 @@ public: // アクセッサ
 	void SetMaterialUVTransform(const Matrix4x4& uvTransform) { materialData_->uvTransform = uvTransform; }
 	bool IsMaterialEnabled() const { return materialData_->enableLighting != 0; }
 	void SetMaterialEnabled(bool enable) { materialData_->enableLighting = enable; }
-
+	void SetMaterialSpecularEnabled(bool enable) { materialData_->enableSpecular = enable; }
+	void SetMaterialHalfVectorEnabled(bool enable) { materialData_->isHalfVector = enable; }
 private:
 	// マテリアルデータ
 	struct Material {
@@ -109,10 +118,19 @@ private:
 		float padding[3];
 		Matrix4x4 uvTransform;
 		float shininess;
+		bool enableSpecular;
+		bool isHalfVector;
+	};
+
+	struct CameraForGPU {
+		Vector3 worldPosition;
 	};
 	// マテリアルのリソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> materialResource_;
 	Material* materialData_ = nullptr;
+
+	Microsoft::WRL::ComPtr<ID3D12Resource> cameraResource_;
+	CameraForGPU* cameraData_ = nullptr;
 
 	// 外部からのポインタ
 	Object3dCommon* object3dCommon_ = nullptr;

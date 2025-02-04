@@ -45,7 +45,7 @@ void EnemeyManager::SpawnEnemy() {
     std::uniform_real_distribution<float> dist(-spawnRange_, spawnRange_);
 
     // プレイヤーの位置を基準にランダムな位置を計算
-    Vector3 playerPos = player_->GetPosition();
+    Vector3 playerPos = player_->GetWorldPosition();
     Vector3 spawnPos = {
         playerPos.x + dist(gen),
         1.0f,  // Y座標は固定

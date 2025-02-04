@@ -16,6 +16,7 @@
 #ifdef _DEBUG
 #include "imgui.h"
 #endif // _DEBUG
+#include <LightManager/LightManager.h>
 
 void Object3d::Initialize()
 {
@@ -27,6 +28,8 @@ void Object3d::Initialize()
 
 
 	CreateMaterialResource();
+
+	CreateCameraResource();
 }
 void Object3d::UpdateAnimation()
 {
@@ -61,6 +64,8 @@ void Object3d::Draw(Camera* camera,WorldTransform& worldTransform)
 	// TransformatonMatrixCB
 	object3dCommon_->GetDxCommon()->GetCommandList()->SetGraphicsRootConstantBufferView(1, worldTransform.GetConstBuffer()->GetGPUVirtualAddress());
 
+	object3dCommon_->GetDxCommon()->GetCommandList()->SetGraphicsRootConstantBufferView(4, cameraResource_->GetGPUVirtualAddress());
+
 	// 3Dモデルが割り当てられていれば描画する
 	if (model_) {
 		model_->Draw();
@@ -79,7 +84,16 @@ void Object3d::CreateMaterialResource()
 	materialData_->color = { 1.0f, 1.0f, 1.0f, 1.0f };
 	materialData_->enableLighting = true;
 	materialData_->shininess = 30.0f;
+	materialData_->enableSpecular = true;
+	materialData_->isHalfVector = true;
 	materialData_->uvTransform = MakeIdentity4x4();
+}
+
+void Object3d::CreateCameraResource()
+{
+	cameraResource_ = object3dCommon_->GetDxCommon()->CreateBufferResource(sizeof(CameraForGPU));
+	cameraResource_->Map(0, nullptr, reinterpret_cast<void**>(&cameraData_));
+	cameraData_->worldPosition = { 0.0f, 0.0f, 0.0f };
 }
 
 
@@ -123,6 +137,8 @@ void Object3d::MaterialByImGui()
 		SetMaterialShininess(shininess);
 	}
 
+
+
 	Matrix4x4 uvTransform = GetMaterialUVTransform();
 	if (ImGui::InputFloat("UV Scale X", &uvTransform.m[0][0], 0.1f, 1.0f, "%.2f")) {
 		uvTransform.m[0][0] = std::clamp(uvTransform.m[0][0], 0.1f, 10.0f);
@@ -133,6 +149,16 @@ void Object3d::MaterialByImGui()
 		SetMaterialUVTransform(uvTransform);
 	}
 
+	bool enableSpecular = IsSpecularEnabled();
+	if (ImGui::Checkbox("Enable Specular", &enableSpecular)) {
+		SetMaterialSpecularEnabled(enableSpecular);
+	}
+
+	bool isHalfVector = IsHalfVectorEnabled();
+	if (ImGui::Checkbox("Use Half Vector", &isHalfVector)) {
+		SetMaterialHalfVectorEnabled(isHalfVector);
+	}
+	
 	bool isMaterialLight = IsMaterialEnabled();
 	if (ImGui::Checkbox("Use Lighting", &isMaterialLight)) {
 		SetMaterialEnabled(isMaterialLight);

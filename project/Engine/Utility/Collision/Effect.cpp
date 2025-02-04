@@ -5,6 +5,7 @@
 // C++
 #include "MathFunc.h"
 #include <cmath> // sin, cos 用
+#include <Particle/ParticleManager.h>
 
 void Effect::Initialize() {
     worldTransform_.Initialize();
@@ -40,6 +41,8 @@ void Effect::Update() {
 
     // 行列の更新
     worldTransform_.UpdateMatrix();
+
+    ParticleManager::GetInstance()->Emit("W", worldTransform_.translation_, 10);
 
     // タイマーの減少と終了判定
     timer_--;

@@ -690,7 +690,7 @@ void PlayerWeapon::OnCollision(Collider* other)
 		effect->Update();
 		effects_.push_back(effect);
 
-		ParticleManager::GetInstance()->Emit("W", enemy->GetWorldTransform().translation_, 3);
+		
 		
 	}
 

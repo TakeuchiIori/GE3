@@ -51,10 +51,15 @@ void Enemy::Initialize(Camera* camera, const Vector3& pos)
     // TypeIDの設定
     Collider::SetTypeID(static_cast<uint32_t>(CollisionTypeIdDef::kEnemy));
 
+    isActive_ = true;
+    isAlive_ = true;
 
     particleEmitter_ = std::make_unique<ParticleEmitter>("Enemy", worldTransform_.translation_, 5);
     particleEmitter_->Initialize();
 	
+	timeID_ = "Enemy : " + std::to_string(serialNumber_);
+	gameTime_ = GameTime::GetInstance();
+	gameTime_->RegisterObject(timeID_);
 }
 
 void Enemy::Update()
@@ -71,7 +76,7 @@ void Enemy::Update()
     Move();
 
 
-    particleEmitter_->UpdateEmit("Enemy", worldTransform_.translation_, 5);
+   
     
 
     if (isHit_) {
@@ -86,9 +91,11 @@ void Enemy::Update()
    ShowCoordinatesImGui();
 
 #endif // _DEBUG
-
+   particleEmitter_->UpdateEmit("Enemy", worldTransform_.translation_, 3);
     worldTransform_.UpdateMatrix();
     WS_.UpdateMatrix();
+
+    
 }
 
 void Enemy::Draw()
@@ -117,7 +124,7 @@ void Enemy::ShowCoordinatesImGui()
     //    worldTransform_.scale_.z = std::max(0.1f, scale[2]);
     //}
 
-
+	ImGui::DragFloat("deltaTime_", &deltaTime_, 0.01f, 0.0f, 10.0f);
 
 
     // 回転
@@ -186,19 +193,46 @@ Matrix4x4 Enemy::GetWorldMatrix() const
 }
 
 void Enemy::Move() {
+    // デルタタイムの取得と制限
+    deltaTime_ = gameTime_->GetObjectTime(timeID_);
+    const float maxDeltaTime = 1.0f / 30.0f;
+    deltaTime_ = std::min(deltaTime_, maxDeltaTime);
 
-    // プレイヤーの位置を取得
-    Vector3 playerPos = player_->GetPosition();
+    if (deltaTime_ <= 0.0f) {
+        return;  // デルタタイムが0以下の場合は移動しない
+    }
+
     // プレイヤーへの方向ベクトルを計算
-    Vector3 pos = playerPos - worldTransform_.translation_;
-    float weaponRadius = 4.0f;
+    Vector3 toPlayer = player_->GetWorldPosition() - worldTransform_.translation_;
+    float distanceToPlayer = Length(toPlayer);
 
-    // プレイヤーとの距離が一定以上なら近づく
-    if (Length(pos) > weaponRadius + radius_) {
-        // 方向の正規化
-        pos = Normalize(pos);
-        // プレイヤーの方向に移動
-        worldTransform_.translation_ += pos * speed_;
+    // プレイヤーとの最小距離（これ以上近づかない）
+    const float minDistance = radius_ + weaponRadius_;  // 自分の半径 + 武器の半径
+    // プレイヤーとの最大距離（この距離以上離れると追跡を開始）
+    const float maxDistance = 20.0f;  // 追跡を開始する距離
+
+    // プレイヤーが追跡範囲内にいる場合
+    if (distanceToPlayer > minDistance && distanceToPlayer < maxDistance) {
+        // 移動方向の正規化
+        Vector3 moveDirection = Normalize(toPlayer);
+
+        // 現在の速度を計算（メートル/秒）
+        Vector3 velocity = moveDirection * speedPerSecond_ * deltaTime_;
+
+        // 移動速度に上限を設定
+        float currentSpeed = Length(velocity);
+        if (currentSpeed > maxSpeed_ * deltaTime_) {
+            velocity = Normalize(velocity) * maxSpeed_ * deltaTime_;
+        }
+
+        // 位置の更新
+        worldTransform_.translation_ += velocity;
+
+        // プレイヤーとの最小距離を保持
+        if (distanceToPlayer < minDistance) {
+            Vector3 pushBackDir = Normalize(toPlayer);
+            worldTransform_.translation_ = player_->GetWorldPosition() - (pushBackDir * minDistance);
+        }
     }
 
     // 高さは固定
@@ -209,10 +243,20 @@ void Enemy::Move() {
     WS_.translation_.z = worldTransform_.translation_.z;
     WS_.translation_.y = 0.1f;
 
-    // プレイヤーの方向を向く
-    Vector3 lockOnPos = player_->GetPosition();
-    Vector3 sub = lockOnPos - worldTransform_.translation_;
-    worldTransform_.rotation_.y = std::atan2(sub.x, sub.z);
+    // プレイヤーの方向を向く（滑らかな回転に変更）
+    Vector3 targetDirection = player_->GetWorldPosition() - worldTransform_.translation_;
+    float targetRotationY = std::atan2(targetDirection.x, targetDirection.z);
+
+    // 現在の回転から目標の回転まで補間
+    float currentRotationY = worldTransform_.rotation_.y;
+    float rotationDiff = targetRotationY - currentRotationY;
+
+    // 回転角度を-πからπの範囲に正規化
+    while (rotationDiff > std::numbers::pi_v<float>) rotationDiff -= 2 * std::numbers::pi_v<float>;
+    while (rotationDiff < -std::numbers::pi_v<float>) rotationDiff += 2 * std::numbers::pi_v<float>;
+
+    // 滑らかな回転
+    worldTransform_.rotation_.y += rotationDiff * rotationSpeed_ * deltaTime_;
 }
 
 void Enemy::CameraShake()

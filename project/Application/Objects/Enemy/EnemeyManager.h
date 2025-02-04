@@ -29,7 +29,7 @@ public:
     void SpawnEnemy();
 
     // プレイヤーの設定
-    void SetPlayer(const Player* player) { player_ = player; }
+    void SetPlayer(Player* player) { player_ = player; }
     Enemy* GetEnemy(int i) { return enemies_[i].get(); }
     size_t GetEnemyCount() const { return enemies_.size(); }
      bool IsAllEnemiesDefeated() const { return deadNum_ >= maxEnemyCount_; }
@@ -45,5 +45,5 @@ private:
     // ポインタ
     std::vector<std::unique_ptr<Enemy>> enemies_;
     Camera* camera_ = nullptr;
-    const Player* player_ = nullptr;
+    Player* player_ = nullptr;
 };

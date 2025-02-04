@@ -49,6 +49,10 @@ void Player::Initialize(Camera* camera)
     particleEmitter_->Initialize();
 
 	InitJson();
+
+	timeID_ = "Player";
+	gameTime_ = GameTime::GetInstance();
+	gameTime_->RegisterObject(timeID_);
 }
 
 void Player::Update()
@@ -164,57 +168,77 @@ void Player::Rotate()
 
 void Player::MoveController()
 {
-	
-	// XInputデバイスの状態を取得
+	deltaTime_ = gameTime_->GetObjectTime(timeID_);
+
+	// deltaTimeの上限設定
+	const float maxDeltaTime = 1.0f / 30.0f;
+	deltaTime_ = (std::max)(deltaTime_, maxDeltaTime);
+
 	XINPUT_STATE state;
 	if (!Input::GetInstance()->GetJoystickState(0, state)) {
-		return; // コントローラーが接続されていない場合は終了
+		// 速度減衰
+		velocity_ = velocity_ * 0.9f;
+		worldTransform_.translation_ += velocity_;
+		return;
 	}
 
 	// 左スティックの入力を取得
-	float leftStickX = state.Gamepad.sThumbLX / 32768.0f; // 正規化（-1.0～1.0）
+	float leftStickX = state.Gamepad.sThumbLX / 32768.0f;
 	float leftStickY = state.Gamepad.sThumbLY / 32768.0f;
 
-	// 入力が一定の閾値以上でない場合は無視
+	// デッドゾーン処理
 	if (std::fabs(leftStickX) < 0.1f) leftStickX = 0.0f;
 	if (std::fabs(leftStickY) < 0.1f) leftStickY = 0.0f;
 
-	// スティックが入力されていない場合は回転や移動をしない
 	if (leftStickX == 0.0f && leftStickY == 0.0f) {
+		// 入力がない場合は減速
+		velocity_ = velocity_ * 0.9f;
+		worldTransform_.translation_ += velocity_;
 		return;
 	}
 
 	// カメラの回転行列を取得
 	Matrix4x4 cameraRotationMatrix = MakeRotateMatrixXYZ(camera_->transform_.rotate);
 
-	// カメラのXZ平面の前方ベクトルを取得
+	// カメラの方向ベクトルを取得
 	Vector3 cameraForward = {
-		cameraRotationMatrix.m[2][0], // カメラのZ軸方向のX成分
+		cameraRotationMatrix.m[2][0],
 		0.0f,
-		cameraRotationMatrix.m[2][2]  // カメラのZ軸方向のZ成分
+		cameraRotationMatrix.m[2][2]
 	};
 
-	// カメラの右方向（XZ平面）を計算
 	Vector3 cameraRight = {
-		cameraRotationMatrix.m[0][0], // カメラのX軸方向のX成分
+		cameraRotationMatrix.m[0][0],
 		0.0f,
-		cameraRotationMatrix.m[0][2]  // カメラのX軸方向のZ成分
+		cameraRotationMatrix.m[0][2]
 	};
 
-	// カメラ基準の移動ベクトルを計算（スティックの前後で前方、左右で横移動）
+	// 移動方向の計算
 	Vector3 moveDirection = cameraForward * leftStickY + cameraRight * leftStickX;
 
-	// ベクトルを正規化（速度を一定に保つため）
+	// 方向の正規化
 	if (moveDirection.x != 0.0f || moveDirection.z != 0.0f) {
 		moveDirection = Normalize(moveDirection);
 	}
 
-	// プレイヤーの回転を更新（移動方向を向く）
+	// プレイヤーの回転
 	worldTransform_.rotation_.y = atan2f(moveDirection.x, moveDirection.z);
 
-	// プレイヤーの移動処理
-	worldTransform_.translation_ += moveDirection * moveSpeed_;
+	// 目標速度の計算（入力の強さに応じた速度）
+	float inputMagnitude = std::sqrt(leftStickX * leftStickX + leftStickY * leftStickY);
+	inputMagnitude = std::min(inputMagnitude, 1.0f);  // 入力の大きさを1以下に制限
 
+	// 現在の速度を計算
+	velocity_ = moveDirection * moveSpeed_ * inputMagnitude * deltaTime_;
+
+	// 速度の大きさを制限
+	float speed = Length(velocity_);
+	if (speed > maxMoveSpeed_) {
+		velocity_ = Normalize(velocity_) * maxMoveSpeed_;
+	}
+
+	// 位置の更新
+	worldTransform_.translation_ += velocity_;
 
 
 }
@@ -391,6 +415,16 @@ void Player::MoveLeft()
 	}
 }
 
+Vector3 Player::GetWorldPosition()
+{
+	Vector3 worldPos;
+	worldPos.x = worldTransform_.matWorld_.m[3][0];
+	worldPos.y = worldTransform_.matWorld_.m[3][1];
+	worldPos.z = worldTransform_.matWorld_.m[3][2];
+
+	return worldPos;
+}
+
 void Player::ShowCoordinatesImGui()
 {
 #ifdef _DEBUG
@@ -437,7 +471,7 @@ void Player::OnCollision(Collider* other)
 Vector3 Player::GetCenterPosition() const
 {
 	// ローカル座標でのオフセット
-	const Vector3 offset = { 0.0f, 1.5f, 0.0f };
+	const Vector3 offset = { 0.0f, 0.0f, 0.0f };
 	// ワールド座標に変換
 	Vector3 worldPos = TransformCoordinates(offset, worldTransform_.matWorld_);
 

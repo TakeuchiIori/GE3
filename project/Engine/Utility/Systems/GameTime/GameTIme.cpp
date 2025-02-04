@@ -1,6 +1,18 @@
 #include "GameTIme.h"
 #include <stdexcept>
 
+GameTime* GameTime::GetInstance()
+{
+    static GameTime instance;
+    return &instance;
+}
+
+void GameTime::Initialize()
+{
+    globalTime_ = 0.0f;
+    //objectTimes_.clear();
+}
+
 /// ゲーム全体の時間を更新
 void GameTime::GameUpdate(float deltaTime) {
   globalTime_ += deltaTime;

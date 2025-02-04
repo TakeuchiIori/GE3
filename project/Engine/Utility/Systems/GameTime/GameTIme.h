@@ -5,8 +5,19 @@
 
 class GameTime {
 public:
-  GameTime() : globalTime_(0.0f) {}
+  GameTime(){}
   ~GameTime() = default;
+  // シングルトンインスタンスの取得
+  static GameTime* GetInstance();
+
+  // コピーと代入を禁止
+  GameTime(const GameTime&) = delete;
+  GameTime& operator=(const GameTime&) = delete;
+
+  /// <summary>
+  /// 初期化
+  /// </summary>
+  void Initialize();
 
   /// <summary>
   /// ゲーム全体の時間を更新

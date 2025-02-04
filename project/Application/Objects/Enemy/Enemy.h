@@ -7,7 +7,7 @@
 #include "Collision./Collider.h"
 #include "Loaders/Json/JsonManager.h"
 #include "Systems/Camera/Camera.h"
-
+#include <Systems/GameTime/GameTIme.h>
 // C++
 #include <memory>
 
@@ -15,6 +15,7 @@
 #include "MathFunc.h"
 #include "Vector3.h" 
 #include "Particle/ParticleEmitter.h"
+
 
 class Player;
 class Enemy : public Collider
@@ -68,9 +69,6 @@ private:
 	/// </summary>
 	void Move();
 
-
-	void UpdateParticle();
-
 	/// <summary>
 	/// カメラシェイク
 	/// </summary>
@@ -88,7 +86,7 @@ public: // アクセッサ
 	const Vector3& GetPosition() const { return worldTransform_.translation_; }
 	const Vector3& GetRotation() const { return worldTransform_.rotation_; }
 	void SetPosition(const Vector3& pos) { worldTransform_.translation_ = pos; }
-	void SetPlayer(const Player* player) { player_ = player; }; // プレイヤーをセットする関数
+	void SetPlayer(Player* player) { player_ = player; }; // プレイヤーをセットする関数
 
 
 	/// <summary>
@@ -104,7 +102,7 @@ public: // アクセッサ
 private:
 	Input* input_ = nullptr;
 	Camera* camera_ = nullptr;
-	const Player* player_; 
+	Player* player_ = nullptr; 
 	JsonManager* jsonManager_ = nullptr;
 	std::unique_ptr<ParticleEmitter> particleEmitter_;
 	std::unique_ptr<Object3d> shadow_;
@@ -113,11 +111,9 @@ private:
 	WorldTransform worldTransform_;
 	WorldTransform WS_;
 
-
-	Vector3 GetParticlePosition() const;
-	float radius_ = 1.0f;
+	//float radius_ = 4.0f;
 	float s_;
-	float speed_ = 0.25f;
+	float speed_ = 0.15f;
 	bool isColliding_ = false;
 	Vector3 moveSpeed_;
 	bool isDrawEnabled_ = true;
@@ -131,5 +127,16 @@ private:
 	int hp_ = 100;
 	bool isAlive_ = true;
 	bool isHit_ = false;
+
+
+	std::string timeID_;
+	GameTime* gameTime_ = nullptr;
+	float deltaTime_;
+
+	float speedPerSecond_ = 5.0f;    // 基本移動速度（メートル/秒）
+	float maxSpeed_ = 8.0f;          // 最大移動速度（メートル/秒）
+	float rotationSpeed_ = 5.0f;     // 回転速度（ラジアン/秒）
+	float radius_ = 1.0f;            // 敵の衝突半径
+	const float weaponRadius_ = 2.0f; // プレイヤーの武器の半径
 };
 

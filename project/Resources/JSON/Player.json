@@ -1,10 +1,13 @@
 {
+    "Acceleration": 10.0,
+    "Deceleration": 15.0,
     "JumpHeight": 5.0,
+    "Max Move Speed": 0.25,
     "Rotate Speed": 0.25,
     "Speed": 0.15000000596046448,
     "World Translation": {
-        "x": 3.084496259689331,
+        "x": 0.0,
         "y": 1.0,
-        "z": -48.068450927734375
+        "z": 0.0
     }
 }

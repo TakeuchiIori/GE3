@@ -18,6 +18,7 @@
 #endif // DEBUG
 #include "LightManager/LightManager.h"
 #include "Sprite/SpriteCommon.h"
+#include <Systems/GameTime/GameTIme.h>
 
 /// <summary>
 /// 初期化処理
@@ -50,7 +51,7 @@ void GameScene::Initialize()
     //inputHandler_->AssignMoveRightCommandPressKeyD();
     //inputHandler_->AssignMoveLeftCommandPressKeyA();
 
-
+	GameTime::GetInstance()->Initialize();
     
 	followCamera_.Initialize();
     // 各オブジェクトの初期化
@@ -112,6 +113,8 @@ void GameScene::Initialize()
     sprite_->Initialize("Resources/Textures/KoboRB.png");
     sprite_->SetSize(Vector2{ 1280.0f,720.0f });
     sprite_->SetTextureSize(Vector2{ 1280,720 });
+
+    
 
 }
 
@@ -268,6 +271,7 @@ void GameScene::Finalize()
 
 void GameScene::ChangePahse()
 {
+    float dt = 1.0f / 60.0f;
     switch (phase_)
     {
     case Phase::kFadeIn:
@@ -301,7 +305,7 @@ void GameScene::ChangePahse()
         //}
 
         // objの更新
-       player_->Update();
+        player_->Update();
 
                 // パーティクル更新
        // ParticleManager::GetInstance()->Update();
@@ -346,10 +350,9 @@ void GameScene::ChangePahse()
         //particleEmitter_[0]->SetPosition(player_->GetPosition());
        
        
-        if (isClear_) {
-            phase_ = Phase::kFadeOut;
-            fade_->Start(Fade::Status::FadeOut, 2.0f);
-        }
+
+     
+		GameTime::GetInstance()->GameUpdate(dt);
 
         //iCommand_ = inputHandler_->HandleInput();
 
@@ -367,11 +370,7 @@ void GameScene::ChangePahse()
         player_->Update();
         player_->JsonImGui();
 
-        // 各敵を更新
-        enemyManager_->Update();
-        if (enemyManager_->IsAllEnemiesDefeated()) {
-            isClear_ = true;
-        }
+    
 
 
 
@@ -388,6 +387,12 @@ void GameScene::ChangePahse()
         UpdateCameraMode();
         UpdateCamera();
 
+        // 各敵を更新
+        enemyManager_->Update();
+        if (enemyManager_->IsAllEnemiesDefeated()) {
+            isClear_ = true;
+        }
+
         // ParticleManager::GetInstance()->UpdateParticlePlayerWeapon(weaponPos);
         ShowImGui();
 
@@ -398,6 +403,11 @@ void GameScene::ChangePahse()
          // ワールドトランスフォーム更新
         testWorldTransform_.UpdateMatrix();
         cameraManager_.UpdateAllCameras();
+
+        if (isClear_) {
+            phase_ = Phase::kFadeOut;
+            fade_->Start(Fade::Status::FadeOut, 2.0f);
+        }
 
         //=====================================================//
         /*                  これより下は触るな危険　　　　　　　   　*/
