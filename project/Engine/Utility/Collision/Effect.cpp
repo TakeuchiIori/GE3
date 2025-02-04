@@ -42,7 +42,7 @@ void Effect::Update() {
     // 行列の更新
     worldTransform_.UpdateMatrix();
 
-    ParticleManager::GetInstance()->Emit("W", worldTransform_.translation_, 10);
+    //ParticleManager::GetInstance()->Emit("W", worldTransform_.translation_, 10);
 
     // タイマーの減少と終了判定
     timer_--;

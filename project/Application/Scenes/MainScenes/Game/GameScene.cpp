@@ -30,7 +30,7 @@ void GameScene::Initialize()
     sceneCamera_ = cameraManager_.AddCamera();
     //Object3dCommon::GetInstance()->SetDefaultCamera(sceneCamera_.get());
 
-    ParticleManager::GetInstance()->SetCamera(sceneCamera_.get());
+    
 
     CollisionManager::GetInstance()->Initialize();
     // 線
@@ -84,8 +84,8 @@ void GameScene::Initialize()
   
     emitterPosition_ = Vector3{ 0.0f, 0.0f, 0.0f }; // エミッタの初期位置
     particleCount_ = 1;
-    //particleEmitter_[0] = std::make_unique<ParticleEmitter>("Circle", emitterPosition_, particleCount_);
-    //particleEmitter_[0]->Initialize();
+    particleEmitter_[0] = std::make_unique<ParticleEmitter>("Circle", emitterPosition_, particleCount_);
+    particleEmitter_[0]->Initialize();
     //// パーティクルグループ名を指定
     //const std::string particleGroupName = "PlayerWeaponEffect";
     //weaponPos = player_->GetPosition();
@@ -114,7 +114,7 @@ void GameScene::Initialize()
     sprite_->SetSize(Vector2{ 1280.0f,720.0f });
     sprite_->SetTextureSize(Vector2{ 1280,720 });
 
-    
+    ParticleManager::GetInstance()->SetCamera(sceneCamera_.get());
 
 }
 
@@ -383,7 +383,7 @@ void GameScene::ChangePahse()
             isClear_ = true;
         }
  
-        //particleEmitter_[0]->Emit();
+        particleEmitter_[0]->Emit();
 
         ParticleManager::GetInstance()->Update();
         // カメラ更新

@@ -45,7 +45,7 @@ void Enemy::Initialize(Camera* camera, const Vector3& pos)
     WS_.translation_.y = 0.1f;
 
     //GlobalVariables* globalvariables = GlobalVariables::GetInstance();
-    const char* groupName = "Enemy";
+   // const char* groupName = "Enemy";
     // グループを追加
    // GlobalVariables::GetInstance()->CreateGroup(groupName);
    // Collider::Initialize();
@@ -71,15 +71,15 @@ void Enemy::Update()
     }
 
 
-    CameraShake();
 
-    Vector3 worldPos = GetWorldPosition();
-    particleEmitter_->UpdateEmit("Enemy", worldPos, 5);
-    particleEmitter_->UpdateEmit("Enemy", worldTransform_.translation_, 5);
-
+ 
     Move();
 
+    /*particleEmitter_->UpdateEmit("Enemy", worldTransform_.translation_, 5);*/
 
+
+
+    CameraShake();
    
     
 
@@ -219,7 +219,7 @@ void Enemy::Move() {
         // プレイヤーとの最小距離を保持
         if (distanceToPlayer < minDistance) {
             Vector3 pushBackDir = Normalize(toPlayer);
-            worldTransform_.translation_ = player_->GetPosition() - (pushBackDir * minDistance);
+            worldTransform_.translation_ = player_->GetPosition() + (pushBackDir * minDistance);
         }
     }
 

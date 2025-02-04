@@ -91,6 +91,13 @@ public:
 		float currentTime;
 	};
 
+	//enum class ParticleUpdateMode {
+	//	kNormal,    // 通常の動き
+	//	kThunder,   // 雷
+	//	kFire,      // 炎
+	//	kSpiral,    // 螺旋
+	//	// 他のモードも追加可能
+	//};
 
 	struct ParticleGroup {
 		MaterialData materialData;										// マテリアルデータ
@@ -139,6 +146,10 @@ public:
 		ParticleColorSettings baseColor;
 		ParticleLifeSettings baseLife;
 	};
+
+
+
+
 
 public: // シングルトン
 	static ParticleManager* GetInstance();
@@ -213,6 +224,11 @@ private:
 	/// 
 	/// </summary>
 	void UpdateParticles();
+
+	/// <summary>
+	/// 
+	/// </summary>
+	void UpdateParticlesFor();
 
 
 	/// <summary>

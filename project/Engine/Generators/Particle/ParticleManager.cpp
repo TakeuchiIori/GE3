@@ -77,7 +77,7 @@ void ParticleManager::Update()
 		UpdateParticles();
 		break;
 	case kUpdateModeSpiral:
-		
+		UpdateParticlesFor();
 
 		break;
 	default:
@@ -222,6 +222,8 @@ void ParticleManager::UpdateParticles()
 	// ビュー・プロジェクション行列を生成
 	viewProjectionMatrix = Multiply(viewMatrix, projectionMatrix);
 
+
+
 	// パーティクルの更新処理
 	for (auto& [groupName, particleGroup] : particleGroups_) {
 
@@ -277,23 +279,116 @@ void ParticleManager::UpdateParticles()
 	}
 }
 
+void ParticleManager::UpdateParticlesFor() {
 
+	// カメラの行列を取得
+	Matrix4x4 cameraMatrix = MakeAffineMatrix(camera_->GetScale(), camera_->GetRotate(), camera_->GetTranslate());
+	Matrix4x4 viewMatrix = Inverse(cameraMatrix);
+	Matrix4x4 projectionMatrix = MakePerspectiveFovMatrix(0.45f, WinApp::kClientWidth / WinApp::kClientHeight, 0.1f, 100.0f);
+	Matrix4x4 backToFrontMatrix = MakeRotateMatrixY(std::numbers::pi_v<float>);
+	Matrix4x4 billboardMatrix;
+	Matrix4x4 viewProjectionMatrix;
+
+	// ビルボード用の行列
+	billboardMatrix = Multiply(backToFrontMatrix, cameraMatrix);
+	billboardMatrix.m[3][0] = 0.0f;
+	billboardMatrix.m[3][1] = 0.0f;
+	billboardMatrix.m[3][2] = 0.0f;
+
+	// ビュー・プロジェクション行列を生成
+	viewProjectionMatrix = Multiply(viewMatrix, projectionMatrix);
+
+	// 各パーティクルグループについて処理
+	for (auto& [groupName, particleGroup] : particleGroups_) {
+		auto particleIterator = particleGroup.particles.begin();
+		uint32_t numInstance = 0;
+
+		while (particleIterator != particleGroup.particles.end()) {
+			// 経過時間を更新
+			(*particleIterator).currentTime += kDeltaTime;
+
+			// 寿命が尽きたパーティクルは削除
+			if ((*particleIterator).currentTime >= (*particleIterator).lifeTime) {
+				particleIterator = particleGroup.particles.erase(particleIterator);
+				continue;
+			}
+
+			// 進行度を0～1の範囲に正規化
+			float normalizedTime = (*particleIterator).currentTime / (*particleIterator).lifeTime;
+
+			// 雷のジグザグな動き
+			float frequency = 30.0f;  // ジグザグの頻度
+			float amplitude = 0.5f;   // ジグザグの振幅
+			float descendSpeed = 15.0f; // 下降速度
+
+			// ノイズを使用してランダムな方向への変位を計算
+			float noiseX = std::sin(normalizedTime * frequency) * amplitude;
+			float noiseZ = std::cos(normalizedTime * frequency * 1.3f) * amplitude;
+
+			// 位置の更新
+			(*particleIterator).transform.translate.x += noiseX * kDeltaTime;
+			(*particleIterator).transform.translate.y -= descendSpeed * kDeltaTime;
+			(*particleIterator).transform.translate.z += noiseZ * kDeltaTime;
+
+			// スケールの更新（雷の太さの変化）
+			float baseScale = 1.0f;
+			float scaleVariation = std::sin(normalizedTime * frequency * 2.0f) * 0.3f;
+			float scale = baseScale + scaleVariation;
+			(*particleIterator).transform.scale = { scale, scale, scale };
+
+			// 色の更新（閃光のような明滅効果）
+			float flashFrequency = 60.0f;
+			float baseAlpha = 1.0f - normalizedTime;  // 時間とともに徐々に消えていく
+			float flashIntensity = std::abs(std::sin(normalizedTime * flashFrequency));
+
+			// 色を青白い雷らしく設定
+			(*particleIterator).color = {
+				0.7f + flashIntensity * 0.3f,  // 青みがかった白
+				0.8f + flashIntensity * 0.2f,
+				1.0f,
+				baseAlpha * (0.8f + flashIntensity * 0.2f)
+			};
+
+			// インスタンシングデータの設定
+			if (numInstance < kNumMaxInstance) {
+				// ワールド行列の計算
+				Matrix4x4 worldMatrix{};
+				if (useBillboard) {
+					scaleMatrix = MakeScaleMatrix((*particleIterator).transform.scale);
+					translateMatrix = MakeTranslateMatrix((*particleIterator).transform.translate);
+					worldMatrix = scaleMatrix * billboardMatrix * translateMatrix;
+				}
+				else {
+					worldMatrix = MakeAffineMatrix(
+						(*particleIterator).transform.scale,
+						(*particleIterator).transform.rotate,
+						(*particleIterator).transform.translate
+					);
+				}
+
+				Matrix4x4 worldViewProjectionMatrix = Multiply(worldMatrix, viewProjectionMatrix);
+
+				instancingData_[numInstance].WVP = worldViewProjectionMatrix;
+				instancingData_[numInstance].World = worldMatrix;
+				instancingData_[numInstance].color = (*particleIterator).color;
+				++numInstance;
+			}
+
+			++particleIterator;
+		}
+
+		// インスタンス数の更新
+		particleGroup.instance = numInstance;
+
+		// GPU メモリにインスタンスデータを書き込む
+		if (particleGroup.instancingData) {
+			std::memcpy(particleGroup.instancingData, instancingData_,
+				sizeof(ParticleForGPU) * numInstance);
+		}
+	}
+}
 void ParticleManager::UpadateMatrix()
 {
-
-	//// カメラの行列を取得
-	//Matrix4x4 cameraMatrix = MakeAffineMatrix(camera_->GetScale(), camera_->GetRotate(), camera_->GetTranslate());
-	//Matrix4x4 viewMatrix = Inverse(cameraMatrix);
-	//Matrix4x4 projectionMatrix = MakePerspectiveFovMatrix(0.45f, WinApp::kClientWidth / WinApp::kClientWidth, 0.1f, 100.0f);
-	//Matrix4x4 backToFrontMatrix = MakeRotateMatrixY(std::numbers::pi_v<float>);
-	//// ビルボード用の行列
-	//billboardMatrix = Multiply(backToFrontMatrix, cameraMatrix);
-	//billboardMatrix.m[3][0] = 0.0f;
-	//billboardMatrix.m[3][1] = 0.0f;
-	//billboardMatrix.m[3][2] = 0.0f;
-
-	//// ビュー・プロジェクション行列を生成
-	//viewProjectionMatrix = Multiply(viewMatrix, projectionMatrix);
 }
 
 void ParticleManager::CreateRootSignature()

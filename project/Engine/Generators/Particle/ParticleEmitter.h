@@ -77,7 +77,8 @@ private:
 		float frequency;			// 頻度
 		float frequencyTime;		// 頻度時間
 	};
-		
+
+	//ParticleUpdateMode updateMode_ = ParticleUpdateMode::kNormal;
 	// エミッター
 	Emitter emitter_{};
 	float deltaTime_ = 1.0f / 60.0f;
