@@ -691,7 +691,7 @@ void PlayerWeapon::OnCollision(Collider* other)
 		effects_.push_back(effect);
 
 		if (state_ == WeaponState::Dashing || state_ == WeaponState::JumpAttack) {
-			enemy->EnemyAllhitStop();
+			enemy->EnemyAllHitStop();
 		}
 
 		
