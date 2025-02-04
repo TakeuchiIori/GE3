@@ -220,7 +220,7 @@ private:
 
 	float rotrateSpeed_ = 0.25f;
 	float moveSpeed_ = 0.25f;
-	float maxMoveSpeed_ = 0.25f;  // 最大移動速度
+	float maxMoveSpeed_ = 0.35f;  // 最大移動速度
 	Vector3 velocity_ = { 0.0f, 0.0f, 0.0f };  // 現在の速度ベクトル
 	//float acceleration_ = 0.0f;  // 加速度
 	//float deceleration_ = 0.0f;  // 減速度

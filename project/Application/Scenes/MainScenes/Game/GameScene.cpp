@@ -60,7 +60,7 @@ void GameScene::Initialize()
     followCamera_.SetTarget(player_.get()->GetWorldTransform());
     
     // 敵
-    enemyManager_ = std::make_unique<EnemeyManager>();
+    enemyManager_ = std::make_unique<EnemyManager>();
     enemyManager_->Initialize(sceneCamera_.get());
     enemyManager_->SetPlayer(player_.get());
 
@@ -305,8 +305,11 @@ void GameScene::ChangePahse()
         //}
 
         // objの更新
-        //player_->Update();
+        
+        
+        player_->Update();
 
+       // enemyManager_->Update();
                 // パーティクル更新
        // ParticleManager::GetInstance()->Update();
 

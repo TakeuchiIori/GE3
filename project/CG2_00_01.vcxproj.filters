@@ -411,7 +411,7 @@
     <ClCompile Include="Application\Objects\Player\PlayerWeapon\PlayerWeapon.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="Application\Objects\Enemy\EnemeyManager.cpp">
+    <ClCompile Include="Application\Objects\Enemy\EnemyManager.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="Application\Objects\Ground\Ground.cpp">
@@ -614,7 +614,7 @@
     <ClInclude Include="Application\Objects\Player\PlayerWeapon\PlayerWeapon.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Application\Objects\Enemy\EnemeyManager.h">
+    <ClInclude Include="Application\Objects\Enemy\EnemyManager.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Application\Objects\Ground\Ground.h">

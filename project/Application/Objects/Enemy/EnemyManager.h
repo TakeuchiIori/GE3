@@ -5,8 +5,9 @@
 #include "Enemy.h"
 #include "Systems/Camera/Camera.h"
 #include "Player/Player.h"
+#include <Systems/GameTime/HitStop.h>
 
-class EnemeyManager {
+class EnemyManager {
 public:
     /// <summary>
     /// 初期化
@@ -34,6 +35,15 @@ public:
     size_t GetEnemyCount() const { return enemies_.size(); }
      bool IsAllEnemiesDefeated() const { return deadNum_ >= maxEnemyCount_; }
     
+     // 全ての敵にヒットストップを適用
+     void ApplyHitStopToAllEnemies(HitStop::HitStopType type) {
+         for (auto& enemy : enemies_) {
+             // 各敵のtimeIDを取得してヒットストップを適用
+             std::string timeID = "Enemy : " + std::to_string(enemy->GetSerialNumber());
+             HitStop::GetInstance()->Start(timeID, type);
+         }
+     }
+
 private:
     // 各種パラメータ
     float spawnTimer_ = 0.0f;

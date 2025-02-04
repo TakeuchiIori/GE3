@@ -26,7 +26,7 @@
 #include "Vector3.h"
 #include "../../../SystemsApp/Cameras/FollowCamera/FollowCamera.h"
 #include "../../../SystemsApp/Cameras/TopDownCamera/TopDownCamera.h"
-#include <Enemy/EnemeyManager.h>
+#include <Enemy/EnemyManager.h>
 
 enum class CameraMode
 {
@@ -125,7 +125,7 @@ private:
     std::unique_ptr<Player> player_;
 
     // 敵
-    std::unique_ptr<EnemeyManager> enemyManager_;
+    std::unique_ptr<EnemyManager> enemyManager_;
 
 
     // 地面

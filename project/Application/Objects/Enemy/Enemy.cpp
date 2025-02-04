@@ -8,6 +8,7 @@
 #include "Player/Player.h"
 #include "Particle/ParticleManager.h"
 #include <Systems/GameTime/HitStop.h>
+#include "EnemyManager.h"
 #ifdef _DEBUG
 #include "imgui.h" 
 #endif // _DEBUG
@@ -156,11 +157,7 @@ void Enemy::OnCollision(Collider* other)
         }
 		isShake_ = true;
 
-
-        
-        HitStop::GetInstance()->Start(timeID_, HitStop::HitStopType::Heavy);
         HitStop::GetInstance()->Start("Player", HitStop::HitStopType::Heavy);
-        //HitStop::GetInstance()->Start(timeID_, 0.1f);
     }
 
     
@@ -182,9 +179,15 @@ Matrix4x4 Enemy::GetWorldMatrix() const
     return worldTransform_.matWorld_;
 }
 
+void Enemy::EnemyAllHitStop()
+{
+    enemyManager_->ApplyHitStopToAllEnemies(HitStop::HitStopType::Heavy);
+}
+
 void Enemy::Move() {
-    // デルタタイムの取得と制限
+    // デルタタイムの取得
     deltaTime_ = gameTime_->GetDeltaTime(timeID_);
+
     // ヒットストップ中は動きを停止
     if (deltaTime_ <= 0.001f) {
         return;
@@ -194,24 +197,16 @@ void Enemy::Move() {
     Vector3 toPlayer = player_->GetWorldPosition() - worldTransform_.translation_;
     float distanceToPlayer = Length(toPlayer);
 
-    // プレイヤーとの最小距離（これ以上近づかない）
-    const float minDistance = radius_ + weaponRadius_;  // 自分の半径 + 武器の半径
-    // プレイヤーとの最大距離（この距離以上離れると追跡を開始）
-    const float maxDistance = 20.0f;  // 追跡を開始する距離
+    // プレイヤーとの最小/最大距離
+    const float minDistance = radius_ + weaponRadius_;
+    const float maxDistance = 40.0f;
 
-    // プレイヤーが追跡範囲内にいる場合
     if (distanceToPlayer > minDistance && distanceToPlayer < maxDistance) {
         // 移動方向の正規化
         Vector3 moveDirection = Normalize(toPlayer);
 
-        // 現在の速度を計算（メートル/秒）
-        Vector3 velocity = moveDirection * speedPerSecond_ * deltaTime_;
-
-        // 移動速度に上限を設定
-        float currentSpeed = Length(velocity);
-        if (currentSpeed > maxSpeed_ * deltaTime_) {
-            velocity = Normalize(velocity) * maxSpeed_ * deltaTime_;
-        }
+        // 現在の速度を計算（deltaTimeを考慮）
+        Vector3 velocity = moveDirection * baseSpeed_ * deltaTime_;
 
         // 位置の更新
         worldTransform_.translation_ += velocity;

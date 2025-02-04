@@ -8,6 +8,7 @@
 #include "Loaders/Json/JsonManager.h"
 #include "Systems/Camera/Camera.h"
 #include <Systems/GameTime/GameTIme.h>
+
 // C++
 #include <memory>
 
@@ -16,7 +17,7 @@
 #include "Vector3.h" 
 #include "Particle/ParticleEmitter.h"
 
-
+class EnemyManager;
 class Player;
 class Enemy : public Collider
 {
@@ -61,6 +62,11 @@ public:
 	/// <returns></returns>
 	Matrix4x4 GetWorldMatrix() const override;
 
+	/// <summary>
+	/// 
+	/// </summary>
+	void EnemyAllHitStop();
+
 
 private:
 
@@ -87,7 +93,7 @@ public: // アクセッサ
 	const Vector3& GetRotation() const { return worldTransform_.rotation_; }
 	void SetPosition(const Vector3& pos) { worldTransform_.translation_ = pos; }
 	void SetPlayer(Player* player) { player_ = player; }; // プレイヤーをセットする関数
-
+	void SetEnemyManager(EnemyManager* manager) { enemyManager_ = manager; }
 
 	/// <summary>
 	/// シリアルナンバーの取得
@@ -100,6 +106,7 @@ public: // アクセッサ
 	int GetHP() { return hp_; }
 
 private:
+	EnemyManager* enemyManager_;
 	Input* input_ = nullptr;
 	Camera* camera_ = nullptr;
 	Player* player_ = nullptr; 
@@ -133,10 +140,9 @@ private:
 	GameTime* gameTime_ = nullptr;
 	float deltaTime_;
 
-	float speedPerSecond_ = 5.0f;    // 基本移動速度（メートル/秒）
-	float maxSpeed_ = 8.0f;          // 最大移動速度（メートル/秒）
-	float rotationSpeed_ = 5.0f;     // 回転速度（ラジアン/秒）
-	float radius_ = 1.0f;            // 敵の衝突半径
+	float baseSpeed_ = 0.25f;
+	float rotationSpeed_ = 0.1f;     // 回転速度（ラジアン/秒）
+	float radius_ = 4.0f;            // 敵の衝突半径
 	const float weaponRadius_ = 2.0f; // プレイヤーの武器の半径
 };
 

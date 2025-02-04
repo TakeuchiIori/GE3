@@ -1,12 +1,12 @@
-#include "EnemeyManager.h"
+#include "EnemyManager.h"
 #include <random>
 
-void EnemeyManager::Initialize(Camera* camera) {
+void EnemyManager::Initialize(Camera* camera) {
     camera_ = camera;
     deadNum_ = 0;
 }
 
-void EnemeyManager::Update() {
+void EnemyManager::Update() {
     // スポーンタイマーの更新
     spawnTimer_ += 1.0f / 60.0f;
     if (spawnTimer_ >= spawnInterval_ && enemies_.size() < maxEnemyCount_) {
@@ -30,13 +30,13 @@ void EnemeyManager::Update() {
     }
 }
 
-void EnemeyManager::Draw() {
+void EnemyManager::Draw() {
     for (auto& enemy : enemies_) {
         enemy->Draw();
     }
 }
 
-void EnemeyManager::SpawnEnemy() {
+void EnemyManager::SpawnEnemy() {
     if (!player_) return;
 
     // 乱数生成
@@ -55,6 +55,7 @@ void EnemeyManager::SpawnEnemy() {
     // 新しい敵を生成
     auto newEnemy = std::make_unique<Enemy>();
     newEnemy->Initialize(camera_, { -30.0f, 0.0f, 20.0f });
+    newEnemy->SetEnemyManager(this);
     newEnemy->SetPlayer(player_);
 
     // リストに追加
