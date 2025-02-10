@@ -33,13 +33,6 @@ class TitleScene : public BaseScene
 
 	};
 
-	enum class Phase {
-		kFadeIn,   // フェードイン
-		kMain,	   // タイトル画面
-		kFadeOut,  // フェードアウト
-	};
-
-
 public:
 	/// <summary>
 	/// 初期化
@@ -63,10 +56,6 @@ public:
 
 private:
 
-	/// <summary>
-	/// フェーズ切り替え
-	/// </summary>
-	void GhangePhase();
 
 	/// <summary>
 	/// カメラモードを更新する
@@ -92,8 +81,6 @@ private:
 	// プレイヤー
 	std::unique_ptr<Player> player_;
 
-	std::unique_ptr<Fade> fade_;
-	Phase phase_ = Phase::kFadeIn;
 	std::unique_ptr<Sprite> sprite_;
 };
 

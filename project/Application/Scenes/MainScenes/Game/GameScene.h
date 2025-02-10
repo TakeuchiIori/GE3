@@ -37,14 +37,6 @@ enum class CameraMode
 
 };
 
-enum class Phase {
-    kFadeIn,   //フェードイン
-    kPlay,	   // ゲームプレイ
-    kDeath,	   // デス演出
-    kFadeOut,  // フェードアウト
-};
-
-
 class GameScene : public BaseScene
 {
 public:
@@ -111,10 +103,6 @@ private:
 
     Vector3 weaponPos;
 
-    //  フェード
-    std::unique_ptr<Fade> fade_;
-    Phase phase_;
-    bool finished_ = false;
     std::unique_ptr<Sprite> sprite_;
 
     // 3Dモデル

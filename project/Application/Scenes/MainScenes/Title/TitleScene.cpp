@@ -33,12 +33,6 @@ void TitleScene::Initialize()
     sprite_->SetSize(Vector2{ 1280.0f,720.0f });
     sprite_->SetTextureSize(Vector2{ 1280,720 });
 
-
-    fade_ = std::make_unique<Fade>();
-    fade_->Initialize("Resources/images/white.png");
-    fade_->Start(Fade::Status::FadeIn, 2.0f);
-
-
     // オーディオファイルのロード（例: MP3）
     soundData = Audio::GetInstance()->LoadAudio(L"Resources./images./harpohikunezumi.mp3");
 
@@ -57,9 +51,15 @@ void TitleScene::Initialize()
 void TitleScene::Update()
 {
     sprite_->Update();
-    fade_->Update();
-    GhangePhase();
+    // シーン遷移中は入力を受け付けない
+    if (sceneManager_->IsTransitioning()) {
+        return;
+    }
+    if (Input::GetInstance()->PushKey(DIK_SPACE)) {
+        sceneManager_->ChangeScene("Game");
+    }
 
+ 
 
 
 }
@@ -84,10 +84,6 @@ void TitleScene::Draw()
     /// 
 
     sprite_->Draw();
-    // フェードイン&&フェードアウト中はフェードの描画
-    if (phase_ == Phase::kFadeIn || phase_ == Phase::kFadeOut) {
-        fade_->Draw();
-    }
 
 
 #pragma endregion
@@ -106,57 +102,6 @@ void TitleScene::Draw()
 
 
 }
-
-
-void TitleScene::GhangePhase()
-{
-    switch (phase_)
-    {
-    case TitleScene::Phase::kFadeIn:
-        if (fade_->IsFinished()) {
-            phase_ = Phase::kMain;
-        }
-
-        break;
-    case TitleScene::Phase::kMain:
-        if (Input::GetInstance()->IsPadPressed(0,GamePadButton::A)) {
-            phase_ = Phase::kFadeOut;
-            fade_->Start(Fade::Status::FadeOut, 2.0f);
-        }
-
-
-        //// プレイヤーの更新
-        //player_->Update();
-
-        //// カメラ更新
-        //UpdateCameraMode();
-        //UpdateCamera();
-
-
-
-
-
-
-        //cameraManager_.UpdateAllCameras();
-
-
-        //// ライティング
-        //LightManager::GetInstance()->ShowLightingEditor();
-
-
-        break;
-    case TitleScene::Phase::kFadeOut:
-        if (fade_->IsFinished()) {
-            SceneManager::GetInstance()->ChangeScene("Game");
-        }
-
-
-        break;
-    default:
-        break;
-    }
-}
-
 
 /// <summary>
 /// 解放処理

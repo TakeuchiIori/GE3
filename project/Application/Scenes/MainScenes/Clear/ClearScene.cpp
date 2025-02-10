@@ -15,9 +15,6 @@ void ClearScene::Initialize()
     sprite_->SetTextureSize(Vector2{ 1280,720 });
 
 
-    fade_ = std::make_unique<Fade>();
-    fade_->Initialize("Resources/images/white.png");
-    fade_->Start(Fade::Status::FadeIn, 2.0f);
 }
 
 void ClearScene::Finalize()
@@ -28,7 +25,6 @@ void ClearScene::Update()
 {
     sprite_->Update();
     fade_->Update();
-    GhangePhase();
 }
 
 void ClearScene::Draw()
@@ -47,10 +43,6 @@ void ClearScene::Draw()
     /// 
 
     sprite_->Draw();
-    // フェードイン&&フェードアウト中はフェードの描画
-    if (phase_ == Phase::kFadeIn || phase_ == Phase::kFadeOut) {
-        fade_->Draw();
-    }
 
 
 #pragma endregion
@@ -65,34 +57,4 @@ void ClearScene::Draw()
 
 #pragma endregion
 
-}
-
-void ClearScene::GhangePhase()
-{
-    switch (phase_)
-    {
-    case ClearScene::Phase::kFadeIn:
-        if (fade_->IsFinished()) {
-            phase_ = Phase::kMain;
-        }
-
-        break;
-    case ClearScene::Phase::kMain:
-        if (Input::GetInstance()->IsPadPressed(0, GamePadButton::A)) {
-            phase_ = Phase::kFadeOut;
-            fade_->Start(Fade::Status::FadeOut, 2.0f);
-        }
-
-
-        break;
-    case ClearScene::Phase::kFadeOut:
-        if (fade_->IsFinished()) {
-            SceneManager::GetInstance()->ChangeScene("Title");
-        }
-
-
-        break;
-    default:
-        break;
-    }
 }

@@ -23,15 +23,6 @@
 
 class ClearScene : public BaseScene
 {
-
-
-	enum class Phase {
-		kFadeIn,   // フェードイン
-		kMain,	   // タイトル画面
-		kFadeOut,  // フェードアウト
-	};
-
-
 public:
 	/// <summary>
 	/// 初期化
@@ -53,14 +44,6 @@ public:
 	/// </summary>
 	void Draw() override;
 
-private:
-
-	/// <summary>
-	/// フェーズ切り替え
-	/// </summary>
-	void GhangePhase();
-
-
 
 
 private:
@@ -74,7 +57,6 @@ private:
 	// プレイヤー
 
 	std::unique_ptr<Fade> fade_;
-	Phase phase_ = Phase::kFadeIn;
 	std::unique_ptr<Sprite> sprite_;
 };
 
