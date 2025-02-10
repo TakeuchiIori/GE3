@@ -57,7 +57,7 @@ void Camera::ShowImGui()
 void Camera::DefaultCamera()
 {
     // カメラの位置と回転をリセット（原点に設定）
-    transform_.translate = Vector3(0.0f, 5.0f, -100.0f);
+    transform_.translate = Vector3(0.0f, 0.0f, -10.0f);
     transform_.rotate = Vector3(0.0f, 0.0f, 0.0f);
 
     // ワールド行列、ビュー行列の更新

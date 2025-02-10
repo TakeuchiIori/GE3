@@ -34,6 +34,22 @@ Vector3 Lerp(const Vector3& a, const Vector3& b, float t)
     return a * (1.0f - t) + b * t;
 }
 
+Vector3 CubicSplineInterpolate(const Vector3& p0, const Vector3& p1, const Vector3& p2, const Vector3& p3, float t) {
+    // t の二乗および三乗を計算
+    float t2 = t * t;
+    float t3 = t2 * t;
+
+    // Catmull-Rom スプラインの基底行列
+    Vector3 a = p1 * 2.0f;
+    Vector3 b = (p2 - p0) * t;
+    Vector3 c = (p0 * 2.0f - p1 * 5.0f + p2 * 4.0f - p3) * t2;
+    Vector3 d = (-1 * p0 + p1 * 3.0f - p2 * 3.0f + p3) * t3;
+
+    Vector3 result = (a + b + c + d) * 0.5f;
+    return result;
+}
+
+
 Vector3 Multiply(const Vector3& v, float scalar) {
     return { v.x * scalar, v.y * scalar, v.z * scalar };
 }
@@ -56,7 +72,126 @@ Vector3 Normalize(Vector3& vec) {
     }
     return Vector3{ 0, 0, 0 };
 }
+std::vector<double> CubicSplineInterpolation(
+    const std::vector<double>& xData,
+    const std::vector<double>& yData,
+    const std::vector<double>& xQuery
+)
+{
+    // xData, yData が妥当かチェック
+    if (xData.size() != yData.size() || xData.size() < 2) {
+        throw std::invalid_argument("xData と yData のサイズ不一致、またはデータ点が不足しています。");
+    }
 
+    // 入力データが単調増加になっているか（最低限の確認）
+    for (size_t i = 1; i < xData.size(); ++i) {
+        if (xData[i] <= xData[i - 1]) {
+            throw std::invalid_argument("xData は単調増加である必要があります。");
+        }
+    }
+
+    // データ点の数
+    const size_t n = xData.size();
+
+    // 便宜上 yData を a にコピー
+    // スプライン係数の計算で a[i] が f_i (yData[i]) を表すことが多いため
+    std::vector<double> a = yData;
+
+    // 区間幅 h[i] = xData[i+1] - xData[i] (i=0..n-2)
+    std::vector<double> h(n - 1);
+    for (size_t i = 0; i < n - 1; ++i) {
+        h[i] = xData[i + 1] - xData[i];
+    }
+
+    // 求めたいスプライン係数: b, c, d
+    // 今回は自然スプラインなので、両端条件: c[0] = 0, c[n-1] = 0
+    std::vector<double> b(n), c(n), d(n);
+
+    // c を求めるための三重対角行列を解く
+    // まず alpha[i] を計算
+    std::vector<double> alpha(n);
+    alpha[0] = 0.0; // 自然スプラインの場合、両端は 0
+    alpha[n - 1] = 0.0;
+
+    for (size_t i = 1; i < n - 1; ++i) {
+        alpha[i] = (3.0 / h[i]) * (a[i + 1] - a[i])
+            - (3.0 / h[i - 1]) * (a[i] - a[i - 1]);
+    }
+
+    // l, mu, z は三重対角行列を前進・後退代入で解く際に使用
+    std::vector<double> l(n), mu(n), z(n);
+    l[0] = 1.0;
+    mu[0] = 0.0;
+    z[0] = 0.0;
+
+    for (size_t i = 1; i < n - 1; ++i) {
+        l[i] = 2.0 * (xData[i + 1] - xData[i - 1]) - h[i - 1] * mu[i - 1];
+        mu[i] = h[i] / l[i];
+        z[i] = (alpha[i] - h[i - 1] * z[i - 1]) / l[i];
+    }
+
+    l[n - 1] = 1.0;
+    z[n - 1] = 0.0;
+    c[n - 1] = 0.0;
+
+    // 後退代入 (c を求める)
+    for (int j = static_cast<int>(n) - 2; j >= 0; --j) {
+        c[j] = z[j] - mu[j] * c[j + 1];
+    }
+
+    // b, d を求める
+    for (size_t i = 0; i < n - 1; ++i) {
+        b[i] = (a[i + 1] - a[i]) / h[i] - (h[i] / 3.0) * (c[i + 1] + 2.0 * c[i]);
+        d[i] = (c[i + 1] - c[i]) / (3.0 * h[i]);
+    }
+    // b[n-1], d[n-1] は使わないが、エラーを避けるため初期化
+    b[n - 1] = b[n - 2];
+    d[n - 1] = d[n - 2];
+
+    // xQuery に対して補間結果を求める
+    std::vector<double> result;
+    result.reserve(xQuery.size());
+
+    for (auto x : xQuery) {
+        // x が xData の範囲外にある場合の扱い (今回は外挿せずに端点近辺を使う例)
+        if (x <= xData.front()) {
+            // 区間[0,1]の延長 (厳密には外挿)
+            double dx = x - xData[0];
+            double y = a[0]
+                + b[0] * dx
+                + c[0] * dx * dx
+                + d[0] * dx * dx * dx;
+            result.push_back(y);
+            continue;
+        }
+        else if (x >= xData.back()) {
+            // 区間[n-2, n-1]の延長
+            size_t i = n - 2;
+            double dx = x - xData[i];
+            double y = a[i]
+                + b[i] * dx
+                + c[i] * dx * dx
+                + d[i] * dx * dx * dx;
+            result.push_back(y);
+            continue;
+        }
+
+        // 2分探索などで x の属する区間を探す
+        // std::upper_bound を使って x が挿入される位置を探す
+        auto it = std::upper_bound(xData.begin(), xData.end(), x);
+        size_t i = static_cast<size_t>(std::distance(xData.begin(), it) - 1);
+
+        // i番目の区間 [xData[i], xData[i+1]) に x は属するとする
+        double dx = x - xData[i];
+        double y = a[i]
+            + b[i] * dx
+            + c[i] * dx * dx
+            + d[i] * dx * dx * dx;
+        result.push_back(y);
+    }
+
+    return result;
+}
 
 Vector3 CatmullRomSpline(const std::vector<Vector3>& controlPoints, float t) {
     // コントロールポイントが4つでないときはエラーを表示する。

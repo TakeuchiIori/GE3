@@ -15,6 +15,9 @@
 // assimp
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
+#include <json.hpp>
+#include <fstream>
+#include <iostream>
 
 void Model::Initialize(ModelCommon* modelCommon, const std::string& directorypath, const std::string& filename, bool isAnimation)
 {
@@ -196,19 +199,17 @@ void Model::UpdateAnimation()
 		UpdateSkinCluster(skinCluster_, skeleton_);
 	}
 	else {
-		PlayAnimation();
+		PlayAnimation(animationTime_);
 	}
 }
 
 
-void Model::PlayAnimation()
+void Model::PlayAnimation(float animationTime)
 {
-	animationTime_ += 1.0f / 60.0f;
-	animationTime_ = std::fmod(animationTime_, animation_.duration); // 最後まで再生したら最初からリピート再生
 	NodeAnimation& rootNodeAnimation = animation_.nodeAnimations[modelData_.rootNode.name]; // rootNodeのAnimationを取得
-	Vector3 translate = CalculateValue(rootNodeAnimation.translate.keyframes, animationTime_); // 指定時刻の値を取得
-	Quaternion rotate= CalculateValue(rootNodeAnimation.rotate.keyframes, animationTime_);
-	Vector3 scale = CalculateValue(rootNodeAnimation.scale.keyframes, animationTime_);
+	Vector3 translate = CalculateValueNew(rootNodeAnimation.translate.keyframes, animationTime, rootNodeAnimation.interpolationType); // 指定時刻の値を取得
+	Quaternion rotate= CalculateValueNew(rootNodeAnimation.rotate.keyframes, animationTime, rootNodeAnimation.interpolationType);
+	Vector3 scale = CalculateValueNew(rootNodeAnimation.scale.keyframes, animationTime, rootNodeAnimation.interpolationType);
 
 	modelData_.rootNode.localMatrix = MakeAffineMatrix(scale, rotate, translate);
 }
@@ -389,6 +390,82 @@ Model::SkinCluster Model::CreateSkinCluster(const Skeleton& skeleton, const Mode
 	return skinCluster;
 }
 
+//================================
+
+Vector3 Model::CalculateValueNew(const std::vector<KeyframeVector3>& keyframes, float time, InterpolationType interpolationType) {
+	assert(!keyframes.empty());
+
+	if (keyframes.size() == 1 || time <= keyframes[0].time) {
+		return keyframes[0].value; // 最初のキー値を返す
+	}
+
+	for (size_t index = 0; index < keyframes.size() - 1; ++index) {
+		size_t nextIndex = index + 1;
+
+		if (keyframes[index].time <= time && time <= keyframes[nextIndex].time) {
+			float t = (time - keyframes[index].time) / (keyframes[nextIndex].time - keyframes[index].time);
+
+			switch (interpolationType) {
+			case InterpolationType::Linear:
+				return Lerp(keyframes[index].value, keyframes[nextIndex].value, t);
+
+			case InterpolationType::Step:
+				return keyframes[index].value;
+
+			case InterpolationType::CubicSpline: {
+				size_t prevIndex = (index == 0) ? index : index - 1;
+				size_t nextNextIndex = (nextIndex + 1 < keyframes.size()) ? nextIndex + 1 : nextIndex;
+
+				return CubicSplineInterpolate(
+					keyframes[prevIndex].value,
+					keyframes[index].value,
+					keyframes[nextIndex].value,
+					keyframes[nextNextIndex].value,
+					t
+				);
+			}
+
+			default:
+				return Lerp(keyframes[index].value, keyframes[nextIndex].value, t);
+			}
+		}
+	}
+
+	return (*keyframes.rbegin()).value;
+}
+
+Quaternion Model::CalculateValueNew(const std::vector<KeyframeQuaternion>& keyframes, float time, InterpolationType interpolationType) {
+	assert(!keyframes.empty());
+
+	if (keyframes.size() == 1 || time <= keyframes[0].time) {
+		return keyframes[0].value; // 最初のキー値を返す
+	}
+
+	for (size_t index = 0; index < keyframes.size() - 1; ++index) {
+		size_t nextIndex = index + 1;
+
+		if (keyframes[index].time <= time && time <= keyframes[nextIndex].time) {
+			float t = (time - keyframes[index].time) / (keyframes[nextIndex].time - keyframes[index].time);
+
+			switch (interpolationType) {
+			case InterpolationType::Linear:
+				return Lerp(keyframes[index].value, keyframes[nextIndex].value, t);
+
+			case InterpolationType::Step:
+				return keyframes[index].value;
+
+			case InterpolationType::CubicSpline: {
+
+			}
+
+			default:
+				return Lerp(keyframes[index].value, keyframes[nextIndex].value, t);
+			}
+		}
+	}
+
+	return (*keyframes.rbegin()).value;
+}
 
 
 
@@ -664,6 +741,22 @@ Model::ModelData Model::LoadModelIndexFile(const std::string& directoryPath, con
 	return modelData;
 }
 
+
+Model::InterpolationType Model::MapAssimpBehaviourToInterpolation(aiAnimBehaviour preState, aiAnimBehaviour postState)
+{
+	if (preState == aiAnimBehaviour_CONSTANT || postState == aiAnimBehaviour_CONSTANT) {
+		return InterpolationType::Step;
+	}
+	else if (preState == aiAnimBehaviour_LINEAR || postState == aiAnimBehaviour_LINEAR) {
+		return InterpolationType::Linear;
+	}
+	else if (preState == aiAnimBehaviour_REPEAT || postState == aiAnimBehaviour_REPEAT) {
+		return InterpolationType::CubicSpline;
+	}
+
+	return InterpolationType::Linear; // デフォルト
+}
+
 Model::Animation Model::LoadAnimationFile(const std::string& directoryPath, const std::string& filename)
 {
 	Animation animation; // 今回作るアニメーション
@@ -678,6 +771,30 @@ Model::Animation Model::LoadAnimationFile(const std::string& directoryPath, cons
 	for (uint32_t channelIndex = 0; channelIndex < animationAssimp->mNumChannels; ++channelIndex) {
 		aiNodeAnim* nodeAnimationAssimp = animationAssimp->mChannels[channelIndex];
 		NodeAnimation& nodeAnimation = animation.nodeAnimations[nodeAnimationAssimp->mNodeName.C_Str()];
+
+		///// デフォルトの補間タイプをLinearに設定
+		//nodeAnimation.interpolationType = InterpolationType::Linear;
+
+		/// ------
+		/// 補間の種類を取得
+		/// ------
+
+		// 補間方法を取得
+		const std::string interpolation = GetGLTFInterpolation(scene, filePath, channelIndex);
+
+		if (interpolation == "LINEAR") {
+			nodeAnimation.interpolationType = InterpolationType::Linear;
+		}
+		else if (interpolation == "STEP") {
+			nodeAnimation.interpolationType = InterpolationType::Step;
+		}
+		else if (interpolation == "CUBICSPLINE") {
+			nodeAnimation.interpolationType = InterpolationType::CubicSpline;
+		}
+		else {
+			nodeAnimation.interpolationType = InterpolationType::Linear; // デフォルト値
+		}
+
 
 		// Position
 		for (uint32_t keyIndex = 0; keyIndex < nodeAnimationAssimp->mNumPositionKeys; ++keyIndex) {
@@ -709,6 +826,48 @@ Model::Animation Model::LoadAnimationFile(const std::string& directoryPath, cons
 	}
 
 	return animation;
+}
+
+
+std::string Model::GetGLTFInterpolation(const aiScene* scene, const std::string& gltfFilePath, uint32_t samplerIndex) {
+	try {
+		// GLTFファイルを直接解析して補間方法を取得
+		return ParseGLTFInterpolation(gltfFilePath, samplerIndex);
+	}
+	catch (const std::exception& e) {
+		// エラーが発生した場合はデフォルトのLINEARを返す
+		std::cerr << "Error parsing GLTF file: " << e.what() << std::endl;
+		return "LINEAR";
+	}
+}
+
+
+
+
+
+std::string ParseGLTFInterpolation(const std::string& gltfFilePath, uint32_t samplerIndex) {
+	// GLTFファイルを開く
+	std::ifstream file(gltfFilePath);
+	if (!file.is_open()) {
+		throw std::runtime_error("Failed to open GLTF file: " + gltfFilePath);
+	}
+
+	// JSONを読み込む
+	nlohmann::json gltfJson;
+	file >> gltfJson;
+
+	// サンプラー情報を取得
+	const auto& samplers = gltfJson["animations"][0]["samplers"];
+	if (samplerIndex >= samplers.size()) {
+		return "LINEAR"; // デフォルト値
+	}
+
+	// 補間方法を取得
+	if (samplers[samplerIndex].contains("interpolation")) {
+		return samplers[samplerIndex]["interpolation"].get<std::string>();
+	}
+
+	return "LINEAR"; // デフォルト値
 }
 
 bool Model::HasBones(const aiScene* scene)
