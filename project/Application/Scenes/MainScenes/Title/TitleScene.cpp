@@ -52,9 +52,9 @@ void TitleScene::Update()
 {
     sprite_->Update();
     // シーン遷移中は入力を受け付けない
-    if (sceneManager_->IsTransitioning()) {
-        return;
-    }
+    //if (sceneManager_->IsTransitioning()) {
+    //    return;
+    //}
     if (Input::GetInstance()->PushKey(DIK_SPACE)) {
         sceneManager_->ChangeScene("Game");
     }

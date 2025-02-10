@@ -144,6 +144,8 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Application\SystemsApp\Cameras\FollowCamera\FollowCamera.cpp" />
     <ClCompile Include="Engine\Utility\Loaders\Json\JsonManager.cpp" />
     <ClCompile Include="Engine\Utility\Systems\GameTime\GameTIme.cpp" />
+    <ClCompile Include="Application\Scenes\MainScenes\Transitions\Base\ISceneTransition.cpp" />
+    <ClCompile Include="Application\Scenes\MainScenes\Transitions\Fade\FadeTransition.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Math\Matrix4x4.cpp" />
     <ClCompile Include="Engine\Utility\Loaders\Model\Model.cpp" />
@@ -173,6 +175,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Application\Objects\Player\PlayerWeapon\PlayerWeapon.cpp" />
     <ClCompile Include="Application\SystemsApp\Cameras\TopDownCamera\TopDownCamera.cpp" />
     <ClCompile Include="Engine\Utility\Systems\GameTime\ObjectTime.cpp" />
+    <ClCompile Include="Application\Scenes\MainScenes\Transitions\Base\TransitionFactory.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application\Objects\Enemy\Enemy.h" />
@@ -207,6 +210,8 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="Application\SystemsApp\Cameras\FollowCamera\FollowCamera.h" />
     <ClInclude Include="Engine\Utility\Loaders\Json\JsonManager.h" />
     <ClInclude Include="Engine\Utility\Systems\GameTime\GameTIme.h" />
+    <ClInclude Include="Application\Scenes\MainScenes\Transitions\Base\ISceneTransition.h" />
+    <ClInclude Include="Application\Scenes\MainScenes\Transitions\Fade\FadeTransition.h" />
     <ClInclude Include="Math\MathFunc.h" />
     <ClInclude Include="Math\Matrix3x3.h" />
     <ClInclude Include="Math\Matrix4x4.h" />
@@ -244,6 +249,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="Application\Objects\Player\PlayerWeapon\PlayerWeapon.h" />
     <ClInclude Include="Application\SystemsApp\Cameras\TopDownCamera\TopDownCamera.h" />
     <ClInclude Include="Engine\Utility\Systems\GameTime\ObjectTime.h" />
+    <ClInclude Include="Application\Scenes\MainScenes\Transitions\Base\TransitionFactory.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="externals\DirectXTex\DirectXTex_Desktop_2022_Win10.vcxproj">

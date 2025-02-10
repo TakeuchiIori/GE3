@@ -3,14 +3,8 @@
 #include <memory>
 #include <WorldTransform/WorldTransform.h>
 #include <Sprite/Sprite.h>
-/// <summary>
-/// フェード
-/// </summary>
 
-
-
-
-class Fade {
+class Fade{
 public:
 	enum class Status {
 		None,    // フェードなし

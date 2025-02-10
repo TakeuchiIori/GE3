@@ -9,8 +9,10 @@ void MyGame::Initialize()
 	// シーンファクトリを生成し、 シーンマネージャに最初のシーンをセット
 	sceneFactory_ = std::make_unique<SceneFactory>();
 	SceneManager::GetInstance()->SetSceneFactory(sceneFactory_.get());
+	SceneManager::GetInstance()->SetTransitionFactory(std::make_unique<FadeTransitionFactory>());
+	SceneManager::GetInstance()->Initialize();
 #ifdef _DEBUG
-	SceneManager::GetInstance()->ChangeScene("Game");
+	SceneManager::GetInstance()->ChangeScene("Title");
 #else
 	SceneManager::GetInstance()->ChangeScene("Title");
 #endif
