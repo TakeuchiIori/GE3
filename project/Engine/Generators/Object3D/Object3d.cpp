@@ -22,7 +22,7 @@ void Object3d::Initialize()
 	// 引数で受け取ってメンバ変数に記録する
 	this->object3dCommon_ = Object3dCommon::GetInstance();
 	// デフォルトカメラのセット
-	this->camera_ = object3dCommon_->GetDefaultCamera();
+	//this->camera_ = object3dCommon_->GetDefaultCamera();
 
 
 
@@ -35,14 +35,14 @@ void Object3d::UpdateAnimation()
 }
 
 
-void Object3d::Draw(WorldTransform& worldTransform)
+void Object3d::Draw(Camera* camera,WorldTransform& worldTransform)
 {
 
 	Matrix4x4 worldViewProjectionMatrix;
 	Matrix4x4 worldMatrix;
 	if (model_) {
-		if (camera_) {
-			const Matrix4x4& viewProjectionMatrix = camera_->GetViewProjectionMatrix();
+		if (camera) {
+			const Matrix4x4& viewProjectionMatrix = camera->GetViewProjectionMatrix();
 
 			// 
 			if (!model_->GetModelData().hasBones) {
@@ -110,7 +110,7 @@ void Object3d::SetModel(const std::string& filePath, bool isAnimation)
 	}
 
 	// .obj 読み込み (第一引数には拡張子なしのパス)
-	ModelManager::GetInstance()->LoadModel("Resources./" + basePath, fileName, isAnimation);
+	ModelManager::GetInstance()->LoadModel("Resources./Models./" + basePath, fileName, isAnimation);
 
 	// モデルを検索してセットする
 	model_ = ModelManager::GetInstance()->FindModel(fileName);

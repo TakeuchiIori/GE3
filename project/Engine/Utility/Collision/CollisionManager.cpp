@@ -30,7 +30,7 @@ void CollisionManager::Initialize() {
 	// OBject3dの初期化
 	obj_ = std::make_unique<Object3d>();
 	obj_->Initialize();
-	obj_->SetModel("ICO.obj",false);
+	obj_->SetModel("ICO.obj");
 	isDrawCollider_ = false;
 	//GlobalVariables* globalvariables = GlobalVariables::GetInstance();
 	//const char* groupName = "Collider";
