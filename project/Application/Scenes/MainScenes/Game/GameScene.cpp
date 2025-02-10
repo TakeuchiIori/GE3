@@ -28,8 +28,6 @@ void GameScene::Initialize()
     srand(static_cast<unsigned int>(time(nullptr))); // 乱数シード設定
     // カメラの生成
     sceneCamera_ = cameraManager_.AddCamera();
-    //Object3dCommon::GetInstance()->SetDefaultCamera(sceneCamera_.get());
-
     
 
     CollisionManager::GetInstance()->Initialize();
@@ -59,11 +57,6 @@ void GameScene::Initialize()
     player_->Initialize(sceneCamera_.get());
     followCamera_.SetTarget(player_.get()->GetWorldTransform());
     
-    // 敵
-    enemyManager_ = std::make_unique<EnemyManager>();
-    enemyManager_->Initialize(sceneCamera_.get());
-    enemyManager_->SetPlayer(player_.get());
-
     // 地面
     ground_ = std::make_unique<Ground>();
     ground_->Initialize(sceneCamera_.get());
@@ -86,12 +79,6 @@ void GameScene::Initialize()
     particleCount_ = 1;
     particleEmitter_[0] = std::make_unique<ParticleEmitter>("Circle", emitterPosition_, particleCount_);
     particleEmitter_[0]->Initialize();
-    //// パーティクルグループ名を指定
-    //const std::string particleGroupName = "PlayerWeaponEffect";
-    //weaponPos = player_->GetPosition();
-    //ParticleManager::GetInstance()->CreateParticleGroup(particleGroupName, "Resources/images/circle.png");
-   // particleEmitter_[1] = std::make_unique<ParticleEmitter>(particleGroupName, weaponPos, 5);
-
 
 
     phase_ = Phase::kFadeIn;
@@ -101,10 +88,8 @@ void GameScene::Initialize()
 
     //// オーディオファイルのロード（例: MP3）
     //soundData = Audio::GetInstance()->LoadAudio(L"Resources./images./harpohikunezumi.mp3");
-
     //// オーディオの再生
     //sourceVoice = Audio::GetInstance()->SoundPlayAudio(soundData);
-
     //// 音量の設定（0.0f ～ 1.0f）
     //Audio::GetInstance()->SetVolume(sourceVoice, 0.8f); // 80%の音量に設定
 
@@ -207,9 +192,7 @@ void GameScene::Draw()
     /// </summary>
     CollisionManager::GetInstance()->Draw();
     player_->Draw();
-  //  enemy_->Draw();
-        // その他の描画処理
-    enemyManager_->Draw();
+
     ground_->Draw();
     //line_->UpdateVertices(start_, end_);
   
@@ -377,11 +360,7 @@ void GameScene::ChangePahse()
         // enemy_->Update();
         ground_->Update();
         //test_->UpdateAnimation();
-        // 各敵を更新
-        enemyManager_->Update();
-        if (enemyManager_->IsAllEnemiesDefeated()) {
-            isClear_ = true;
-        }
+
  
         particleEmitter_[0]->Emit();
 
@@ -542,15 +521,7 @@ void GameScene::CheckAllCollisions() {
     // コライダーリストに登録
     CollisionManager::GetInstance()->AddCollider(player_->GetPlayerWeapon());
 
-    // 敵全てについて
-        // その他の描画処理
-    // 敵全てについて
-    size_t enemyCount = enemyManager_->GetEnemyCount(); // 現在の敵の数を取得
-    for (size_t i = 0; i < enemyCount; i++) {
-        if (auto enemy = enemyManager_->GetEnemy(i)) {  // nullチェックを追加
-            CollisionManager::GetInstance()->AddCollider(enemy);
-        }
-    }
+
    // CollisionManager::GetInstance()->AddCollider(enemy_.get());
 
     // 衝突判定と応答

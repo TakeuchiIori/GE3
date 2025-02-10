@@ -124,10 +124,6 @@ private:
     // プレイヤー
     std::unique_ptr<Player> player_;
 
-    // 敵
-    std::unique_ptr<EnemyManager> enemyManager_;
-
-
     // 地面
     std::unique_ptr< Ground> ground_;
 
