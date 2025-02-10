@@ -117,6 +117,8 @@ Matrix4x4 MakeTranslateMatrix(const Vector3& translate);
 // 9. 座標変換
 Vector3 TransformCoordinates(const Vector3& vector, const Matrix4x4& matrix);
 
+// ベクトル変換データ
+Vector3 TransformNormal(const Vector3& v, const Matrix4x4& m);
 // 10.回転行列
 //    X軸回転行列
 Matrix4x4 MakeRotateMatrixX(float radian);

@@ -149,8 +149,16 @@ void PipelineManager::CreatePSO_Sprite()
 	// BlendDtateの設定
 	D3D12_BLEND_DESC blendDesc{};
 	// 全ての色要素を書き込む
-	blendDesc.RenderTarget[0].RenderTargetWriteMask =
-		D3D12_COLOR_WRITE_ENABLE_ALL;
+	blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
+	blendDesc.RenderTarget[0].BlendEnable = TRUE;
+	blendDesc.RenderTarget[0].SrcBlend = D3D12_BLEND_SRC_ALPHA;
+	blendDesc.RenderTarget[0].BlendOp = D3D12_BLEND_OP_ADD;
+	blendDesc.RenderTarget[0].DestBlend = D3D12_BLEND_INV_SRC_ALPHA;
+	blendDesc.RenderTarget[0].SrcBlendAlpha = D3D12_BLEND_ONE;
+	blendDesc.RenderTarget[0].BlendOpAlpha = D3D12_BLEND_OP_ADD;
+	blendDesc.RenderTarget[0].DestBlendAlpha = D3D12_BLEND_ZERO;
+
+
 	// RasterrizerStateの設定
 	D3D12_RASTERIZER_DESC rasterrizerDesc{};
 	rasterrizerDesc.CullMode = D3D12_CULL_MODE_NONE;
@@ -226,7 +234,7 @@ void PipelineManager::CreatePSO_Object()
 	descriptionRootSignature.Flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
 	//=================== RootParameter ===================//
 	D3D12_ROOT_PARAMETER rootParameters[7] = {};
-	// マテリアル
+	// マテリアル　＋　鏡面反射
 	rootParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;		 			// CBVを使う
 	rootParameters[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;					// PixelShaderで使う
 	rootParameters[0].Descriptor.ShaderRegister = 0;									// レジスタ番号0とバインド
@@ -247,7 +255,7 @@ void PipelineManager::CreatePSO_Object()
 	rootParameters[3].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;					// PixelShaderで使う
 	rootParameters[3].Descriptor.ShaderRegister = 1;									// レジスタ番号1を使う
 
-	// 鏡面反射
+	// カメラ
 	rootParameters[4].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;					// CBVを使う
 	rootParameters[4].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;					// PixelShaderで使う
 	rootParameters[4].Descriptor.ShaderRegister = 2;									// レジスタ番号2を使う

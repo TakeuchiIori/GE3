@@ -3,6 +3,7 @@
 #include "WorldTransform./WorldTransform.h"
 #include "Object3D./Object3d.h"
 #include "Collision./CollisionTypeIdDef.h"
+#include "Systems/Camera/Camera.h"
 
 // Math
 #include "Vector3.h"
@@ -23,7 +24,7 @@ public:
 	/// <summary>
 	/// 描画
 	/// </summary>
-	void Draw(Object3d* obj);
+	void Draw(Object3d* obj,Camera* camera);
 
 public: // ポリモーフィズム
 

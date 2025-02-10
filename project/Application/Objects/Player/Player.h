@@ -7,6 +7,11 @@
 #include "WorldTransform./WorldTransform.h"
 #include "Collision./Collider.h"
 #include "PlayerWeapon/PlayerWeapon.h"
+#include <Systems/GameTime/GameTIme.h>
+#include <Particle/ParticleManager.h>
+#include <Particle/ParticleEmitter.h>
+
+#include "Loaders/Json/JsonManager.h"
 // C++
 #include <memory>
 
@@ -23,7 +28,7 @@ public: // メンバ関数（公開）
 	/// <summary>
 	/// 初期化
 	/// </summary>
-	void Initialize();
+	void Initialize(Camera* camera);
 
 	/// <summary>
 	/// 更新
@@ -36,12 +41,17 @@ public: // メンバ関数（公開）
 	void Draw();
 
 
-	void DrawSprite();
 
 	/// <summary>
 	/// ImGui
 	/// </summary>
 	void ShowCoordinatesImGui();
+
+
+	void InitJson();
+
+
+	void JsonImGui();
 
 public: // ポリモーフィズム
 
@@ -81,6 +91,14 @@ private: // メンバ関数（非公開）
 	/// </summary>
 	void Move();
 
+	/// <summary>
+	/// 回転
+	/// </summary>
+	void Rotate();
+
+	/// <summary>
+	/// コントローラー移動
+	/// </summary>
 	void MoveController();
 
 	/// <summary>
@@ -97,6 +115,11 @@ private: // メンバ関数（非公開）
 	/// ダッシュ
 	/// </summary>
 	void Dash();
+
+	/// <summary>
+	/// カメラシェイク
+	/// </summary>
+	void CameraShake();
 
 public: // コマンドパターンによる移動関数
 
@@ -125,29 +148,46 @@ public: // コマンドパターンによる移動関数
 public: // アクセッサ
 	// プレイヤーの位置を取得する関数
 	const Vector3& GetPosition() const { return worldTransform_.translation_; }
+	Vector3 GetWorldPosition();
 	const Vector3& GetRotation() const { return worldTransform_.rotation_; }
+	const WorldTransform& GetWorldTransform() { return worldTransform_; }
+
 	PlayerWeapon* GetPlayerWeapon() { return weapon_.get(); }
 
-	void SetCamera(Camera* camera) { sprite_->SetCamera(camera); }
+	void SetCameraSprite(Camera* camera) { sprite_->SetCamera(camera); }
+	void SetCamera(Camera* camera) { camera_ = camera; }
 
-private: // メンバ変数
+private: 
+	/*===============================================================//
+							ワールドトランスフォーム
+	//===============================================================*/
 
 	WorldTransform worldTransform_;
 	WorldTransform WS_;
-	// ポインタ
+	Camera* camera_;
+	/*===============================================================//
+								ポインタ
+	//===============================================================*/
 	std::unique_ptr<Object3d> base_ = nullptr;
 	Input* input_ = nullptr;
 	std::unique_ptr<PlayerWeapon> weapon_;
 	std::unique_ptr<Object3d> shadow_;
 	std::unique_ptr<Sprite> sprite_;
+	std::unique_ptr<ParticleEmitter> particleEmitter_;
 
+	std::unique_ptr <JsonManager> jsonManager_;
 
+	/*===============================================================//
+								フラグ関連
+	//===============================================================*/
 	bool isColliding_ = false;
-	Vector3 moveSpeed_;
+
 	bool isDrawEnabled_ = true;
-
 	bool isUpdate_ = true;
-
+	bool isShake_ = false;
+	/*===============================================================//
+								ジャンプ関連
+	//===============================================================*/
 	bool isJumping_ = false;       // ジャンプ中かどうか
 	float jumpVelocity_ = 0.0f;    // ジャンプの上昇速度
 	const float gravity_ = -9.8f;  // 重力加速度
@@ -158,9 +198,36 @@ private: // メンバ変数
 	float jumpDuration_ = 1.0f; // ジャンプの補完時間
 	float fallSpeedFactor_ = 1.5f;
 
+	/*===============================================================//
+								ダッシュ関連
+	//===============================================================*/
 	bool isDash_ = false;
 	float dashTime_ = 0.0f;          // ダッシュの経過時間
 	const float dashDuration_ = 0.4f; // ダッシュの継続時間
 	const float dashSpeed_ = 100.0f;   // ダッシュの速度
+
+	/*===============================================================//
+								生存関連
+	//===============================================================*/	
+	uint32_t maxHP_ = 100;
+	uint32_t hp_ = 100;
+	bool isAlive_ = true;
+
+	/*===============================================================//
+							コントローラー関連
+	//===============================================================*/
+
+
+	float rotrateSpeed_ = 0.25f;
+	float moveSpeed_ = 0.25f;
+	float maxMoveSpeed_ = 0.35f;  // 最大移動速度
+	Vector3 velocity_ = { 0.0f, 0.0f, 0.0f };  // 現在の速度ベクトル
+	//float acceleration_ = 0.0f;  // 加速度
+	//float deceleration_ = 0.0f;  // 減速度
+	
+
+	std::string timeID_;
+	GameTime* gameTime_ = nullptr;
+	float deltaTime_;
 };
 

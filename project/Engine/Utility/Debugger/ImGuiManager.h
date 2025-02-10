@@ -38,6 +38,13 @@ public: // メンバ関数
 	void Draw();
 
 	/// <summary>
+	/// 終了
+	/// </summary>
+	void Finalize();
+
+private:
+
+	/// <summary>
 	/// デスクリプターヒープ生成
 	/// </summary>
 	void CreateDescriptorHeap();
@@ -47,15 +54,16 @@ public: // メンバ関数
 	/// </summary>
 	void InitialzeDX12();
 
+
+	void CustomizeColor();
+
 	/// <summary>
 	/// エディターを変更
 	/// </summary>
 	void CustomizeEditor();
 
-	/// <summary>
-	/// 終了
-	/// </summary>
-	void Finalize();
+
+
 
 
 private:

@@ -1,7 +1,8 @@
 #include "Ground.h"
 
-void Ground::Initialize()
+void Ground::Initialize(Camera* camera)
 {
+	camera_ = camera;
 	// Object3dの生成
 	obj_ = std::make_unique<Object3d>();
 	obj_->Initialize();
@@ -17,5 +18,5 @@ void Ground::Update()
 
 void Ground::Draw()
 {
-	obj_->Draw(worldTransform_);
+	obj_->Draw(camera_,worldTransform_);
 }

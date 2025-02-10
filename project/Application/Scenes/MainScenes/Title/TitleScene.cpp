@@ -20,32 +20,33 @@ void TitleScene::Initialize()
     currentCamera_ = cameraManager_.AddCamera();
     Object3dCommon::GetInstance()->SetDefaultCamera(currentCamera_.get());
 
-    // 線
-    line_ = std::make_unique<Line>();
-    line_->Initialize();
-    line_->SetCamera(currentCamera_.get());
-
-    // 各オブジェクトの初期化
-    player_ = std::make_unique<Player>();
-    player_->Initialize();
-
-    // test
-    test_ = std::make_unique<Object3d>();
-    test_->Initialize();
-    test_->SetModel("sneakWalk.gltf", true);
-    testWorldTransform_.Initialize();
-    //test_->SetLine(line_.get());
-
     // 初期カメラモード設定
     cameraMode_ = CameraMode::FOLLOW;
 
-    // パーティクル
-    std::string particleName = "Circle";
-    ParticleManager::GetInstance()->SetCamera(currentCamera_.get());
-    ParticleManager::GetInstance()->CreateParticleGroup(particleName, "Resources/images/circle.png");
-    emitterPosition_ = Vector3{ 0.0f, 0.0f, 0.0f }; // エミッタの初期位置
-    particleCount_ = 1;
-    particleEmitter_ = std::make_unique<ParticleEmitter>(particleName, emitterPosition_, particleCount_);
+
+    // 各オブジェクトの初期化
+    player_ = std::make_unique<Player>();
+    player_->Initialize(currentCamera_.get());
+
+    sprite_ = std::make_unique<Sprite>();
+    sprite_->Initialize("Resources/Textures/KoboTitle.png");
+    sprite_->SetSize(Vector2{ 1280.0f,720.0f });
+    sprite_->SetTextureSize(Vector2{ 1280,720 });
+
+
+    fade_ = std::make_unique<Fade>();
+    fade_->Initialize("Resources/images/white.png");
+    fade_->Start(Fade::Status::FadeIn, 2.0f);
+
+
+    // オーディオファイルのロード（例: MP3）
+    soundData = Audio::GetInstance()->LoadAudio(L"Resources./images./harpohikunezumi.mp3");
+
+    //// オーディオの再生
+    //sourceVoice = Audio::GetInstance()->SoundPlayAudio(soundData);
+
+    //// 音量の設定（0.0f ～ 1.0f）
+    //Audio::GetInstance()->SetVolume(sourceVoice, 0.05f); // 80%の音量に設定
 
 
 }
@@ -55,36 +56,12 @@ void TitleScene::Initialize()
 /// </summary>
 void TitleScene::Update()
 {
-
-    //if (Input::GetInstance()->TriggerKey(DIK_RETURN)) {
-    //    SceneManager::GetInstance()->ChangeScene("TITLE");
-    //}
-
-    // プレイヤーの更新
-    player_->Update();
-    test_->UpdateAnimation();
-
-    // カメラ更新
-    UpdateCameraMode();
-    UpdateCamera();
-
-    // パーティクル更新
-    ParticleManager::GetInstance()->Update();
-    ShowImGui();
-    particleEmitter_->Update();
+    sprite_->Update();
+    fade_->Update();
+    GhangePhase();
 
 
 
-    // ワールドトランスフォーム更新
-    testWorldTransform_.UpdateMatrix();
-    cameraManager_.UpdateAllCameras();
-
-    //=====================================================//
-    /*                  これより下は触るな危険　　　　　　　   　*/
-    //=====================================================//
-
-    // ライティング
-    LightManager::GetInstance()->ShowLightingEditor();
 }
 
 
@@ -93,13 +70,24 @@ void TitleScene::Update()
 /// </summary>
 void TitleScene::Draw()
 {
+#pragma region 演出描画
+    ParticleManager::GetInstance()->Draw();
+
+
+
+#pragma endregion
 #pragma region 2Dスプライト描画
     SpriteCommon::GetInstance()->DrawPreference();
     /// <summary>
     /// ここから描画可能です
     /// </summary>
+    /// 
 
-    ParticleManager::GetInstance()->Draw();
+    sprite_->Draw();
+    // フェードイン&&フェードアウト中はフェードの描画
+    if (phase_ == Phase::kFadeIn || phase_ == Phase::kFadeOut) {
+        fade_->Draw();
+    }
 
 
 #pragma endregion
@@ -112,16 +100,63 @@ void TitleScene::Draw()
     /// </summary>
 
     player_->Draw();
-    test_->Draw(testWorldTransform_);
 
-
-
-    //test_->DrawSkeleton();
 
 #pragma endregion
 
 
 }
+
+
+void TitleScene::GhangePhase()
+{
+    switch (phase_)
+    {
+    case TitleScene::Phase::kFadeIn:
+        if (fade_->IsFinished()) {
+            phase_ = Phase::kMain;
+        }
+
+        break;
+    case TitleScene::Phase::kMain:
+        if (Input::GetInstance()->IsPadPressed(0,GamePadButton::A)) {
+            phase_ = Phase::kFadeOut;
+            fade_->Start(Fade::Status::FadeOut, 2.0f);
+        }
+
+
+        //// プレイヤーの更新
+        //player_->Update();
+
+        //// カメラ更新
+        //UpdateCameraMode();
+        //UpdateCamera();
+
+
+
+
+
+
+        //cameraManager_.UpdateAllCameras();
+
+
+        //// ライティング
+        //LightManager::GetInstance()->ShowLightingEditor();
+
+
+        break;
+    case TitleScene::Phase::kFadeOut:
+        if (fade_->IsFinished()) {
+            SceneManager::GetInstance()->ChangeScene("Game");
+        }
+
+
+        break;
+    default:
+        break;
+    }
+}
+
 
 /// <summary>
 /// 解放処理
@@ -130,6 +165,7 @@ void TitleScene::Finalize()
 {
     cameraManager_.RemoveCamera(currentCamera_);
 }
+
 
 void TitleScene::UpdateCameraMode()
 {
@@ -162,50 +198,23 @@ void TitleScene::UpdateCamera()
     break;
     case CameraMode::FOLLOW:
     {
-        Vector3 playerPos = player_->GetPosition();
-        currentCamera_->FollowCamera(playerPos);
+
     }
     break;
     case CameraMode::TOP_DOWN:
     {
-        Vector3 topDownPosition = Vector3(0.0f, 100.0f, 0.0f);
-        currentCamera_->SetTopDownCamera(topDownPosition + player_->GetPosition());
+
     }
     break;
     case CameraMode::FPS:
     {
-        Vector3 playerPos = player_->GetPosition();
-        currentCamera_->SetFPSCamera(playerPos, player_->GetRotation());
+
     }
     break;
 
     default:
         break;
     }
-}
-
-void TitleScene::ShowImGui()
-{
-#ifdef _DEBUG
-    ImGui::Begin("Emitter");
-    ImGui::DragFloat3("Emitter Position", &emitterPosition_.x, 0.1f);
-    particleEmitter_->SetPosition(emitterPosition_);
-
-    // パーティクル数の表示と調整
-    ImGui::Text("Particle Count: %.0d", particleCount_); // 現在のパーティクル数を表示
-    if (ImGui::Button("Increase Count")) {
-        particleCount_ += 1; // パーティクル数を増加
-    }
-    if (ImGui::Button("Decrease Count")) {
-        if (particleCount_ > 1) { // パーティクル数が1未満にならないように制限
-            particleCount_ -= 1;
-        }
-    }
-    particleEmitter_->SetCount(particleCount_);
-
-
-    ImGui::End();
-#endif // _DEBUG
 }
 
 

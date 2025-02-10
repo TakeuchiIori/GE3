@@ -111,6 +111,8 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Application\Objects\Enemy\Enemy.cpp" />
+    <ClCompile Include="Application\Objects\Enemy\EnemyManager.cpp" />
+    <ClCompile Include="Application\Scenes\MainScenes\Clear\ClearScene.cpp" />
     <ClCompile Include="Engine\Utility\Loaders\Model\Animation.cpp" />
     <ClCompile Include="Application\Scenes\CoreScenes\Base\BaseScene.cpp" />
     <ClCompile Include="Application\Scenes\MainScenes\Game\GameScene.cpp" />
@@ -137,6 +139,11 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Application\Objects\Player\ICommand\ICommandMove.cpp" />
     <ClCompile Include="Application\Objects\Player\InputHandle\InputHandleMove.cpp" />
     <ClCompile Include="Application\Objects\Ground\Ground.cpp" />
+    <ClCompile Include="Application\Scenes\MainScenes\Transitions\Fade\Fade.cpp" />
+    <ClCompile Include="Engine\Utility\Systems\GameTime\HitStop.cpp" />
+    <ClCompile Include="Application\SystemsApp\Cameras\FollowCamera\FollowCamera.cpp" />
+    <ClCompile Include="Engine\Utility\Loaders\Json\JsonManager.cpp" />
+    <ClCompile Include="Engine\Utility\Systems\GameTime\GameTIme.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Math\Matrix4x4.cpp" />
     <ClCompile Include="Engine\Utility\Loaders\Model\Model.cpp" />
@@ -164,9 +171,15 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Engine\Utility\Loaders\Model\Node.cpp" />
     <ClCompile Include="Engine\Utility\Loaders\Model\SkinCluster.cpp" />
     <ClCompile Include="Application\Objects\Player\PlayerWeapon\PlayerWeapon.cpp" />
+    <ClCompile Include="Application\SystemsApp\Cameras\TopDownCamera\TopDownCamera.cpp" />
+    <ClCompile Include="Engine\Utility\Systems\GameTime\ObjectTime.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application\Objects\Enemy\Enemy.h" />
+    <ClInclude Include="Application\Objects\Enemy\EnemyManager.h" />
+    <ClInclude Include="Application\Scenes\MainScenes\Clear\ClearScene.h" />
+    <ClInclude Include="Engine\Utility\Loaders\Json\ConversionJson.h" />
+    <ClInclude Include="Engine\Utility\Loaders\Json\VariableJson.h" />
     <ClInclude Include="Engine\Utility\Loaders\Model\Animation.h" />
     <ClInclude Include="Application\Scenes\CoreScenes\Base\BaseScene.h" />
     <ClInclude Include="Application\Scenes\MainScenes\Game\GameScene.h" />
@@ -189,6 +202,11 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="Application\Objects\Player\ICommand\ICommandMove.h" />
     <ClInclude Include="Application\Objects\Player\InputHandle\InputHandleMove.h" />
     <ClInclude Include="Application\Objects\Ground\Ground.h" />
+    <ClInclude Include="Application\Scenes\MainScenes\Transitions\Fade\Fade.h" />
+    <ClInclude Include="Engine\Utility\Systems\GameTime\HitStop.h" />
+    <ClInclude Include="Application\SystemsApp\Cameras\FollowCamera\FollowCamera.h" />
+    <ClInclude Include="Engine\Utility\Loaders\Json\JsonManager.h" />
+    <ClInclude Include="Engine\Utility\Systems\GameTime\GameTIme.h" />
     <ClInclude Include="Math\MathFunc.h" />
     <ClInclude Include="Math\Matrix3x3.h" />
     <ClInclude Include="Math\Matrix4x4.h" />
@@ -224,6 +242,8 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="Engine\Utility\Loaders\Model\Node.h" />
     <ClInclude Include="Engine\Utility\Loaders\Model\SkinCluster.h" />
     <ClInclude Include="Application\Objects\Player\PlayerWeapon\PlayerWeapon.h" />
+    <ClInclude Include="Application\SystemsApp\Cameras\TopDownCamera\TopDownCamera.h" />
+    <ClInclude Include="Engine\Utility\Systems\GameTime\ObjectTime.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="externals\DirectXTex\DirectXTex_Desktop_2022_Win10.vcxproj">
