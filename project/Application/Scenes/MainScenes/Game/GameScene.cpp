@@ -198,10 +198,10 @@ void GameScene::Draw()
     test_->Draw(sceneCamera_.get(), testWorldTransform_);
 
     // 骨描画
-    //if (test_ && test_->GetModel()->GetSkeleton().joints.size() > 0) {
-    //    test_->DrawSkeleton(test_->GetModel()->GetSkeleton(), *boneLine_);
-    //    boneLine_->DrawLine();
-    //}
+    if (test_ && test_->GetModel()->GetSkeleton().joints.size() > 0) {
+        test_->DrawSkeleton(test_->GetModel()->GetSkeleton(), *boneLine_);
+        boneLine_->DrawLine();
+    }
 
    
 

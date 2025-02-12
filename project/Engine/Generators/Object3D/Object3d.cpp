@@ -21,10 +21,6 @@ void Object3d::Initialize()
 {
 	// 引数で受け取ってメンバ変数に記録する
 	this->object3dCommon_ = Object3dCommon::GetInstance();
-	// デフォルトカメラのセット
-	//this->camera_ = object3dCommon_->GetDefaultCamera();
-
-
 
 	CreateMaterialResource();
 

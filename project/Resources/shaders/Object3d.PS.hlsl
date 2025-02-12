@@ -18,7 +18,6 @@ struct DirectionalLight
 struct Camera
 {
     float3 worldPosition;
-
 };
 struct PointLight
 {

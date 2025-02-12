@@ -124,6 +124,7 @@ private:
 
 	struct CameraForGPU {
 		Vector3 worldPosition;
+		//float padding[3];
 	};
 	// マテリアルのリソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> materialResource_;

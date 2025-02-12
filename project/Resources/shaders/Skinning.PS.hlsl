@@ -5,19 +5,19 @@ struct Material
 	int enableLighting;
 	float4x4 uvTransform;
 	float shininess;
+    int enableSpecular;
+    int isHalfVector;
 };
 struct DirectionalLight
 {
-	float4 color; // ƒ‰ƒCƒg‚ÌF
-	float3 direction; // ƒ‰ƒCƒg‚ÌŒü‚«
-	float intensity; // ‹P“x
+	float4 color; // ãƒ©ã‚¤ãƒˆã®è‰²
+	float3 direction; // ãƒ©ã‚¤ãƒˆã®å‘ã
+	float intensity; // è¼åº¦
 	int isEnableDirectionalLighting;
 };
 struct Camera
 {
 	float3 worldPosition;
-	int enableSpecular;
-	int isHalfVector;
 };
 struct PointLight
 {
@@ -25,8 +25,8 @@ struct PointLight
 	float3 position;
 	float intensity;
 	int isEnablePointLight;
-	float radius; // ƒ‰ƒCƒg‚Ì“Í‚­Å‘å‹——£
-	float decay; // Œ¸Š—¦
+	float radius; // ãƒ©ã‚¤ãƒˆã®å±Šãæœ€å¤§è·é›¢
+	float decay; // æ¸›è¡°ç‡
 };
 struct SpotLight
 {
@@ -58,36 +58,36 @@ PixelShaderOutput main(VertexShaderOutput input)
 {
 	PixelShaderOutput output;
 
-    // UVÀ•W•ÏŠ·‚ÆƒeƒNƒXƒ`ƒƒƒTƒ“ƒvƒŠƒ“ƒO
+    // UVåº§æ¨™å¤‰æ›ã¨ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚µãƒ³ãƒ—ãƒªãƒ³ã‚°
 	float4 transformedUV = mul(float4(input.texcoord, 0.0f, 1.0f), gMaterial.uvTransform);
 	float4 textureColor = gTexture.Sample(gSampler, transformedUV.xy);
 
-    // ‰Šú‰»
+    // åˆæœŸåŒ–
 	float3 finalDiffuse = float3(0.0f, 0.0f, 0.0f);
 	float3 finalSpecular = float3(0.0f, 0.0f, 0.0f);
 
 	if (gMaterial.enableLighting)
 	{
-        // ƒJƒƒ‰‹üƒxƒNƒgƒ‹
+        // ã‚«ãƒ¡ãƒ©è¦–ç·šãƒ™ã‚¯ãƒˆãƒ«
 		float3 toEye = normalize(gCamera.worldPosition - input.worldPosition);
 
         //===========================================================//
-        //                   ƒfƒBƒŒƒNƒVƒ‡ƒiƒ‹ƒ‰ƒCƒg‚ÌŒvZ               
+        //                   ãƒ‡ã‚£ãƒ¬ã‚¯ã‚·ãƒ§ãƒŠãƒ«ãƒ©ã‚¤ãƒˆã®è¨ˆç®—               
         //===========================================================//
         
 		if (gDirectionalLight.isEnableDirectionalLighting)
 		{
-            // ŠgU”½Ë
+            // æ‹¡æ•£åå°„
 			float NdotL = max(dot(normalize(input.normal), -gDirectionalLight.direction), 0.0f);
 			float cos = pow(NdotL * 0.5f + 0.5f, 2.0f);
 			float3 diffuseDirectional = gMaterial.color.rgb * textureColor.rgb * gDirectionalLight.color.rgb * cos * gDirectionalLight.intensity;
-            // ‹¾–Ê”½Ë (Blinn-Phong)
+            // é¡é¢åå°„ (Blinn-Phong)
 			float3 halfVector = normalize(-gDirectionalLight.direction + toEye);
 			float NdotH = max(dot(normalize(input.normal), halfVector), 0.0f);
 			float3 specularDirectional = gDirectionalLight.color.rgb * gDirectionalLight.intensity * pow(saturate(NdotH), gMaterial.shininess);
 
-            // ƒtƒ‰ƒO‚Å—LŒø‰»
-			if (gCamera.enableSpecular != 0)
+            // ãƒ•ãƒ©ã‚°ã§æœ‰åŠ¹åŒ–
+			if (gMaterial.enableSpecular != 0)
 			{
 				finalSpecular += specularDirectional;
 			}
@@ -95,27 +95,27 @@ PixelShaderOutput main(VertexShaderOutput input)
 		}
 
         //===========================================================//
-        //                      ƒ|ƒCƒ“ƒgƒ‰ƒCƒg‚ÌŒvZ               
+        //                      ãƒã‚¤ãƒ³ãƒˆãƒ©ã‚¤ãƒˆã®è¨ˆç®—               
         //===========================================================//
         
 		if (gPointLight.isEnablePointLight)
 		{
-            // ƒ‰ƒCƒg•ûŒüƒxƒNƒgƒ‹
+            // ãƒ©ã‚¤ãƒˆæ–¹å‘ãƒ™ã‚¯ãƒˆãƒ«
 			float3 pointLightDirection = normalize(gPointLight.position - input.worldPosition);
             
-			float distance = length(gPointLight.position - input.worldPosition); // ƒ|ƒCƒ“ƒgƒ‰ƒCƒg‚Ö‚Ì‹——£
-			float factor = pow(saturate(-distance / gPointLight.radius + 1.0f), gPointLight.decay); //w”‚É‚æ‚éƒRƒ“ƒgƒ[ƒ‹
+			float distance = length(gPointLight.position - input.worldPosition); // ãƒã‚¤ãƒ³ãƒˆãƒ©ã‚¤ãƒˆã¸ã®è·é›¢
+			float factor = pow(saturate(-distance / gPointLight.radius + 1.0f), gPointLight.decay); //æŒ‡æ•°ã«ã‚ˆã‚‹ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«
             
-            // ŠgU”½Ë
+            // æ‹¡æ•£åå°„
 			float NdotLPoint = max(dot(normalize(input.normal), pointLightDirection), 0.0f);
 			float3 diffusePoint = gMaterial.color.rgb * textureColor.rgb * gPointLight.color.rgb * NdotLPoint * gPointLight.intensity * factor;
-            // ‹¾–Ê”½Ë (Blinn-Phong)
+            // é¡é¢åå°„ (Blinn-Phong)
 			float3 halfVectorPoint = normalize(pointLightDirection + toEye);
 			float NdotHPoint = max(dot(normalize(input.normal), halfVectorPoint), 0.0f);
 			float3 specularPoint = gPointLight.color.rgb * gPointLight.intensity * pow(saturate(NdotHPoint), gMaterial.shininess) * factor;
         
-            // ƒtƒ‰ƒO‚Å—LŒø‰»
-			if (gCamera.enableSpecular != 0)
+            // ãƒ•ãƒ©ã‚°ã§æœ‰åŠ¹åŒ–
+            if (gMaterial.enableSpecular != 0)
 			{
 				finalSpecular += specularPoint;
 			}
@@ -123,54 +123,54 @@ PixelShaderOutput main(VertexShaderOutput input)
 		}
         
         //===========================================================//
-        //                      ƒXƒ|ƒbƒgƒ‰ƒCƒg‚ÌŒvZ               
+        //                      ã‚¹ãƒãƒƒãƒˆãƒ©ã‚¤ãƒˆã®è¨ˆç®—               
         //===========================================================//
         
 		if (gSpotLight.isEnableSpotLight)
 		{
-            // ƒXƒ|ƒbƒgƒ‰ƒCƒg‚Ì•ûŒüƒxƒNƒgƒ‹
+            // ã‚¹ãƒãƒƒãƒˆãƒ©ã‚¤ãƒˆã®æ–¹å‘ãƒ™ã‚¯ãƒˆãƒ«
 			float3 spotLightDirectionOnSurface = normalize(input.worldPosition - gSpotLight.position);
 
-            // ƒ‰ƒCƒg‚Æ‚Ì‹——£
+            // ãƒ©ã‚¤ãƒˆã¨ã®è·é›¢
 			float distanceToSurface = length(gSpotLight.position - input.worldPosition);
 
-            // ‹——£‚É‚æ‚éŒ¸Š—¦ (‹t‹——£‚ÌŒ¸ŠŒvZ)
+            // è·é›¢ã«ã‚ˆã‚‹æ¸›è¡°ç‡ (é€†è·é›¢ã®æ¸›è¡°è¨ˆç®—)
 			float distanceDecay = pow(saturate(-distanceToSurface / gSpotLight.distance + 1.0f), gSpotLight.decay);
 
-            // ƒXƒ|ƒbƒgƒ‰ƒCƒg‚ÌŠp“x‚É‚æ‚éŒ¸Š (FalloffŠJnŠp“x‚ğl—¶)
+            // ã‚¹ãƒãƒƒãƒˆãƒ©ã‚¤ãƒˆã®è§’åº¦ã«ã‚ˆã‚‹æ¸›è¡° (Falloffé–‹å§‹è§’åº¦ã‚’è€ƒæ…®)
 			float cosAngle = dot(spotLightDirectionOnSurface, gSpotLight.direction);
 			float angleFalloff = saturate((cosAngle - gSpotLight.cosFalloffStart) / (gSpotLight.cosAngle - gSpotLight.cosFalloffStart));
 
-            // ‘Œ¸ŠŒW”
+            // ç·æ¸›è¡°ä¿‚æ•°
 			float falloffFactor = angleFalloff * distanceDecay;
 
-            // ŠgU”½Ë (NdotL)
+            // æ‹¡æ•£åå°„ (NdotL)
 			float NdotLPoint = max(dot(normalize(input.normal), -spotLightDirectionOnSurface), 0.0f);
 			float3 diffusePoint = gMaterial.color.rgb * textureColor.rgb * gSpotLight.color.rgb * NdotLPoint * gSpotLight.intensity * falloffFactor;
 
-            // ‹¾–Ê”½Ë (Blinn-Phong)
+            // é¡é¢åå°„ (Blinn-Phong)
 			float3 halfVectorPoint = normalize(-spotLightDirectionOnSurface + toEye);
 			float NdotHPoint = max(dot(normalize(input.normal), halfVectorPoint), 0.0f);
 			float3 specularPoint = gSpotLight.color.rgb * gSpotLight.intensity * pow(saturate(NdotHPoint), gMaterial.shininess) * falloffFactor;
 
-            // ƒXƒyƒLƒ…ƒ‰[”½Ë‚Ì—LŒø‰»
-			if (gCamera.enableSpecular != 0)
+            // ã‚¹ãƒšã‚­ãƒ¥ãƒ©ãƒ¼åå°„ã®æœ‰åŠ¹åŒ–
+            if (gMaterial.enableSpecular != 0)
 			{
 				finalSpecular += specularPoint;
 			}
 			finalDiffuse += diffusePoint;
 		}
 
-        // ÅI“I‚ÈF‚ğ‡¬
+        // æœ€çµ‚çš„ãªè‰²ã‚’åˆæˆ
 		output.color.rgb = finalDiffuse + finalSpecular;
 	}
 	else
 	{
-        // ƒ‰ƒCƒeƒBƒ“ƒO‚È‚µ‚Ìê‡
+        // ãƒ©ã‚¤ãƒ†ã‚£ãƒ³ã‚°ãªã—ã®å ´åˆ
 		output.color.rgb = gMaterial.color.rgb * textureColor.rgb;
 	}
 
-    // ƒAƒ‹ƒtƒ@’l‚Ìİ’è
+    // ã‚¢ãƒ«ãƒ•ã‚¡å€¤ã®è¨­å®š
 	output.color.a = gMaterial.color.a * textureColor.a;
 
 	return output;
