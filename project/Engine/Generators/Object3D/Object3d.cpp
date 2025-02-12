@@ -68,6 +68,8 @@ void Object3d::Draw(Camera* camera,WorldTransform& worldTransform)
 	object3dCommon_->GetDxCommon()->GetCommandList()->SetGraphicsRootConstantBufferView(0, materialResource_->GetGPUVirtualAddress());
 	// TransformatonMatrixCB
 	object3dCommon_->GetDxCommon()->GetCommandList()->SetGraphicsRootConstantBufferView(1, worldTransform.GetConstBuffer()->GetGPUVirtualAddress());
+	// カメラ
+	object3dCommon_->GetDxCommon()->GetCommandList()->SetGraphicsRootConstantBufferView(4, cameraResource_->GetGPUVirtualAddress());
 
 	// 3Dモデルが割り当てられていれば描画する
 	if (model_) {
@@ -92,7 +94,11 @@ void Object3d::CreateMaterialResource()
 
 void Object3d::CreateCameraResource()
 {
+	cameraResource_ = object3dCommon_->GetDxCommon()->CreateBufferResource(sizeof(CameraForGPU));
+	cameraResource_->Map(0, nullptr, reinterpret_cast<void**>(&cameraData_));
+	cameraData_->worldPosition = { 0.0f, 0.0f, 0.0f };
 }
+
 
 
 
