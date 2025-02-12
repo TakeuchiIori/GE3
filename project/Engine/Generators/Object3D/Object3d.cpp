@@ -27,6 +27,8 @@ void Object3d::Initialize()
 
 
 	CreateMaterialResource();
+
+	CreateCameraResource();
 }
 void Object3d::UpdateAnimation()
 {

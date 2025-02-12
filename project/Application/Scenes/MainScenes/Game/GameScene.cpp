@@ -67,7 +67,7 @@ void GameScene::Initialize()
     test_->SetModel("walk.gltf",true);
     //test_->SetModel("sneakWalk.gltf", true);
     testWorldTransform_.Initialize();
-    test_->SetLine(line_.get());
+   
 
     // 初期カメラモード設定
     cameraMode_ = CameraMode::FOLLOW;
@@ -128,7 +128,7 @@ void GameScene::Update()
 
     // enemy_->Update();
     ground_->Update();
-    //test_->UpdateAnimation();
+    test_->UpdateAnimation();
 
 
     particleEmitter_[0]->Emit();
@@ -195,7 +195,7 @@ void GameScene::Draw()
     /// ここから描画可能です
     /// </summary>
 
-   // test_->Draw(testWorldTransform_);
+    test_->Draw(sceneCamera_.get(), testWorldTransform_);
 
     // 骨描画
     //if (test_ && test_->GetModel()->GetSkeleton().joints.size() > 0) {
