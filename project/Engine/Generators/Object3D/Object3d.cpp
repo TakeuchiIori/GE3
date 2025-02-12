@@ -90,6 +90,10 @@ void Object3d::CreateMaterialResource()
 	materialData_->uvTransform = MakeIdentity4x4();
 }
 
+void Object3d::CreateCameraResource()
+{
+}
+
 
 
 void Object3d::SetModel(const std::string& filePath, bool isAnimation)

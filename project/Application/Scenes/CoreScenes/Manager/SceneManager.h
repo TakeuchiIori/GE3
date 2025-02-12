@@ -16,6 +16,8 @@ class SceneManager {
 public:
     // シングルトン
     static SceneManager* GetInstance();
+    SceneManager() = default;
+    ~SceneManager() = default;
 
     /// <summary> 初期化 </summary>
     void Initialize();
@@ -42,8 +44,7 @@ private:
     static std::unique_ptr<SceneManager> instance;
     static std::once_flag initInstanceFlag;
 
-    SceneManager() = default;
-    ~SceneManager() = default;
+
     SceneManager(const SceneManager&) = delete;
     SceneManager& operator=(const SceneManager&) = delete;
 

@@ -62,12 +62,12 @@ void GameScene::Initialize()
     ground_->Initialize(sceneCamera_.get());
     
     // test
-    //test_ = std::make_unique<Object3d>();
-    //test_->Initialize();
-    //test_->SetModel("walk.gltf",true);
-    ////test_->SetModel("sneakWalk.gltf", true);
-    //testWorldTransform_.Initialize();
-    //test_->SetLine(line_.get());
+    test_ = std::make_unique<Object3d>();
+    test_->Initialize();
+    test_->SetModel("walk.gltf",true);
+    //test_->SetModel("sneakWalk.gltf", true);
+    testWorldTransform_.Initialize();
+    test_->SetLine(line_.get());
 
     // 初期カメラモード設定
     cameraMode_ = CameraMode::FOLLOW;
@@ -220,7 +220,7 @@ ParticleManager::GetInstance()->Draw();
     /// <summary>
     /// ここから描画可能です
     /// </summary>
-    sprite_->Draw();
+    //sprite_->Draw();
 
 #pragma endregion
 

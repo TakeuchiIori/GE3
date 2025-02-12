@@ -12,7 +12,7 @@ void MyGame::Initialize()
 	SceneManager::GetInstance()->SetTransitionFactory(std::make_unique<FadeTransitionFactory>());
 	SceneManager::GetInstance()->Initialize();
 #ifdef _DEBUG
-	SceneManager::GetInstance()->ChangeScene("Title");
+	SceneManager::GetInstance()->ChangeScene("Game");
 #else
 	SceneManager::GetInstance()->ChangeScene("Title");
 #endif
