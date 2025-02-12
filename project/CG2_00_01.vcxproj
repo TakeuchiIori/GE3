@@ -176,6 +176,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Application\SystemsApp\Cameras\TopDownCamera\TopDownCamera.cpp" />
     <ClCompile Include="Engine\Utility\Systems\GameTime\ObjectTime.cpp" />
     <ClCompile Include="Application\Scenes\MainScenes\Transitions\Base\TransitionFactory.cpp" />
+    <ClCompile Include="Engine\Utility\Loaders\Model\Mesh.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application\Objects\Enemy\Enemy.h" />
@@ -250,6 +251,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="Application\SystemsApp\Cameras\TopDownCamera\TopDownCamera.h" />
     <ClInclude Include="Engine\Utility\Systems\GameTime\ObjectTime.h" />
     <ClInclude Include="Application\Scenes\MainScenes\Transitions\Base\TransitionFactory.h" />
+    <ClInclude Include="Engine\Utility\Loaders\Model\Mesh.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="externals\DirectXTex\DirectXTex_Desktop_2022_Win10.vcxproj">

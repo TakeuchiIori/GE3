@@ -126,7 +126,7 @@ void from_json(const json& j, std::tuple<Args...>& t)
 }
 
 /// <summary>
-///  Vector2, Vector3, Quaternion 用のカスタムJSON変換
+///  Vector2, Vector3, Quaternion 用のJSON変換
 /// </summary>
 inline void to_json(json& j, const Vector2& v)
 {
