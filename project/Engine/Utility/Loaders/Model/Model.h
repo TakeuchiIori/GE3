@@ -12,6 +12,8 @@
 // Engine
 #include "DX./DirectXCommon.h"
 #include "WorldTransform./WorldTransform.h"
+#include "Material.h"
+#include "Mesh.h"
 
 // Math
 #include "MathFunc.h"
@@ -295,13 +297,26 @@ private:
 
 	
 
-public: // アクセッサ
+public:
+	/*=================================================================
+
+							アクセッサ
+
+	=================================================================*/
 	ModelData GetModelData() { return modelData_; }
 	Matrix4x4 GetLocalMatrix() { return localMatrix_; }
 	Skeleton GetSkeleton() { return skeleton_; }
-private: // メンバ変数
-	// 外部からのポインタ
+
+private: 
+	/*=================================================================
+
+							ポインタ
+
+	=================================================================*/
 	ModelCommon* modelCommon_;
+	std::vector<std::unique_ptr<Material>> material_;
+	std::vector<std::unique_ptr<Mesh>> mesh_;
+
 	// objファイルのデータ
 	ModelData modelData_;
 
