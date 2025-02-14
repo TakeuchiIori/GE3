@@ -10,7 +10,6 @@ void SkinCluster::CreateResource(size_t jointsSize, size_t verticesSize, std::ma
 	//=========================================================//
 	//					palette用のResourceを確保				   //
 	//=========================================================//
-
 	paletteResource_ = DirectXCommon::GetInstance()->CreateBufferResource(sizeof(WellForGPU) * jointsSize);
 	WellForGPU* mappedPalette = nullptr;
 	paletteResource_->Map(0, nullptr, reinterpret_cast<void**>(&mappedPalette));
@@ -19,12 +18,11 @@ void SkinCluster::CreateResource(size_t jointsSize, size_t verticesSize, std::ma
 	paletteSrvHandle_.first = SrvManager::GetInstance()->GetCPUSRVDescriptorHandle(srvIndex_);
 	paletteSrvHandle_.second = SrvManager::GetInstance()->GetGPUSRVDescriptorHandle(srvIndex_);
 	SrvManager::GetInstance()->CreateSRVforStructuredBuffer(srvIndex_, paletteResource_.Get(),
-		UINT(jointsSize), sizeof(WellForGPU));
+	UINT(jointsSize), sizeof(WellForGPU));
 
 	//=========================================================//
 	//					Influece用のResourceを生成			   //
 	//=========================================================//
-
 	influenceResource_ = DirectXCommon::GetInstance()->CreateBufferResource(sizeof(VertexInfluence) * verticesSize);
 	VertexInfluence* mappedInfluence = nullptr;
 	influenceResource_->Map(0, nullptr, reinterpret_cast<void**>(&mappedInfluence));
@@ -41,18 +39,17 @@ void SkinCluster::CreateResource(size_t jointsSize, size_t verticesSize, std::ma
 	//=========================================================//
 	//			ModelDataを解析してInfluenceを埋める			   //
 	//=========================================================//
-
-	for (const auto& jointWeight : skinClusterData_) { // ModelのSkinCluster情報を解析
-		auto it = jointMap.find(jointWeight.first); // jointweight.firstはjoint名なので、skeletonに対象となるjointは含まれるか判断
-		if (it == jointMap.end()) { // そんな名前は存在しない。なので次に回す
+	for (const auto& jointWeight : skinClusterData_) {	/// ModelのSkinCluster情報を解析
+		auto it = jointMap.find(jointWeight.first);		/// jointweight.firstはjoint名なので、skeletonに対象となるjointは含まれるか判断
+		if (it == jointMap.end()) {						/// そんな名前は存在しない。なので次に回す
 			continue;
 		}
-		// (*it).secondにはjointのindexが入ってるので、該当のindexのinverseBindPoseMatrixを代入
+		/// (*it).secondにはjointのindexが入ってるので、該当のindexのinverseBindPoseMatrixを代入
 		inverseBindposeMatrices_[(*it).second] = jointWeight.second.inverseBindPoseMatrix;
 		for (const auto& vertexWeight : jointWeight.second.vertexWeights) {
-			auto& currentInfluence = mappedInfluence_[vertexWeight.vertexIndex]; // 該当のいvertexIndexのinfluence情報を参照しておく
+			auto& currentInfluence = mappedInfluence_[vertexWeight.vertexIndex]; /// 該当のいvertexIndexのinfluence情報を参照しておく
 			for (uint32_t index = 0; index < kNumMaxInfluence; ++index) {
-				if (currentInfluence.weights[index] == 0.0f) { // weight == 0が開いてる状態なので、その場所でweightとjointのindexを代入
+				if (currentInfluence.weights[index] == 0.0f) {					 /// weight == 0が開いてる状態なので、その場所でweightとjointのindexを代入
 					currentInfluence.weights[index] = vertexWeight.weight;
 					currentInfluence.jointindices[index] = (*it).second;
 					break;
