@@ -112,36 +112,35 @@ public:
 
 	=================================================================*/
 
-	/// <summary>
-	/// メッシュデータの取得
-	/// </summary>
+	/// 
+	/// MeshData
+	/// 
 	const MeshData& GetMeshData() const { return meshData_; }
 
-	/// <summary>
-	/// メッシュリソースの取得
-	/// </summary>
+	/// 
+	/// MeshResource
+	/// 
 	const MeshResource& GetMeshResource() const { return meshResources_; }
 
-	/// <summary>
-	/// 頂点データの取得
-	/// </summary>
+	/// 
+	/// VertexData
+	/// 
 	VertexData* GetVertexData() const { return vertexData_; }
 
-	/// <summary>
-	/// インデックスデータの取得
-	/// </summary>
+	/// 
+	/// IndexData
+	/// 
 	uint32_t* GetIndexData() const { return indexData_; }
 
-	/// <summary>
-	/// マテリアルの取得・セット
-	/// </summary>
-	/// <returns></returns>
+	/// 
+	/// Material
+	/// 
 	uint32_t GetMaterialIndex() const { return meshData_.materialIndex; }
 	void SetUseMaterialIndex(uint32_t index) { meshData_.materialIndex = index; }
 
-	/// <summary>
-	/// DirectXCommonの取得・セット
-	/// </summary>
+	/// 
+	/// DirectXCommon
+	/// 
 	DirectXCommon* GetDirectXCommon() const { return dxCommon_; }
 	void SetDirectXCommon(DirectXCommon* dxCommon) { dxCommon_ = dxCommon; }
 	
