@@ -6,7 +6,9 @@
 #include "Collision./GlobalVariables.h"
 #include "Collision/CollisionTypeIdDef.h"
 #include "Player/Player.h"
-
+#include "Particle/ParticleManager.h"
+#include <Systems/GameTime/HitStop.h>
+#include "EnemyManager.h"
 #ifdef _DEBUG
 #include "imgui.h" 
 #endif // _DEBUG
@@ -18,8 +20,10 @@ Enemy::Enemy() {
     // 番号の追加
     ++nextSerialNumber_;
 }
-void Enemy::Initialize()
+void Enemy::Initialize(Camera* camera, const Vector3& pos)
 {
+    camera_ = camera;
+
     // OBject3dの初期化
     base_ = std::make_unique<Object3d>();
     base_->Initialize();
@@ -27,20 +31,21 @@ void Enemy::Initialize()
     //needle_Body
     // その他初期化
     input_ = Input::GetInstance();
-    moveSpeed_ = { 0.25f, 0.25f , 0.25f };
+    //moveSpeed_ = { 0.25f, 0.25f , 0.25f };
     worldTransform_.Initialize();
-    worldTransform_.translation_.y = 2.0f;
-    worldTransform_.translation_.z = 25.0f;
+	worldTransform_.translation_ = pos;
+    worldTransform_.translation_.y = 1.0f;
+   // worldTransform_.translation_.z = 25.0f;
     shadow_ = std::make_unique<Object3d>();
     shadow_->Initialize();
     shadow_->SetModel("Shadow.obj");
 
     WS_.Initialize();
 
-    WS_.translation_.y = 0.5f;
+    WS_.translation_.y = 0.1f;
 
     //GlobalVariables* globalvariables = GlobalVariables::GetInstance();
-    const char* groupName = "Enemy";
+   // const char* groupName = "Enemy";
     // グループを追加
    // GlobalVariables::GetInstance()->CreateGroup(groupName);
    // Collider::Initialize();
@@ -48,28 +53,65 @@ void Enemy::Initialize()
     Collider::SetTypeID(static_cast<uint32_t>(CollisionTypeIdDef::kEnemy));
 
     isActive_ = true;
+    isAlive_ = true;
+
+    particleEmitter_ = std::make_unique<ParticleEmitter>("Enemy", worldTransform_.translation_, 5);
+    particleEmitter_->Initialize();
+	
+	timeID_ = "Enemy : " + std::to_string(serialNumber_);
+	gameTime_ = GameTime::GetInstance();
+	gameTime_->RegisterObject(timeID_);
 }
 
 void Enemy::Update()
 {
-    if (!isActive_)
+    // 死亡時は更新処理をスキップ
+    if (!isActive_ || !isAlive_) {
         return;
+    }
 
+
+
+ 
     Move();
 
-    ShowCoordinatesImGui();
+   
+
+
+
+    CameraShake();
+   
+    
+
+    if (isHit_) {
+        base_->SetMaterialColor({ 1.0f, 0.0f, 0.0f, 1.0f });
+    }
+    else {
+        base_->SetMaterialColor({ 1.0f, 1.0f, 1.0f, 1.0f });
+    }
+	isHit_ = false;
+
+#ifdef _DEBUG
+   ShowCoordinatesImGui();
+
+#endif // _DEBUG
+ 
+   //particleEmitter_->UpdateEmit("Enemy", WS_.translation_, 5);
 
     worldTransform_.UpdateMatrix();
-
     WS_.UpdateMatrix();
+
+    
 }
 
 void Enemy::Draw()
 {
-    if (isActive_) {
-        base_->Draw(worldTransform_);
-        shadow_->Draw(WS_);
+    if (!isActive_ || !isAlive_) {
+        return;
     }
+        base_->Draw(camera_,worldTransform_);
+        shadow_->Draw(camera_,WS_);
+  
     
 }
 
@@ -78,15 +120,8 @@ void Enemy::ShowCoordinatesImGui()
 #ifdef _DEBUG
     ImGui::Begin("Enemy");
     ImGui::Checkbox("Enable Draw", &isDrawEnabled_);
+	ImGui::DragFloat("deltaTime_", &deltaTime_, 0.01f, 0.0f, 10.0f);
 
-    // スケール
-    //ImGui::Text("Scale");
-    //float scale[3] = { worldTransform_.scale_.x, worldTransform_.scale_.y, worldTransform_.scale_.z };
-    //if (ImGui::SliderFloat3("Scale", scale, 0.1f, 10.0f, "%.2f")) {
-    //    worldTransform_.scale_.x = std::max(0.1f, scale[0]);
-    //    worldTransform_.scale_.y = std::max(0.1f, scale[1]);
-    //    worldTransform_.scale_.z = std::max(0.1f, scale[2]);
-    //}
 
     // 回転
     ImGui::Text("Rotation");
@@ -115,11 +150,22 @@ void Enemy::OnCollision(Collider* other)
 {
     // 衝突相手の種別IDを取得
     uint32_t typeID = other->GetTypeID();
-    // 衝突相手が敵なら
-    if (typeID == static_cast<uint32_t>(CollisionTypeIdDef::kPlayer) || typeID == static_cast<uint32_t>(CollisionTypeIdDef::kPlayerWeapon)) {
+    // 衝突相手が武器かプレイヤーなら
+    if (typeID == static_cast<uint32_t>(CollisionTypeIdDef::kPlayerWeapon)) {
 
-        isActive_ = false;
+        isHit_ = true;
+		base_->SetMaterialColor({ 1.0f, 0.0f, 0.0f, 1.0f });
+        hp_ -= 2;
+        if (hp_ <= 0) {
+            isAlive_ = false;
+            isActive_ = false;  // 完全に無効化
+        }
+		isShake_ = true;
+
+        HitStop::GetInstance()->Start("Player", HitStop::HitStopType::Heavy);
     }
+
+    
 
 }
 
@@ -138,28 +184,90 @@ Matrix4x4 Enemy::GetWorldMatrix() const
     return worldTransform_.matWorld_;
 }
 
-void Enemy::Move()
+void Enemy::EnemyAllHitStop()
 {
-    Vector3 playerPos = player_->GetPosition();
-    playerPos = playerPos - Vector3{ 0,1.0f,0 };
-    Vector3 pos = { playerPos - worldTransform_.translation_ };
-    float weponRadius = 4.0f;
-    if (Length(pos) > weponRadius + radius_)// プレイヤーの半径 + エネミー半径 - 0.1fくらい？
-    {
-        pos = Normalize(pos);
-        worldTransform_.translation_ += pos * speed_;
+    enemyManager_->ApplyHitStopToAllEnemies(HitStop::HitStopType::Heavy);
+}
+
+void Enemy::Move() {
+    // デルタタイムの取得
+    deltaTime_ = gameTime_->GetDeltaTime(timeID_);
+
+    // ヒットストップ中は動きを停止
+    if (deltaTime_ <= 0.001f) {
+        return;
     }
 
-    // 衝突中フラグが立っている場合は非表示に
-    if (isColliding_) {
-        isDrawEnabled_ = false; // 描画を無効に
-    }
-    else {
-        isDrawEnabled_ = true; // 描画を有効に
-    }
-    // 衝突状態をリセット
-    isColliding_ = false; // 毎フレーム初期化
+    // プレイヤーへの方向ベクトルを計算
+    Vector3 toPlayer = player_->GetPosition() - worldTransform_.translation_;
+    float distanceToPlayer = Length(toPlayer);
 
+    // プレイヤーとの最小/最大距離
+    const float minDistance = radius_ + weaponRadius_;
+    const float maxDistance = 40.0f;
+
+    if (distanceToPlayer > minDistance && distanceToPlayer < maxDistance) {
+        // 移動方向の正規化
+        Vector3 moveDirection = Normalize(toPlayer);
+
+        // 現在の速度を計算（deltaTimeを考慮）
+        Vector3 velocity = moveDirection * baseSpeed_ * deltaTime_;
+
+        // 位置の更新
+        worldTransform_.translation_ += velocity;
+
+        // プレイヤーとの最小距離を保持
+        if (distanceToPlayer < minDistance) {
+            Vector3 pushBackDir = Normalize(toPlayer);
+            worldTransform_.translation_ = player_->GetPosition() + (pushBackDir * minDistance);
+        }
+    }
+
+    // 高さは固定
+    worldTransform_.translation_.y = 1.0f;
+
+    // 影の位置更新
     WS_.translation_.x = worldTransform_.translation_.x;
     WS_.translation_.z = worldTransform_.translation_.z;
+    WS_.translation_.y = 0.1f;
+
+    // プレイヤーの方向を向く（滑らかな回転に変更）
+    Vector3 targetDirection = player_->GetWorldPosition() - worldTransform_.translation_;
+    float targetRotationY = std::atan2(targetDirection.x, targetDirection.z);
+
+    // 現在の回転から目標の回転まで補間
+    float currentRotationY = worldTransform_.rotation_.y;
+    float rotationDiff = targetRotationY - currentRotationY;
+
+    // 回転角度を-πからπの範囲に正規化
+    while (rotationDiff > std::numbers::pi_v<float>) rotationDiff -= 2 * std::numbers::pi_v<float>;
+    while (rotationDiff < -std::numbers::pi_v<float>) rotationDiff += 2 * std::numbers::pi_v<float>;
+
+    // 滑らかな回転
+    worldTransform_.rotation_.y += rotationDiff * rotationSpeed_ * deltaTime_;
+
+    
+}
+
+void Enemy::CameraShake()
+{
+    if (isShake_) {
+        camera_->Shake(0.1f, Vector2{ -0.1f, -0.1f },Vector2{0.1f,0.1f});
+		isShake_ = false;
+    }
+}
+
+void Enemy::InitJson()
+{
+	jsonManager_ = new JsonManager("Enemy", "Resources./JSON");
+	jsonManager_->Register("HP", &hp_);
+
+}
+
+Vector3 Enemy::GetWorldPosition() {
+    Vector3 worldPos;
+    worldPos.x = worldTransform_.matWorld_.m[3][0];
+    worldPos.y = worldTransform_.matWorld_.m[3][1];
+    worldPos.z = worldTransform_.matWorld_.m[3][2];
+    return worldPos;
 }

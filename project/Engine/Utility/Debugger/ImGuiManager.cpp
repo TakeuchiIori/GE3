@@ -6,7 +6,10 @@
 #include "imgui.h"
 #include <imgui_impl_win32.h>
 #include <imgui_impl_dx12.h>
+#include "imgui_internal.h"        
+#include <imgui_impl_dx12.cpp>
 #endif
+
 
 ImGuiManager* ImGuiManager::instance = nullptr;
 ImGuiManager* ImGuiManager::GetInstance()
@@ -23,13 +26,19 @@ void ImGuiManager::Initialize(WinApp* winApp, DirectXCommon* dxCommon)
 	// メンバ変数に引数を渡す
 	dxCommon_ = dxCommon;
 
+	winApp_ = winApp;
+
 	// ImGuiのコンテキストを生成
 	ImGui::CreateContext();
-	//ImGuiのスタイルを設定
-	ImGui::StyleColorsDark();
 
-	// Win32用初期化
-	ImGui_ImplWin32_Init(winApp->GetHwnd());
+	ImGuiIO& io = ImGui::GetIO();
+	io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable; // 追加
+
+	// Editorの設定
+	CustomizeEditor();
+
+	// DockSpaceの設定
+	CustomizeColor();
 
 	// デスクリプタヒープ生成
 	CreateDescriptorHeap();
@@ -37,8 +46,7 @@ void ImGuiManager::Initialize(WinApp* winApp, DirectXCommon* dxCommon)
 	// DirectX12の初期化
 	InitialzeDX12();
 
-	// 変更したエディター呼び出し
-	CustomizeEditor();
+
 	
 
 #endif
@@ -52,45 +60,46 @@ void ImGuiManager::Begin()
 	ImGui_ImplWin32_NewFrame();
 	ImGui::NewFrame();
 
-	// DockSpaceの設定
-
-	ImGuiIO& io = ImGui::GetIO();
-	ImGui::SetNextWindowPos(ImVec2(0.0f, 0.0f)); // ウィンドウ全体をカバーする
-
-	ImGui::SetNextWindowSize(io.DisplaySize);
-	ImGui::SetNextWindowBgAlpha(0.0f); // 背景を透明にする
 	ImGuiWindowFlags dockspace_flags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse |
 		ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove |
 		ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus |
 		ImGuiWindowFlags_NoBackground;
-
-	ImGui::Begin("MainDockSpace", nullptr, dockspace_flags);
-
-	// DockSpaceの作成
-	ImGui::DockSpace(ImGui::GetID("MainDockSpace"), ImVec2(0.0f, 0.0f), ImGuiDockNodeFlags_None);
+	ImGui::Begin("MainDockSpace", nullptr, ImGuiWindowFlags_NoCollapse);
+	ImGui::DockSpace(ImGui::GetID("MainDockSpace"), ImVec2(0.0f, 0.0f), ImGuiDockNodeFlags_PassthruCentralNode);
 	ImGui::End();
 #endif
-
 }
 
 void ImGuiManager::End()
 {
 #ifdef _DEBUG
+	ImGui::EndFrame();
 	// 描画前準備
 	ImGui::Render();
+	ID3D12GraphicsCommandList* commandList = dxCommon_->GetCommandList().Get();
+
+	ImGuiIO& io = ImGui::GetIO();
+	if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+	{
+		ImGui::UpdatePlatformWindows();
+		ImGui::RenderPlatformWindowsDefault(nullptr, (void*)commandList);
+	}
+	Draw();
 #endif
 }
 
 void ImGuiManager::Draw()
 {
 #ifdef _DEBUG
-	ID3D12GraphicsCommandList* commandList = dxCommon_->GetCommandList().Get();
-
 	// デスクリプターヒープの配列をセットするコマンド
-	ID3D12DescriptorHeap* ppHeaps[] = { srvHeap_.Get() };
-	commandList->SetDescriptorHeaps(_countof(ppHeaps), ppHeaps);
+	ID3D12DescriptorHeap* ppHeaps[] = { srvHeap_.Get()};
+	dxCommon_->GetCommandList()->SetDescriptorHeaps(_countof(ppHeaps), ppHeaps);
+	if (ImGui::GetDrawData()->TotalVtxCount == 0) {
+		printf("Warning: No vertices to render!\n");
+		return;
+	}
 	// 描画コマンドを発行
-	ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), commandList);
+	ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), dxCommon_->GetCommandList().Get());
 	
 #endif
 }
@@ -114,14 +123,92 @@ void ImGuiManager::CreateDescriptorHeap()
 void ImGuiManager::InitialzeDX12()
 {
 #ifdef _DEBUG
-	ImGui_ImplDX12_Init(
+	if (!srvHeap_) {
+		printf("srvHeap_ is NULL! Check CreateDescriptorHeap!\n");
+		assert(srvHeap_);
+	}
+
+	// DirectX12の初期化
+	IMGUI_CHECKVERSION();
+	// Win32用初期化
+	ImGui_ImplWin32_Init(winApp_->GetHwnd());
+
+	HRESULT hr = ImGui_ImplDX12_Init(
 		dxCommon_->GetDevice().Get(),
-		static_cast<int> (dxCommon_->GetBackBufferCount()),
-		DXGI_FORMAT_R8G8B8A8_UNORM_SRGB, srvHeap_.Get(),
+		dxCommon_->GetBackBufferCount(),
+		DXGI_FORMAT_R8G8B8A8_UNORM, srvHeap_.Get(),
 		srvHeap_->GetCPUDescriptorHandleForHeapStart(),
 		srvHeap_->GetGPUDescriptorHandleForHeapStart()
-	); 
+	);
+
+	if (FAILED(hr)) {
+		printf("ImGui_ImplDX12_Init failed! HRESULT: 0x%08X\n", hr);
+		assert(SUCCEEDED(hr)); // ここで停止してエラー内容を確認
+	}
+
+
+	ImGui_ImplDX12_InitPlatformInterface();
+
 #endif // DEBUG
+}
+
+void ImGuiManager::CustomizeColor()
+{
+#ifdef _DEBUG
+
+	ImGuiIO& io = ImGui::GetIO();
+	if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+	{
+		ImGuiStyle& style = ImGui::GetStyle();
+		ImVec4* colors = style.Colors;
+
+		// DockSpace背景色を透明に設定
+		colors[ImGuiCol_DockingEmptyBg] = ImVec4(0.0f, 0.0f, 0.0f, 0.0f); // 完全に透明
+		// パディングとスペーシングの調整
+		style.WindowPadding = ImVec2(0.0f, 0.0f); // ウィンドウ内の余白をゼロに
+
+		// ここでカラーやスタイル設定を変更
+		colors[ImGuiCol_WindowBg] = ImVec4(0.3f, 0.3f, 0.3f, 1.0f);    // 背景色 (ダークグレー)
+		colors[ImGuiCol_TitleBg] = ImVec4(0.45f, 0.45f, 0.48f, 1.0f);  // タイトルバー (暗い灰色)
+		colors[ImGuiCol_TitleBgActive] = ImVec4(0.5f, 0.5f, 0.55f, 1.0f);    // アクティブなタイトルバー (少し明るい灰色)
+		colors[ImGuiCol_TitleBgCollapsed] = ImVec4(0.4f, 0.4f, 0.42f, 1.0f);    // 折りたたまれたタイトルバー
+		colors[ImGuiCol_Button] = ImVec4(0.5f, 0.52f, 0.6f, 1.0f);    // ボタン (青灰色)
+		colors[ImGuiCol_ButtonHovered] = ImVec4(0.6f, 0.65f, 0.75f, 1.0f);   // ホバーしたボタン (明るい青灰色)
+		colors[ImGuiCol_ButtonActive] = ImVec4(0.55f, 0.58f, 0.65f, 1.0f);  // 押されたボタン (少し暗めの青灰色)
+		colors[ImGuiCol_FrameBg] = ImVec4(0.45f, 0.45f, 0.48f, 1.0f);  // 入力欄やフレーム背景
+		colors[ImGuiCol_FrameBgHovered] = ImVec4(0.5f, 0.5f, 0.55f, 1.0f);    // ホバーしたフレーム背景
+		colors[ImGuiCol_FrameBgActive] = ImVec4(0.55f, 0.55f, 0.6f, 1.0f);   // アクティブなフレーム背景
+		colors[ImGuiCol_CheckMark] = ImVec4(0.56f, 0.9f, 1.15f, 1.0f);   // チェックマーク (青アクセント)
+		colors[ImGuiCol_SliderGrab] = ImVec4(0.56f, 0.9f, 1.15f, 1.0f);   // スライダーつまみ (青アクセント)
+		colors[ImGuiCol_SliderGrabActive] = ImVec4(0.67f, 1.0f, 1.25f, 1.0f);   // アクティブなスライダーつまみ
+		colors[ImGuiCol_Header] = ImVec4(0.5f, 0.55f, 0.6f, 1.0f);    // ヘッダー背景
+		colors[ImGuiCol_HeaderHovered] = ImVec4(0.6f, 0.65f, 0.7f, 1.0f);    // ホバーしたヘッダー
+		colors[ImGuiCol_HeaderActive] = ImVec4(0.55f, 0.6f, 0.65f, 1.0f);   // アクティブなヘッダー
+		colors[ImGuiCol_Tab] = ImVec4(0.45f, 0.48f, 0.52f, 1.0f);  // タブ背景
+		colors[ImGuiCol_TabHovered] = ImVec4(0.55f, 0.6f, 0.7f, 1.0f);    // ホバーしたタブ
+		colors[ImGuiCol_TabActive] = ImVec4(0.5f, 0.55f, 0.65f, 1.0f);   // アクティブなタブ
+		colors[ImGuiCol_Separator] = ImVec4(0.55f, 0.55f, 0.6f, 1.0f);   // セパレーター
+		colors[ImGuiCol_SeparatorHovered] = ImVec4(0.65f, 0.7f, 0.75f, 1.0f);   // ホバーしたセパレーター
+		colors[ImGuiCol_SeparatorActive] = ImVec4(0.75f, 0.8f, 0.85f, 1.0f);   // アクティブなセパレーター
+		colors[ImGuiCol_Text] = ImVec4(1.2f, 1.2f, 1.2f, 1.0f);     // テキスト (白)
+		colors[ImGuiCol_TextDisabled] = ImVec4(0.8f, 0.8f, 0.8f, 1.0f);     // 無効化されたテキスト (灰色)
+		colors[ImGuiCol_Border] = ImVec4(0.5f, 0.5f, 0.55f, 1.0f);    // 境界線
+		colors[ImGuiCol_BorderShadow] = ImVec4(0.3f, 0.3f, 0.3f, 0.0f);     // 境界線の影
+
+		ImVec4 inactiveTabColor = ImVec4(0.4f, 0.4f, 0.4f, 1.0f); // 選択していないタブの色
+		ImVec4 inactiveTabActiveColor = ImVec4(0.5f, 0.5f, 0.5f, 1.0f); // 選択していないがアクティブなタブの色
+		ImVec4 activeTabColor = ImVec4(0.6f, 0.6f, 0.6f, 1.0f); // 選択されたタブの色
+		colors[ImGuiCol_TabUnfocused] = inactiveTabColor;         // 非アクティブなタブの色
+		colors[ImGuiCol_TabUnfocusedActive] = inactiveTabActiveColor;
+		// スタイルの変更
+		style.WindowRounding = 15.0f;      // ウィンドウの角丸
+		style.FrameRounding = 4.0f;        // フレームの角丸
+		style.ScrollbarSize = 15.0f;       // スクロールバーのサイズ
+
+
+
+	}
+#endif // _DEBUG
 }
 
 void ImGuiManager::CustomizeEditor()
@@ -131,95 +218,15 @@ void ImGuiManager::CustomizeEditor()
 	ImGuiIO& io = ImGui::GetIO();
 	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 
-
-	// メインDockSpaceの設定
-	//ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse |
-	//	ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove |
-	//	ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
-
-	// ウィンドウ全体をカバーするDockSpaceの作成
-	ImGui::SetNextWindowPos(ImVec2(0.0f, 0.0f)); // ウィンドウ位置を(0,0)に設定
-	ImGui::SetNextWindowSize(io.DisplaySize);    // ウィンドウサイズを全画面に設定
-
-
 	// フォントファイルのパスとサイズを指定してフォントをロードする
 	io.Fonts->AddFontFromFileTTF(
-		"Resources/Fonts/FiraMono-Regular.ttf", 14.0f // フォントファイルのパスとフォントサイズ
+		"Resources/Fonts/SourceHanMonoSC-MediumIt.otf", 17.0f // フォントファイルのパスとフォントサイズ
 	);
 	// 標準フォントを追加する
 	io.Fonts->AddFontDefault();
 
-
-	ImGuiStyle& style = ImGui::GetStyle();
-
-	// カラースキームのカスタマイズ
-	ImVec4* colors = style.Colors;
-	/*========================================================
-							ドックスペース
-	========================================================*/
-
-	// DockSpace背景色を透明に設定
-	colors[ImGuiCol_DockingEmptyBg] = ImVec4(0.0f, 0.0f, 0.0f, 0.0f); // 完全に透明
-	// パディングとスペーシングの調整
-	style.WindowPadding = ImVec2(0.0f, 0.0f); // ウィンドウ内の余白をゼロに
-
-	//style.FramePadding = ImVec2(0.0f, 0.0f);  // フレーム内の余白をゼロに
-	//style.ItemSpacing = ImVec2(0.0f, 0.0f);   // アイテム間のスペースをゼロに
-	//style.CellPadding = ImVec2(0.0f, 0.0f);   // テーブルセル内の余白をゼロに
-	//style.WindowBorderSize = 0.0f;            // ウィンドウの境界線幅をゼロに
-	//style.ChildBorderSize = 0.0f;             // 子ウィンドウの境界線幅をゼロに
-	//style.PopupBorderSize = 0.0f;             // ポップアップの境界線幅をゼロに
-	//style.FrameBorderSize = 0.0f;             // フレームの境界線幅をゼロに
-	//// DockNodeのスペーシングを調整
-	//style.TabBorderSize = 0.0f;               // タブの境界線幅をゼロに
-	////style.TabRounding = 0.0f;                 // タブの角丸をゼロに
-
-
-	/*========================================================
-							ImGui
-	========================================================*/
-
-	colors[ImGuiCol_WindowBg] = ImVec4(0.05f, 0.05f, 0.05f, 1.0f);    // 背景色 (ダークグレー)
-	colors[ImGuiCol_TitleBg] = ImVec4(0.15f, 0.15f, 0.18f, 1.0f);  // タイトルバー (暗い灰色)
-	colors[ImGuiCol_TitleBgActive] = ImVec4(0.2f, 0.2f, 0.25f, 1.0f);    // アクティブなタイトルバー (少し明るい灰色)
-	colors[ImGuiCol_TitleBgCollapsed] = ImVec4(0.1f, 0.1f, 0.12f, 1.0f);    // 折りたたまれたタイトルバー
-	colors[ImGuiCol_Button] = ImVec4(0.2f, 0.22f, 0.3f, 1.0f);    // ボタン (青灰色)
-	colors[ImGuiCol_ButtonHovered] = ImVec4(0.3f, 0.35f, 0.45f, 1.0f);   // ホバーしたボタン (明るい青灰色)
-	colors[ImGuiCol_ButtonActive] = ImVec4(0.25f, 0.28f, 0.35f, 1.0f);  // 押されたボタン (少し暗めの青灰色)
-	colors[ImGuiCol_FrameBg] = ImVec4(0.15f, 0.15f, 0.18f, 1.0f);  // 入力欄やフレーム背景
-	colors[ImGuiCol_FrameBgHovered] = ImVec4(0.2f, 0.2f, 0.25f, 1.0f);    // ホバーしたフレーム背景
-	colors[ImGuiCol_FrameBgActive] = ImVec4(0.25f, 0.25f, 0.3f, 1.0f);   // アクティブなフレーム背景
-	colors[ImGuiCol_CheckMark] = ImVec4(0.26f, 0.6f, 0.85f, 1.0f);   // チェックマーク (青アクセント)
-	colors[ImGuiCol_SliderGrab] = ImVec4(0.26f, 0.6f, 0.85f, 1.0f);   // スライダーつまみ (青アクセント)
-	colors[ImGuiCol_SliderGrabActive] = ImVec4(0.37f, 0.7f, 0.95f, 1.0f);   // アクティブなスライダーつまみ
-	colors[ImGuiCol_Header] = ImVec4(0.2f, 0.25f, 0.3f, 1.0f);    // ヘッダー背景
-	colors[ImGuiCol_HeaderHovered] = ImVec4(0.3f, 0.35f, 0.4f, 1.0f);    // ホバーしたヘッダー
-	colors[ImGuiCol_HeaderActive] = ImVec4(0.25f, 0.3f, 0.35f, 1.0f);   // アクティブなヘッダー
-	colors[ImGuiCol_Tab] = ImVec4(0.15f, 0.18f, 0.22f, 1.0f);  // タブ背景
-	colors[ImGuiCol_TabHovered] = ImVec4(0.25f, 0.3f, 0.4f, 1.0f);    // ホバーしたタブ
-	colors[ImGuiCol_TabActive] = ImVec4(0.2f, 0.25f, 0.35f, 1.0f);   // アクティブなタブ
-	colors[ImGuiCol_Separator] = ImVec4(0.25f, 0.25f, 0.3f, 1.0f);   // セパレーター
-	colors[ImGuiCol_SeparatorHovered] = ImVec4(0.35f, 0.4f, 0.45f, 1.0f);   // ホバーしたセパレーター
-	colors[ImGuiCol_SeparatorActive] = ImVec4(0.45f, 0.5f, 0.55f, 1.0f);   // アクティブなセパレーター
-	colors[ImGuiCol_Text] = ImVec4(0.9f, 0.9f, 0.9f, 1.0f);     // テキスト (白)
-	colors[ImGuiCol_TextDisabled] = ImVec4(0.5f, 0.5f, 0.5f, 1.0f);     // 無効化されたテキスト (灰色)
-	colors[ImGuiCol_Border] = ImVec4(0.2f, 0.2f, 0.25f, 1.0f);    // 境界線
-	colors[ImGuiCol_BorderShadow] = ImVec4(0.0f, 0.0f, 0.0f, 0.0f);     // 境界線の影
-
-
-
-	// スタイルの変更
-	style.WindowRounding = 15.0f;      // ウィンドウの角丸
-	style.FrameRounding = 4.0f;        // フレームの角丸
-	style.ScrollbarSize = 15.0f;       // スクロールバーのサイズ
-	//style.FramePadding = ImVec2(10, 10); // フレーム内のパディング
-
-	// ImGuiのスタイルを設定
-	//ImGui::StyleColorsClassic();
-
 #endif;
 }
-
 
 void ImGuiManager::Finalize()
 {
@@ -230,7 +237,9 @@ void ImGuiManager::Finalize()
 	ImGui::DestroyContext();
 
 	// デスクリプターヒープを解放
-	srvHeap_.Reset();
+	if (srvHeap_) {
+		srvHeap_.Reset();
+	}
 
 	delete instance;
 	instance = nullptr;

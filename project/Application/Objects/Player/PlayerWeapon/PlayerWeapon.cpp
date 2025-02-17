@@ -33,7 +33,7 @@ void PlayerWeapon::Initialize()
 	input_ = Input::GetInstance();
 
 	worldTransform_.Initialize();
-	worldTransform_.translation_.y = 0.0f;
+	worldTransform_.translation_.y = -1.0f;
 	worldTransform_.translation_.z = -2.0f;
 
 #pragma region 各モーションの初期化
@@ -184,12 +184,12 @@ void PlayerWeapon::Update()
 /// <summary>
 /// 描画
 /// </summary>
-void PlayerWeapon::Draw()
+void PlayerWeapon::Draw(Camera* camera)
 {
 	for (Effect* effect : effects_) {
-		effect->Draw();
+		effect->Draw(camera);
 	}
-	weapon_->Draw(worldTransform_);
+	weapon_->Draw(camera,worldTransform_);
 }
 
 /// <summary>
@@ -431,8 +431,8 @@ void PlayerWeapon::UpdateState()
 /// <param name="deltaTime"></param>
 void PlayerWeapon::IdleMotion(float deltaTime)
 {
-	// スペースを押されたらアタック
-	if (input_->PushKey(DIK_SPACE)) {
+	// スペースキーまたはAボタンを押されたら攻撃
+	if (input_->PushKey(DIK_SPACE) || input_->IsPadTriggered(0, GamePadButton::RB)) {
 		stateRequest_ = WeaponState::Attacking;
 		return;
 	}
@@ -480,7 +480,7 @@ void PlayerWeapon::UpdateAttackMotion(float deltaTime)
 
 	// コンボ開始
 	if (attackProgress_ >= 0.5f) {
-		if (IsComboAvailable() && input_->PushKey(DIK_SPACE)) {
+		if (IsComboAvailable() && input_->PushKey(DIK_SPACE) || input_->IsPadTriggered(0, GamePadButton::RB)) {
 			stateRequest_ = WeaponState::LSwing;
 			currentMotion_ = LSwing_;
 			attackProgress_ = 0.0f;
@@ -519,7 +519,7 @@ void PlayerWeapon::UpdateLeftHorizontalSwing(float deltaTime)
 
 	// コンボ開始
 	if (attackProgress_ >= 0.5f) {
-		if (IsComboAvailable() && input_->PushKey(DIK_SPACE)) {
+		if (IsComboAvailable() && input_->PushKey(DIK_SPACE) || input_->IsPadTriggered(0, GamePadButton::RB)) {
 			stateRequest_ = WeaponState::RSwing;
 			currentMotion_ = RSwing_; // ダッシュ攻撃モーション
 			attackProgress_ = 0.0f;
@@ -556,7 +556,7 @@ void PlayerWeapon::UpdateRightHorizontalSwiwng(float deltaTime)
 
 	// コンボ開始
 	if (attackProgress_ >= 0.5f) {
-		if (IsComboAvailable() && input_->PushKey(DIK_SPACE)) {
+		if (IsComboAvailable() && input_->PushKey(DIK_SPACE) || input_->IsPadTriggered(0, GamePadButton::RB)) {
 			stateRequest_ = WeaponState::JumpAttack;
 			currentMotion_ = jumpAttack_; // ダッシュ攻撃モーション
 			attackProgress_ = 0.0f;
@@ -597,7 +597,7 @@ void PlayerWeapon::UpdateJumpAttack(float deltaTime)
 
 	// コンボ開始
 	if (attackProgress_ >= 1.0f) {
-		if (IsComboAvailable() && input_->PushKey(DIK_SPACE)) {
+		if (IsComboAvailable() && input_->PushKey(DIK_SPACE) || input_->IsPadTriggered(0, GamePadButton::RB)) {
 			stateRequest_ = WeaponState::Dashing;
 			currentMotion_ = dashMotion_; // ダッシュ攻撃モーション
 			attackProgress_ = 0.0f;
@@ -638,7 +638,7 @@ void PlayerWeapon::UpdateDashMotion(float deltaTime)
 
 	// コンボ開始
 	if (attackProgress_ >= 0.5f) {
-		if (IsComboAvailable() && input_->PushKey(DIK_SPACE)) {
+		if (IsComboAvailable() && input_->PushKey(DIK_SPACE) || input_->IsPadTriggered(0, GamePadButton::RB)) {
 			//stateRequest_ = WeaponState::Dashing;
 			//currentMotion_ = dashMotion_; // ダッシュ攻撃モーション
 			//attackProgress_ = 0.0f;
@@ -676,7 +676,6 @@ void PlayerWeapon::OnCollision(Collider* other)
 
 		Enemy* enemy = static_cast<Enemy*>(other);
 		uint32_t serialNumber = enemy->GetSerialNumber();
-
 		// 接触履歴があれば何もせずに抜ける
 		if (contactRecord_.CheckHistory(serialNumber)) {
 			return;
@@ -690,6 +689,12 @@ void PlayerWeapon::OnCollision(Collider* other)
 		effect->SetWorldTransform(enemy->GetWorldTransform());
 		effect->Update();
 		effects_.push_back(effect);
+
+		if (state_ == WeaponState::Dashing || state_ == WeaponState::JumpAttack) {
+			enemy->EnemyAllHitStop();
+		}
+
+		
 	}
 
 }

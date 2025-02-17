@@ -6,6 +6,7 @@
 #include "Loaders./Model./Model.h"
 #include "WorldTransform./WorldTransform.h"
 #include "Object3D./Object3d.h"
+#include "Systems/Camera/Camera.h"
 
 class Effect {
 public:
@@ -24,7 +25,7 @@ public:
 	/// <summary>
 	/// 描画
 	/// </summary>
-	void Draw();
+	void Draw(Camera* camera);
 
 	/// <summary>
 	/// ワールドトランスフォーム
@@ -39,7 +40,7 @@ private:
 	// ワールドトランスフォーム
 	WorldTransform worldTransform_;
 	bool isAlive_ = true;
-	float timer_ = 15.0f;
+	float timer_ = 5.0f;
 
 	// 改良コードで追加したメンバ
 	float rotationAngle_; // 回転角度

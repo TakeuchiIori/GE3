@@ -66,7 +66,7 @@ public:
 	/// <summary>
 	/// 描画
 	/// </summary>
-	void Draw();  
+	void Draw(Camera* camera);  
 
 	/// <summary>
 	/// デバッグ用UIの描画

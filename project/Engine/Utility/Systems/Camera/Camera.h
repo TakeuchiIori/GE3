@@ -7,6 +7,15 @@
 class Camera
 {
 public: // メンバ関数
+
+	struct CameraShake {
+		float shakeTimer_ = 0.0f;
+		float shakeDuration_ = 0.0f;
+		Vector2 shakeMinRange_;
+		Vector2 shakeMaxRange_;
+		Vector3 originalPosition_;
+		bool isShaking_ = false;
+	};
 	/// <summary>
 	/// コンストラクタ
 	/// </summary>
@@ -16,6 +25,12 @@ public: // メンバ関数
 	/// 更新
 	/// </summary>
 	void Update();
+
+	/// <summary>
+	/// 行列の更新
+	/// </summary>
+	void UpdateMatrix();
+
 
 	/// <summary>
 	/// ImGui
@@ -29,24 +44,14 @@ public: // カメラ
     /// </summary>
 	void DefaultCamera();
 
-	/// <summary>
-	/// 追従カメラ
-	/// </summary>
-	void FollowCamera(Vector3& target );
 
-	/// <summary>
-   /// 神視点カメラを設定する
-   /// </summary>
-	void SetTopDownCamera(const Vector3& position);
+public: // シェイク
 
+	void Shake(float time, const Vector2 min, const Vector2 max);
 
-	/// <summary>
-	/// FPS視点
-	/// </summary>
-	/// <param name="position"></param>
-	/// <param name="rotation"></param>
-	void SetFPSCamera(const Vector3& position, const Vector3& rotation);
+private:
 
+	void UpdateShake();
 
 public: // アクセッサ
     // Setter
@@ -66,7 +71,7 @@ public: // アクセッサ
 	Vector3 GetTranslate() const { return transform_.translate; }
 	Vector3 GetScale() const { return transform_.scale; }
 
-private: // メンバ変数
+public: 
 	EulerTransform transform_;	   
 	Matrix4x4 worldMatrix_;	   
 	Matrix4x4 viewMatrix_;	   
@@ -77,9 +82,11 @@ private: // メンバ変数
 	float nearClip_;			 // ニアクリップ距離
 	float farClip_;				 // ファークリップ距離
 
-	Vector3 followCameraOffsetPosition_ = Vector3(0.0f, 9.0f, -33.0f);
+	/*===============================================================//
+								シェイク
+	//===============================================================*/
 
-	Vector3 followCameraOffsetRotare_ = Vector3(0.2f, 0.0f, 0.0f);
-
+	CameraShake cameraShake_;
+	Vector3 shakeOffset_;
 };
 

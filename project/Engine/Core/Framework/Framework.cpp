@@ -62,7 +62,6 @@ void Framework::Initialize()
 	skinningManager_ = SkinningManager::GetInstance();
 	skinningManager_->Initialize(dxCommon_);
 
-	GlobalVariables::GetInstance()->LoadFiles();
 }
 
 void Framework::Finalize()
@@ -87,10 +86,6 @@ void Framework::Update()
 	imguiManager_->Begin();
 	// 入力は初めに更新
 	input_->Update();
-	// グローバル変数の更新
-	GlobalVariables::GetInstance()->Update();
-	//collisionManager_->Reset();
-	//collisionManager_->CheckAllCollisions();
 
 	// コライダーの更新
 #ifdef _DEBUG

@@ -1,17 +1,28 @@
 #pragma once
-// C++
 #include <xaudio2.h>
+#include <wrl/client.h>
 #include <fstream>
-#include <wrl.h>
+#include <vector>
+#include <mfapi.h>
+#include <mfidl.h>
+#include <mfreadwrite.h>
+#include <mferror.h>
+#include <cassert>
 
-
+#pragma comment(lib, "mfplat.lib")
+#pragma comment(lib, "mfreadwrite.lib")
+#pragma comment(lib, "mfuuid.lib")
 #pragma comment(lib,"xaudio2.lib")
+class Audio {
+public:
+	// シングルトンの取得と破棄
+	static Audio* GetInstance();
+	static void Finalize();
 
-class Audio
-{
+	// 初期化と終了処理
+	void Initialize();
+	void FinalizeAudio();
 
-public: // インナークラス
-	// チャンクヘッダ
 	struct ChunkHeader
 	{
 		char id[4];		 // チャンク毎のID
@@ -40,63 +51,28 @@ public: // インナークラス
 		unsigned int bufferSize;
 	};
 
-public: // メンバ関数
 
-	// シングルトンインスタンスの取得
-	static Audio* GetInstance();
-	// 終了
-	void Finalize();
-
-	/// <summary>
-	/// 初期化
-	/// </summary>
-	void Initialize();
-
-	/// <summary>
-	/// 音声データ読み込み
-	/// </summary>
-	/// <param name="filename"></param>
-	/// <returns></returns>
 	SoundData LoadWave(const char* filename);
+	SoundData LoadAudio(const wchar_t* filename); // .mp3, .mp4 用
+	void SoundUnload(SoundData* soundData);
 
-	/// <summary>
-	/// 音声データの解放
-	/// </summary>
-	/// <param name="soundData"></param>
-	void SoundUnload(Microsoft::WRL::ComPtr<IXAudio2> xAudio2,SoundData* soundData);
+	IXAudio2SourceVoice* SoundPlayWave(const SoundData& soundData);
+	IXAudio2SourceVoice* SoundPlayAudio(const SoundData& soundData); // .mp3, .mp4 用
 
-	/// <summary>
-	/// サウンド再生
-	/// </summary>
-	/// <param name="xAudio2"></param>
-	/// <param name="soundData"></param>
-	void SoundPlayWave(IXAudio2* xAudio2,const SoundData& soundData);
-
-	/// <summary>
-	/// サウンド停止
-	/// </summary>
-	void SoundStop(IXAudio2SourceVoice* pSourceVoice);
-
-	/// <summary>
-	/// 音量を設定
-	/// </summary>
-	/// <param name="pSourceVoice">音声ソース</param>
-	/// <param name="volume">設定する音量 (0.0f～1.0f)</param>
+	// 音量設定
 	void SetVolume(IXAudio2SourceVoice* pSourceVoice, float volume);
 
-public: 
-	Microsoft::WRL::ComPtr<IXAudio2> GetXAudio2() const {return xAudio2_;}
-
-private: 
-
+private:
+	// シングルトンパターン
 	static Audio* instance;
-	Audio() = default;
-	~Audio() = default;
-	Audio(Audio&) = delete;
-	Audio& operator = (Audio&) = delete;
+	Audio();
+	~Audio();
 
-	Microsoft::WRL::ComPtr<IXAudio2> xAudio2_;
+	// XAudio2 関連
+	IXAudio2* xAudio2_;
 	IXAudio2MasteringVoice* masterVoice_;
 	HRESULT hr_;
-};
 
+	// Media Foundation 関連
+	bool mediaFoundationInitialized_;
+};

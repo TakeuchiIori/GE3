@@ -27,8 +27,15 @@ Camera::Camera()
 
 void Camera::Update()
 {
-	// transformからアフィン変換行列を計算
-	worldMatrix_ = MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.translate);
+	if (cameraShake_.isShaking_) {
+		UpdateShake();
+	}
+}
+
+void Camera::UpdateMatrix()
+{
+    // transformからアフィン変換行列を計算
+    worldMatrix_ = MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.translate + shakeOffset_);
     // worldMatrixの逆行列
     viewMatrix_ = Inverse(worldMatrix_);
     // プロジェクション行列の更新
@@ -60,69 +67,41 @@ void Camera::DefaultCamera()
 
 }
 
-void Camera::FollowCamera(Vector3& target)
-{	// カメラの位置を対象の後方に設定
- // マウスの移動量を取得
-    Input::MouseMove mouseMove = Input::GetInstance()->GetMouseMove();
-
-    // マウス感度（調整可能）
-    const float mouseSensitivity = 0.001f;
-
-    // マウスの移動量に基づいて回転を更新
-    followCameraOffsetRotare_.y += mouseMove.lX * mouseSensitivity; // 左右回転
-   // followCameraOffsetRotare_.x += mouseMove.lY * mouseSensitivity; // 上下回転
-
-    // 上下回転の制限（-89° ～ 89°）
-    //followCameraOffsetRotare_.x = std::clamp(followCameraOffsetRotare_.x, -89.0f, 89.0f);
-
-    // 回転行列を作成
-    Matrix4x4 rotationMatrix = MakeRotateMatrixXYZ(followCameraOffsetRotare_);
-
-    // 初期オフセットを回転
-    Vector3 rotatedOffset = TransformCoordinates(followCameraOffsetPosition_, rotationMatrix);
-
-    // カメラの位置をターゲットの後方に設定
-    transform_.translate = target + rotatedOffset;
-
-    transform_.translate.y -= 2.0f;
-    // カメラの回転を設定
-    transform_.rotate = followCameraOffsetRotare_;
-
-    // ワールド行列とビュー行列を更新
-    worldMatrix_ = MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.translate);
-    viewMatrix_ = Inverse(worldMatrix_);
-
-#ifdef _DEBUG
-    // デバッグ用UIでカメラのオフセットを調整可能
-    ImGui::Begin("Camera ");
-    ImGui::DragFloat3("Camera Position Offset", &followCameraOffsetPosition_.x, 0.01f);
-    ImGui::DragFloat3("Camera Rotation", &followCameraOffsetRotare_.x, 0.01f);
-    ImGui::End();
-#endif
+void Camera::Shake(float time, const Vector2 min, const Vector2 max)
+{
+     cameraShake_.isShaking_ = true;
+     cameraShake_.shakeTimer_ = 0.0f;
+     cameraShake_.shakeDuration_ = time;
+     cameraShake_.shakeMinRange_ = min;
+     cameraShake_.shakeMaxRange_ = max;
+     cameraShake_.originalPosition_ = transform_.translate;
 }
 
-void Camera::SetTopDownCamera(const Vector3& position)
+void Camera::UpdateShake()
 {
-    transform_.translate = position;
-    transform_.rotate = Vector3(1.57f, 0.0f, 0.0f); // 真上から見下ろすように設定
-    worldMatrix_ = MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.translate);
-    viewMatrix_ = Inverse(worldMatrix_);
-}
+    if (cameraShake_.isShaking_) {
+		float deltaTime = 1.0f / 60.0f;
+        cameraShake_.shakeTimer_ += deltaTime;
 
+        if (cameraShake_.shakeTimer_ >= cameraShake_.shakeDuration_) {
+            // シェイク終了
+            cameraShake_.isShaking_ = false;
+            transform_.translate = cameraShake_.originalPosition_;
+        }
+        else {
+            // シェイクの強さを計算（X方向とY方向で別々に）
+            float progressRatio = cameraShake_.shakeTimer_ / cameraShake_.shakeDuration_;
+            Vector2 shakePower = {
+                std::lerp(cameraShake_.shakeMaxRange_.x, cameraShake_.shakeMinRange_.x, progressRatio),
+                std::lerp(cameraShake_.shakeMaxRange_.y, cameraShake_.shakeMinRange_.y, progressRatio)
+            };
 
-void Camera::SetFPSCamera(const Vector3& position, const Vector3& rotation)
-{
-    // カメラ位置をプレイヤーの位置に合わせ、目の高さに調整
-    transform_.translate = position;
-    transform_.translate.y += 1.5f;
-    transform_.translate.z += 1.2f; // 目の高さを設定
-
-    // 回転はプレイヤーの回転のみを反映し、位置の移動とは独立させる
-    transform_.rotate = rotation;
-
-    // アフィン変換行列を再計算
-    worldMatrix_ = MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.translate);
-    viewMatrix_ = Inverse(worldMatrix_);
-    //viewProjectionMatrix_ = Multiply(viewMatrix_, projectionMatrix_);
-  
+            // ランダムなシェイクオフセットを計算
+            shakeOffset_ = {
+                (float)(rand() % 20 - 10) / 10.0f * shakePower.x,
+                (float)(rand() % 20 - 10) / 10.0f * shakePower.y,
+                0.0f
+            };
+        }
+    }
 }

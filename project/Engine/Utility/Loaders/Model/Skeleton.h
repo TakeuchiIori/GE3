@@ -41,6 +41,26 @@ public:
 	/// <param name="skeleton"></param>
 	void DrawSkeleton(Line& line);
 
+public:
+
+	/// <summary>
+	/// スケルトンの取得
+	/// </summary>
+	/// <returns></returns>
+	std::vector<Joint>& GetJoints() { return joints_; }
+
+	/// <summary>
+	/// スケルトンの取得
+	/// </summary>
+	/// <returns></returns>
+	std::map<std::string, int32_t>& GetJointMap() { return jointMap_; }
+
+	/// <summary>
+	/// スケルトンの取得
+	/// </summary>
+	/// <returns></returns>
+	std::vector<std::pair<int32_t, int32_t>>& GetConnections() { return connections_; }
+
 private:
 
 	int32_t root_;												// RootJointのIndex

@@ -14,8 +14,8 @@ void Collider::UpdateWorldTransform() {
 	worldTransform_.UpdateMatrix();
 }
 
-void Collider::Draw(Object3d* obj) {
-	obj->Draw(worldTransform_);
+void Collider::Draw(Object3d* obj, Camera* camera) {
+	obj->Draw(camera,worldTransform_);
 }
 
 

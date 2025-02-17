@@ -5,6 +5,8 @@ struct Material
     int enableLighting;
     float4x4 uvTransform;
     float shininess;
+    int enableSpecular;
+    int isHalfVector;
 };
 struct DirectionalLight
 {
@@ -16,8 +18,6 @@ struct DirectionalLight
 struct Camera
 {
     float3 worldPosition;
-    int enableSpecular;
-    int isHalfVector;
 };
 struct PointLight
 {
@@ -87,7 +87,7 @@ PixelShaderOutput main(VertexShaderOutput input)
             float3 specularDirectional = gDirectionalLight.color.rgb * gDirectionalLight.intensity * pow(saturate(NdotH), gMaterial.shininess);
 
             // フラグで有効化
-            if (gCamera.enableSpecular != 0)
+            if (gMaterial.enableSpecular != 0)
             {
                 finalSpecular += specularDirectional;
             }
@@ -115,7 +115,7 @@ PixelShaderOutput main(VertexShaderOutput input)
             float3 specularPoint = gPointLight.color.rgb * gPointLight.intensity * pow(saturate(NdotHPoint), gMaterial.shininess) * factor;
         
             // フラグで有効化
-            if (gCamera.enableSpecular != 0)
+            if (gMaterial.enableSpecular != 0)
             {
                 finalSpecular += specularPoint;
             }
@@ -154,7 +154,7 @@ PixelShaderOutput main(VertexShaderOutput input)
             float3 specularPoint = gSpotLight.color.rgb * gSpotLight.intensity * pow(saturate(NdotHPoint), gMaterial.shininess) * falloffFactor;
 
             // スペキュラー反射の有効化
-            if (gCamera.enableSpecular != 0)
+            if (gMaterial.enableSpecular != 0)
             {
                 finalSpecular += specularPoint;
             }

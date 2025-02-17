@@ -2,13 +2,14 @@
 // Engine
 #include "CoreScenes./Manager./SceneManager.h"
 #include "Systems./Input./Input.h"
+#include "Systems/Audio/Audio.h"
 #include "Loaders./Texture./TextureManager.h"
 #include "Particle./ParticleManager.h"
 #include "Object3D/Object3dCommon.h"
 #include "PipelineManager/SkinningManager.h"
 #include "Loaders/Model/Model.h"
 #include "Collision/CollisionManager.h"
-
+#include <Systems/GameTime/HitStop.h>
 #include <cstdlib>
 #include <ctime>
 
@@ -17,6 +18,7 @@
 #endif // DEBUG
 #include "LightManager/LightManager.h"
 #include "Sprite/SpriteCommon.h"
+#include <Systems/GameTime/GameTIme.h>
 
 /// <summary>
 /// 初期化処理
@@ -25,68 +27,75 @@ void GameScene::Initialize()
 {
     srand(static_cast<unsigned int>(time(nullptr))); // 乱数シード設定
     // カメラの生成
-    currentCamera_ = cameraManager_.AddCamera();
-    Object3dCommon::GetInstance()->SetDefaultCamera(currentCamera_.get());
+    sceneCamera_ = cameraManager_.AddCamera();
+    
+
     CollisionManager::GetInstance()->Initialize();
     // 線
     line_ = std::make_unique<Line>();
     line_->Initialize();
-    line_->SetCamera(currentCamera_.get());
+    line_->SetCamera(sceneCamera_.get());
 
     boneLine_ = std::make_unique<Line>();
     boneLine_->Initialize();
-    boneLine_->SetCamera(currentCamera_.get());
+    boneLine_->SetCamera(sceneCamera_.get());
 
 
     //// コマンドパターン
     //inputHandler_ = std::make_unique<InputHandleMove>();
+
     //inputHandler_->AssignMoveFrontCommandPressKeyW();
     //inputHandler_->AssignMoveBehindCommandPressKeyS();
     //inputHandler_->AssignMoveRightCommandPressKeyD();
     //inputHandler_->AssignMoveLeftCommandPressKeyA();
 
-
-
+	GameTime::GetInstance()->Initialize();
+    
+	followCamera_.Initialize();
     // 各オブジェクトの初期化
     player_ = std::make_unique<Player>();
-    player_->Initialize();
-   
-
-    // 敵
-    //enemy_ = std::make_unique<Enemy>();
-    //enemy_->Initialize();
-    //enemy_->SetPlayer(player_.get());
-
+    player_->Initialize(sceneCamera_.get());
+    followCamera_.SetTarget(player_.get()->GetWorldTransform());
+    
     // 地面
     ground_ = std::make_unique<Ground>();
-    ground_->Initialize();
-
+    ground_->Initialize(sceneCamera_.get());
+    
     // test
     test_ = std::make_unique<Object3d>();
     test_->Initialize();
-    //test_->SetModel("Animation_Node_00.gltf",true);
-    test_->SetModel("ICo.obj");
+    test_->SetModel("walk.gltf",true);
+    //test_->SetModel("sneakWalk.gltf", true);
     testWorldTransform_.Initialize();
-
-    // アニメーション確認用
-	animation_ = std::make_unique<Object3d>();
-	animation_->Initialize();
-	animation_->SetModel("AnimatedCube.gltf", true);
-	animationTransform_.Initialize();
-
-
-    //test_->SetLine(line_.get());
+   
 
     // 初期カメラモード設定
-    cameraMode_ = CameraMode::DEFAULT;
+    cameraMode_ = CameraMode::FOLLOW;
 
     // パーティクル
-    std::string particleName = "Circle";
-    ParticleManager::GetInstance()->SetCamera(currentCamera_.get());
-    ParticleManager::GetInstance()->CreateParticleGroup(particleName, "Resources/images/circle.png");
+   
+  
     emitterPosition_ = Vector3{ 0.0f, 0.0f, 0.0f }; // エミッタの初期位置
     particleCount_ = 1;
-    particleEmitter_[0] = std::make_unique<ParticleEmitter>(particleName, emitterPosition_, particleCount_);
+    particleEmitter_[0] = std::make_unique<ParticleEmitter>("Circle", emitterPosition_, particleCount_);
+    particleEmitter_[0]->Initialize();
+
+
+
+    //// オーディオファイルのロード（例: MP3）
+    //soundData = Audio::GetInstance()->LoadAudio(L"Resources./images./harpohikunezumi.mp3");
+    //// オーディオの再生
+    //sourceVoice = Audio::GetInstance()->SoundPlayAudio(soundData);
+    //// 音量の設定（0.0f ～ 1.0f）
+    //Audio::GetInstance()->SetVolume(sourceVoice, 0.8f); // 80%の音量に設定
+
+
+    sprite_ = std::make_unique<Sprite>();
+    sprite_->Initialize("Resources/Textures/KoboRB.png");
+    sprite_->SetSize(Vector2{ 1280.0f,720.0f });
+    sprite_->SetTextureSize(Vector2{ 1280,720 });
+
+    ParticleManager::GetInstance()->SetCamera(sceneCamera_.get());
 
 }
 
@@ -95,52 +104,64 @@ void GameScene::Initialize()
 /// </summary>
 void GameScene::Update()
 {
-    CheckAllCollisions();
-    CollisionManager::GetInstance()->UpdateWorldTransform();
 
-    //if (Input::GetInstance()->TriggerKey(DIK_RETURN)) {
-    //    SceneManager::GetInstance()->ChangeScene("TITLE");
-    //}
+
+    //particleEmitter_[0]->SetPosition(player_->GetPosition());
+
+
     //iCommand_ = inputHandler_->HandleInput();
+
     //if (this->iCommand_) {
     //    iCommand_->Exec(*player_.get());
     //}
 
+           // パーティクル更新
 
-
+    CheckAllCollisions();
+    CollisionManager::GetInstance()->UpdateWorldTransform();
+    // スポーンタイマーを更新
 
     // objの更新
     player_->Update();
+    player_->JsonImGui();
+    //followCamera_.JsonImGui();
 
-
-   // enemy_->Update();
+    // enemy_->Update();
     ground_->Update();
-    //test_->UpdateAnimation();
-	animation_->UpdateAnimation();
+    test_->UpdateAnimation();
 
+
+    particleEmitter_[0]->Emit();
+
+    ParticleManager::GetInstance()->Update();
     // カメラ更新
     UpdateCameraMode();
     UpdateCamera();
 
-    // パーティクル更新
-    ParticleManager::GetInstance()->Update();
 
-    ChamgeLoadAnimation();
-    // ShowImGui();
-    particleEmitter_[0]->Update();
 
+
+    // ParticleManager::GetInstance()->UpdateParticlePlayerWeapon(weaponPos);
+    ShowImGui();
+
+
+    // particleEmitter_[1]->Update();
+
+    JsonManager::ImGuiManager();
     // ワールドトランスフォーム更新
     testWorldTransform_.UpdateMatrix();
-    animationTransform_.UpdateMatrix();
     cameraManager_.UpdateAllCameras();
 
     //=====================================================//
     /*                  これより下は触るな危険　　　　　　　   　*/
     //=====================================================//
-   
+
     // ライティング
     LightManager::GetInstance()->ShowLightingEditor();
 
+
+	sprite_->Update();
+  
    
 }
 
@@ -150,22 +171,6 @@ void GameScene::Update()
 /// </summary>
 void GameScene::Draw()
 {
-#pragma region 演出描画
-    //ParticleManager::GetInstance()->Draw();
-
-
-
-#pragma endregion
-  
-#pragma region 2Dスプライト描画
-    SpriteCommon::GetInstance()->DrawPreference();
-    /// <summary>
-    /// ここから描画可能です
-    /// </summary>
-    //player_->DrawSprite();
-   
-
-#pragma endregion
 
 #pragma region 3Dオブジェクト描画
     Object3dCommon::GetInstance()->DrawPreference();
@@ -174,20 +179,13 @@ void GameScene::Draw()
     /// ここから描画可能です
     /// </summary>
     CollisionManager::GetInstance()->Draw();
-    //player_->Draw();
-    //enemy_->Draw();
-    // その他の描画処理
+    player_->Draw();
 
     ground_->Draw();
     //line_->UpdateVertices(start_, end_);
   
     //line_->DrawLine();
-    if (isTestDraw_) {
-        test_->Draw(testWorldTransform_);
-    }
-    if (isAnimationDraw_) {
-        animation_->Draw(animationTransform_);
-    }
+   
 #pragma endregion
 
 #pragma region 骨付きアニメーション描画
@@ -197,19 +195,37 @@ void GameScene::Draw()
     /// ここから描画可能です
     /// </summary>
 
-	
+    test_->Draw(sceneCamera_.get(), testWorldTransform_);
 
     // 骨描画
-    //if (animation_&& animation_->GetModel()->GetSkeleton().joints.size() > 0) {
-    //    animation_->DrawSkeleton(animation_->GetModel()->GetSkeleton(), *boneLine_);
-    //    boneLine_->DrawLine();
-    //}
+    if (test_ && test_->GetModel()->GetSkeleton().joints.size() > 0) {
+        test_->DrawSkeleton(test_->GetModel()->GetSkeleton(), *boneLine_);
+        boneLine_->DrawLine();
+    }
 
    
 
 #pragma endregion
 
+#pragma region 演出描画
+   
+ParticleManager::GetInstance()->Draw();
 
+
+#pragma endregion
+
+
+#pragma region 2Dスプライト描画
+    SpriteCommon::GetInstance()->DrawPreference();
+    /// <summary>
+    /// ここから描画可能です
+    /// </summary>
+    //sprite_->Draw();
+
+#pragma endregion
+
+
+    
 }
 
 /// <summary>
@@ -217,8 +233,9 @@ void GameScene::Draw()
 /// </summary>
 void GameScene::Finalize()
 {
-    cameraManager_.RemoveCamera(currentCamera_);
+    cameraManager_.RemoveCamera(sceneCamera_);
 }
+
 
 void GameScene::UpdateCameraMode()
 {
@@ -227,15 +244,15 @@ void GameScene::UpdateCameraMode()
     if (ImGui::Button("DEFAULT Camera")) {
         cameraMode_ = CameraMode::DEFAULT;
     }
-    //if (ImGui::Button("Follow Camera")) {
-    //    cameraMode_ = CameraMode::FOLLOW;
-    //}
+    if (ImGui::Button("Follow Camera")) {
+        cameraMode_ = CameraMode::FOLLOW;
+    }
     if (ImGui::Button("Top-Down Camera")) {
         cameraMode_ = CameraMode::TOP_DOWN;
     }
-    //if (ImGui::Button("FPS Camera")) {
-    //    cameraMode_ = CameraMode::FPS;
-    //}
+    if (ImGui::Button("FPS Camera")) {
+        cameraMode_ = CameraMode::FPS;
+    }
     ImGui::End();
 #endif
 }
@@ -246,25 +263,37 @@ void GameScene::UpdateCamera()
     {
     case CameraMode::DEFAULT:
     {
-        currentCamera_->DefaultCamera();
+        sceneCamera_->DefaultCamera();
     }
     break;
     case CameraMode::FOLLOW:
     {
-        Vector3 playerPos = player_->GetPosition();
-        //currentCamera_->FollowCamera(playerPos);
+        
+        followCamera_.Update();
+		sceneCamera_->viewMatrix_ = followCamera_.matView_;
+		sceneCamera_->transform_.translate = followCamera_.translate_;
+		sceneCamera_->transform_.rotate = followCamera_.rotate_;
+
+		sceneCamera_->UpdateMatrix();
     }
     break;
     case CameraMode::TOP_DOWN:
     {
-        Vector3 topDownPosition = Vector3(0.0f, 50.0f, 0.0f);
-        currentCamera_->SetTopDownCamera(topDownPosition + Vector3{0.0f,0.0f,0.0f});
+        //Vector3 topDownPosition = Vector3(0.0f, 100.0f, 0.0f);
+        //sceneCamera_->SetTopDownCamera(topDownPosition + player_->GetPosition());
+        
+        topDownCamera_.SetTarget(player_.get()->GetWorldTransform());
+        topDownCamera_.Update();
+		sceneCamera_->viewMatrix_ = topDownCamera_.matView_;
+		sceneCamera_->transform_.translate = topDownCamera_.translate_;
+		sceneCamera_->transform_.rotate = topDownCamera_.rotate_;
+
+		sceneCamera_->UpdateMatrix();
     }
     break;
     case CameraMode::FPS:
     {
-        Vector3 playerPos = player_->GetPosition();
-        currentCamera_->SetFPSCamera(playerPos, player_->GetRotation());
+
     }
     break;
 
@@ -281,7 +310,7 @@ void GameScene::ShowImGui()
     ImGui::End();
     ImGui::Begin("Emitter");
     ImGui::DragFloat3("Emitter Position", &emitterPosition_.x, 0.1f);
-    particleEmitter_[0]->SetPosition(emitterPosition_);
+   // particleEmitter_[0]->SetPosition(emitterPosition_);
 
     // パーティクル数の表示と調整
     ImGui::Text("Particle Count: %.0d", particleCount_); // 現在のパーティクル数を表示
@@ -293,7 +322,7 @@ void GameScene::ShowImGui()
             particleCount_ -= 1;
         }
     }
-    particleEmitter_[0]->SetCount(particleCount_);
+    //particleEmitter_[0]->SetCount(particleCount_);
 
 
     ImGui::End();
@@ -311,81 +340,10 @@ void GameScene::CheckAllCollisions() {
     // コライダーリストに登録
     CollisionManager::GetInstance()->AddCollider(player_->GetPlayerWeapon());
 
-    // 敵全てについて
-    //CollisionManager::GetInstance()->AddCollider(enemy_.get());
+
+   // CollisionManager::GetInstance()->AddCollider(enemy_.get());
 
     // 衝突判定と応答
     CollisionManager::GetInstance()->CheckAllCollisions();
 
 }
-
-void GameScene::ChamgeLoadAnimation()
-{
-    static std::string currentAnimationFile = "None"; // 現在のアニメーションファイル名を保持
-
-    ImGui::Begin("Animation");
-
-    ImGui::Text("Animation_Node");
-
-    if (ImGui::Button("Animation_Node_00")) {
-        currentAnimationFile = "Animation_Node_00.gltf";
-        animation_->SetModel(currentAnimationFile.c_str(), true);
-    }
-
-    if (ImGui::Button("Animation_Node_01")) {
-        currentAnimationFile = "Animation_Node_01.gltf";
-        animation_->SetModel(currentAnimationFile.c_str(), true);
-    }
-
-    if (ImGui::Button("Animation_Node_02")) {
-        currentAnimationFile = "Animation_Node_02.gltf";
-        animation_->SetModel(currentAnimationFile.c_str(), true);
-    }
-
-    if (ImGui::Button("Animation_Node_03")) {
-        currentAnimationFile = "Animation_Node_03.gltf";
-        animation_->SetModel(currentAnimationFile.c_str(), true);
-    }
-
-    if (ImGui::Button("Animation_Node_04")) {
-        currentAnimationFile = "Animation_Node_04.gltf";
-        animation_->SetModel(currentAnimationFile.c_str(), true);
-    }
-
-    if (ImGui::Button("Animation_Node_05")) {
-        currentAnimationFile = "Animation_Node_05.gltf";
-        animation_->SetModel(currentAnimationFile.c_str(), true);
-    }
-
-
-    if (ImGui::Button("Animation_NodeMisc_00")) {
-        currentAnimationFile = "Animation_NodeMisc_00.gltf";
-        animation_->SetModel(currentAnimationFile.c_str(), true);
-    }
-
-    if (ImGui::Button("Animation_NodeMisc_01")) {
-        currentAnimationFile = "Animation_NodeMisc_01.gltf";
-        animation_->SetModel(currentAnimationFile.c_str(), true);
-    }
-
-    if (ImGui::Button("Animation_NodeMisc_02")) {
-        currentAnimationFile = "Animation_NodeMisc_02.gltf";
-        animation_->SetModel(currentAnimationFile.c_str(), true);
-    }
-
-    if (ImGui::Button("Animation_NodeMisc_03")) {
-        currentAnimationFile = "Animation_NodeMisc_03.gltf";
-        animation_->SetModel(currentAnimationFile.c_str(), true);
-    }
-
-
-    // 現在のアニメーションファイル名を表示
-    ImGui::Text("Now Playing: %s", currentAnimationFile.c_str());
-
-    ImGui::Checkbox("AnimationDraw", &isAnimationDraw_);
-    ImGui::Checkbox("TestDraw", &isTestDraw_);
-    ImGui::End();
-
-}
-
-

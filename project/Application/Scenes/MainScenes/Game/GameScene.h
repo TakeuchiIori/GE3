@@ -19,9 +19,14 @@
 #include "Player/ICommand/ICommandMove.h"
 #include "Player/InputHandle/InputHandleMove.h"
 #include "Ground/Ground.h"
+#include "../Transitions/Fade/Fade.h"
+
 
 // Math
 #include "Vector3.h"
+#include "../../../SystemsApp/Cameras/FollowCamera/FollowCamera.h"
+#include "../../../SystemsApp/Cameras/TopDownCamera/TopDownCamera.h"
+#include <Enemy/EnemyManager.h>
 
 enum class CameraMode
 {
@@ -58,6 +63,12 @@ public:
 private:
 
     /// <summary>
+    /// フェースの切り替え
+    /// </summary>
+    void ChangePahse();
+
+
+    /// <summary>
     /// カメラモードを更新する
     /// </summary>
     void UpdateCameraMode();
@@ -74,43 +85,33 @@ private:
 
     void CheckAllCollisions();
 
-    /// <summary>
-    /// アニメーションの再生を変更
-    /// </summary>
-    void ChamgeLoadAnimation();
 
 private:
     // カメラ
     CameraMode cameraMode_;
-    std::shared_ptr<Camera> currentCamera_;
+    std::shared_ptr<Camera> sceneCamera_;
     CameraManager cameraManager_;
+	FollowCamera followCamera_;
+    TopDownCamera topDownCamera_;
     // サウンド
     Audio::SoundData soundData;
+    IXAudio2SourceVoice* sourceVoice;
     // パーティクルエミッター
     std::unique_ptr<ParticleEmitter> particleEmitter_[2];
     Vector3 emitterPosition_;
     uint32_t particleCount_;
 
     Vector3 weaponPos;
-   
+
+    std::unique_ptr<Sprite> sprite_;
+
     // 3Dモデル
     std::unique_ptr<Object3d> test_;
-    bool isTestDraw_ = true;
-    // アニメーション確認用
-	std::unique_ptr<Object3d> animation_;
-    bool isAnimationDraw_ = false;
-
-    WorldTransform animationTransform_;
     WorldTransform testWorldTransform_;
 
     // プレイヤー
     std::unique_ptr<Player> player_;
 
-    // 敵
-    std::unique_ptr<Enemy> enemy_;
-
-    // 敵のリスト
-    std::vector<std::unique_ptr<Enemy>> enemies_;
     // 地面
     std::unique_ptr< Ground> ground_;
 
@@ -126,5 +127,7 @@ private:
     std::unique_ptr<Line> boneLine_;
     Vector3 start_ = { 0.0f,0.0f,0.0f };
     Vector3 end_ = { 10.0f,0.0f,10.0f };
+
+     bool isClear_ = false;
  
 };
