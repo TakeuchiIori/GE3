@@ -14,7 +14,7 @@
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
     <ProjectGuid>{8e57f568-5f17-4092-bcf1-db4eba228a61}</ProjectGuid>
-    <RootNamespace>CG2_00_01</RootNamespace>
+    <RootNamespace>MyEngine</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
     <ProjectName>DirectXGame</ProjectName>
   </PropertyGroup>

@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.9.34728.123
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DirectXGame", "CG2_00_01.vcxproj", "{8E57F568-5F17-4092-BCF1-DB4EBA228A61}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MyEngine", "MyEngine.vcxproj", "{8E57F568-5F17-4092-BCF1-DB4EBA228A61}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ソリューション項目", "ソリューション項目", "{2540B630-2E3C-4FCC-93D9-EFBB73476A8B}"
 	ProjectSection(SolutionItems) = preProject
