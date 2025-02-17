@@ -1,8 +1,15 @@
 #include "SkinCluster.h"
 #include "../Core/DX/DirectXCommon.h"
 #include "../Graphics/SrvManager/SrvManager.h"
-void SkinCluster::Update()
+void SkinCluster::Update(std::vector<Joint> joints_)
 {
+	for (size_t jointIndex = 0; jointIndex < joints_.size(); ++jointIndex) {
+		assert(jointIndex < inverseBindposeMatrices_.size());
+		// スケルトン空間行列の計算
+		mappedPalette_[jointIndex].skeletonSpaceMatrix = inverseBindposeMatrices_[jointIndex] * joints_[jointIndex].GetSkeletonSpaceMatrix();
+		// 法線用の行列を計算（転置逆行列）
+		mappedPalette_[jointIndex].skeletonSpaceInverseTransposeMatrix = TransPose(Inverse(mappedPalette_[jointIndex].skeletonSpaceMatrix));
+	}
 }
 
 void SkinCluster::CreateResource(size_t jointsSize, size_t verticesSize, std::map<std::string, int32_t> jointMap)

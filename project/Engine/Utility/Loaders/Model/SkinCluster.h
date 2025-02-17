@@ -18,7 +18,8 @@
 #include "Joint.h"
 #include "Node.h"
 #include "Skeleton.h"
-#include <span>
+#include "Joint.h"
+
 
 // Math
 #include "Quaternion.h"
@@ -35,7 +36,7 @@ public:
 	/// <summary>
 	/// 更新
 	/// </summary>
-	void Update();
+	void Update(std::vector<Joint> joints_);
 
 	/// <summary>
 	/// リソース

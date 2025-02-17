@@ -110,6 +110,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Engine\Utility\Loaders\Model\AnimationSystem.cpp" />
     <ClCompile Include="Application\Objects\Enemy\Enemy.cpp" />
     <ClCompile Include="Application\Objects\Enemy\EnemyManager.cpp" />
     <ClCompile Include="Application\Scenes\MainScenes\Clear\ClearScene.cpp" />
@@ -178,8 +179,11 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Engine\Utility\Systems\GameTime\ObjectTime.cpp" />
     <ClCompile Include="Application\Scenes\MainScenes\Transitions\Base\TransitionFactory.cpp" />
     <ClCompile Include="Engine\Utility\Loaders\Model\Mesh.cpp" />
+    <ClCompile Include="Engine\Utility\Loaders\Model\ModelTest.cpp" />
+    <ClCompile Include="Engine\Utility\Loaders\Model\ModelLoader.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Engine\Utility\Loaders\Model\AnimationSystem.h" />
     <ClInclude Include="Application\Objects\Enemy\Enemy.h" />
     <ClInclude Include="Application\Objects\Enemy\EnemyManager.h" />
     <ClInclude Include="Application\Scenes\MainScenes\Clear\ClearScene.h" />
@@ -254,6 +258,8 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="Engine\Utility\Systems\GameTime\ObjectTime.h" />
     <ClInclude Include="Application\Scenes\MainScenes\Transitions\Base\TransitionFactory.h" />
     <ClInclude Include="Engine\Utility\Loaders\Model\Mesh.h" />
+    <ClInclude Include="Engine\Utility\Loaders\Model\ModelTest.h" />
+    <ClInclude Include="Engine\Utility\Loaders\Model\ModelLoader.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="externals\DirectXTex\DirectXTex_Desktop_2022_Win10.vcxproj">

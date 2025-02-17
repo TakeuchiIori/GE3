@@ -1,6 +1,6 @@
 
 // Engine
-#include "Model.h"
+#include "ModelTest.h"
 #include "ModelCommon.h"
 #include "SrvManager/SrvManager.h"
 #include "Loaders./Texture./TextureManager.h"
@@ -19,7 +19,7 @@
 #include <fstream>
 #include <iostream>
 
-void Model::Initialize(ModelCommon* modelCommon, const std::string& directorypath, const std::string& filename, bool isAnimation)
+void ModelTest::Initialize(ModelCommon* modelCommon, const std::string& directorypath, const std::string& filename, bool isAnimation)
 {
 	isAnimation_ = isAnimation;
 	// 引数から受け取ってメンバ変数に記録する
@@ -54,17 +54,16 @@ void Model::Initialize(ModelCommon* modelCommon, const std::string& directorypat
 	TextureManager::GetInstance()->LoadTexture(modelData_.material.textureFilePath);
 
 	// 読み込んだテクスチャ番号の取得
-	modelData_.material.textureIndex =TextureManager::GetInstance()->GetTextureIndexByFilePath(modelData_.material.textureFilePath);
+	modelData_.material.textureIndex = TextureManager::GetInstance()->GetTextureIndexByFilePath(modelData_.material.textureFilePath);
 
 }
 
-void Model::Draw()
+void ModelTest::Draw()
 {
 	if (skeleton_.joints.empty()) {
 		// スケルトンが存在しない場合
 		modelCommon_->GetDxCommon()->GetCommandList()->IASetVertexBuffers(0, 1, &vertexBufferView_); // VBVを設定
-	}
-	else {
+	} else {
 		// スケルトンが存在する場合
 		D3D12_VERTEX_BUFFER_VIEW vbvs[2] = {
 			vertexBufferView_,                       // VertexDataのVBV
@@ -82,12 +81,12 @@ void Model::Draw()
 	// SRVの設定
 	modelCommon_->GetDxCommon()->GetCommandList()->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetsrvHandleGPU(modelData_.material.textureFilePath)); // SRVのパラメータインデックスを変更
 	// 描画！！！DrawCall/ドローコール）
-	modelCommon_->GetDxCommon()->GetCommandList()->DrawIndexedInstanced(static_cast<UINT>(modelData_.indices.size()), 1, 0, 0,0);
+	modelCommon_->GetDxCommon()->GetCommandList()->DrawIndexedInstanced(static_cast<UINT>(modelData_.indices.size()), 1, 0, 0, 0);
 
 }
 
 
-std::vector<Vector3> Model::GetConnectionPositions()
+std::vector<Vector3> ModelTest::GetConnectionPositions()
 {
 	std::vector<Vector3> connectionPositions;
 
@@ -117,14 +116,14 @@ std::vector<Vector3> Model::GetConnectionPositions()
 	return connectionPositions;
 }
 
-uint32_t Model::GetConnectionCount()
+uint32_t ModelTest::GetConnectionCount()
 {
 	return static_cast<int>(skeleton_.joints.size()) - 1; // 全ボーン数 - ルートボーン
 }
 
 
 
-Vector3 Model::ExtractJointPosition(const Joint& joint) const
+Vector3 ModelTest::ExtractJointPosition(const Joint& joint) const
 {
 	return {
 		joint.skeletonSpaceMatrix.m[3][0],
@@ -133,7 +132,7 @@ Vector3 Model::ExtractJointPosition(const Joint& joint) const
 	};
 }
 
-void Model::DrawSkeleton(const Skeleton& skeleton,Line& line) {
+void ModelTest::DrawSkeleton(const Skeleton& skeleton, Line& line) {
 	// スケルトンが空の場合は終了
 	// ラインを描画
 	//line.ClearVertices();
@@ -150,13 +149,13 @@ void Model::DrawSkeleton(const Skeleton& skeleton,Line& line) {
 		const Vector3& parentPosition = ExtractJointPosition(skeleton.joints[parentIndex]);
 		const Vector3& childPosition = ExtractJointPosition(skeleton.joints[childIndex]);
 
-		
+
 		line.UpdateVertices(parentPosition, childPosition);
 	}
 }
 
 
-void Model::UpdateAnimation()
+void ModelTest::UpdateAnimation()
 {
 	animationTime_ += 1.0f / 60.0f;
 	animationTime_ = std::fmod(animationTime_, animation_.duration);
@@ -164,24 +163,23 @@ void Model::UpdateAnimation()
 		ApplyAnimation(skeleton_, animation_, animationTime_);
 		UpdateSkeleton(skeleton_);
 		UpdateSkinCluster(skinCluster_, skeleton_);
-	}
-	else {
+	} else {
 		PlayAnimation(animationTime_);
 	}
 }
 
 
-void Model::PlayAnimation(float animationTime)
+void ModelTest::PlayAnimation(float animationTime)
 {
 	NodeAnimation& rootNodeAnimation = animation_.nodeAnimations[modelData_.rootNode.name]; // rootNodeのAnimationを取得
 	Vector3 translate = CalculateValueNew(rootNodeAnimation.translate.keyframes, animationTime, rootNodeAnimation.interpolationType); // 指定時刻の値を取得
-	Quaternion rotate= CalculateValueNew(rootNodeAnimation.rotate.keyframes, animationTime, rootNodeAnimation.interpolationType);
+	Quaternion rotate = CalculateValueNew(rootNodeAnimation.rotate.keyframes, animationTime, rootNodeAnimation.interpolationType);
 	Vector3 scale = CalculateValueNew(rootNodeAnimation.scale.keyframes, animationTime, rootNodeAnimation.interpolationType);
 
 	modelData_.rootNode.localMatrix = MakeAffineMatrix(scale, rotate, translate);
 }
 
-void Model::UpdateSkeleton(Skeleton& skeleton)
+void ModelTest::UpdateSkeleton(Skeleton& skeleton)
 {
 	// すべてのJointを更新。親が若いので通常ループで処理が可能になっている
 	for (Joint& joint : skeleton.joints) {
@@ -189,15 +187,14 @@ void Model::UpdateSkeleton(Skeleton& skeleton)
 
 		if (joint.parent) { // 親がいれば親の行列を掛ける
 			joint.skeletonSpaceMatrix = joint.localMatrix * skeleton.joints[*joint.parent].skeletonSpaceMatrix;
-		}
-		else { // 親がいないのでlocalMatrixとskeletonSpaceMatrixは一致する
+		} else { // 親がいないのでlocalMatrixとskeletonSpaceMatrixは一致する
 			joint.skeletonSpaceMatrix = joint.localMatrix;
 
 		}
 	}
 }
 
-void Model::ApplyAnimation(Skeleton& skeleton, const Animation& animation, float animationTime) {
+void ModelTest::ApplyAnimation(Skeleton& skeleton, const Animation& animation, float animationTime) {
 	for (Joint& joint : skeleton.joints) {
 		// 対象のJointのAnimationがあれば、値の適用を行う。
 		// 下記のif文はC++17から可能になったinit-statement付きのif文。
@@ -206,29 +203,29 @@ void Model::ApplyAnimation(Skeleton& skeleton, const Animation& animation, float
 			joint.transform.scale = CalculateValue(rootNodeAnimation.scale.keyframes, animationTime);
 			joint.transform.rotate = CalculateValue(rootNodeAnimation.rotate.keyframes, animationTime);
 			joint.transform.translate = CalculateValue(rootNodeAnimation.translate.keyframes, animationTime);
-			
+
 		}
 	}
 }
 
 
 
-void Model::UpdateSkinCluster(SkinCluster& skinCluster, const Skeleton& skeleton)
+void ModelTest::UpdateSkinCluster(SkinCluster& skinCluster, const Skeleton& skeleton)
 {
 	for (size_t jointIndex = 0; jointIndex < skeleton.joints.size(); ++jointIndex) {
 		assert(jointIndex < skinCluster.inverseBindposeMatrices.size());
-		
+
 		// スケルトン空間行列の計算
 		skinCluster.mappedPalette[jointIndex].skeletonSpaceMatrix =
 			skinCluster.inverseBindposeMatrices[jointIndex] * skeleton.joints[jointIndex].skeletonSpaceMatrix;
-		
+
 		// 法線用の行列を計算（転置逆行列）
 		skinCluster.mappedPalette[jointIndex].skeletonSpaceInverseTransposeMatrix =
 			TransPose(Inverse(skinCluster.mappedPalette[jointIndex].skeletonSpaceMatrix));
 	}
 }
 
-void Model::CreateVertex()
+void ModelTest::CreateVertex()
 {
 	// リソース
 	vertexResource_ = modelCommon_->GetDxCommon()->CreateBufferResource(sizeof(VertexData) * modelData_.vertices.size());
@@ -243,7 +240,7 @@ void Model::CreateVertex()
 	vertexResource_->Unmap(0, nullptr);
 }
 
-void Model::CreteIndex()
+void ModelTest::CreteIndex()
 {
 	indexResource_ = modelCommon_->GetDxCommon()->CreateBufferResource(sizeof(uint32_t) * modelData_.indices.size());
 
@@ -256,7 +253,7 @@ void Model::CreteIndex()
 	indexResource_->Unmap(0, nullptr);
 }
 
-int32_t Model::CreateJoint(const Model::Node& node, const std::optional<int32_t>& parent, std::vector<Joint>& joints)
+int32_t ModelTest::CreateJoint(const ModelTest::Node& node, const std::optional<int32_t>& parent, std::vector<Joint>& joints)
 {
 	Joint joint;
 	joint.name = node.name;
@@ -277,7 +274,7 @@ int32_t Model::CreateJoint(const Model::Node& node, const std::optional<int32_t>
 }
 
 
-Model::Skeleton Model::CreateSkeleton(const Model::Node& rootNode)
+ModelTest::Skeleton ModelTest::CreateSkeleton(const ModelTest::Node& rootNode)
 {
 	Skeleton skeleton;
 	skeleton.root = CreateJoint(rootNode, {}, skeleton.joints);
@@ -295,7 +292,7 @@ Model::Skeleton Model::CreateSkeleton(const Model::Node& rootNode)
 }
 
 
-Model::SkinCluster Model::CreateSkinCluster(const Skeleton& skeleton, const ModelData& modelData)
+ModelTest::SkinCluster ModelTest::CreateSkinCluster(const Skeleton& skeleton, const ModelData& modelData)
 {
 	SkinCluster skinCluster;
 	//auto device = modelCommon_->GetDxCommon()->GetDevice();
@@ -334,7 +331,7 @@ Model::SkinCluster Model::CreateSkinCluster(const Skeleton& skeleton, const Mode
 	//			ModelDataを解析してInfluenceを埋める			   //
 	//=========================================================//
 
-	for (const auto& jointWeight : modelData.skinClusterData) { // ModelのSkinCluster情報を解析
+	for (const auto& jointWeight : modelData.skinClusterData) { // ModelTestのSkinCluster情報を解析
 		auto it = skeleton.jointMap.find(jointWeight.first); // jointweight.firstはjoint名なので、skeletonに対象となるjointは含まれるか判断
 		if (it == skeleton.jointMap.end()) { // そんな名前は存在しない。なので次に回す
 			continue;
@@ -352,7 +349,7 @@ Model::SkinCluster Model::CreateSkinCluster(const Skeleton& skeleton, const Mode
 			}
 		}
 
-	}	
+	}
 
 
 	return skinCluster;
@@ -360,7 +357,7 @@ Model::SkinCluster Model::CreateSkinCluster(const Skeleton& skeleton, const Mode
 
 //================================
 
-Vector3 Model::CalculateValueNew(const std::vector<KeyframeVector3>& keyframes, float time, InterpolationType interpolationType) {
+Vector3 ModelTest::CalculateValueNew(const std::vector<KeyframeVector3>& keyframes, float time, InterpolationType interpolationType) {
 	assert(!keyframes.empty());
 
 	if (keyframes.size() == 1 || time <= keyframes[0].time) {
@@ -402,7 +399,7 @@ Vector3 Model::CalculateValueNew(const std::vector<KeyframeVector3>& keyframes, 
 	return (*keyframes.rbegin()).value;
 }
 
-Quaternion Model::CalculateValueNew(const std::vector<KeyframeQuaternion>& keyframes, float time, InterpolationType interpolationType) {
+Quaternion ModelTest::CalculateValueNew(const std::vector<KeyframeQuaternion>& keyframes, float time, InterpolationType interpolationType) {
 	assert(!keyframes.empty());
 
 	if (keyframes.size() == 1 || time <= keyframes[0].time) {
@@ -437,7 +434,7 @@ Quaternion Model::CalculateValueNew(const std::vector<KeyframeQuaternion>& keyfr
 
 
 
-Vector3 Model::CalculateValue(const std::vector<KeyframeVector3>& keyframes, float time)
+Vector3 ModelTest::CalculateValue(const std::vector<KeyframeVector3>& keyframes, float time)
 {
 	assert(!keyframes.empty());
 	if (keyframes.size() == 1 || time <= keyframes[0].time) {
@@ -457,7 +454,7 @@ Vector3 Model::CalculateValue(const std::vector<KeyframeVector3>& keyframes, flo
 	return (*keyframes.rbegin()).value;
 }
 
-Quaternion Model::CalculateValue(const std::vector<KeyframeQuaternion>& keyframes, float time)
+Quaternion ModelTest::CalculateValue(const std::vector<KeyframeQuaternion>& keyframes, float time)
 {
 	assert(!keyframes.empty());// キーがないものは返す値がわからないのでだめ
 	if (keyframes.size() == 1 || time <= keyframes[0].time) {// キーが一つか、時刻がキーフレーム前なら最初の値とする
@@ -477,7 +474,7 @@ Quaternion Model::CalculateValue(const std::vector<KeyframeQuaternion>& keyframe
 }
 
 
-Model::Node Model::ReadNode(aiNode* node) {
+ModelTest::Node ModelTest::ReadNode(aiNode* node) {
 	Node result;
 	aiVector3D scale, translate;
 	aiQuaternion rotate;
@@ -497,7 +494,7 @@ Model::Node Model::ReadNode(aiNode* node) {
 }
 
 
-Model::ModelData Model::LoadModelIndexFile(const std::string& directoryPath, const std::string& filename)
+ModelTest::ModelData ModelTest::LoadModelIndexFile(const std::string& directoryPath, const std::string& filename)
 {
 	//=================================================//
 	//					 .obj読み込み
@@ -593,22 +590,20 @@ Model::ModelData Model::LoadModelIndexFile(const std::string& directoryPath, con
 }
 
 
-Model::InterpolationType Model::MapAssimpBehaviourToInterpolation(aiAnimBehaviour preState, aiAnimBehaviour postState)
+ModelTest::InterpolationType ModelTest::MapAssimpBehaviourToInterpolation(aiAnimBehaviour preState, aiAnimBehaviour postState)
 {
 	if (preState == aiAnimBehaviour_CONSTANT || postState == aiAnimBehaviour_CONSTANT) {
 		return InterpolationType::Step;
-	}
-	else if (preState == aiAnimBehaviour_LINEAR || postState == aiAnimBehaviour_LINEAR) {
+	} else if (preState == aiAnimBehaviour_LINEAR || postState == aiAnimBehaviour_LINEAR) {
 		return InterpolationType::Linear;
-	}
-	else if (preState == aiAnimBehaviour_REPEAT || postState == aiAnimBehaviour_REPEAT) {
+	} else if (preState == aiAnimBehaviour_REPEAT || postState == aiAnimBehaviour_REPEAT) {
 		return InterpolationType::CubicSpline;
 	}
 
 	return InterpolationType::Linear; // デフォルト
 }
 
-Model::Animation Model::LoadAnimationFile(const std::string& directoryPath, const std::string& filename)
+ModelTest::Animation ModelTest::LoadAnimationFile(const std::string& directoryPath, const std::string& filename)
 {
 	Animation animation; // 今回作るアニメーション
 	Assimp::Importer importer;
@@ -635,14 +630,11 @@ Model::Animation Model::LoadAnimationFile(const std::string& directoryPath, cons
 
 		if (interpolation == "LINEAR") {
 			nodeAnimation.interpolationType = InterpolationType::Linear;
-		}
-		else if (interpolation == "STEP") {
+		} else if (interpolation == "STEP") {
 			nodeAnimation.interpolationType = InterpolationType::Step;
-		}
-		else if (interpolation == "CUBICSPLINE") {
+		} else if (interpolation == "CUBICSPLINE") {
 			nodeAnimation.interpolationType = InterpolationType::CubicSpline;
-		}
-		else {
+		} else {
 			nodeAnimation.interpolationType = InterpolationType::Linear; // デフォルト値
 		}
 
@@ -680,7 +672,7 @@ Model::Animation Model::LoadAnimationFile(const std::string& directoryPath, cons
 }
 
 
-std::string Model::GetGLTFInterpolation(const aiScene* scene, const std::string& gltfFilePath, uint32_t samplerIndex) {
+std::string ModelTest::GetGLTFInterpolation(const aiScene* scene, const std::string& gltfFilePath, uint32_t samplerIndex) {
 	try {
 		// GLTFファイルを直接解析して補間方法を取得
 		return ParseGLTFInterpolation(gltfFilePath, samplerIndex);
@@ -692,11 +684,29 @@ std::string Model::GetGLTFInterpolation(const aiScene* scene, const std::string&
 	}
 }
 
+bool ModelTest::HasBones(const aiScene* scene)
+{
+	// メッシュがなければボーンもない
+	if (!scene->HasMeshes()) {
+		return false;
+	}
 
+	// 各メッシュをチェック
+	for (uint32_t meshIndex = 0; meshIndex < scene->mNumMeshes; ++meshIndex) {
+		aiMesh* mesh = scene->mMeshes[meshIndex];
 
+		// ボーン数が0でなければボーンがあると判断
+		if (mesh->mNumBones > 0) {
+			return true;
+		}
+	}
 
+	// どのメッシュにもボーンが含まれていない場合
+	return false;
+}
 
-std::string ParseGLTFInterpolation(const std::string& gltfFilePath, uint32_t samplerIndex) {
+std::string ModelTest::ParseGLTFInterpolation(const std::string& gltfFilePath, uint32_t samplerIndex)
+{
 	// GLTFファイルを開く
 	std::ifstream file(gltfFilePath);
 	if (!file.is_open()) {
@@ -719,25 +729,4 @@ std::string ParseGLTFInterpolation(const std::string& gltfFilePath, uint32_t sam
 	}
 
 	return "LINEAR"; // デフォルト値
-}
-
-bool Model::HasBones(const aiScene* scene)
-{
-	// メッシュがなければボーンもない
-	if (!scene->HasMeshes()) {
-		return false;
-	}
-
-	// 各メッシュをチェック
-	for (uint32_t meshIndex = 0; meshIndex < scene->mNumMeshes; ++meshIndex) {
-		aiMesh* mesh = scene->mMeshes[meshIndex];
-
-		// ボーン数が0でなければボーンがあると判断
-		if (mesh->mNumBones > 0) {
-			return true;
-		}
-	}
-
-	// どのメッシュにもボーンが含まれていない場合
-	return false;
 }
