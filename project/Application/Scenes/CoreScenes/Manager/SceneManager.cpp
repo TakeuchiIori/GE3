@@ -1,4 +1,5 @@
 #include "SceneManager.h"
+#include "Sprite/SpriteCommon.h"
 #include <assert.h>
 
 std::unique_ptr<SceneManager> SceneManager::instance = nullptr;
@@ -18,41 +19,92 @@ void SceneManager::Finalize()
 	delete scene_;
 }
 
+void SceneManager::Initialize()
+{
+    if (transitionFactory_) {
+		transition_ = transitionFactory_->CreateTransition();
+		transition_->Initialize();
+    }
+}
+
 void SceneManager::Update()
 {
-	//========== TODO : シーン切り替え機構 ///==========///
-	// 次のシーンがあるなら
-	//・旧シーンの終了
-	//・シーン切り替え
-	if (nextScene_) {
-		if (scene_) {
-			scene_->Finalize();
-			delete scene_;
-		}
-		scene_ = nextScene_;
-		nextScene_ = nullptr;
+    // 現在のシーンの更新
+    if (scene_) {
+        scene_->Update();
+    }
 
-		// シーンマネージャをセット
-		scene_->SetSceneManager(this);
+    // トランジションの更新
+    if (transition_) {
+        transition_->Update();
 
-		scene_->Initialize();
+        switch (transitionState_) {
+        case TransitionState::TransitionOut:
+            if (transition_->IsFinished()) {
+                // シーン切り替え
+                if (scene_) {
+                    scene_->Finalize();
+                    delete scene_;
+                }
+                scene_ = nextScene_;
+                nextScene_ = nullptr;
+                scene_->SetSceneManager(this);
+                scene_->Initialize();
 
-	}
-	// 実行中のシーンを更新
-	scene_->Update();
+                transition_->StartTransition();
+                transitionState_ = TransitionState::TransitionIn;
+            }
+            break;
+
+        case TransitionState::TransitionIn:
+            if (transition_->IsFinished()) {
+                transitionState_ = TransitionState::None;
+            }
+            break;
+
+        case TransitionState::None:
+            if (nextScene_) {
+                transition_->EndTransition();
+                transitionState_ = TransitionState::TransitionOut;
+            }
+            break;
+        }
+    }
 }
 
 void SceneManager::Draw()
 {
-	// 描画
-	scene_->Draw();
+    // 現在のシーンの描画
+    if (scene_) {
+        scene_->Draw();
+    }
+
+    // 遷移の描画
+    if (transition_ && transitionState_ != TransitionState::None) {
+        transition_->Draw();
+    }
 }
 
 void SceneManager::ChangeScene(const std::string& sceneName)
 {
-	assert(sceneFactory_);
-	assert(nextScene_ == nullptr);
+    assert(sceneFactory_);
 
-	// 次シーンを生成
-	nextScene_ = sceneFactory_->CreateScene(sceneName);
+    if (transitionState_ != TransitionState::None || nextScene_) {
+        return;
+    }
+
+    nextScene_ = sceneFactory_->CreateScene(sceneName);
+
+    // 初回シーン生成時
+    if (!scene_) {
+        scene_ = nextScene_;
+        nextScene_ = nullptr;
+        scene_->SetSceneManager(this);
+        scene_->Initialize();
+        if (transition_) {
+            transition_->StartTransition();
+            transitionState_ = TransitionState::TransitionIn;
+        }
+    }
 }
+

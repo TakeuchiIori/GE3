@@ -6,7 +6,7 @@ Sprite::Sprite()
 {
 }
 
-void Sprite::Initialize(std::string& textureFilePath)
+void Sprite::Initialize(const std::string& textureFilePath)
 {
 	this->spriteCommon_ = SpriteCommon::GetInstance();
 
@@ -28,15 +28,16 @@ void Sprite::Initialize(std::string& textureFilePath)
 
 	transform_ = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
 
+	
 }
 
 void Sprite::Update()
 {
-	CreateVertex();
+	
 	// スプライトのSRT
-
-	transform_.translate = { position_.x,position_.y,0.0f };
-	transform_.rotate = { 0.0f,0.0f,rotation_ };
+	CreateVertex();
+	transform_.translate = { position_.x,position_.y,position_.z};
+	transform_.rotate = { rotation_.x,rotation_.y,rotation_.z };
 	transform_.scale = { size_.x,size_.y,1.0f };
 	Matrix4x4 worldMatrix = MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.translate);
 	Matrix4x4 viewMatrix = MakeIdentity4x4();
@@ -45,10 +46,18 @@ void Sprite::Update()
 
 	transformationMatrixData_->WVP = worldProjectionMatrix;
 	transformationMatrixData_->World = worldMatrix;
+	// WVP行列を更新
+	if (camera_) {
+		transformationMatrixData_->WVP = worldProjectionMatrix * camera_->GetViewProjectionMatrix();
+	}
+	else {
+		transformationMatrixData_->WVP = worldProjectionMatrix;
+	}
 }
 
 void Sprite::Draw()
 {
+
 	// VertexBufferView
 	spriteCommon_->GetDxCommon()->GetCommandList()->IASetVertexBuffers(0, 1, &vertexBufferView_); // VBVを設定
 	// IndexBufferView
@@ -157,7 +166,7 @@ void Sprite::CreateVertex()
 	//// 書き込むためのアドレスを取得
 	//vertexData[0].normal = { 0.0f,0.0f,-1.0f };
 	
-	vertexResource_->Unmap(0, nullptr);
+	//vertexResource_->Unmap(0, nullptr);
 }
 
 void Sprite::IndexResource()
@@ -184,7 +193,7 @@ void Sprite::CreateIndex()
 	indexData[3] = 1;  // 2つ目の三角形
 	indexData[4] = 3;
 	indexData[5] = 2;
-	indexResource_->Unmap(0, nullptr);
+	//indexResource_->Unmap(0, nullptr);
 }
 
 void Sprite::MaterialResource()
@@ -225,7 +234,7 @@ void Sprite::AdjustTaxtureSize()
 	size_ = textureSize_;
 }
 
-void Sprite::ChangeTexture(std::string textureFilePath)
+void Sprite::ChangeTexture(const std::string textureFilePath)
 {
 	// 新しいテクスチャをロード
 	TextureManager::GetInstance()->LoadTexture(textureFilePath);

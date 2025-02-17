@@ -336,3 +336,109 @@ void Input::CalibrateJoystick(int32_t stickNo)
 	// キャリブレーション処理（例：初期位置の記録などを行う）
 	devJoysticks_[stickNo].statePre_ = devJoysticks_[stickNo].state_;
 }
+
+bool Input::IsPadPressed(int32_t playerIndex, GamePadButton button) const {
+	if (playerIndex < 0 || playerIndex >= devJoysticks_.size()) return false;
+
+	const auto& joystick = devJoysticks_[playerIndex];
+	if (joystick.type_ != PadType::XInput) return false;
+
+	return (joystick.state_.xInput_.Gamepad.wButtons & static_cast<WORD>(button)) != 0;
+}
+
+bool Input::IsPadTriggered(int32_t playerIndex, GamePadButton button) const {
+	if (playerIndex < 0 || playerIndex >= devJoysticks_.size()) return false;
+
+	const auto& joystick = devJoysticks_[playerIndex];
+	if (joystick.type_ != PadType::XInput) return false;
+
+	return ((joystick.state_.xInput_.Gamepad.wButtons & static_cast<WORD>(button)) != 0) &&
+		((joystick.statePre_.xInput_.Gamepad.wButtons & static_cast<WORD>(button)) == 0);
+}
+
+Vector2 Input::GetLeftStickInput(int32_t stickNo) const
+{
+	if (stickNo < 0 || stickNo >= devJoysticks_.size()) {
+		return { 0.0f, 0.0f };
+	}
+	const auto& joystick = devJoysticks_[stickNo];
+	if (joystick.type_ != PadType::XInput) {
+		return { 0.0f, 0.0f };
+	}
+	const auto& gamepad = joystick.state_.xInput_.Gamepad;
+	return {
+		static_cast<float>(gamepad.sThumbLX) / 32768.0f,
+		static_cast<float>(gamepad.sThumbLY) / 32768.0f
+	};
+}
+
+Vector2 Input::GetRightStickInput(int32_t stickNo) const
+{
+	if (stickNo < 0 || stickNo >= devJoysticks_.size()) {
+		return { 0.0f, 0.0f };
+	}
+	const auto& joystick = devJoysticks_[stickNo];
+	if (joystick.type_ != PadType::XInput) {
+		return { 0.0f, 0.0f };
+	}
+	const auto& gamepad = joystick.state_.xInput_.Gamepad;
+	return {
+		static_cast<float>(gamepad.sThumbRX) / 32768.0f,
+		static_cast<float>(gamepad.sThumbRY) / 32768.0f
+	};
+}
+
+bool Input::IsControllerConnected()
+{
+	XINPUT_STATE state; ZeroMemory(&state, sizeof(XINPUT_STATE));
+	// コントローラの状態を取得
+	DWORD result = XInputGetState(0, &state);
+	// コントローラが接続されている場合は true を返す
+	return (result == ERROR_SUCCESS);
+}
+
+/// <summary>
+/// 左スティックが動いているかを判定する
+/// </summary>
+/// <returns>左スティックが動いていれば true</returns>
+bool Input::IsLeftStickMoving() {
+	// ジョイスティック番号を固定（通常は0番目のコントローラーを対象とする）
+	const int32_t stickNo = 0;
+
+	// ジョイスティックの状態を取得
+	XINPUT_STATE state;
+	if (!GetJoystickState(stickNo, state)) {
+		return false; // コントローラーが接続されていない場合
+	}
+
+	// 左スティックの入力値
+	float leftStickX = state.Gamepad.sThumbLX / 32768.0f;
+	float leftStickY = state.Gamepad.sThumbLY / 32768.0f;
+
+	// 入力が閾値を超えているか判定
+	const float deadZoneThreshold = 0.1f; // スティックの動きを無視する閾値
+	return (std::fabs(leftStickX) > deadZoneThreshold || std::fabs(leftStickY) > deadZoneThreshold);
+}
+
+/// <summary>
+/// 右スティックが動いているかを判定する
+/// </summary>
+/// <returns>右スティックが動いていれば true</returns>
+bool Input::IsRightStickMoving() {
+	// ジョイスティック番号を固定（通常は0番目のコントローラーを対象とする）
+	const int32_t stickNo = 0;
+
+	// ジョイスティックの状態を取得
+	XINPUT_STATE state;
+	if (!GetJoystickState(stickNo, state)) {
+		return false; // コントローラーが接続されていない場合
+	}
+
+	// 右スティックの入力値
+	float rightStickX = state.Gamepad.sThumbRX / 32768.0f;
+	float rightStickY = state.Gamepad.sThumbRY / 32768.0f;
+
+	// 入力が閾値を超えているか判定
+	const float deadZoneThreshold = 0.1f; // スティックの動きを無視する閾値
+	return (std::fabs(rightStickX) > deadZoneThreshold || std::fabs(rightStickY) > deadZoneThreshold);
+}

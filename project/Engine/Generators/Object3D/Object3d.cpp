@@ -21,10 +21,10 @@ void Object3d::Initialize()
 {
 	// 引数で受け取ってメンバ変数に記録する
 	this->object3dCommon_ = Object3dCommon::GetInstance();
-	// デフォルトカメラのセット
-	this->camera_ = object3dCommon_->GetDefaultCamera();
 
 	CreateMaterialResource();
+
+	CreateCameraResource();
 }
 void Object3d::UpdateAnimation()
 {
@@ -33,20 +33,29 @@ void Object3d::UpdateAnimation()
 }
 
 
-void Object3d::Draw(WorldTransform& worldTransform)
+void Object3d::Draw(Camera* camera,WorldTransform& worldTransform)
 {
 
 	Matrix4x4 worldViewProjectionMatrix;
 	Matrix4x4 worldMatrix;
 	if (model_) {
-		if (camera_) {
-			const Matrix4x4& viewProjectionMatrix = camera_->GetViewProjectionMatrix();
-			worldViewProjectionMatrix = worldTransform.GetMatWorld() * viewProjectionMatrix;
-			worldMatrix = worldTransform.GetMatWorld();
+		if (camera) {
+			const Matrix4x4& viewProjectionMatrix = camera->GetViewProjectionMatrix();
+
+			// 
+			if (!model_->GetModelData().hasBones) {
+				worldViewProjectionMatrix = worldTransform.GetMatWorld() * model_->GetModelData().rootNode.localMatrix * viewProjectionMatrix;
+				worldMatrix = worldTransform.GetMatWorld() * model_->GetModelData().rootNode.localMatrix;
+			}
+			else {
+				worldViewProjectionMatrix = worldTransform.GetMatWorld() * viewProjectionMatrix;
+				worldMatrix = worldTransform.GetMatWorld();
+			}
 		}
 		else {
 
 			worldViewProjectionMatrix = worldTransform.GetMatWorld();
+			worldMatrix = worldTransform.GetMatWorld(); // 初期化が必要
 		}
 	}
 
@@ -57,6 +66,8 @@ void Object3d::Draw(WorldTransform& worldTransform)
 	object3dCommon_->GetDxCommon()->GetCommandList()->SetGraphicsRootConstantBufferView(0, materialResource_->GetGPUVirtualAddress());
 	// TransformatonMatrixCB
 	object3dCommon_->GetDxCommon()->GetCommandList()->SetGraphicsRootConstantBufferView(1, worldTransform.GetConstBuffer()->GetGPUVirtualAddress());
+	// カメラ
+	object3dCommon_->GetDxCommon()->GetCommandList()->SetGraphicsRootConstantBufferView(4, cameraResource_->GetGPUVirtualAddress());
 
 	// 3Dモデルが割り当てられていれば描画する
 	if (model_) {
@@ -79,6 +90,14 @@ void Object3d::CreateMaterialResource()
 	materialData_->uvTransform = MakeIdentity4x4();
 }
 
+void Object3d::CreateCameraResource()
+{
+	cameraResource_ = object3dCommon_->GetDxCommon()->CreateBufferResource(sizeof(CameraForGPU));
+	cameraResource_->Map(0, nullptr, reinterpret_cast<void**>(&cameraData_));
+	cameraData_->worldPosition = { 0.0f, 0.0f, 0.0f };
+}
+
+
 
 
 void Object3d::SetModel(const std::string& filePath, bool isAnimation)
@@ -99,7 +118,7 @@ void Object3d::SetModel(const std::string& filePath, bool isAnimation)
 	}
 
 	// .obj 読み込み (第一引数には拡張子なしのパス)
-	ModelManager::GetInstance()->LoadModel("Resources./" + basePath, fileName, isAnimation);
+	ModelManager::GetInstance()->LoadModel("Resources./Models./" + basePath, fileName, isAnimation);
 
 	// モデルを検索してセットする
 	model_ = ModelManager::GetInstance()->FindModel(fileName);

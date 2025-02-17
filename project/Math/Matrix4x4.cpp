@@ -267,6 +267,10 @@ Matrix4x4 MakeTranslateMatrix(const Vector3& translate) {
 	return result;
 }
 
+
+
+
+
 //=====================================9.座標変換===============================================//
 Vector3 TransformCoordinates(const Vector3& vector, const Matrix4x4& matrix) {
 	Vector3 result;
@@ -280,6 +284,13 @@ Vector3 TransformCoordinates(const Vector3& vector, const Matrix4x4& matrix) {
 	result.z /= w;
 	return result;
 }
+
+
+Vector3 TransformNormal(const Vector3& v, const Matrix4x4& m) {
+	Vector3 result{ v.x * m.m[0][0] + v.y * m.m[1][0] + v.z * m.m[2][0], v.x * m.m[0][1] + v.y * m.m[1][1] + v.z * m.m[2][1], v.x * m.m[0][2] + v.y * m.m[1][2] + v.z * m.m[2][2] };
+	return result;
+}
+
 
 //=====================================10.回転行列=====================================//
 // 1. X軸回転行列
@@ -356,6 +367,11 @@ Matrix4x4 MakeRotateMatrixZ(float radian) {
 	result.m[3][3] = 1;
 
 	return result;
+}
+Matrix4x4 MakeRotateMatrixXYZ(Vector3& rad)
+{
+
+	return Multiply(Multiply(MakeRotateMatrixX(rad.x), MakeRotateMatrixY(rad.y)), MakeRotateMatrixZ(rad.z));
 };
 
 //=============================11. 3次元のアフィン変換行列=============================//

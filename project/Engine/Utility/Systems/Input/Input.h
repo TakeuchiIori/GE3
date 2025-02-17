@@ -20,6 +20,21 @@
 #pragma comment(lib,"xinput.lib")
 
 template <class T> using ComPtr = Microsoft::WRL::ComPtr<T>;
+
+
+enum class GamePadButton {
+    A = XINPUT_GAMEPAD_A,
+    B = XINPUT_GAMEPAD_B,
+    X = XINPUT_GAMEPAD_X,
+    Y = XINPUT_GAMEPAD_Y,
+    LB = XINPUT_GAMEPAD_LEFT_SHOULDER,
+    RB = XINPUT_GAMEPAD_RIGHT_SHOULDER,
+    Start = XINPUT_GAMEPAD_START,
+    Back = XINPUT_GAMEPAD_BACK,
+    LT = XINPUT_GAMEPAD_LEFT_THUMB,
+    RT = XINPUT_GAMEPAD_RIGHT_THUMB,
+};
+
 /// <summary>
 /// 入力
 /// </summary>
@@ -35,6 +50,7 @@ public: // インナークラス
         DirectInput,
         XInput,
     };
+
     // variantがC++17から
     union State {
         XINPUT_STATE xInput_;
@@ -217,6 +233,51 @@ public:
     /// </summary>
     /// <param name="stickNo">ジョイスティック番号</param>
     void CalibrateJoystick(int32_t stickNo);
+
+    /// <summary>
+    /// 指定されたボタンが押されているかチェック
+    /// </summary>
+    bool IsPadPressed(int32_t playerIndex, GamePadButton button) const;
+
+    /// <summary>
+    /// 指定されたボタンがトリガー（押した瞬間）かをチェック
+    /// </summary>
+    bool IsPadTriggered(int32_t playerIndex, GamePadButton button) const;
+
+
+
+    /// <summary>
+    /// 左スティックの入力を取得する
+    /// </summary>
+    /// <param name="stickNo">ジョイスティック番号</param>
+    /// <returns>スティック入力のベクトル</returns>
+    Vector2 GetLeftStickInput(int32_t stickNo) const;
+
+    /// <summary>
+    /// 右スティックの入力を取得する
+    /// </summary>
+    /// <param name="stickNo">ジョイスティック番号</param>
+    /// <returns>スティック入力のベクトル</returns>
+    Vector2 GetRightStickInput(int32_t stickNo) const;
+
+
+    /// <summary>
+    /// コントローラーの接続確認
+    /// </summary>
+    /// <returns></returns>
+    static bool IsControllerConnected();
+
+    /// <summary>
+    /// 左スティックの入力があるか
+    /// </summary>
+    /// <returns></returns>
+    bool IsLeftStickMoving();
+
+    /// <summary>
+    /// 右スティックの入力があるか
+    /// </summary>
+    /// <returns></returns>
+    bool IsRightStickMoving();
 
 private:
 

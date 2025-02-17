@@ -1,10 +1,10 @@
 #include "Collider.h"
 // Engine
-#include "CollisionManager.h"
+
 
 void Collider::Initialize() {
 	worldTransform_.Initialize();
-	CollisionManager::GetInstance()->AddCollider(this);
+	//CollisionManager::GetInstance()->AddCollider(this);
 }
 
 void Collider::UpdateWorldTransform() {
@@ -14,8 +14,8 @@ void Collider::UpdateWorldTransform() {
 	worldTransform_.UpdateMatrix();
 }
 
-void Collider::Draw(Object3d* obj) {
-	obj->Draw(worldTransform_);
+void Collider::Draw(Object3d* obj, Camera* camera) {
+	obj->Draw(camera,worldTransform_);
 }
 
 

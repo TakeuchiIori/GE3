@@ -10,12 +10,17 @@
 #include "Systems/Audio/Audio.h"
 #include "Particle/ParticleEmitter.h"
 #include "Object3D/Object3d.h"
+#include "Sprite/Sprite.h"
 #include "Player/Player.h"
 #include "WorldTransform./WorldTransform.h"
 #include "Drawer/LineManager/Line.h"
+#include "../Transitions/Fade/Fade.h"
 
 // Math
 #include "Vector3.h"
+
+
+
 class TitleScene : public BaseScene
 {
 
@@ -51,6 +56,7 @@ public:
 
 private:
 
+
 	/// <summary>
 	/// カメラモードを更新する
 	/// </summary>
@@ -61,10 +67,6 @@ private:
 	/// </summary>
 	void UpdateCamera();
 
-	/// <summary>
-	/// ImGui
-	/// </summary>
-	void ShowImGui();
 
 
 private:
@@ -74,24 +76,11 @@ private:
 	CameraManager cameraManager_;
 	// サウンド
 	Audio::SoundData soundData;
-	// パーティクルエミッター
-	std::unique_ptr<ParticleEmitter> particleEmitter_;
-	Vector3 emitterPosition_;
-	uint32_t particleCount_;
-
-	// 3Dモデル
-	std::unique_ptr<Object3d> test_;
-	WorldTransform testWorldTransform_;
+	IXAudio2SourceVoice* sourceVoice;
 
 	// プレイヤー
 	std::unique_ptr<Player> player_;
 
-	// Line
-	std::unique_ptr<Line> line_;
-
-	Vector3 start_ = { 0.0f,0.0f,0.0f };
-
-	Vector3 end_ = { 10.0f,0.0f,10.0f };
-
+	std::unique_ptr<Sprite> sprite_;
 };
 

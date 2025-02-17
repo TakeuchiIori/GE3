@@ -110,6 +110,11 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Engine\Utility\Loaders\Model\AnimationSystem.cpp" />
+    <ClCompile Include="Application\Objects\Enemy\Enemy.cpp" />
+    <ClCompile Include="Application\Objects\Enemy\EnemyManager.cpp" />
+    <ClCompile Include="Application\Scenes\MainScenes\Clear\ClearScene.cpp" />
+    <ClCompile Include="Engine\Utility\Loaders\Model\Animation.cpp" />
     <ClCompile Include="Application\Scenes\CoreScenes\Base\BaseScene.cpp" />
     <ClCompile Include="Application\Scenes\MainScenes\Game\GameScene.cpp" />
     <ClCompile Include="Application\Scenes\CoreScenes\Manager\SceneManager.cpp" />
@@ -131,7 +136,19 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Engine\Graphics\Drawer\LineManager\LineManager.cpp" />
     <ClCompile Include="Engine\Graphics\Drawer\LineManager\Line.cpp" />
     <ClCompile Include="Engine\Graphics\PipelineManager\PipelineManager.cpp" />
+    <ClCompile Include="Engine\Utility\Loaders\Model\Joint.cpp" />
+    <ClCompile Include="Application\Objects\Player\ICommand\ICommandMove.cpp" />
+    <ClCompile Include="Application\Objects\Player\InputHandle\InputHandleMove.cpp" />
+    <ClCompile Include="Application\Objects\Ground\Ground.cpp" />
+    <ClCompile Include="Application\Scenes\MainScenes\Transitions\Fade\Fade.cpp" />
+    <ClCompile Include="Engine\Utility\Systems\GameTime\HitStop.cpp" />
+    <ClCompile Include="Application\SystemsApp\Cameras\FollowCamera\FollowCamera.cpp" />
+    <ClCompile Include="Engine\Utility\Loaders\Json\JsonManager.cpp" />
+    <ClCompile Include="Engine\Utility\Systems\GameTime\GameTIme.cpp" />
+    <ClCompile Include="Application\Scenes\MainScenes\Transitions\Base\ISceneTransition.cpp" />
+    <ClCompile Include="Application\Scenes\MainScenes\Transitions\Fade\FadeTransition.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Engine\Utility\Loaders\Model\Material.cpp" />
     <ClCompile Include="Math\Matrix4x4.cpp" />
     <ClCompile Include="Engine\Utility\Loaders\Model\Model.cpp" />
     <ClCompile Include="Engine\Utility\Loaders\Model\ModelCommon.cpp" />
@@ -154,8 +171,25 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Engine\Graphics\PipelineManager\SkinningManager.cpp" />
     <ClCompile Include="Math\Quaternion.cpp" />
     <ClCompile Include="Math\Vector3.cpp" />
+    <ClCompile Include="Engine\Utility\Loaders\Model\Skeleton.cpp" />
+    <ClCompile Include="Engine\Utility\Loaders\Model\Node.cpp" />
+    <ClCompile Include="Engine\Utility\Loaders\Model\SkinCluster.cpp" />
+    <ClCompile Include="Application\Objects\Player\PlayerWeapon\PlayerWeapon.cpp" />
+    <ClCompile Include="Application\SystemsApp\Cameras\TopDownCamera\TopDownCamera.cpp" />
+    <ClCompile Include="Engine\Utility\Systems\GameTime\ObjectTime.cpp" />
+    <ClCompile Include="Application\Scenes\MainScenes\Transitions\Base\TransitionFactory.cpp" />
+    <ClCompile Include="Engine\Utility\Loaders\Model\Mesh.cpp" />
+    <ClCompile Include="Engine\Utility\Loaders\Model\ModelTest.cpp" />
+    <ClCompile Include="Engine\Utility\Loaders\Model\ModelLoader.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Engine\Utility\Loaders\Model\AnimationSystem.h" />
+    <ClInclude Include="Application\Objects\Enemy\Enemy.h" />
+    <ClInclude Include="Application\Objects\Enemy\EnemyManager.h" />
+    <ClInclude Include="Application\Scenes\MainScenes\Clear\ClearScene.h" />
+    <ClInclude Include="Engine\Utility\Loaders\Json\ConversionJson.h" />
+    <ClInclude Include="Engine\Utility\Loaders\Json\VariableJson.h" />
+    <ClInclude Include="Engine\Utility\Loaders\Model\Animation.h" />
     <ClInclude Include="Application\Scenes\CoreScenes\Base\BaseScene.h" />
     <ClInclude Include="Application\Scenes\MainScenes\Game\GameScene.h" />
     <ClInclude Include="Application\Scenes\CoreScenes\Manager\SceneManager.h" />
@@ -173,6 +207,18 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="Engine\Core\DX\DirectXCommon.h" />
     <ClInclude Include="Engine\Utility\Debugger\LeakChecker.h" />
     <ClInclude Include="Engine\Utility\Systems\Input\Input.h" />
+    <ClInclude Include="Engine\Utility\Loaders\Model\Joint.h" />
+    <ClInclude Include="Application\Objects\Player\ICommand\ICommandMove.h" />
+    <ClInclude Include="Application\Objects\Player\InputHandle\InputHandleMove.h" />
+    <ClInclude Include="Application\Objects\Ground\Ground.h" />
+    <ClInclude Include="Application\Scenes\MainScenes\Transitions\Fade\Fade.h" />
+    <ClInclude Include="Engine\Utility\Systems\GameTime\HitStop.h" />
+    <ClInclude Include="Application\SystemsApp\Cameras\FollowCamera\FollowCamera.h" />
+    <ClInclude Include="Engine\Utility\Loaders\Json\JsonManager.h" />
+    <ClInclude Include="Engine\Utility\Systems\GameTime\GameTIme.h" />
+    <ClInclude Include="Application\Scenes\MainScenes\Transitions\Base\ISceneTransition.h" />
+    <ClInclude Include="Application\Scenes\MainScenes\Transitions\Fade\FadeTransition.h" />
+    <ClInclude Include="Engine\Utility\Loaders\Model\Material.h" />
     <ClInclude Include="Math\MathFunc.h" />
     <ClInclude Include="Math\Matrix3x3.h" />
     <ClInclude Include="Math\Matrix4x4.h" />
@@ -204,6 +250,16 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="Engine\Graphics\Drawer\LineManager\Line.h" />
     <ClInclude Include="Engine\Graphics\PipelineManager\PipelineManager.h" />
     <ClInclude Include="Engine\Graphics\PipelineManager\SkinningManager.h" />
+    <ClInclude Include="Engine\Utility\Loaders\Model\Skeleton.h" />
+    <ClInclude Include="Engine\Utility\Loaders\Model\Node.h" />
+    <ClInclude Include="Engine\Utility\Loaders\Model\SkinCluster.h" />
+    <ClInclude Include="Application\Objects\Player\PlayerWeapon\PlayerWeapon.h" />
+    <ClInclude Include="Application\SystemsApp\Cameras\TopDownCamera\TopDownCamera.h" />
+    <ClInclude Include="Engine\Utility\Systems\GameTime\ObjectTime.h" />
+    <ClInclude Include="Application\Scenes\MainScenes\Transitions\Base\TransitionFactory.h" />
+    <ClInclude Include="Engine\Utility\Loaders\Model\Mesh.h" />
+    <ClInclude Include="Engine\Utility\Loaders\Model\ModelTest.h" />
+    <ClInclude Include="Engine\Utility\Loaders\Model\ModelLoader.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="externals\DirectXTex\DirectXTex_Desktop_2022_Win10.vcxproj">
@@ -223,6 +279,10 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </None>
     <None Include="Resources\shaders\Skinning.PS.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </None>
+    <None Include="Resources\shaders\Sprite.hlsli">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </None>
@@ -249,6 +309,18 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </FxCompile>
     <FxCompile Include="Resources\shaders\Skinning.VS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="Resources\shaders\Sprite.PS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="Resources\shaders\Sprite.VS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>

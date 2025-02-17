@@ -5,7 +5,7 @@
 #include <string>
 
 // Engine
-
+#include "Systems/Camera/Camera.h"
 #include "SrvManager./SrvManager.h"
 
 // Math
@@ -45,7 +45,7 @@ public: // 基本的関数
 	/// <summary>
 	/// 初期化
 	/// </summary>
-	void Initialize(std::string& textureFilePath);
+	void Initialize(const std::string& textureFilePath);
 
 	/// <summary>
 	/// 更新
@@ -60,7 +60,7 @@ public: // 基本的関数
 	/// <summary>
 	/// テクスチャ変更
 	/// </summary>
-	void ChangeTexture(std::string textureFilePath);
+	void ChangeTexture(const std::string textureFilePath);
 
 private: // メンバ関数
 
@@ -105,14 +105,14 @@ public: // アクセッサ
 	/*===============================================//
 						  座標
 	//===============================================*/
-	const Vector2& GetPosition()const { return position_; }
-	void SetPosition(const Vector2& position) { position_ = position; }
+	const Vector3& GetPosition()const { return position_; }
+	void SetPosition(const Vector3& position) { position_ = position; }
 
 	/*===============================================//
 						  回転
 	//===============================================*/
-	float GetRotation()const { return rotation_; }
-	void SetRotation(float rotation) { rotation_ = rotation; }
+	Vector3 GetRotation()const { return rotation_; }
+	void SetRotation(Vector3 rotation) { rotation_ = rotation; }
 
 	/*===============================================//
 						  拡縮
@@ -125,6 +125,12 @@ public: // アクセッサ
 	//===============================================*/
 	const Vector4& GetColor()const { return materialData_->color; }
 	void SetColor(const Vector4& color) { materialData_->color = color; }
+
+	/*===============================================//
+				　		アルファ値の変更
+	//===============================================*/
+
+	void SetAlpha(const float& alpha) { materialData_->color.w = alpha; }
 
 	/*===============================================//
 					　アンカーポイント
@@ -156,10 +162,13 @@ public: // アクセッサ
 	// SrvManagerのセッター
 	void SetSrvManager(SrvManager* srvManager) { this->srvManagaer_ = srvManager; }
 
+	void SetCamera(Camera* camera) { this->camera_ = camera; }
+
 private: // メンバ変数
 
 	SpriteCommon* spriteCommon_ = nullptr;
 	SrvManager* srvManagaer_;
+	Camera* camera_;
 	/*===============================================//
 						Resouurces
 	//===============================================*/
@@ -203,8 +212,8 @@ private: // メンバ変数
 	Vector2 textureSize_ = { 100.0f,100.0f };
 
 	// スプライト
-	Vector2 position_ = { 0.0f,0.0f };
-	float rotation_ = 0.0f;
+	Vector3 position_ = { 0.0f,0.0f ,0.0f};
+	Vector3 rotation_ = { 0.0f,0.0f,0.0f };
 	Vector2 size_ = { 100.0f,100.0f };
 
 	// アンカーポイント

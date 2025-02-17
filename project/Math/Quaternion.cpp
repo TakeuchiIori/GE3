@@ -12,43 +12,9 @@ Matrix4x4 MakeAffineMatrix(const Vector3& scale, const Quaternion& rotate, const
     result = scaleMatrix * rotateMatrix * translateMatrix;
     return result;
 }
-Quaternion Quaternion::operator+(const Quaternion& q) const {
-    return Quaternion(x + q.x, y + q.y, z + q.z, w + q.w);
-}
-
-Quaternion Quaternion::operator-(const Quaternion& q) const {
-    return Quaternion(x - q.x, y - q.y, z - q.z, w - q.w);
-}
-
-Quaternion& Quaternion::operator+=(const Quaternion& q) {
-    x += q.x;
-    y += q.y;
-    z += q.z;
-    w += q.w;
-    return *this;
-}
-
-Quaternion& Quaternion::operator-=(const Quaternion& q) {
-    x -= q.x;
-    y -= q.y;
-    z -= q.z;
-    w -= q.w;
-    return *this;
-}
 
 
-// スカラー倍演算子
-Quaternion Quaternion::operator*(float scalar) const {
-    return Quaternion(x * scalar, y * scalar, z * scalar, w * scalar);
-}
 
-Quaternion& Quaternion::operator*=(float scalar) {
-    x *= scalar;
-    y *= scalar;
-    z *= scalar;
-    w *= scalar;
-    return *this;
-}
 
 
 Quaternion IdentityQuaternion()
@@ -100,6 +66,97 @@ Quaternion MakeRotateAxisAngleQuaternion(const Vector3& axis, float angle) {
     float cosHalfAngle = std::cos(angle / 2.0f);
     return { normAxis.x * sinHalfAngle, normAxis.y * sinHalfAngle, normAxis.z * sinHalfAngle, cosHalfAngle };
 }
+
+//Quaternion CombineRotations(const Quaternion& q1, const Quaternion& q2)
+//{
+//    return {
+//        q1.w * q2.w - q1.x * q2.x - q1.y * q2.y - q1.z * q2.z,
+//        q1.w * q2.x + q1.x * q2.w + q1.y * q2.z - q1.z * q2.y,
+//        q1.w * q2.y - q1.x * q2.z + q1.y * q2.w + q1.z * q2.x,
+//        q1.w * q2.z + q1.x * q2.y - q1.y * q2.x + q1.z * q2.w
+//    };
+//}
+
+/// <summary>
+/// 2つのクォータニオンをハミルトン積（乗算）で合成する関数
+/// </summary>
+Quaternion CombineRotations(const Quaternion& lhs, const Quaternion& rhs)
+{
+    // ハミルトン積の計算（左：lhs, 右：rhs）
+    // w成分
+    float newW = lhs.w * rhs.w
+        - lhs.x * rhs.x
+        - lhs.y * rhs.y
+        - lhs.z * rhs.z;
+
+    // x成分
+    float newX = lhs.w * rhs.x
+        + lhs.x * rhs.w
+        + lhs.y * rhs.z
+        - lhs.z * rhs.y;
+
+    // y成分
+    float newY = lhs.w * rhs.y
+        - lhs.x * rhs.z
+        + lhs.y * rhs.w
+        + lhs.z * rhs.x;
+
+    // z成分
+    float newZ = lhs.w * rhs.z
+        + lhs.x * rhs.y
+        - lhs.y * rhs.x
+        + lhs.z * rhs.w;
+
+    return { newX, newY, newZ, newW };
+}
+
+
+Quaternion MakeRotateAxisAngleQuaternion(const Vector3& angles) {
+    // 度→ラジアン
+    const float deg2Rad = 3.14159265359f / 180.0f;
+    float radX = angles.x * deg2Rad;
+    float radY = angles.y * deg2Rad;
+    float radZ = angles.z * deg2Rad;
+
+    // X軸回転
+    float sinHalfX = sin(radX * 0.5f);
+    float cosHalfX = cos(radX * 0.5f);
+    // (x, y, z, w)
+    Quaternion quatX = {
+        sinHalfX,  // x
+        0.0f,      // y
+        0.0f,      // z
+        cosHalfX   // w
+    };
+
+    // Y軸回転
+    float sinHalfY = sin(radY * 0.5f);
+    float cosHalfY = cos(radY * 0.5f);
+    Quaternion quatY = {
+        0.0f,
+        sinHalfY,
+        0.0f,
+        cosHalfY
+    };
+
+    // Z軸回転
+    float sinHalfZ = sin(radZ * 0.5f);
+    float cosHalfZ = cos(radZ * 0.5f);
+    Quaternion quatZ = {
+        0.0f,
+        0.0f,
+        sinHalfZ,
+        cosHalfZ
+    };
+
+    // 順序：X → Y → Z に回したいなら → Q = Z * Y * X
+    // 実際に適用されるのは「X軸回転 → Y軸回転 → Z軸回転」
+    Quaternion zy = CombineRotations(quatZ, quatY);
+    Quaternion zyx = CombineRotations(zy, quatX);
+
+    return zyx;
+}
+
 
 Vector3 RotateVector(const Vector3& vector, const Quaternion& quaternion) {
     Quaternion qVector = { vector.x, vector.y, vector.z, 0.0f };
@@ -200,6 +257,127 @@ Quaternion Slerp(Quaternion q0, Quaternion q1, float t) {
         return q0 * (1 - t) + q1 * t;
     }
 }
+
+Quaternion CubicSplineInterpolate(const Quaternion& q0, const Quaternion& t0, const Quaternion& q1, const Quaternion& t1, float t) {
+    // t の 2乗と 3乗を計算
+    float t2 = t * t;
+    float t3 = t2 * t;
+
+    // 補間係数を計算
+    float h00 = 2.0f * t3 - 3.0f * t2 + 1.0f;
+    float h10 = t3 - 2.0f * t2 + t;
+    float h01 = -2.0f * t3 + 3.0f * t2;
+    float h11 = t3 - t2;
+
+    // スプライン補間を計算
+    return (q0 * h00) + (t0 * h10) + (q1 * h01) + (t1 * h11);
+}
+
+Quaternion CubicSplineQuaternionInterpolation(const std::vector<float>& keyTimes, const std::vector<Quaternion>& keyValues, const std::vector<Quaternion>& keyInTangents, const std::vector<Quaternion>& keyOutTangents, float time)
+{
+    assert(keyTimes.size() == keyValues.size());
+    assert(keyValues.size() == keyInTangents.size());
+    assert(keyInTangents.size() == keyOutTangents.size());
+    assert(!keyTimes.empty());
+
+    // 時間が範囲外の場合、最初または最後の値を返す
+    if (time <= keyTimes.front()) {
+        return keyValues.front();
+    }
+    if (time >= keyTimes.back()) {
+        return keyValues.back();
+    }
+
+    // 補間に使用する区間を探索
+    size_t segmentIndex = 0;
+    for (size_t i = 0; i < keyTimes.size() - 1; ++i) {
+        if (time >= keyTimes[i] && time <= keyTimes[i + 1]) {
+            segmentIndex = i;
+            break;
+        }
+    }
+
+    // セグメントデータを取得
+    float t0 = keyTimes[segmentIndex];
+    float t1 = keyTimes[segmentIndex + 1];
+    const Quaternion& p0 = keyValues[segmentIndex];
+    const Quaternion& p1 = keyValues[segmentIndex + 1];
+    const Quaternion& m0 = keyOutTangents[segmentIndex];
+    const Quaternion& m1 = keyInTangents[segmentIndex + 1];
+
+    // 補間パラメータ t を計算
+    float t = (time - t0) / (t1 - t0);
+
+    // Hermiteスプライン補間式を適用
+    float t2 = t * t;
+    float t3 = t2 * t;
+
+    Quaternion h00 = (2 * t3 - 3 * t2 + 1) * p0;
+    Quaternion h10 = (t3 - 2 * t2 + t) * m0;
+    Quaternion h01 = (-2 * t3 + 3 * t2) * p1;
+    Quaternion h11 = (t3 - t2) * m1;
+
+    return h00 + h10 + h01 + h11;
+}
+
+
+std::vector<Quaternion> CubicSplineQuaternionInterpolation(
+    const std::vector<float>& xData,
+    const std::vector<Quaternion>& yData,
+    const std::vector<Quaternion>& inTangents,
+    const std::vector<Quaternion>& outTangents,
+    const std::vector<float>& xQuery
+) {
+    // xData, yData, inTangents, outTangents が妥当かチェック
+    if (xData.size() != yData.size() || xData.size() != inTangents.size() || xData.size() != outTangents.size()) {
+        throw std::invalid_argument("xData, yData, inTangents, outTangents のサイズが一致していません。");
+    }
+    if (xData.size() < 2) {
+        throw std::invalid_argument("データ点が不足しています。");
+    }
+
+    // 入力データが単調増加になっているか確認
+    for (size_t i = 1; i < xData.size(); ++i) {
+        if (xData[i] <= xData[i - 1]) {
+            throw std::invalid_argument("xData は単調増加である必要があります。");
+        }
+    }
+
+   // const size_t n = xData.size();
+    std::vector<Quaternion> result;
+    result.reserve(xQuery.size());
+
+    for (float x : xQuery) {
+        // x が xData の範囲外にある場合の扱い（今回は外挿せずに端点近辺を使う）
+        if (x <= xData.front()) {
+            result.push_back(yData.front());
+            continue;
+        }
+        else if (x >= xData.back()) {
+            result.push_back(yData.back());
+            continue;
+        }
+
+        // x が属する区間を探す
+        auto it = std::upper_bound(xData.begin(), xData.end(), x);
+        size_t i = static_cast<size_t>(std::distance(xData.begin(), it) - 1);
+
+        // i番目の区間 [xData[i], xData[i+1]) に x は属する
+        float t = (x - xData[i]) / (xData[i + 1] - xData[i]); // 正規化された時間
+
+        // Cubic Spline 補間を計算
+        Quaternion h00 = yData[i] * (2 * t * t * t - 3 * t * t + 1);
+        Quaternion h10 = outTangents[i] * (t * t * t - 2 * t * t + t);
+        Quaternion h01 = yData[i + 1] * (-2 * t * t * t + 3 * t * t);
+        Quaternion h11 = inTangents[i + 1] * (t * t * t - t * t);
+
+        Quaternion interpolated = h00 + h10 + h01 + h11;
+        result.push_back(interpolated);
+    }
+
+    return result;
+}
+
 
 // クォータニオンからオイラー角を作成する関数
 Vector3 QuaternionToEuler(const Quaternion& q)
@@ -313,10 +491,11 @@ Vector3 RotateVectorByQuaternion(const Vector3& vec, const Quaternion& quat) {
 // オイラー角をクォータニオンに変換する関数
 Quaternion EulerToQuaternion(const Vector3& euler)
 {
-    // オイラー角をラジアンに変換
-    float pitch = euler.x;
-    float yaw = euler.y;
-    float roll = euler.z;
+    // オイラー角をラジアンに変換（もし入力が度であれば以下を有効化）
+    constexpr float DEG_TO_RAD = 3.14159265358979323846f / 180.0f;
+    float pitch = euler.x * DEG_TO_RAD; // x軸 (Pitch)
+    float yaw = euler.y * DEG_TO_RAD; // y軸 (Yaw)
+    float roll = euler.z * DEG_TO_RAD; // z軸 (Roll)
 
     // 半角を計算
     float cy = cos(yaw * 0.5f);

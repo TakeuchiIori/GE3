@@ -7,13 +7,14 @@
 
 // Math
 #include "Vector3.h"
+#include "Quaternion.h"
 
 using json = nlohmann::json;
 
 /// <summary>
 /// グローバル変数
 /// </summary>
-const std::string kDirectoryPath = "resource/GlobalVariables/";
+const std::string kDirectoryPath = "Resources/JSON/GlobalVariables/";
 
 class GlobalVariables {
 public: // インナークラス
@@ -21,7 +22,7 @@ public: // インナークラス
 	// 項目
 	struct Item {
 		// 項目の値
-		std::variant<int32_t, float, Vector3, bool> value;
+		std::variant<int32_t, float, Vector3, Quaternion, bool> value;
 	};
 
 	// グループ
@@ -76,6 +77,11 @@ public: // メンバ関数
 	/// 項目の追加(Vector3)
 	/// </summary>
 	void AddItem(const std::string& groupName, const std::string& key, const Vector3& value);
+	
+	/// <summary>
+	/// 項目の追加(Quaternion)
+	/// </summary>
+	void AddItem(const std::string& groupName, const std::string& key, const Quaternion& value);
 
 	/// <summary>
 	/// 項目の追加(bool)
@@ -88,6 +94,8 @@ public: // メンバ関数
 	void SetValue(const std::string& groupName, const std::string& key, float value);
 	// 値のセット（Vector3）
 	void SetValue(const std::string& groupName, const std::string& key, const Vector3 value);
+	// 値のセット（Vector3）
+	void SetValue(const std::string& groupName, const std::string& key, const Quaternion value);
 	// 値のセット (bool)
 	void SetValue(const std::string& groupName, const std::string& key, const bool& value);
 
@@ -99,7 +107,7 @@ public: // アクセッサ
 	float GetFloatValue(const std::string& groupName, const std::string& key) const;
 	Vector3 GetVector3Value(const std::string& groupName, const std::string& key) const;
 	bool GetBoolValue(const std::string& groupName, const std::string& key) const;
-
+	Quaternion GetQuaternionValue(const std::string& groupName, const std::string& key) const;
 
 private:
 	// コンストラクタ

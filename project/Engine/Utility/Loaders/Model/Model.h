@@ -12,6 +12,8 @@
 // Engine
 #include "DX./DirectXCommon.h"
 #include "WorldTransform./WorldTransform.h"
+#include "Material.h"
+#include "Mesh.h"
 
 // Math
 #include "MathFunc.h"
@@ -32,6 +34,14 @@ class ModelCommon;
 class Model
 {
 public: // 構造体
+
+	enum class InterpolationType {
+		Linear,
+		Step,
+		CubicSpline
+	};
+
+
 	// 頂点データ
 	struct VertexData {
 		Vector4 position;
@@ -122,6 +132,7 @@ public: // 構造体
 		AnimationCurve<Vector3> translate;
 		AnimationCurve<Quaternion> rotate;
 		AnimationCurve<Vector3> scale;
+		InterpolationType interpolationType;
 	};
 
 	struct Animation {
@@ -147,6 +158,8 @@ public: // 構造体
 		std::vector<std::pair<int32_t, int32_t>> connections; // 接続情報: 親 -> 子のペア
 	};
 
+
+
 public: // メンバ関数
 	/// <summary>
 	/// 初期化
@@ -157,8 +170,6 @@ public: // メンバ関数
 	/// 描画
 	/// </summary>
 	void Draw();
-
-	void DrawSkeletonRecursive(const Skeleton& skeleton, Line& line, int32_t parentIndex);
 
 	/// <summary>
 	//  スケルトンの描画　※DrawLineを調整中なので仮
@@ -174,15 +185,22 @@ public: // メンバ関数
 	/// <summary>
 	/// アニメーション再生
 	/// </summary>
-	void PlayAnimation();
+	void PlayAnimation(float animationTime);
 
 	/// <summary>
 	/// スキンクラスターの更新
 	/// </summary>
 	void UpdateSkinCluster(SkinCluster& skinCluster,const Skeleton& skeleton);
 
+	/// <summary>
+	/// 
+	/// </summary>
+	/// <param name="joint"></param>
+	/// <returns></returns>
 	Vector3 ExtractJointPosition(const Joint& joint) const;
+
 private:
+
 	/// <summary>
 	/// 頂点リソース
 	/// </summary>
@@ -234,6 +252,9 @@ private:
 	SkinCluster CreateSkinCluster(const Skeleton& skeleton, const
 		ModelData& modelData);
 
+	Vector3 CalculateValueNew(const std::vector<KeyframeVector3>& keyframes, float time, InterpolationType interpolationType);
+	Quaternion CalculateValueNew(const std::vector<KeyframeQuaternion>& keyframes, float time, InterpolationType interpolationType);
+
 	std::vector<Vector3> GetConnectionPositions();
 
 	uint32_t GetConnectionCount();
@@ -248,48 +269,58 @@ private:
 	static Node ReadNode(aiNode* node);
 
 	/// <summary>
-	/// .mtlファイルの読み取り
-	/// </summary>
-	static MaterialData LoadMaterialTemplateFile(const std::string& directoryPath, const std::string& filename);
-	
-	/// <summary>
-	/// .objファイルの読み取り
-	/// </summary>
-	static ModelData LoadObjFile(const std::string& directoryPath, const std::string& filename);
-	
-	/// <summary>
-	/// .objファイルの読み取り　（assimp）
-	/// </summary>
-	static ModelData LoadModelFile(const std::string& directoryPath, const std::string& filename);
-
-	/// <summary>
 	/// .objファイルの読み取り　（Index）
 	/// </summary>
 	static ModelData LoadModelIndexFile(const std::string& directoryPath, const std::string& filename);
 
 
+	/// <summary>
+	/// 補間の設定
+	/// </summary>
+	/// <param name="behaviour"></param>
+	/// <returns></returns>
+	InterpolationType MapAssimpBehaviourToInterpolation(aiAnimBehaviour preState, aiAnimBehaviour postState);
 
 	/// <summary>
 	/// アニメーション解析
 	/// </summary>
 	Animation LoadAnimationFile(const std::string& directoryPath, const std::string& filename);
 
+	std::string GetGLTFInterpolation(const aiScene* scene, const std::string& gltfFilePath, uint32_t samplerIndex);
+
 	static bool HasBones(const aiScene* scene);
 
 
-
-
+	void LoadMesh(const aiScene* scene);
+	void LoadMaterial(const aiScene* scene,std::string& directoryPath);
 	
 
 	
 
-public: // アクセッサ
+public:
+	/*=================================================================
+
+							アクセッサ
+
+	=================================================================*/
 	ModelData GetModelData() { return modelData_; }
 	Matrix4x4 GetLocalMatrix() { return localMatrix_; }
 	Skeleton GetSkeleton() { return skeleton_; }
-private: // メンバ変数
-	// 外部からのポインタ
+
+private: 
+	/*=================================================================
+
+							ポインタ
+
+	=================================================================*/
 	ModelCommon* modelCommon_;
+	struct MeshCommon{
+		std::unique_ptr<Material> material_;
+		std::unique_ptr<Mesh> mesh_;
+	};
+
+	std::vector<MeshCommon> meshes_;
+
 	// objファイルのデータ
 	ModelData modelData_;
 
@@ -311,6 +342,10 @@ private: // メンバ変数
 	Skeleton skeleton_;
 
 	bool isAnimation_;
+
+	// アニメーションの補間方法
+	InterpolationType interpolationType_ = InterpolationType::Linear;
+
 private: // Skinning
 
 	SrvManager* srvManager_ = nullptr;
@@ -318,4 +353,4 @@ private: // Skinning
 	SkinCluster skinCluster_;
 };
 
-
+std::string ParseGLTFInterpolation(const std::string& gltfFilePath, uint32_t samplerIndex);

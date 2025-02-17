@@ -12,6 +12,22 @@ class DirectXCommon;
 class PipelineManager
 {
 public: 
+	// ブレンドモード構造体
+	enum BlendMode {
+		// 通常のブレンド
+		kBlendModeNormal,
+		// 加算
+		kBlendModeAdd,
+		// 減算
+		kBlendModeSubtract,
+		// 乗算
+		kBlendModeMultiply,
+		// スクリーン
+		kBlendModeScreen,
+
+		// 利用してはいけない
+		kCount0fBlendMode,
+	};
 	// コンストラクタとデストラクタ
 	 PipelineManager() = default;
 	~ PipelineManager() = default;
@@ -22,7 +38,7 @@ public:
 	/// 初期化
 	/// </summary>
 	void Initialize();
-
+	D3D12_BLEND_DESC GetBlendDesc(BlendMode _mode);
 	ID3D12RootSignature* GetRootSignature(const std::string& key);
 	ID3D12PipelineState* GetPipeLineStateObject(const std::string& key);
 

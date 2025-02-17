@@ -15,6 +15,9 @@
 // assimp
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
+#include <json.hpp>
+#include <fstream>
+#include <iostream>
 
 void Model::Initialize(ModelCommon* modelCommon, const std::string& directorypath, const std::string& filename, bool isAnimation)
 {
@@ -130,39 +133,6 @@ Vector3 Model::ExtractJointPosition(const Joint& joint) const
 	};
 }
 
-
-void Model::DrawSkeletonRecursive(const Skeleton& skeleton, Line& line, int32_t currentIndex)
-{
-	const Joint& currentJoint = skeleton.joints[currentIndex];
-
-	// 現在のジョイントの位置を取得
-	Vector3 currentPosition = {
-		currentJoint.skeletonSpaceMatrix.m[3][0],
-		currentJoint.skeletonSpaceMatrix.m[3][1],
-		currentJoint.skeletonSpaceMatrix.m[3][2]
-	};
-
-	// 親が存在する場合、親ジョイントと現在のジョイントを線でつなぐ
-	if (currentJoint.parent.has_value()) {
-		const Joint& parentJoint = skeleton.joints[currentJoint.parent.value()];
-
-		Vector3 parentPosition = {
-			parentJoint.skeletonSpaceMatrix.m[3][0],
-			parentJoint.skeletonSpaceMatrix.m[3][1],
-			parentJoint.skeletonSpaceMatrix.m[3][2]
-		};
-
-		// 親ジョイントと現在のジョイントを線で描画
-		//line.DrawLine(parentPosition, currentPosition);
-	}
-
-	// 子ジョイントを再帰的に処理する
-	for (int32_t childIndex : currentJoint.children) {
-		DrawSkeletonRecursive(skeleton, line, childIndex);
-	}
-}
-
-
 void Model::DrawSkeleton(const Skeleton& skeleton,Line& line) {
 	// スケルトンが空の場合は終了
 	// ラインを描画
@@ -196,19 +166,17 @@ void Model::UpdateAnimation()
 		UpdateSkinCluster(skinCluster_, skeleton_);
 	}
 	else {
-		PlayAnimation();
+		PlayAnimation(animationTime_);
 	}
 }
 
 
-void Model::PlayAnimation()
+void Model::PlayAnimation(float animationTime)
 {
-	animationTime_ += 1.0f / 60.0f;
-	animationTime_ = std::fmod(animationTime_, animation_.duration); // 最後まで再生したら最初からリピート再生
 	NodeAnimation& rootNodeAnimation = animation_.nodeAnimations[modelData_.rootNode.name]; // rootNodeのAnimationを取得
-	Vector3 translate = CalculateValue(rootNodeAnimation.translate.keyframes, animationTime_); // 指定時刻の値を取得
-	Quaternion rotate= CalculateValue(rootNodeAnimation.rotate.keyframes, animationTime_);
-	Vector3 scale = CalculateValue(rootNodeAnimation.scale.keyframes, animationTime_);
+	Vector3 translate = CalculateValueNew(rootNodeAnimation.translate.keyframes, animationTime, rootNodeAnimation.interpolationType); // 指定時刻の値を取得
+	Quaternion rotate= CalculateValueNew(rootNodeAnimation.rotate.keyframes, animationTime, rootNodeAnimation.interpolationType);
+	Vector3 scale = CalculateValueNew(rootNodeAnimation.scale.keyframes, animationTime, rootNodeAnimation.interpolationType);
 
 	modelData_.rootNode.localMatrix = MakeAffineMatrix(scale, rotate, translate);
 }
@@ -308,6 +276,7 @@ int32_t Model::CreateJoint(const Model::Node& node, const std::optional<int32_t>
 	return joint.index;
 }
 
+
 Model::Skeleton Model::CreateSkeleton(const Model::Node& rootNode)
 {
 	Skeleton skeleton;
@@ -389,6 +358,82 @@ Model::SkinCluster Model::CreateSkinCluster(const Skeleton& skeleton, const Mode
 	return skinCluster;
 }
 
+//================================
+
+Vector3 Model::CalculateValueNew(const std::vector<KeyframeVector3>& keyframes, float time, InterpolationType interpolationType) {
+	assert(!keyframes.empty());
+
+	if (keyframes.size() == 1 || time <= keyframes[0].time) {
+		return keyframes[0].value; // 最初のキー値を返す
+	}
+
+	for (size_t index = 0; index < keyframes.size() - 1; ++index) {
+		size_t nextIndex = index + 1;
+
+		if (keyframes[index].time <= time && time <= keyframes[nextIndex].time) {
+			float t = (time - keyframes[index].time) / (keyframes[nextIndex].time - keyframes[index].time);
+
+			switch (interpolationType) {
+			case InterpolationType::Linear:
+				return Lerp(keyframes[index].value, keyframes[nextIndex].value, t);
+
+			case InterpolationType::Step:
+				return keyframes[index].value;
+
+			case InterpolationType::CubicSpline: {
+				size_t prevIndex = (index == 0) ? index : index - 1;
+				size_t nextNextIndex = (nextIndex + 1 < keyframes.size()) ? nextIndex + 1 : nextIndex;
+
+				return CubicSplineInterpolate(
+					keyframes[prevIndex].value,
+					keyframes[index].value,
+					keyframes[nextIndex].value,
+					keyframes[nextNextIndex].value,
+					t
+				);
+			}
+
+			default:
+				return Lerp(keyframes[index].value, keyframes[nextIndex].value, t);
+			}
+		}
+	}
+
+	return (*keyframes.rbegin()).value;
+}
+
+Quaternion Model::CalculateValueNew(const std::vector<KeyframeQuaternion>& keyframes, float time, InterpolationType interpolationType) {
+	assert(!keyframes.empty());
+
+	if (keyframes.size() == 1 || time <= keyframes[0].time) {
+		return keyframes[0].value; // 最初のキー値を返す
+	}
+
+	for (size_t index = 0; index < keyframes.size() - 1; ++index) {
+		size_t nextIndex = index + 1;
+
+		if (keyframes[index].time <= time && time <= keyframes[nextIndex].time) {
+			float t = (time - keyframes[index].time) / (keyframes[nextIndex].time - keyframes[index].time);
+
+			switch (interpolationType) {
+			case InterpolationType::Linear:
+				return Lerp(keyframes[index].value, keyframes[nextIndex].value, t);
+
+			case InterpolationType::Step:
+				return keyframes[index].value;
+
+			case InterpolationType::CubicSpline: {
+
+			}
+
+			default:
+				return Lerp(keyframes[index].value, keyframes[nextIndex].value, t);
+			}
+		}
+	}
+
+	return (*keyframes.rbegin()).value;
+}
 
 
 
@@ -452,123 +497,6 @@ Model::Node Model::ReadNode(aiNode* node) {
 }
 
 
-
-Model::MaterialData Model::LoadMaterialTemplateFile(const std::string& directoryPath, const std::string& filename)
-{
-	MaterialData materialData;
-	std::string line;
-	std::ifstream file(directoryPath + "/" + filename);
-	assert(file.is_open());
-
-	while (std::getline(file, line)) {
-		std::string identifier;
-		std::istringstream s(line);
-		s >> identifier;
-
-		if (identifier == "newmtl") {
-			s >> materialData.name;
-		}
-		else if (identifier == "Ns") {
-			s >> materialData.Ns;
-		}
-		else if (identifier == "Ka") {
-			s >> materialData.Ka.r >> materialData.Ka.g >> materialData.Ka.b;
-		}
-		else if (identifier == "Kd") {
-			s >> materialData.Kd.r >> materialData.Kd.g >> materialData.Kd.b;
-		}
-		else if (identifier == "Ks") {
-			s >> materialData.Ks.r >> materialData.Ks.g >> materialData.Ks.b;
-		}
-		else if (identifier == "Ni") {
-			s >> materialData.Ni;
-		}
-		else if (identifier == "d") {
-			s >> materialData.d;
-		}
-		else if (identifier == "illum") {
-			s >> materialData.illum;
-		}
-		else if (identifier == "map_Kd") {
-			std::string textureFilename;
-			s >> textureFilename;
-			materialData.textureFilePath = directoryPath + "/" + textureFilename;
-		}
-	}
-	return materialData;
-}
-Model::ModelData Model::LoadObjFile(const std::string& directoryPath, const std::string& filename)
-{
-	// 1. 必要な変数宣言
-	ModelData modelData;		   // 構築するModelData
-	vector<Vector4> positions;	   // 位置
-	vector<Vector3> normals;	   // 法線
-	vector<Vector2> texcoords;	   // テクスチャ座標
-	string line;				   // ファイルから読んだ1行を格納
-
-	// 2. ファイルを開く
-	ifstream file(directoryPath + "/" + filename);
-	assert(file.is_open());						   // 開けなかったら止める
-
-	while (getline(file, line)) {
-		string identifier;
-		istringstream s(line);
-		s >> identifier; // 先頭の識別子を読む
-
-		// identifierに応じた処理
-		if (identifier == "v") {
-			Vector4 position;
-			s >> position.x >> position.y >> position.z;
-			position.x *= -1;
-			position.w = 1.0f;
-			positions.push_back(position);
-		}
-		else if (identifier == "vt") {
-			Vector2 texcoord;
-			s >> texcoord.x >> texcoord.y;
-			texcoord.y = 1.0f - texcoord.y;
-			texcoords.push_back(texcoord);
-		}
-		else if (identifier == "vn") {
-			Vector3 normal;
-			s >> normal.x >> normal.y >> normal.z;
-			normal.x *= -1;
-			normals.push_back(normal);
-		}
-		else if (identifier == "f") {
-			VertexData triangle[3];
-			// 面は三角形限定。その他は未定。
-			for (int32_t faceVertex = 0; faceVertex < 3; ++faceVertex) {
-				string vertexDefinition;
-				s >> vertexDefinition;
-				// 頂点の要素へのIndexは　［位置/UV/法線］　で格納されているので分解してIndexを取得する
-				istringstream v(vertexDefinition);
-				uint32_t elementIndices[3];
-				for (int32_t element = 0; element < 3; ++element) {
-					string index;
-					getline(v, index, '/');				  // 区切りでインデックスうぃ読んでいく
-					elementIndices[element] = stoi(index);
-				}
-				// 要素へのIndexから、実際の要素の値を取得して、頂点を構築する
-				Vector4 position = positions[elementIndices[0] - 1];
-				Vector2 texcoord = texcoords[elementIndices[1] - 1];
-				Vector3 normal = normals[elementIndices[2] - 1];
-				triangle[faceVertex] = { position,texcoord,normal };
-			}
-			// 頂点を逆順すろことで、回り順を逆にする
-			modelData.vertices.push_back(triangle[2]);
-			modelData.vertices.push_back(triangle[1]);
-			modelData.vertices.push_back(triangle[0]);
-		}
-		else if (identifier == "mtllib") {
-			std::string materialFilename;
-			s >> materialFilename;
-			modelData.material = LoadMaterialTemplateFile(directoryPath, materialFilename);
-		}
-	}
-	return modelData;
-}
-
 Model::ModelData Model::LoadModelIndexFile(const std::string& directoryPath, const std::string& filename)
 {
 	//=================================================//
@@ -585,6 +513,8 @@ Model::ModelData Model::LoadModelIndexFile(const std::string& directoryPath, con
 	//=================================================//
 	//					 Meshを解析
 	//=================================================//
+
+	
 
 	for (uint32_t meshIndex = 0; meshIndex < scene->mNumMeshes; ++meshIndex) {
 		aiMesh* mesh = scene->mMeshes[meshIndex];
@@ -664,6 +594,22 @@ Model::ModelData Model::LoadModelIndexFile(const std::string& directoryPath, con
 	return modelData;
 }
 
+
+Model::InterpolationType Model::MapAssimpBehaviourToInterpolation(aiAnimBehaviour preState, aiAnimBehaviour postState)
+{
+	if (preState == aiAnimBehaviour_CONSTANT || postState == aiAnimBehaviour_CONSTANT) {
+		return InterpolationType::Step;
+	}
+	else if (preState == aiAnimBehaviour_LINEAR || postState == aiAnimBehaviour_LINEAR) {
+		return InterpolationType::Linear;
+	}
+	else if (preState == aiAnimBehaviour_REPEAT || postState == aiAnimBehaviour_REPEAT) {
+		return InterpolationType::CubicSpline;
+	}
+
+	return InterpolationType::Linear; // デフォルト
+}
+
 Model::Animation Model::LoadAnimationFile(const std::string& directoryPath, const std::string& filename)
 {
 	Animation animation; // 今回作るアニメーション
@@ -678,6 +624,30 @@ Model::Animation Model::LoadAnimationFile(const std::string& directoryPath, cons
 	for (uint32_t channelIndex = 0; channelIndex < animationAssimp->mNumChannels; ++channelIndex) {
 		aiNodeAnim* nodeAnimationAssimp = animationAssimp->mChannels[channelIndex];
 		NodeAnimation& nodeAnimation = animation.nodeAnimations[nodeAnimationAssimp->mNodeName.C_Str()];
+
+		///// デフォルトの補間タイプをLinearに設定
+		//nodeAnimation.interpolationType = InterpolationType::Linear;
+
+		/// ------
+		/// 補間の種類を取得
+		/// ------
+
+		// 補間方法を取得
+		const std::string interpolation = GetGLTFInterpolation(scene, filePath, channelIndex);
+
+		if (interpolation == "LINEAR") {
+			nodeAnimation.interpolationType = InterpolationType::Linear;
+		}
+		else if (interpolation == "STEP") {
+			nodeAnimation.interpolationType = InterpolationType::Step;
+		}
+		else if (interpolation == "CUBICSPLINE") {
+			nodeAnimation.interpolationType = InterpolationType::CubicSpline;
+		}
+		else {
+			nodeAnimation.interpolationType = InterpolationType::Linear; // デフォルト値
+		}
+
 
 		// Position
 		for (uint32_t keyIndex = 0; keyIndex < nodeAnimationAssimp->mNumPositionKeys; ++keyIndex) {
@@ -711,6 +681,48 @@ Model::Animation Model::LoadAnimationFile(const std::string& directoryPath, cons
 	return animation;
 }
 
+
+std::string Model::GetGLTFInterpolation(const aiScene* scene, const std::string& gltfFilePath, uint32_t samplerIndex) {
+	try {
+		// GLTFファイルを直接解析して補間方法を取得
+		return ParseGLTFInterpolation(gltfFilePath, samplerIndex);
+	}
+	catch (const std::exception& e) {
+		// エラーが発生した場合はデフォルトのLINEARを返す
+		std::cerr << "Error parsing GLTF file: " << e.what() << std::endl;
+		return "LINEAR";
+	}
+}
+
+
+
+
+
+std::string ParseGLTFInterpolation(const std::string& gltfFilePath, uint32_t samplerIndex) {
+	// GLTFファイルを開く
+	std::ifstream file(gltfFilePath);
+	if (!file.is_open()) {
+		throw std::runtime_error("Failed to open GLTF file: " + gltfFilePath);
+	}
+
+	// JSONを読み込む
+	nlohmann::json gltfJson;
+	file >> gltfJson;
+
+	// サンプラー情報を取得
+	const auto& samplers = gltfJson["animations"][0]["samplers"];
+	if (samplerIndex >= samplers.size()) {
+		return "LINEAR"; // デフォルト値
+	}
+
+	// 補間方法を取得
+	if (samplers[samplerIndex].contains("interpolation")) {
+		return samplers[samplerIndex]["interpolation"].get<std::string>();
+	}
+
+	return "LINEAR"; // デフォルト値
+}
+
 bool Model::HasBones(const aiScene* scene)
 {
 	// メッシュがなければボーンもない
@@ -730,4 +742,140 @@ bool Model::HasBones(const aiScene* scene)
 
 	// どのメッシュにもボーンが含まれていない場合
 	return false;
+}
+
+void Model::LoadMesh(const aiScene* scene)
+{
+	// メッシュごとの処理
+	for (uint32_t meshIndex = 0; meshIndex < scene->mNumMeshes; ++meshIndex) {
+		aiMesh* mesh = scene->mMeshes[meshIndex];
+		assert(mesh->HasNormals());        // 法線が無い場合のMeshは非対応
+		assert(mesh->HasTextureCoords(0)); // Texcoordがない場合は非対応
+
+		MeshCommon meshCommon;
+		meshCommon.mesh_ = std::make_unique<Mesh>();
+
+		meshCommon.mesh_->Initialize();
+
+		// メッシュデータの取得と頂点バッファのサイズ設定
+		auto& meshData = meshCommon.mesh_->GetMeshData();
+		meshData.vertices.resize(mesh->mNumVertices);
+
+		// 頂点データの設定
+		for (uint32_t vertexIndex = 0; vertexIndex < mesh->mNumVertices; ++vertexIndex) {
+			aiVector3D& position = mesh->mVertices[vertexIndex];
+			aiVector3D& normal = mesh->mNormals[vertexIndex];
+			aiVector3D& texcoords = mesh->mTextureCoords[0][vertexIndex];
+
+			// 右手系->左手系への変換を考慮して頂点データを設定
+			meshData.vertices[vertexIndex].position = { -position.x, position.y, position.z, 1.0f };
+			meshData.vertices[vertexIndex].normal = { -normal.x, normal.y, normal.z };
+			meshData.vertices[vertexIndex].texcoord = { texcoords.x, texcoords.y };
+		}
+
+		// インデックスデータの設定
+		for (uint32_t faceIndex = 0; faceIndex < mesh->mNumFaces; ++faceIndex) {
+			aiFace& face = mesh->mFaces[faceIndex];
+			if (face.mNumIndices == 4) {
+				// 四角形の場合、2つの三角形に分割
+				uint32_t i0 = face.mIndices[0];
+				uint32_t i1 = face.mIndices[1];
+				uint32_t i2 = face.mIndices[2];
+				uint32_t i3 = face.mIndices[3];
+
+				// 1つ目の三角形
+				meshData.indices.push_back(i0);
+				meshData.indices.push_back(i1);
+				meshData.indices.push_back(i2);
+
+				// 2つ目の三角形
+				meshData.indices.push_back(i0);
+				meshData.indices.push_back(i2);
+				meshData.indices.push_back(i3);
+			} else if (face.mNumIndices == 3) {
+				// 三角形の場合はそのまま追加
+				for (uint32_t element = 0; element < face.mNumIndices; ++element) {
+					meshData.indices.push_back(face.mIndices[element]);
+				}
+			}
+		}
+
+		// メッシュリソースの初期化
+		meshCommon.mesh_->InitializeResource();
+
+		// メッシュをコンテナに追加
+		meshes_.push_back(std::move(meshCommon));
+	}
+
+}
+
+void Model::LoadMaterial(const aiScene* scene, std::string& directoryPath) {
+	// マテリアルの処理
+	for (uint32_t materialIndex = 0; materialIndex < scene->mNumMaterials; ++materialIndex) {
+		aiMaterial* material = scene->mMaterials[materialIndex];
+
+		// 対応するメッシュを探してマテリアル設定
+		for (auto& meshCommon : meshes_) {
+			if (meshCommon.mesh_->GetMeshData().materialIndex == materialIndex) {
+				// マテリアル名の取得
+				aiString materialName;
+				if (material->Get(AI_MATKEY_NAME, materialName) == AI_SUCCESS) {
+					meshCommon.material_->name_ = materialName.C_Str();
+				}
+
+				// ディフューズテクスチャの処理
+				if (material->GetTextureCount(aiTextureType_DIFFUSE) > 0) {
+					aiString textureFilePath;
+					if (material->GetTexture(aiTextureType_DIFFUSE, 0, &textureFilePath) == AI_SUCCESS) {
+						std::string fullPath = directoryPath + "/" + textureFilePath.C_Str();
+						meshCommon.material_->SetTextureFilePath(fullPath);
+					}
+				}
+
+				// 各種カラーの取得と設定
+				aiColor3D color;
+				if (material->Get(AI_MATKEY_COLOR_AMBIENT, color) == AI_SUCCESS) {
+					meshCommon.material_->Ka_ = { color.r, color.g, color.b };
+				}
+				if (material->Get(AI_MATKEY_COLOR_DIFFUSE, color) == AI_SUCCESS) {
+					meshCommon.material_->Kd_ = { color.r, color.g, color.b };
+					// マテリアルカラーとして設定
+					meshCommon.material_->SetMaterialColor({
+						color.r, color.g, color.b, 1.0f
+						});
+				}
+				if (material->Get(AI_MATKEY_COLOR_SPECULAR, color) == AI_SUCCESS) {
+					meshCommon.material_->Ks_ = { color.r, color.g, color.b };
+				}
+
+				// その他のパラメータの取得と設定
+				float shininess = 0.0f;
+				if (material->Get(AI_MATKEY_SHININESS, shininess) == AI_SUCCESS) {
+					meshCommon.material_->Ns_ = shininess;
+					meshCommon.material_->SetMaterialShininess(shininess);
+				}
+
+				float opacity = 1.0f;
+				if (material->Get(AI_MATKEY_OPACITY, opacity) == AI_SUCCESS) {
+					meshCommon.material_->d_ = opacity;
+					meshCommon.material_->SetAlpha(opacity);
+				}
+
+				float refractionIndex = 1.0f;
+				if (material->Get(AI_MATKEY_REFRACTI, refractionIndex) == AI_SUCCESS) {
+					meshCommon.material_->Ni_ = refractionIndex;
+				}
+
+				unsigned int illumModel = 0;
+				if (material->Get(AI_MATKEY_SHADING_MODEL, illumModel) == AI_SUCCESS) {
+					meshCommon.material_->illum_ = illumModel;
+				}
+
+				// スペキュラ反射の有効化（必要に応じて）
+				if (material->Get(AI_MATKEY_SHININESS_STRENGTH, shininess) == AI_SUCCESS && shininess > 0.0f) {
+					meshCommon.material_->SetMaterialSpecularEnabled(true);
+				}
+			}
+		}
+	}
 }
