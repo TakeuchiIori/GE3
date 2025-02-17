@@ -291,8 +291,8 @@ private:
 	static bool HasBones(const aiScene* scene);
 
 
-
-
+	void LoadMesh(const aiScene* scene);
+	void LoadMaterial(const aiScene* scene,std::string& directoryPath);
 	
 
 	
@@ -314,8 +314,12 @@ private:
 
 	=================================================================*/
 	ModelCommon* modelCommon_;
-	std::vector<std::unique_ptr<Material>> material_;
-	std::vector<std::unique_ptr<Mesh>> mesh_;
+	struct MeshCommon{
+		std::unique_ptr<Material> material_;
+		std::unique_ptr<Mesh> mesh_;
+	};
+
+	std::vector<MeshCommon> meshes_;
 
 	// objファイルのデータ
 	ModelData modelData_;

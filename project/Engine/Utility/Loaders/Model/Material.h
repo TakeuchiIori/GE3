@@ -49,6 +49,12 @@ public:
 	void TransferData();
 
 
+private:
+
+	/// <summary>
+	/// テクスチャ読み込み
+	/// </summary>
+	void LoadTexture();
 public:
 	/*=================================================================
 
@@ -106,6 +112,8 @@ public:
 	MaterialData* GetMaterialData() { return materialData_; }
 
 
+	const std::string& GetTextureFilePath() const { return textureFilePath_; }
+	void SetTextureFilePath(const std::string& path) { textureFilePath_ = path; }
 
 private:
 	/*=================================================================
@@ -129,5 +137,19 @@ private:
 	MaterialData* materialData_ = nullptr;
 
 
+public:
+	struct Color {
+		float r, g, b;
+	};
+	std::string name_;
+	float Ns_;
+	Color Ka_;	// 環境光色
+	Color Kd_;	// 拡散反射色
+	Color Ks_;	// 鏡面反射光
+	float Ni_;
+	float d_;
+	uint32_t illum_;
+	std::string textureFilePath_;
+	uint32_t textureIndex_ = 0;
 };
 

@@ -514,6 +514,8 @@ Model::ModelData Model::LoadModelIndexFile(const std::string& directoryPath, con
 	//					 Meshを解析
 	//=================================================//
 
+	
+
 	for (uint32_t meshIndex = 0; meshIndex < scene->mNumMeshes; ++meshIndex) {
 		aiMesh* mesh = scene->mMeshes[meshIndex];
 		assert(mesh->HasNormals());			  // 法線が無い場合のMeshは 04-00 では非対応
@@ -740,4 +742,140 @@ bool Model::HasBones(const aiScene* scene)
 
 	// どのメッシュにもボーンが含まれていない場合
 	return false;
+}
+
+void Model::LoadMesh(const aiScene* scene)
+{
+	// メッシュごとの処理
+	for (uint32_t meshIndex = 0; meshIndex < scene->mNumMeshes; ++meshIndex) {
+		aiMesh* mesh = scene->mMeshes[meshIndex];
+		assert(mesh->HasNormals());        // 法線が無い場合のMeshは非対応
+		assert(mesh->HasTextureCoords(0)); // Texcoordがない場合は非対応
+
+		MeshCommon meshCommon;
+		meshCommon.mesh_ = std::make_unique<Mesh>();
+
+		meshCommon.mesh_->Initialize();
+
+		// メッシュデータの取得と頂点バッファのサイズ設定
+		auto& meshData = meshCommon.mesh_->GetMeshData();
+		meshData.vertices.resize(mesh->mNumVertices);
+
+		// 頂点データの設定
+		for (uint32_t vertexIndex = 0; vertexIndex < mesh->mNumVertices; ++vertexIndex) {
+			aiVector3D& position = mesh->mVertices[vertexIndex];
+			aiVector3D& normal = mesh->mNormals[vertexIndex];
+			aiVector3D& texcoords = mesh->mTextureCoords[0][vertexIndex];
+
+			// 右手系->左手系への変換を考慮して頂点データを設定
+			meshData.vertices[vertexIndex].position = { -position.x, position.y, position.z, 1.0f };
+			meshData.vertices[vertexIndex].normal = { -normal.x, normal.y, normal.z };
+			meshData.vertices[vertexIndex].texcoord = { texcoords.x, texcoords.y };
+		}
+
+		// インデックスデータの設定
+		for (uint32_t faceIndex = 0; faceIndex < mesh->mNumFaces; ++faceIndex) {
+			aiFace& face = mesh->mFaces[faceIndex];
+			if (face.mNumIndices == 4) {
+				// 四角形の場合、2つの三角形に分割
+				uint32_t i0 = face.mIndices[0];
+				uint32_t i1 = face.mIndices[1];
+				uint32_t i2 = face.mIndices[2];
+				uint32_t i3 = face.mIndices[3];
+
+				// 1つ目の三角形
+				meshData.indices.push_back(i0);
+				meshData.indices.push_back(i1);
+				meshData.indices.push_back(i2);
+
+				// 2つ目の三角形
+				meshData.indices.push_back(i0);
+				meshData.indices.push_back(i2);
+				meshData.indices.push_back(i3);
+			} else if (face.mNumIndices == 3) {
+				// 三角形の場合はそのまま追加
+				for (uint32_t element = 0; element < face.mNumIndices; ++element) {
+					meshData.indices.push_back(face.mIndices[element]);
+				}
+			}
+		}
+
+		// メッシュリソースの初期化
+		meshCommon.mesh_->InitializeResource();
+
+		// メッシュをコンテナに追加
+		meshes_.push_back(std::move(meshCommon));
+	}
+
+}
+
+void Model::LoadMaterial(const aiScene* scene, std::string& directoryPath) {
+	// マテリアルの処理
+	for (uint32_t materialIndex = 0; materialIndex < scene->mNumMaterials; ++materialIndex) {
+		aiMaterial* material = scene->mMaterials[materialIndex];
+
+		// 対応するメッシュを探してマテリアル設定
+		for (auto& meshCommon : meshes_) {
+			if (meshCommon.mesh_->GetMeshData().materialIndex == materialIndex) {
+				// マテリアル名の取得
+				aiString materialName;
+				if (material->Get(AI_MATKEY_NAME, materialName) == AI_SUCCESS) {
+					meshCommon.material_->name_ = materialName.C_Str();
+				}
+
+				// ディフューズテクスチャの処理
+				if (material->GetTextureCount(aiTextureType_DIFFUSE) > 0) {
+					aiString textureFilePath;
+					if (material->GetTexture(aiTextureType_DIFFUSE, 0, &textureFilePath) == AI_SUCCESS) {
+						std::string fullPath = directoryPath + "/" + textureFilePath.C_Str();
+						meshCommon.material_->SetTextureFilePath(fullPath);
+					}
+				}
+
+				// 各種カラーの取得と設定
+				aiColor3D color;
+				if (material->Get(AI_MATKEY_COLOR_AMBIENT, color) == AI_SUCCESS) {
+					meshCommon.material_->Ka_ = { color.r, color.g, color.b };
+				}
+				if (material->Get(AI_MATKEY_COLOR_DIFFUSE, color) == AI_SUCCESS) {
+					meshCommon.material_->Kd_ = { color.r, color.g, color.b };
+					// マテリアルカラーとして設定
+					meshCommon.material_->SetMaterialColor({
+						color.r, color.g, color.b, 1.0f
+						});
+				}
+				if (material->Get(AI_MATKEY_COLOR_SPECULAR, color) == AI_SUCCESS) {
+					meshCommon.material_->Ks_ = { color.r, color.g, color.b };
+				}
+
+				// その他のパラメータの取得と設定
+				float shininess = 0.0f;
+				if (material->Get(AI_MATKEY_SHININESS, shininess) == AI_SUCCESS) {
+					meshCommon.material_->Ns_ = shininess;
+					meshCommon.material_->SetMaterialShininess(shininess);
+				}
+
+				float opacity = 1.0f;
+				if (material->Get(AI_MATKEY_OPACITY, opacity) == AI_SUCCESS) {
+					meshCommon.material_->d_ = opacity;
+					meshCommon.material_->SetAlpha(opacity);
+				}
+
+				float refractionIndex = 1.0f;
+				if (material->Get(AI_MATKEY_REFRACTI, refractionIndex) == AI_SUCCESS) {
+					meshCommon.material_->Ni_ = refractionIndex;
+				}
+
+				unsigned int illumModel = 0;
+				if (material->Get(AI_MATKEY_SHADING_MODEL, illumModel) == AI_SUCCESS) {
+					meshCommon.material_->illum_ = illumModel;
+				}
+
+				// スペキュラ反射の有効化（必要に応じて）
+				if (material->Get(AI_MATKEY_SHININESS_STRENGTH, shininess) == AI_SUCCESS && shininess > 0.0f) {
+					meshCommon.material_->SetMaterialSpecularEnabled(true);
+				}
+			}
+		}
+	}
 }
