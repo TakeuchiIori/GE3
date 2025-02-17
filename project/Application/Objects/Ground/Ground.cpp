@@ -9,6 +9,7 @@ void Ground::Initialize(Camera* camera)
 	obj_->SetModel("terrain.obj");
 
 	worldTransform_.Initialize();
+	worldTransform_.translation_.y -= 2.0f;
 }
 
 void Ground::Update()

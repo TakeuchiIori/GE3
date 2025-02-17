@@ -347,4 +347,3 @@ void GameScene::CheckAllCollisions() {
     CollisionManager::GetInstance()->CheckAllCollisions();
 
 }
-
