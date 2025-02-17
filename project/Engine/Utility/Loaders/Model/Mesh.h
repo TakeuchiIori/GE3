@@ -116,7 +116,7 @@ public:
 	/// MeshData
 	/// 
 	const MeshData& GetMeshData() const { return meshData_; }
-
+	MeshData& GetMeshData() { return meshData_; }
 	/// 
 	/// MeshResource
 	/// 
